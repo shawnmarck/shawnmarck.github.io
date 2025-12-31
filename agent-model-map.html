@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Model Map - OpenCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background: 240 10% 3.9%;
+            --foreground: 0 0% 98%;
+            --card: 240 10% 3.9%;
+            --card-foreground: 0 0% 98%;
+            --popover: 240 10% 3.9%;
+            --popover-foreground: 0 0% 98%;
+            --primary: 0 0% 98%;
+            --primary-foreground: 240 5.9% 10%;
+            --secondary: 240 3.7% 15.9%;
+            --secondary-foreground: 0 0% 98%;
+            --muted: 240 3.7% 15.9%;
+            --muted-foreground: 240 5% 64.9%;
+            --accent: 240 3.7% 15.9%;
+            --accent-foreground: 0 0% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 240 3.7% 15.9%;
+            --input: 240 3.7% 15.9%;
+            --ring: 240 4.9% 83.9%;
+            --radius: 0.5rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: hsl(var(--muted-foreground));
+            font-size: 1.1rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .card {
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        th {
+            font-weight: 600;
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: hsl(var(--accent));
+        }
+
+        .agent-name {
+            font-weight: 600;
+            color: hsl(var(--primary));
+            font-size: 0.95rem;
+        }
+
+        .model-name {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.85rem;
+            background-color: hsl(var(--secondary));
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            display: inline-block;
+        }
+
+        .price {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .price-low {
+            color: hsl(142 76% 36%);
+        }
+
+        .price-medium {
+            color: hsl(38 92% 50%);
+        }
+
+        .price-high {
+            color: hsl(0 84% 60%);
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .note-card {
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1.25rem;
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: hsl(var(--primary));
+        }
+
+        .note-content {
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .tag-blue {
+            background-color: hsl(217 91% 60% / 20%);
+            color: hsl(217 91% 60%);
+        }
+
+        .tag-green {
+            background-color: hsl(142 76% 36% / 20%);
+            color: hsl(142 76% 36%);
+        }
+
+        .tag-purple {
+            background-color: hsl(262 83% 58% / 20%);
+            color: hsl(262 83% 58%);
+        }
+
+        .tag-orange {
+            background-color: hsl(38 92% 50% / 20%);
+            color: hsl(38 92% 50%);
+        }
+
+        .tag-red {
+            background-color: hsl(0 84% 60% / 20%);
+            color: hsl(0 84% 60%);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-primary {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        .badge-secondary {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+        }
+
+        .comparison {
+            margin-top: 2rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .comparison-card {
+            background-color: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: var(--radius);
+            padding: 1.25rem;
+        }
+
+        .comparison-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .comparison-card ul {
+            list-style: none;
+            font-size: 0.875rem;
+        }
+
+        .comparison-card li {
+            padding: 0.25rem 0;
+            padding-left: 1.25rem;
+            position: relative;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .comparison-card li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .recommendation {
+            background-color: hsl(142 76% 36% / 10%);
+            border: 1px solid hsl(142 76% 36% / 30%);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: hsl(142 76% 36%);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recommendation-content {
+            font-size: 0.9rem;
+            color: hsl(var(--foreground));
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid hsl(var(--border));
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Agent Model Map</h1>
+            <p class="subtitle">OpenCode AI Agent Configuration & Rationale</p>
+        </header>
+
+        <section class="section">
+            <h2>Agent-Model Configuration</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Model</th>
+                            <th>Context Window</th>
+                            <th>Input Price</th>
+                            <th>Output Price</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="agent-name">build</span></td>
+                            <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
+                            <td>200K tokens</td>
+                            <td><span class="price price-low">$0.40/M</span></td>
+                            <td><span class="price price-medium">$1.50/M</span></td>
+                            <td><span class="tag tag-blue">coding</span> <span class="tag tag-green">cost-effective</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="agent-name">plan</span></td>
+                            <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
+                            <td>200K tokens</td>
+                            <td><span class="price price-low">$0.40/M</span></td>
+                            <td><span class="price price-medium">$1.50/M</span></td>
+                            <td><span class="tag tag-blue">planning</span> <span class="tag tag-green">cost-effective</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="agent-name">librarian</span></td>
+                            <td><span class="model-name">google/gemini-3-flash</span></td>
+                            <td>1M tokens</td>
+                            <td><span class="price price-low">$0.50/M</span></td>
+                            <td><span class="price price-medium">$3.00/M</span></td>
+                            <td><span class="tag tag-purple">research</span> <span class="tag tag-blue">fast</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="agent-name">explore</span></td>
+                            <td><span class="model-name">x.ai/grok-code-fast-1</span></td>
+                            <td>256K tokens</td>
+                            <td><span class="price price-low">$0.20/M</span></td>
+                            <td><span class="price price-low">$1.50/M</span></td>
+                            <td><span class="tag tag-blue">code-search</span> <span class="tag tag-green">cheapest</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="agent-name">oracle</span></td>
+                            <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
+                            <td>200K tokens</td>
+                            <td><span class="price price-high">$5.00/M</span></td>
+                            <td><span class="price price-high">$25.00/M</span></td>
+                            <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">reasoning</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="agent-name">frontend-ui-ux-engineer</span></td>
+                            <td><span class="model-name">google/gemini-3-pro-high</span></td>
+                            <td>1M tokens</td>
+                            <td><span class="price price-medium">$2.00/M</span></td>
+                            <td><span class="price price-high">$12.00/M</span></td>
+                            <td><span class="tag tag-orange">visual</span> <span class="tag tag-red">expensive</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="agent-name">document-writer</span></td>
+                            <td><span class="model-name">google/gemini-3-flash</span></td>
+                            <td>1M tokens</td>
+                            <td><span class="price price-low">$0.50/M</span></td>
+                            <td><span class="price price-medium">$3.00/M</span></td>
+                            <td><span class="tag tag-purple">docs</span> <span class="tag tag-blue">fast</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="agent-name">multimodal-looker</span></td>
+                            <td><span class="model-name">google/gemini-3-flash</span></td>
+                            <td>1M tokens</td>
+                            <td><span class="price price-low">$0.50/M</span></td>
+                            <td><span class="price price-medium">$3.00/M</span></td>
+                            <td><span class="tag tag-blue">vision</span> <span class="tag tag-purple">multimodal</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Configuration Rationale</h2>
+            <div class="notes-grid">
+                <div class="note-card">
+                    <div class="note-title">🛠️ build & plan Agents</div>
+                    <div class="note-content">
+                        <strong>Model:</strong> GLM-4.7 (Z.AI)<br>
+                        <strong>Why:</strong> MIT-licensed open weights with strong coding capabilities and multi-step reasoning. Very cost-effective ($0.40/$1.50 per M tokens). Good balance of performance and price for agentic workflows.
+                    </div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title">📚 librarian Agent</div>
+                    <div class="note-content">
+                        <strong>Model:</strong> Gemini 3 Flash (Google)<br>
+                        <strong>Why:</strong> Massive 1M context window for reading extensive documentation. Fast and efficient ($0.50/$3.00 per M). Optimized for speed - crucial for rapid research across external docs and GitHub examples.
+                    </div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title">🔍 explore Agent</div>
+                    <div class="note-content">
+                        <strong>Model:</strong> Grok Code Fast 1 (xAI)<br>
+                        <strong>Why:</strong> Built specifically for agentic coding and code search. Mastered common dev tools (grep, terminal, file editing). Cheapest in the stack ($0.20/$1.50 per M) with excellent TypeScript, Python, Rust, C++, Go support.
+                    </div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title">🧠 oracle Agent</div>
+                    <div class="note-content">
+                        <strong>Model:</strong> Claude Opus 4.5 (Anthropic)<br>
+                        <strong>Why:</strong> SOTA model for complex architecture decisions and deep reasoning. Best model in the world for coding, agents, and computer use. Most robustly aligned with strong prompt injection resistance. Reserved for high-stakes decisions.
+                    </div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title">🎨 frontend-ui-ux-engineer Agent</div>
+                    <div class="note-content">
+                        <strong>Model:</strong> Gemini 3 Pro High (Google)<br>
+                        <strong>Why:</strong> Visual reasoning specialist with 1M context for understanding design systems, components, and UI patterns. More expensive but necessary for design fidelity. Strong multimodal capabilities for analyzing screenshots and design mockups.
+                    </div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title">📝 document-writer Agent</div>
+                    <div class="note-content">
+                        <strong>Model:</strong> Gemini 3 Flash (Google)<br>
+                        <strong>Why:</strong> Fast and efficient for generating documentation. 1M context allows reading large codebases and docs simultaneously. Cost-effective while maintaining quality for README, API docs, and guides.
+                    </div>
+                </div>
+                <div class="note-card">
+                    <div class="note-title">👁️ multimodal-looker Agent</div>
+                    <div class="note-content">
+                        <strong>Model:</strong> Gemini 3 Flash (Google)<br>
+                        <strong>Why:</strong> Analyzes PDFs, images, diagrams via Gemini 2.5 Flash. 1M context enables processing extensive documents. Fast and cost-effective ($0.50/$3.00 per M). Good balance of speed, context, and price for visual analysis tasks.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Key Design Principles</h2>
+            <div class="comparison">
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h3>💰 Cost Optimization</h3>
+                        <ul>
+                            <li>Cheapest models for high-frequency tasks (explore, librarian, document-writer, multimodal-looker)</li>
+                            <li>Premium model (Opus 4.5) reserved for high-stakes architecture decisions</li>
+                            <li>GLM-4.7 used for build/plan - open source and cost-effective</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h3>⚡ Speed vs. Quality Tradeoff</h3>
+                        <ul>
+                            <li>Flash models for research and documentation (fast, efficient)</li>
+                            <li>Pro/High models for visual reasoning (better quality)</li>
+                            <li>Grok Code Fast 1 optimized for code search speed</li>
+                            <li>Oracle reserved for complex, non-time-sensitive decisions</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h3>🎯 Specialization</h3>
+                        <ul>
+                            <li>Each agent paired with model optimized for its domain</li>
+                            <li>Grok Code Fast 1 specifically trained for agentic coding</li>
+                            <li>Gemini 3 Pro High for visual/UI tasks</li>
+                            <li>GLM-4.7 for general coding and planning</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h3>📏 Context Window Strategy</h3>
+                        <ul>
+                            <li>1M context where large docs needed (librarian, frontend, document-writer, multimodal-looker)</li>
+                            <li>200K-256K sufficient for most coding tasks (build, plan, explore, oracle)</li>
+                            <li>Balance context size with cost - larger windows more expensive</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Cost Summary</h2>
+            <div class="card">
+                <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Total input range: $0.20/M - $5.00/M (25x variance)<br>
+                    Total output range: $1.50/M - $25.00/M (17x variance)
+                </p>
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                    <div>
+                        <strong style="display: block; margin-bottom: 0.25rem;">Most Cost-Effective</strong>
+                        <span class="badge badge-secondary">Grok Code Fast 1</span>
+                    </div>
+                    <div>
+                        <strong style="display: block; margin-bottom: 0.25rem;">Best Value (Performance/Cost)</strong>
+                        <span class="badge badge-secondary">GLM-4.7</span>
+                    </div>
+                    <div>
+                        <strong style="display: block; margin-bottom: 0.25rem;">Fastest</strong>
+                        <span class="badge badge-secondary">Gemini 3 Flash</span>
+                    </div>
+                    <div>
+                        <strong style="display: block; margin-bottom: 0.25rem;">Most Capable</strong>
+                        <span class="badge badge-primary">Claude Opus 4.5</span>
+                    </div>
+                    <div>
+                        <strong style="display: block; margin-bottom: 0.25rem;">Best Visual</strong>
+                        <span class="badge badge-secondary">Gemini 3 Pro High</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Generated on <span id="date"></span> • OpenCode Configuration Analysis</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>
