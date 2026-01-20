@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Model Map - OpenCode</title>
+    <title>Agent Model Map - OpenCode Configuration Strategies</title>
     <style>
         * {
             margin: 0;
@@ -32,6 +32,8 @@
             --input: 240 3.7% 15.9%;
             --ring: 240 4.9% 83.9%;
             --radius: 0.5rem;
+            --success: 142 76% 36%;
+            --warning: 38 92% 50%;
         }
 
         body {
@@ -74,6 +76,13 @@
             letter-spacing: -0.01em;
         }
 
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+        }
+
         .card {
             background-color: hsl(var(--card));
             border: 1px solid hsl(var(--border));
@@ -82,10 +91,73 @@
             margin-bottom: 1rem;
         }
 
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid hsl(var(--border));
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .tab:hover {
+            color: hsl(var(--foreground));
+            background-color: hsl(var(--accent));
+        }
+
+        .tab.active {
+            color: hsl(var(--primary));
+            border-bottom-color: hsl(var(--primary));
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background-color: hsl(var(--success) / 20%);
+            color: hsl(var(--success));
+        }
+
+        .status-standby {
+            background-color: hsl(var(--warning) / 20%);
+            color: hsl(var(--warning));
+        }
+
+        /* Tables */
         .table-container {
             overflow-x: auto;
             border: 1px solid hsl(var(--border));
             border-radius: var(--radius);
+            margin-bottom: 1.5rem;
         }
 
         table {
@@ -147,31 +219,85 @@
             color: hsl(0 84% 60%);
         }
 
-        .notes-grid {
+        /* Info boxes */
+        .info-box {
+            background-color: hsl(217 91% 60% / 10%);
+            border: 1px solid hsl(217 91% 60% / 30%);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: hsl(217 91% 60%);
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            color: hsl(var(--foreground));
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+
+        .info-box li {
+            padding: 0.25rem 0;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .info-box li::before {
+            content: "→ ";
+            color: hsl(217 91% 60%);
+        }
+
+        /* Comparison grid */
+        .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1rem;
             margin-top: 1rem;
         }
 
-        .note-card {
+        .comparison-card {
             background-color: hsl(var(--card));
             border: 1px solid hsl(var(--border));
             border-radius: var(--radius);
             padding: 1.25rem;
         }
 
-        .note-title {
+        .comparison-card h4 {
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: hsl(var(--primary));
+            margin-bottom: 0.75rem;
         }
 
-        .note-content {
+        .comparison-card ul {
+            list-style: none;
             font-size: 0.875rem;
+        }
+
+        .comparison-card li {
+            padding: 0.25rem 0;
+            padding-left: 1.25rem;
+            position: relative;
             color: hsl(var(--muted-foreground));
         }
 
+        .comparison-card li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: hsl(var(--muted-foreground));
+        }
+
+        /* Tags */
         .tag {
             display: inline-block;
             padding: 0.25rem 0.5rem;
@@ -207,89 +333,14 @@
             color: hsl(0 84% 60%);
         }
 
-        .badge {
-            display: inline-block;
-            padding: 0.125rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .badge-primary {
-            background-color: hsl(var(--primary));
-            color: hsl(var(--primary-foreground));
-        }
-
-        .badge-secondary {
-            background-color: hsl(var(--secondary));
-            color: hsl(var(--secondary-foreground));
-        }
-
-        .comparison {
-            margin-top: 2rem;
-        }
-
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .comparison-card {
-            background-color: hsl(var(--card));
-            border: 1px solid hsl(var(--border));
-            border-radius: var(--radius);
-            padding: 1.25rem;
-        }
-
-        .comparison-card h3 {
+        .section-header {
             font-size: 1rem;
             font-weight: 600;
+            color: hsl(var(--muted-foreground));
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             margin-bottom: 0.75rem;
-        }
-
-        .comparison-card ul {
-            list-style: none;
-            font-size: 0.875rem;
-        }
-
-        .comparison-card li {
-            padding: 0.25rem 0;
-            padding-left: 1.25rem;
-            position: relative;
-            color: hsl(var(--muted-foreground));
-        }
-
-        .comparison-card li::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: hsl(var(--muted-foreground));
-        }
-
-        .recommendation {
-            background-color: hsl(142 76% 36% / 10%);
-            border: 1px solid hsl(142 76% 36% / 30%);
-            border-radius: var(--radius);
-            padding: 1.5rem;
             margin-top: 1.5rem;
-        }
-
-        .recommendation-title {
-            font-weight: 600;
-            color: hsl(142 76% 36%);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .recommendation-content {
-            font-size: 0.9rem;
-            color: hsl(var(--foreground));
         }
 
         footer {
@@ -305,87 +356,566 @@
     <div class="container">
         <header>
             <h1>Agent Model Map</h1>
-            <p class="subtitle">OpenCode AI Agent Configuration & Rationale</p>
+            <p class="subtitle">OpenCode Configuration Strategies - Multi-Tier Setup</p>
         </header>
 
         <section class="section">
-            <h2>Agent-Model Configuration</h2>
+            <h2>Configuration Strategies</h2>
+            <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1.5rem;">
+                Three configuration variants optimized for different scenarios. Switch between them using symlinks for instant strategy changes.
+            </p>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('option-a')">
+                    Option A: Cost Optimization
+                    <span class="status-badge status-active">Active</span>
+                </button>
+                <button class="tab" onclick="showTab('option-b')">
+                    Option B: Balanced Quality
+                    <span class="status-badge status-standby">Standby</span>
+                </button>
+                <button class="tab" onclick="showTab('option-c')">
+                    Option C: Hybrid Adaptive
+                    <span class="status-badge status-standby">Standby</span>
+                </button>
+            </div>
+
+            <!-- Option A: Cost Optimization -->
+            <div id="option-a" class="tab-content active">
+                <div class="info-box">
+                    <h4>💰 Pure Cost Optimization Strategy</h4>
+                    <p><strong>Location:</strong> <code>~/.config/opencode/oh-my-opencode-option-a.json</code></p>
+                    <p><strong>Cost Reduction:</strong> 85-90% vs. Opus-heavy config</p>
+                    <p><strong>Prerequisites:</strong></p>
+                    <ul>
+                        <li>OpenAI API key (for GPT-5.2)</li>
+                        <li>Google API key or Antigravity auth (for Gemini models)</li>
+                        <li>Anthropic API key optional (only for Haiku in quick category)</li>
+                    </ul>
+                    <p><strong>Best For:</strong> Daily work, cost-conscious development, learning, when Anthropic rate limits are a concern</p>
+                </div>
+
+                <div class="section-header">Orchestration Layer</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Input Price</th>
+                                <th>Output Price</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="agent-name">Sisyphus</span></td>
+                                <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
+                                <td><span class="price price-low">$0.40/M</span></td>
+                                <td><span class="price price-medium">$1.50/M</span></td>
+                                <td>Main orchestrator</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Prometheus</span></td>
+                                <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
+                                <td><span class="price price-low">$0.40/M</span></td>
+                                <td><span class="price price-medium">$1.50/M</span></td>
+                                <td>Strategic planner</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Metis</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td><span class="price price-medium">~$1-2/M</span></td>
+                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td>Pre-planning analyst</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Momus</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td><span class="price price-medium">~$1-2/M</span></td>
+                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td>Plan validator</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">Worker Agents</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Context</th>
+                                <th>Input Price</th>
+                                <th>Output Price</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="agent-name">oracle</span></td>
+                                <td><span class="model-name">openai/gpt-5.2</span></td>
+                                <td>128K</td>
+                                <td><span class="price price-high">$5.00/M</span></td>
+                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">reasoning</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">oracle-lite</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">~$1-2/M</span></td>
+                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="tag tag-orange">medium-tier</span> <span class="tag tag-purple">escalation</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">librarian</span></td>
+                                <td><span class="model-name">google/gemini-3-flash</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-low">$0.50/M</span></td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="tag tag-purple">research</span> <span class="tag tag-blue">fast</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">explore</span></td>
+                                <td><span class="model-name">opencode/grok-code</span></td>
+                                <td>256K</td>
+                                <td><span class="price price-low">$0.20/M</span></td>
+                                <td><span class="price price-low">$1.50/M</span></td>
+                                <td><span class="tag tag-blue">code-search</span> <span class="tag tag-green">cheapest</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">frontend-ui-ux-engineer</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-high</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
+                                <td><span class="tag tag-orange">visual</span> <span class="tag tag-purple">UI/UX</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">document-writer</span></td>
+                                <td><span class="model-name">google/gemini-3-flash</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-low">$0.50/M</span></td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="tag tag-purple">docs</span> <span class="tag tag-blue">fast</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">multimodal-looker</span></td>
+                                <td><span class="model-name">google/gemini-3-flash</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-low">$0.50/M</span></td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="tag tag-blue">vision</span> <span class="tag tag-purple">multimodal</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">Semantic Categories</div>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>quick</h4>
+                        <ul>
+                            <li>Model: Claude Haiku 4.5</li>
+                            <li>Temp: 0.3</li>
+                            <li>Use: Simple tasks, refactoring</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>general</h4>
+                        <ul>
+                            <li>Model: GLM-4.7</li>
+                            <li>Temp: 0.2</li>
+                            <li>Use: 90% of standard work</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>ultrabrain</h4>
+                        <ul>
+                            <li>Model: GPT-5.2</li>
+                            <li>Temp: 0.1</li>
+                            <li>Use: Complex architecture</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>visual-engineering</h4>
+                        <ul>
+                            <li>Model: Gemini 3 Pro High</li>
+                            <li>Temp: 0.7</li>
+                            <li>Use: UI/UX, design systems</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>writing</h4>
+                        <ul>
+                            <li>Model: Gemini 3 Flash</li>
+                            <li>Temp: 0.5</li>
+                            <li>Use: Documentation, blogs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option B: Balanced Quality -->
+            <div id="option-b" class="tab-content">
+                <div class="info-box">
+                    <h4>⚖️ Balanced Quality/Cost Strategy</h4>
+                    <p><strong>Location:</strong> <code>~/.config/opencode/oh-my-opencode-option-b.json</code></p>
+                    <p><strong>Cost Reduction:</strong> 60-70% vs. all-Opus config</p>
+                    <p><strong>Prerequisites:</strong></p>
+                    <ul>
+                        <li><strong>Anthropic API key REQUIRED</strong> (for Opus/Sonnet/Haiku)</li>
+                        <li>OpenAI API key (for GPT-5.2)</li>
+                        <li>Google API key or Antigravity auth (for Gemini models)</li>
+                    </ul>
+                    <p><strong>Best For:</strong> Production work, complex projects with tight deadlines, when planning quality is critical</p>
+                </div>
+
+                <div class="section-header">Orchestration Layer</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Input Price</th>
+                                <th>Output Price</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="agent-name">Sisyphus</span></td>
+                                <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
+                                <td><span class="price price-high">$5.00/M</span></td>
+                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td>Main orchestrator (robust)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Prometheus</span></td>
+                                <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
+                                <td><span class="price price-high">$5.00/M</span></td>
+                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td>Strategic planner (high-quality)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Metis</span></td>
+                                <td><span class="model-name">anthropic/claude-sonnet-4-5</span></td>
+                                <td><span class="price price-medium">~$1.00/M</span></td>
+                                <td><span class="price price-medium">~$5.00/M</span></td>
+                                <td>Pre-planning analyst</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Momus</span></td>
+                                <td><span class="model-name">anthropic/claude-sonnet-4-5</span></td>
+                                <td><span class="price price-medium">~$1.00/M</span></td>
+                                <td><span class="price price-medium">~$5.00/M</span></td>
+                                <td>Plan validator (precision)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">Worker Agents</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Context</th>
+                                <th>Input Price</th>
+                                <th>Output Price</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="agent-name">oracle</span></td>
+                                <td><span class="model-name">openai/gpt-5.2</span></td>
+                                <td>128K</td>
+                                <td><span class="price price-high">$5.00/M</span></td>
+                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">logical-reasoning</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">oracle-lite</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">~$1-2/M</span></td>
+                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="tag tag-orange">medium-tier</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: hsl(var(--muted-foreground)); font-style: italic;">
+                                    Worker agents (librarian, explore, frontend-ui-ux-engineer, document-writer, multimodal-looker) same as Option A
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">Semantic Categories</div>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>quick</h4>
+                        <ul>
+                            <li>Model: Claude Haiku 4.5</li>
+                            <li>Temp: 0.3</li>
+                            <li>Use: Simple, fast tasks</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>ultrabrain</h4>
+                        <ul>
+                            <li>Model: GPT-5.2</li>
+                            <li>Temp: 0.1</li>
+                            <li>Use: Complex architecture, business logic</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>visual-engineering</h4>
+                        <ul>
+                            <li>Model: Gemini 3 Pro High</li>
+                            <li>Temp: 0.7</li>
+                            <li>Use: Frontend, UI/UX</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>most-capable</h4>
+                        <ul>
+                            <li>Model: Claude Opus 4.5</li>
+                            <li>Temp: 0.1</li>
+                            <li>Use: Highest quality output</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option C: Hybrid Adaptive -->
+            <div id="option-c" class="tab-content">
+                <div class="info-box">
+                    <h4>🔄 Hybrid Adaptive Strategy</h4>
+                    <p><strong>Location:</strong> <code>~/.config/opencode/oh-my-opencode-option-c.json</code></p>
+                    <p><strong>Cost Reduction:</strong> 75-85% vs. all-Opus config</p>
+                    <p><strong>Prerequisites:</strong></p>
+                    <ul>
+                        <li><strong>Anthropic API key REQUIRED</strong> (for Opus/Sonnet/Haiku)</li>
+                        <li>Google API key or Antigravity auth (for Gemini models)</li>
+                        <li>OpenAI API key optional (not used in this config)</li>
+                    </ul>
+                    <p><strong>Best For:</strong> Balanced orchestration with cost controls, multi-tier escalation, best of both worlds</p>
+                </div>
+
+                <div class="section-header">Orchestration Layer</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Input Price</th>
+                                <th>Output Price</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="agent-name">Sisyphus</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td><span class="price price-medium">~$1-2/M</span></td>
+                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td>Main orchestrator (balanced)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Prometheus</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td><span class="price price-medium">~$1-2/M</span></td>
+                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td>Strategic planner (balanced)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Metis</span></td>
+                                <td><span class="model-name">google/gemini-3-flash</span></td>
+                                <td><span class="price price-low">$0.50/M</span></td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td>Pre-planning (fast)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Momus</span></td>
+                                <td><span class="model-name">anthropic/claude-sonnet-4-5</span></td>
+                                <td><span class="price price-medium">~$1.00/M</span></td>
+                                <td><span class="price price-medium">~$5.00/M</span></td>
+                                <td>Plan validator (quality)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">Worker Agents</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Context</th>
+                                <th>Input Price</th>
+                                <th>Output Price</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="agent-name">oracle</span></td>
+                                <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
+                                <td>200K</td>
+                                <td><span class="price price-high">$5.00/M</span></td>
+                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">best-for-coding</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">oracle-lite</span></td>
+                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">~$1-2/M</span></td>
+                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="tag tag-orange">medium-tier</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: hsl(var(--muted-foreground)); font-style: italic;">
+                                    Worker agents (librarian, explore, frontend-ui-ux-engineer, document-writer, multimodal-looker) same as Option A
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">Semantic Categories (Multi-Tier)</div>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>quick (Tier 1)</h4>
+                        <ul>
+                            <li>Model: Claude Haiku 4.5</li>
+                            <li>Temp: 0.3</li>
+                            <li>Use: Simple tasks</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>general (Tier 2)</h4>
+                        <ul>
+                            <li>Model: GLM-4.7</li>
+                            <li>Temp: 0.2</li>
+                            <li>Use: Most work (90%)</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>medium (Tier 3)</h4>
+                        <ul>
+                            <li>Model: Gemini 3 Pro Medium</li>
+                            <li>Temp: 0.2</li>
+                            <li>Use: Medium complexity</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>ultrabrain (Tier 4)</h4>
+                        <ul>
+                            <li>Model: Claude Opus 4.5</li>
+                            <li>Temp: 0.1</li>
+                            <li>Use: Complex architecture</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>visual-engineering</h4>
+                        <ul>
+                            <li>Model: Gemini 3 Pro High</li>
+                            <li>Temp: 0.7</li>
+                            <li>Use: UI/UX, design</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>writing</h4>
+                        <ul>
+                            <li>Model: Gemini 3 Flash</li>
+                            <li>Temp: 0.5</li>
+                            <li>Use: Documentation</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>most-capable</h4>
+                        <ul>
+                            <li>Model: Claude Opus 4.5</li>
+                            <li>Temp: 0.1</li>
+                            <li>Use: Critical tasks</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Strategy Comparison</h2>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Agent</th>
-                            <th>Model</th>
-                            <th>Context Window</th>
-                            <th>Input Price</th>
-                            <th>Output Price</th>
-                            <th>Tags</th>
+                            <th>Aspect</th>
+                            <th>Option A</th>
+                            <th>Option B</th>
+                            <th>Option C</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="agent-name">build</span></td>
-                            <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
-                            <td>200K tokens</td>
-                            <td><span class="price price-low">$0.40/M</span></td>
-                            <td><span class="price price-medium">$1.50/M</span></td>
-                            <td><span class="tag tag-blue">coding</span> <span class="tag tag-green">cost-effective</span></td>
+                            <td><strong>Orchestrator</strong></td>
+                            <td>GLM-4.7</td>
+                            <td>Claude Opus 4.5</td>
+                            <td>Gemini 3 Pro Medium</td>
                         </tr>
                         <tr>
-                            <td><span class="agent-name">plan</span></td>
-                            <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
-                            <td>200K tokens</td>
-                            <td><span class="price price-low">$0.40/M</span></td>
-                            <td><span class="price price-medium">$1.50/M</span></td>
-                            <td><span class="tag tag-blue">planning</span> <span class="tag tag-green">cost-effective</span></td>
+                            <td><strong>Planner</strong></td>
+                            <td>GLM-4.7</td>
+                            <td>Claude Opus 4.5</td>
+                            <td>Gemini 3 Pro Medium</td>
                         </tr>
                         <tr>
-                            <td><span class="agent-name">librarian</span></td>
-                            <td><span class="model-name">google/gemini-3-flash</span></td>
-                            <td>1M tokens</td>
-                            <td><span class="price price-low">$0.50/M</span></td>
-                            <td><span class="price price-medium">$3.00/M</span></td>
-                            <td><span class="tag tag-purple">research</span> <span class="tag tag-blue">fast</span></td>
+                            <td><strong>Validator</strong></td>
+                            <td>Gemini Pro Medium</td>
+                            <td>Claude Sonnet 4.5</td>
+                            <td>Flash + Sonnet</td>
                         </tr>
                         <tr>
-                            <td><span class="agent-name">explore</span></td>
-                            <td><span class="model-name">x.ai/grok-code-fast-1</span></td>
-                            <td>256K tokens</td>
-                            <td><span class="price price-low">$0.20/M</span></td>
-                            <td><span class="price price-low">$1.50/M</span></td>
-                            <td><span class="tag tag-blue">code-search</span> <span class="tag tag-green">cheapest</span></td>
+                            <td><strong>Oracle</strong></td>
+                            <td>GPT-5.2</td>
+                            <td>GPT-5.2</td>
+                            <td>Claude Opus 4.5</td>
                         </tr>
                         <tr>
-                            <td><span class="agent-name">oracle</span></td>
-                            <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
-                            <td>200K tokens</td>
-                            <td><span class="price price-high">$5.00/M</span></td>
-                            <td><span class="price price-high">$25.00/M</span></td>
-                            <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">reasoning</span></td>
+                            <td><strong>Cost Reduction</strong></td>
+                            <td><span class="tag tag-green">85-90%</span></td>
+                            <td><span class="tag tag-orange">60-70%</span></td>
+                            <td><span class="tag tag-green">75-85%</span></td>
                         </tr>
                         <tr>
-                            <td><span class="agent-name">frontend-ui-ux-engineer</span></td>
-                            <td><span class="model-name">google/gemini-3-pro-high</span></td>
-                            <td>1M tokens</td>
-                            <td><span class="price price-medium">$2.00/M</span></td>
-                            <td><span class="price price-high">$12.00/M</span></td>
-                            <td><span class="tag tag-orange">visual</span> <span class="tag tag-red">expensive</span></td>
+                            <td><strong>Anthropic Key</strong></td>
+                            <td>Optional</td>
+                            <td><span class="tag tag-red">Required</span></td>
+                            <td><span class="tag tag-red">Required</span></td>
                         </tr>
                         <tr>
-                            <td><span class="agent-name">document-writer</span></td>
-                            <td><span class="model-name">google/gemini-3-flash</span></td>
-                            <td>1M tokens</td>
-                            <td><span class="price price-low">$0.50/M</span></td>
-                            <td><span class="price price-medium">$3.00/M</span></td>
-                            <td><span class="tag tag-purple">docs</span> <span class="tag tag-blue">fast</span></td>
+                            <td><strong>Categories</strong></td>
+                            <td>5 total</td>
+                            <td>4 total</td>
+                            <td>7 total (multi-tier)</td>
                         </tr>
                         <tr>
-                            <td><span class="agent-name">multimodal-looker</span></td>
-                            <td><span class="model-name">google/gemini-3-flash</span></td>
-                            <td>1M tokens</td>
-                            <td><span class="price price-low">$0.50/M</span></td>
-                            <td><span class="price price-medium">$3.00/M</span></td>
-                            <td><span class="tag tag-blue">vision</span> <span class="tag tag-purple">multimodal</span></td>
+                            <td><strong>Best Use Case</strong></td>
+                            <td>Daily work, learning</td>
+                            <td>Production, quality</td>
+                            <td>Balanced, flexible</td>
                         </tr>
                     </tbody>
                 </table>
@@ -393,140 +923,82 @@
         </section>
 
         <section class="section">
-            <h2>Configuration Rationale</h2>
-            <div class="notes-grid">
-                <div class="note-card">
-                    <div class="note-title">🛠️ build & plan Agents</div>
-                    <div class="note-content">
-                        <strong>Model:</strong> GLM-4.7 (Z.AI)<br>
-                        <strong>Why:</strong> MIT-licensed open weights with strong coding capabilities and multi-step reasoning. Very cost-effective ($0.40/$1.50 per M tokens). Good balance of performance and price for agentic workflows.
-                    </div>
-                </div>
-                <div class="note-card">
-                    <div class="note-title">📚 librarian Agent</div>
-                    <div class="note-content">
-                        <strong>Model:</strong> Gemini 3 Flash (Google)<br>
-                        <strong>Why:</strong> Massive 1M context window for reading extensive documentation. Fast and efficient ($0.50/$3.00 per M). Optimized for speed - crucial for rapid research across external docs and GitHub examples.
-                    </div>
-                </div>
-                <div class="note-card">
-                    <div class="note-title">🔍 explore Agent</div>
-                    <div class="note-content">
-                        <strong>Model:</strong> Grok Code Fast 1 (xAI)<br>
-                        <strong>Why:</strong> Built specifically for agentic coding and code search. Mastered common dev tools (grep, terminal, file editing). Cheapest in the stack ($0.20/$1.50 per M) with excellent TypeScript, Python, Rust, C++, Go support.
-                    </div>
-                </div>
-                <div class="note-card">
-                    <div class="note-title">🧠 oracle Agent</div>
-                    <div class="note-content">
-                        <strong>Model:</strong> Claude Opus 4.5 (Anthropic)<br>
-                        <strong>Why:</strong> SOTA model for complex architecture decisions and deep reasoning. Best model in the world for coding, agents, and computer use. Most robustly aligned with strong prompt injection resistance. Reserved for high-stakes decisions.
-                    </div>
-                </div>
-                <div class="note-card">
-                    <div class="note-title">🎨 frontend-ui-ux-engineer Agent</div>
-                    <div class="note-content">
-                        <strong>Model:</strong> Gemini 3 Pro High (Google)<br>
-                        <strong>Why:</strong> Visual reasoning specialist with 1M context for understanding design systems, components, and UI patterns. More expensive but necessary for design fidelity. Strong multimodal capabilities for analyzing screenshots and design mockups.
-                    </div>
-                </div>
-                <div class="note-card">
-                    <div class="note-title">📝 document-writer Agent</div>
-                    <div class="note-content">
-                        <strong>Model:</strong> Gemini 3 Flash (Google)<br>
-                        <strong>Why:</strong> Fast and efficient for generating documentation. 1M context allows reading large codebases and docs simultaneously. Cost-effective while maintaining quality for README, API docs, and guides.
-                    </div>
-                </div>
-                <div class="note-card">
-                    <div class="note-title">👁️ multimodal-looker Agent</div>
-                    <div class="note-content">
-                        <strong>Model:</strong> Gemini 3 Flash (Google)<br>
-                        <strong>Why:</strong> Analyzes PDFs, images, diagrams via Gemini 2.5 Flash. 1M context enables processing extensive documents. Fast and cost-effective ($0.50/$3.00 per M). Good balance of speed, context, and price for visual analysis tasks.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>Key Design Principles</h2>
-            <div class="comparison">
-                <div class="comparison-grid">
-                    <div class="comparison-card">
-                        <h3>💰 Cost Optimization</h3>
-                        <ul>
-                            <li>Cheapest models for high-frequency tasks (explore, librarian, document-writer, multimodal-looker)</li>
-                            <li>Premium model (Opus 4.5) reserved for high-stakes architecture decisions</li>
-                            <li>GLM-4.7 used for build/plan - open source and cost-effective</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h3>⚡ Speed vs. Quality Tradeoff</h3>
-                        <ul>
-                            <li>Flash models for research and documentation (fast, efficient)</li>
-                            <li>Pro/High models for visual reasoning (better quality)</li>
-                            <li>Grok Code Fast 1 optimized for code search speed</li>
-                            <li>Oracle reserved for complex, non-time-sensitive decisions</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h3>🎯 Specialization</h3>
-                        <ul>
-                            <li>Each agent paired with model optimized for its domain</li>
-                            <li>Grok Code Fast 1 specifically trained for agentic coding</li>
-                            <li>Gemini 3 Pro High for visual/UI tasks</li>
-                            <li>GLM-4.7 for general coding and planning</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h3>📏 Context Window Strategy</h3>
-                        <ul>
-                            <li>1M context where large docs needed (librarian, frontend, document-writer, multimodal-looker)</li>
-                            <li>200K-256K sufficient for most coding tasks (build, plan, explore, oracle)</li>
-                            <li>Balance context size with cost - larger windows more expensive</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>Cost Summary</h2>
+            <h2>Switching Between Strategies</h2>
             <div class="card">
-                <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem; margin-bottom: 1rem;">
-                    Total input range: $0.20/M - $5.00/M (25x variance)<br>
-                    Total output range: $1.50/M - $25.00/M (17x variance)
+                <h3 style="margin-bottom: 1rem;">Quick Switch Commands</h3>
+                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                    Switch configurations instantly using symlinks. The active config is at <code>~/.config/opencode/oh-my-opencode.json</code>
                 </p>
-                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.25rem;">Most Cost-Effective</strong>
-                        <span class="badge badge-secondary">Grok Code Fast 1</span>
-                    </div>
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.25rem;">Best Value (Performance/Cost)</strong>
-                        <span class="badge badge-secondary">GLM-4.7</span>
-                    </div>
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.25rem;">Fastest</strong>
-                        <span class="badge badge-secondary">Gemini 3 Flash</span>
-                    </div>
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.25rem;">Most Capable</strong>
-                        <span class="badge badge-primary">Claude Opus 4.5</span>
-                    </div>
-                    <div>
-                        <strong style="display: block; margin-bottom: 0.25rem;">Best Visual</strong>
-                        <span class="badge badge-secondary">Gemini 3 Pro High</span>
-                    </div>
+
+                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
+                        # Check current configuration:
+                    </p>
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
+                        readlink ~/.config/opencode/oh-my-opencode.json
+                    </p>
                 </div>
+
+                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
+                        # Switch to Option A (cost-optimized):
+                    </p>
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
+                        cd ~/.config/opencode && ln -sf oh-my-opencode-option-a.json oh-my-opencode.json
+                    </p>
+                </div>
+
+                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
+                        # Switch to Option B (balanced quality):
+                    </p>
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
+                        cd ~/.config/opencode && ln -sf oh-my-opencode-option-b.json oh-my-opencode.json
+                    </p>
+                </div>
+
+                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius);">
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
+                        # Switch to Option C (hybrid adaptive):
+                    </p>
+                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
+                        cd ~/.config/opencode && ln -sf oh-my-opencode-option-c.json oh-my-opencode.json
+                    </p>
+                </div>
+
+                <p style="color: hsl(var(--muted-foreground)); margin-top: 1rem; font-size: 0.9rem;">
+                    📖 For detailed switching instructions, see <code>configs/CONFIG_SWITCHING_GUIDE.md</code>
+                </p>
             </div>
         </section>
 
         <footer>
-            <p>Generated on <span id="date"></span> • OpenCode Configuration Analysis</p>
+            <p>Generated on <span id="date"></span> • OpenCode Multi-Configuration Strategy</p>
+            <p style="margin-top: 0.5rem;">Active: Option A (Pure Cost Optimization) • Symlink-based switching enabled</p>
         </footer>
     </div>
 
     <script>
+        function showTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.closest('.tab').classList.add('active');
+        }
+
         document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
