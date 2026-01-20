@@ -388,9 +388,8 @@
                     <p><strong>Cost Reduction:</strong> 85-90% vs. Opus-heavy config</p>
                     <p><strong>Prerequisites:</strong></p>
                     <ul>
-                        <li>OpenAI API key (for GPT-5.2)</li>
-                        <li>Google API key or Antigravity auth (for Gemini models)</li>
-                        <li>Anthropic API key optional (only for Haiku in quick category)</li>
+                        <li>OpenCode Zen API key (for GPT-5.2, Claude, and Gemini models)</li>
+                        <li>zai-coding-plan API key (for GLM-4.7)</li>
                     </ul>
                     <p><strong>Best For:</strong> Daily work, cost-conscious development, learning, when Anthropic rate limits are a concern</p>
                 </div>
@@ -424,16 +423,18 @@
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Metis</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
-                                <td><span class="price price-medium">~$1-2/M</span></td>
-                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
                                 <td>Pre-planning analyst</td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Momus</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
-                                <td><span class="price price-medium">~$1-2/M</span></td>
-                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
                                 <td>Plan validator</td>
                             </tr>
                         </tbody>
@@ -456,18 +457,18 @@
                         <tbody>
                             <tr>
                                 <td><span class="agent-name">oracle</span></td>
-                                <td><span class="model-name">openai/gpt-5.2</span></td>
-                                <td>128K</td>
-                                <td><span class="price price-high">$5.00/M</span></td>
-                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td><span class="model-name">opencode/gpt-5.2</span></td>
+                                <td>400K</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$14.00/M</span></td>
                                 <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">reasoning</span></td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">oracle-lite</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
                                 <td>1M</td>
-                                <td><span class="price price-medium">~$1-2/M</span></td>
-                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
                                 <td><span class="tag tag-orange">medium-tier</span> <span class="tag tag-purple">escalation</span></td>
                             </tr>
                             <tr>
@@ -488,7 +489,7 @@
                             </tr>
                             <tr>
                                 <td><span class="agent-name">frontend-ui-ux-engineer</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-high</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
                                 <td>1M</td>
                                 <td><span class="price price-medium">$2.00/M</span></td>
                                 <td><span class="price price-high">$12.00/M</span></td>
@@ -535,7 +536,7 @@
                     <div class="comparison-card">
                         <h4>ultrabrain</h4>
                         <ul>
-                            <li>Model: GPT-5.2</li>
+                            <li>Model: <span class="model-name">opencode/gpt-5.2</span></li>
                             <li>Temp: 0.1</li>
                             <li>Use: Complex architecture</li>
                         </ul>
@@ -543,7 +544,7 @@
                     <div class="comparison-card">
                         <h4>visual-engineering</h4>
                         <ul>
-                            <li>Model: Gemini 3 Pro High</li>
+                            <li>Model: <span class="model-name">opencode/gemini-3-pro</span></li>
                             <li>Temp: 0.7</li>
                             <li>Use: UI/UX, design systems</li>
                         </ul>
@@ -551,7 +552,7 @@
                     <div class="comparison-card">
                         <h4>writing</h4>
                         <ul>
-                            <li>Model: Gemini 3 Flash</li>
+                            <li>Model: <span class="model-name">opencode/gemini-3-flash</span></li>
                             <li>Temp: 0.5</li>
                             <li>Use: Documentation, blogs</li>
                         </ul>
@@ -567,9 +568,7 @@
                     <p><strong>Cost Reduction:</strong> 60-70% vs. all-Opus config</p>
                     <p><strong>Prerequisites:</strong></p>
                     <ul>
-                        <li><strong>Anthropic API key REQUIRED</strong> (for Opus/Sonnet/Haiku)</li>
-                        <li>OpenAI API key (for GPT-5.2)</li>
-                        <li>Google API key or Antigravity auth (for Gemini models)</li>
+                        <li><strong>OpenCode Zen API key</strong> (for Claude Opus/Sonnet/Haiku, GPT-5.2, and Gemini models)</li>
                     </ul>
                     <p><strong>Best For:</strong> Production work, complex projects with tight deadlines, when planning quality is critical</p>
                 </div>
@@ -589,30 +588,34 @@
                         <tbody>
                             <tr>
                                 <td><span class="agent-name">Sisyphus</span></td>
-                                <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
+                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
+                                <td>200K</td>
                                 <td><span class="price price-high">$5.00/M</span></td>
                                 <td><span class="price price-high">$25.00/M</span></td>
                                 <td>Main orchestrator (robust)</td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Prometheus</span></td>
-                                <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
+                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
+                                <td>200K</td>
                                 <td><span class="price price-high">$5.00/M</span></td>
                                 <td><span class="price price-high">$25.00/M</span></td>
                                 <td>Strategic planner (high-quality)</td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Metis</span></td>
-                                <td><span class="model-name">anthropic/claude-sonnet-4-5</span></td>
-                                <td><span class="price price-medium">~$1.00/M</span></td>
-                                <td><span class="price price-medium">~$5.00/M</span></td>
+                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="price price-high">$15.00/M</span></td>
                                 <td>Pre-planning analyst</td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Momus</span></td>
-                                <td><span class="model-name">anthropic/claude-sonnet-4-5</span></td>
-                                <td><span class="price price-medium">~$1.00/M</span></td>
-                                <td><span class="price price-medium">~$5.00/M</span></td>
+                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="price price-high">$15.00/M</span></td>
                                 <td>Plan validator (precision)</td>
                             </tr>
                         </tbody>
@@ -635,18 +638,76 @@
                         <tbody>
                             <tr>
                                 <td><span class="agent-name">oracle</span></td>
-                                <td><span class="model-name">openai/gpt-5.2</span></td>
-                                <td>128K</td>
-                                <td><span class="price price-high">$5.00/M</span></td>
-                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td><span class="model-name">opencode/gpt-5.2</span></td>
+                                <td>400K</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$14.00/M</span></td>
                                 <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">logical-reasoning</span></td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">oracle-lite</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
                                 <td>1M</td>
-                                <td><span class="price price-medium">~$1-2/M</span></td>
-                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
+                                <td><span class="tag tag-orange">medium-tier</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Prometheus</span></td>
+                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
+                                <td>200K</td>
+                                <td><span class="price price-high">$5.00/M</span></td>
+                                <td><span class="price price-high">$25.00/M</span></td>
+                                <td>Strategic planner (high-quality)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Metis</span></td>
+                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="price price-medium">$15.00/M</span></td>
+                                <td>Pre-planning analyst</td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">Momus</span></td>
+                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="price price-medium">$15.00/M</span></td>
+                                <td>Plan validator (precision)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">Worker Agents</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Agent</th>
+                                <th>Model</th>
+                                <th>Context</th>
+                                <th>Input Price</th>
+                                <th>Output Price</th>
+                                <th>Tags</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="agent-name">oracle</span></td>
+                                <td><span class="model-name">opencode/gpt-5.2</span></td>
+                                <td>400K</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$14.00/M</span></td>
+                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">logical-reasoning</span></td>
+                            </tr>
+                            <tr>
+                                <td><span class="agent-name">oracle-lite</span></td>
+                                <td><span class="model-name">opencode/gemini-3-pro</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
                                 <td><span class="tag tag-orange">medium-tier</span></td>
                             </tr>
                             <tr>
@@ -663,7 +724,7 @@
                     <div class="comparison-card">
                         <h4>quick</h4>
                         <ul>
-                            <li>Model: Claude Haiku 4.5</li>
+                            <li>Model: <span class="model-name">opencode/claude-haiku-4-5</span></li>
                             <li>Temp: 0.3</li>
                             <li>Use: Simple, fast tasks</li>
                         </ul>
@@ -671,7 +732,7 @@
                     <div class="comparison-card">
                         <h4>ultrabrain</h4>
                         <ul>
-                            <li>Model: GPT-5.2</li>
+                            <li>Model: <span class="model-name">opencode/gpt-5.2</span></li>
                             <li>Temp: 0.1</li>
                             <li>Use: Complex architecture, business logic</li>
                         </ul>
@@ -679,7 +740,23 @@
                     <div class="comparison-card">
                         <h4>visual-engineering</h4>
                         <ul>
-                            <li>Model: Gemini 3 Pro High</li>
+                            <li>Model: <span class="model-name">google/gemini-3-pro</span></li>
+                            <li>Temp: 0.7</li>
+                            <li>Use: UI/UX, design systems</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>writing</h4>
+                        <ul>
+                            <li>Model: <span class="model-name">google/gemini-3-flash</span></li>
+                            <li>Temp: 0.5</li>
+                            <li>Use: Documentation, blogs</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>visual-engineering</h4>
+                        <ul>
+                            <li>Model: <span class="model-name">opencode/gemini-3-pro</span></li>
                             <li>Temp: 0.7</li>
                             <li>Use: Frontend, UI/UX</li>
                         </ul>
@@ -687,7 +764,7 @@
                     <div class="comparison-card">
                         <h4>most-capable</h4>
                         <ul>
-                            <li>Model: Claude Opus 4.5</li>
+                            <li>Model: <span class="model-name">opencode/claude-opus-4-5</span></li>
                             <li>Temp: 0.1</li>
                             <li>Use: Highest quality output</li>
                         </ul>
@@ -703,9 +780,8 @@
                     <p><strong>Cost Reduction:</strong> 75-85% vs. all-Opus config</p>
                     <p><strong>Prerequisites:</strong></p>
                     <ul>
-                        <li><strong>Anthropic API key REQUIRED</strong> (for Opus/Sonnet/Haiku)</li>
-                        <li>Google API key or Antigravity auth (for Gemini models)</li>
-                        <li>OpenAI API key optional (not used in this config)</li>
+                        <li><strong>OpenCode Zen API key</strong> (for Claude Opus/Sonnet/Haiku and Gemini models)</li>
+                        <li>zai-coding-plan API key (for GLM-4.7)</li>
                     </ul>
                     <p><strong>Best For:</strong> Balanced orchestration with cost controls, multi-tier escalation, best of both worlds</p>
                 </div>
@@ -725,30 +801,34 @@
                         <tbody>
                             <tr>
                                 <td><span class="agent-name">Sisyphus</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
-                                <td><span class="price price-medium">~$1-2/M</span></td>
-                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
                                 <td>Main orchestrator (balanced)</td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Prometheus</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
-                                <td><span class="price price-medium">~$1-2/M</span></td>
-                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
                                 <td>Strategic planner (balanced)</td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Metis</span></td>
                                 <td><span class="model-name">google/gemini-3-flash</span></td>
+                                <td>1M</td>
                                 <td><span class="price price-low">$0.50/M</span></td>
                                 <td><span class="price price-medium">$3.00/M</span></td>
                                 <td>Pre-planning (fast)</td>
                             </tr>
                             <tr>
                                 <td><span class="agent-name">Momus</span></td>
-                                <td><span class="model-name">anthropic/claude-sonnet-4-5</span></td>
-                                <td><span class="price price-medium">~$1.00/M</span></td>
-                                <td><span class="price price-medium">~$5.00/M</span></td>
+                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
+                                <td>1M</td>
+                                <td><span class="price price-medium">$3.00/M</span></td>
+                                <td><span class="price price-high">$15.00/M</span></td>
                                 <td>Plan validator (quality)</td>
                             </tr>
                         </tbody>
@@ -771,7 +851,7 @@
                         <tbody>
                             <tr>
                                 <td><span class="agent-name">oracle</span></td>
-                                <td><span class="model-name">anthropic/claude-opus-4-5</span></td>
+                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
                                 <td>200K</td>
                                 <td><span class="price price-high">$5.00/M</span></td>
                                 <td><span class="price price-high">$25.00/M</span></td>
@@ -779,10 +859,10 @@
                             </tr>
                             <tr>
                                 <td><span class="agent-name">oracle-lite</span></td>
-                                <td><span class="model-name">google/gemini-3-pro-medium</span></td>
+                                <td><span class="model-name">google/gemini-3-pro</span></td>
                                 <td>1M</td>
-                                <td><span class="price price-medium">~$1-2/M</span></td>
-                                <td><span class="price price-medium">~$8-10/M</span></td>
+                                <td><span class="price price-medium">$2.00/M</span></td>
+                                <td><span class="price price-high">$12.00/M</span></td>
                                 <td><span class="tag tag-orange">medium-tier</span></td>
                             </tr>
                             <tr>
@@ -799,7 +879,7 @@
                     <div class="comparison-card">
                         <h4>quick (Tier 1)</h4>
                         <ul>
-                            <li>Model: Claude Haiku 4.5</li>
+                            <li>Model: <span class="model-name">opencode/claude-haiku-4-5</span></li>
                             <li>Temp: 0.3</li>
                             <li>Use: Simple tasks</li>
                         </ul>
@@ -807,7 +887,7 @@
                     <div class="comparison-card">
                         <h4>general (Tier 2)</h4>
                         <ul>
-                            <li>Model: GLM-4.7</li>
+                            <li>Model: zai-coding-plan/glm-4.7</li>
                             <li>Temp: 0.2</li>
                             <li>Use: Most work (90%)</li>
                         </ul>
@@ -815,7 +895,7 @@
                     <div class="comparison-card">
                         <h4>medium (Tier 3)</h4>
                         <ul>
-                            <li>Model: Gemini 3 Pro Medium</li>
+                            <li>Model: <span class="model-name">google/gemini-3-pro</span></li>
                             <li>Temp: 0.2</li>
                             <li>Use: Medium complexity</li>
                         </ul>
@@ -823,7 +903,7 @@
                     <div class="comparison-card">
                         <h4>ultrabrain (Tier 4)</h4>
                         <ul>
-                            <li>Model: Claude Opus 4.5</li>
+                            <li>Model: <span class="model-name">opencode/claude-opus-4-5</span></li>
                             <li>Temp: 0.1</li>
                             <li>Use: Complex architecture</li>
                         </ul>
@@ -831,7 +911,7 @@
                     <div class="comparison-card">
                         <h4>visual-engineering</h4>
                         <ul>
-                            <li>Model: Gemini 3 Pro High</li>
+                            <li>Model: <span class="model-name">google/gemini-3-pro</span></li>
                             <li>Temp: 0.7</li>
                             <li>Use: UI/UX, design</li>
                         </ul>
@@ -839,7 +919,7 @@
                     <div class="comparison-card">
                         <h4>writing</h4>
                         <ul>
-                            <li>Model: Gemini 3 Flash</li>
+                            <li>Model: <span class="model-name">google/gemini-3-flash</span></li>
                             <li>Temp: 0.5</li>
                             <li>Use: Documentation</li>
                         </ul>
@@ -847,7 +927,7 @@
                     <div class="comparison-card">
                         <h4>most-capable</h4>
                         <ul>
-                            <li>Model: Claude Opus 4.5</li>
+                            <li>Model: <span class="model-name">opencode/claude-opus-4-5</span></li>
                             <li>Temp: 0.1</li>
                             <li>Use: Critical tasks</li>
                         </ul>
@@ -889,9 +969,9 @@
                         </tr>
                         <tr>
                             <td><strong>Oracle</strong></td>
-                            <td>GPT-5.2</td>
-                            <td>GPT-5.2</td>
-                            <td>Claude Opus 4.5</td>
+                            <td><span class="model-name">opencode/gpt-5.2</span></td>
+                            <td><span class="model-name">opencode/gpt-5.2</span></td>
+                            <td><span class="model-name">opencode/claude-opus-4-5</span></td>
                         </tr>
                         <tr>
                             <td><strong>Cost Reduction</strong></td>
@@ -900,10 +980,10 @@
                             <td><span class="tag tag-green">75-85%</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Anthropic Key</strong></td>
-                            <td>Optional</td>
-                            <td><span class="tag tag-red">Required</span></td>
-                            <td><span class="tag tag-red">Required</span></td>
+                            <td><strong>Provider Key</strong></td>
+                            <td>OpenCode Zen</td>
+                            <td><span class="tag tag-green">OpenCode Zen</span></td>
+                            <td><span class="tag tag-green">OpenCode Zen</span></td>
                         </tr>
                         <tr>
                             <td><strong>Categories</strong></td>

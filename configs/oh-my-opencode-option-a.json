@@ -22,12 +22,12 @@
     },
 
     "metis": {
-      "model": "opencode/gemini-3-pro",
+      "model": "google/gemini-3-pro",
       "prompt_append": "You are the pre-planning analyst. Identify ambiguities, hidden requirements, and potential failure points before planning begins."
     },
 
     "momus": {
-      "model": "opencode/gemini-3-pro",
+      "model": "google/gemini-3-pro",
       "prompt_append": "You are the plan validator. Check for clarity, completeness, and feasibility. Reject unclear plans."
     },
 
@@ -37,12 +37,12 @@
     },
 
     "oracle-lite": {
-      "model": "opencode/gemini-3-pro",
+      "model": "google/gemini-3-pro",
       "prompt_append": "You are the medium-tier escalation agent. Provide architecture guidance and debugging help when GLM-4.7 struggles."
     },
 
     "librarian": {
-      "model": "opencode/gemini-3-flash",
+      "model": "google/gemini-3-flash",
       "prompt_append": "You are the research specialist. Fast documentation lookup, multi-repo analysis, and implementation examples."
     },
 
@@ -52,17 +52,17 @@
     },
 
     "frontend-ui-ux-engineer": {
-      "model": "opencode/gemini-3-pro",
+      "model": "google/gemini-3-pro",
       "prompt_append": "You are the UI/UX specialist. Focus on visual design, aesthetics, user experience, and design fidelity."
     },
 
     "document-writer": {
-      "model": "opencode/gemini-3-flash",
+      "model": "google/gemini-3-flash",
       "prompt_append": "You are the documentation specialist. Fast, efficient generation of README, API docs, and technical guides."
     },
 
     "multimodal-looker": {
-      "model": "opencode/gemini-3-flash",
+      "model": "google/gemini-3-flash",
       "prompt_append": "You are the multimodal analysis specialist. Analyze PDFs, images, and diagrams efficiently."
     }
   },
@@ -87,13 +87,13 @@
     },
 
     "visual-engineering": {
-      "model": "opencode/gemini-3-pro",
+      "model": "google/gemini-3-pro",
       "temperature": 0.7,
       "prompt_append": "Frontend, UI/UX, animations, design systems. Focus on aesthetics and user experience."
     },
 
     "writing": {
-      "model": "opencode/gemini-3-flash",
+      "model": "google/gemini-3-flash",
       "temperature": 0.5,
       "prompt_append": "Documentation, technical blogs, guides. Natural writing flow with technical accuracy."
     }

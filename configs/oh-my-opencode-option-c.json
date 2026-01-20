@@ -37,12 +37,12 @@
     },
 
     "oracle-lite": {
-      "model": "opencode/gemini-3-pro",
+      "model": "google/gemini-3-pro",
       "prompt_append": "You are the medium-tier escalation agent. Architecture guidance when standard models need help."
     },
 
     "librarian": {
-      "model": "opencode/gemini-3-flash",
+      "model": "google/gemini-3-flash",
       "prompt_append": "You are the research specialist. Fast documentation and implementation research."
     },
 
@@ -52,17 +52,17 @@
     },
 
     "frontend-ui-ux-engineer": {
-      "model": "opencode/gemini-3-pro",
+      "model": "google/gemini-3-pro",
       "prompt_append": "You are the UI/UX specialist. Visual design and user experience focus."
     },
 
     "document-writer": {
-      "model": "opencode/gemini-3-flash",
+      "model": "google/gemini-3-flash",
       "prompt_append": "You are the documentation specialist. Fast, quality documentation."
     },
 
     "multimodal-looker": {
-      "model": "opencode/gemini-3-flash",
+      "model": "google/gemini-3-flash",
       "prompt_append": "You are the multimodal analysis specialist. PDF, image, and diagram analysis."
     }
   },
