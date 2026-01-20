@@ -12,37 +12,37 @@
 
   "agents": {
     "sisyphus": {
-      "model": "google/gemini-3-pro-medium",
+      "model": "opencode/gemini-3-pro",
       "prompt_append": "You are the main orchestrator using Gemini 3 Pro Medium. Balanced orchestration with good reasoning. Delegate appropriately."
     },
 
     "prometheus": {
-      "model": "google/gemini-3-pro-medium",
+      "model": "opencode/gemini-3-pro",
       "prompt_append": "You are the strategic planner using Gemini 3 Pro Medium. Create clear, well-reasoned plans with balanced quality."
     },
 
     "metis": {
-      "model": "google/gemini-3-flash",
+      "model": "opencode/gemini-3-flash",
       "prompt_append": "You are the pre-planning analyst using Gemini 3 Flash. Fast identification of ambiguities and hidden requirements."
     },
 
     "momus": {
-      "model": "anthropic/claude-sonnet-4-5",
+      "model": "opencode/claude-sonnet-4-5",
       "prompt_append": "You are the plan validator using Claude Sonnet 4.5. High-quality validation to catch issues before execution."
     },
 
     "oracle": {
-      "model": "anthropic/claude-opus-4-5",
+      "model": "opencode/claude-opus-4-5",
       "prompt_append": "You are the premium reasoning agent using Claude Opus 4.5. Best-in-class for architecture, deep debugging, and complex decisions."
     },
 
     "oracle-lite": {
-      "model": "google/gemini-3-pro-medium",
+      "model": "opencode/gemini-3-pro",
       "prompt_append": "You are the medium-tier escalation agent. Architecture guidance when standard models need help."
     },
 
     "librarian": {
-      "model": "google/gemini-3-flash",
+      "model": "opencode/gemini-3-flash",
       "prompt_append": "You are the research specialist. Fast documentation and implementation research."
     },
 
@@ -52,24 +52,24 @@
     },
 
     "frontend-ui-ux-engineer": {
-      "model": "google/gemini-3-pro-high",
+      "model": "opencode/gemini-3-pro",
       "prompt_append": "You are the UI/UX specialist. Visual design and user experience focus."
     },
 
     "document-writer": {
-      "model": "google/gemini-3-flash",
+      "model": "opencode/gemini-3-flash",
       "prompt_append": "You are the documentation specialist. Fast, quality documentation."
     },
 
     "multimodal-looker": {
-      "model": "google/gemini-3-flash",
+      "model": "opencode/gemini-3-flash",
       "prompt_append": "You are the multimodal analysis specialist. PDF, image, and diagram analysis."
     }
   },
 
   "categories": {
     "quick": {
-      "model": "anthropic/claude-haiku-4-5",
+      "model": "opencode/claude-haiku-4-5",
       "temperature": 0.3,
       "prompt_append": "Fast, focused execution for simple tasks. Cost-effective tier 1."
     },
@@ -81,31 +81,31 @@
     },
 
     "medium": {
-      "model": "google/gemini-3-pro-medium",
+      "model": "opencode/gemini-3-pro",
       "temperature": 0.2,
       "prompt_append": "Medium complexity tasks needing better reasoning. Tier 3."
     },
 
     "ultrabrain": {
-      "model": "anthropic/claude-opus-4-5",
+      "model": "opencode/claude-opus-4-5",
       "temperature": 0.1,
       "prompt_append": "Complex architecture and deep reasoning. Premium tier 4."
     },
 
     "visual-engineering": {
-      "model": "google/gemini-3-pro-high",
+      "model": "opencode/gemini-3-pro",
       "temperature": 0.7,
       "prompt_append": "Frontend, UI/UX, animations, design systems."
     },
 
     "writing": {
-      "model": "google/gemini-3-flash",
+      "model": "opencode/gemini-3-flash",
       "temperature": 0.5,
       "prompt_append": "Documentation and technical writing."
     },
 
     "most-capable": {
-      "model": "anthropic/claude-opus-4-5",
+      "model": "opencode/claude-opus-4-5",
       "temperature": 0.1,
       "prompt_append": "Absolute highest quality for critical tasks."
     }
@@ -113,15 +113,15 @@
 
   "background_tasks": {
     "modelConcurrency": {
-      "anthropic/claude-opus-4-5": 2,
-      "anthropic/claude-sonnet-4-5": 3,
-      "anthropic/claude-haiku-4-5": 5,
-      "google/gemini-3-pro-medium": 5
+      "opencode/claude-opus-4-5": 2,
+      "opencode/claude-sonnet-4-5": 3,
+      "opencode/claude-haiku-4-5": 5,
+      "opencode/gemini-3-pro": 5
     },
     "providerConcurrency": {
-      "anthropic": 3,
-      "openai": 5,
-      "google": 10
+      "opencode": 5,
+      "google": 10,
+      "anthropic": 3
     }
   }
 }

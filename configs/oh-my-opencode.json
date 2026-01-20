@@ -3,25 +3,25 @@
   "google_auth": false,
   "agents": {
     "librarian": {
-      "model": "google/gemini-3-flash"
+      "model": "opencode/gemini-3-flash"
     },
     "explore": {
       "model": "opencode/grok-code"
     },
     "oracle": {
-      "model": "anthropic/claude-opus-4-5"
+      "model": "opencode/claude-opus-4-5"
     },
     "oracle-lite": {
-      "model": "google/gemini-3-pro-medium"
+      "model": "opencode/gemini-3-pro"
     },
     "frontend-ui-ux-engineer": {
-      "model": "google/gemini-3-pro-high"
+      "model": "opencode/gemini-3-pro"
     },
     "document-writer": {
-      "model": "google/gemini-3-flash"
+      "model": "opencode/gemini-3-flash"
     },
     "multimodal-looker": {
-      "model": "google/gemini-3-flash"
+      "model": "opencode/gemini-3-flash"
     }
   }
 }
