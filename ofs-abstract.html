@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenFairStack: A Provably Fair Framework for Server-Authoritative Online Gaming</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-dim: #388bfd66;
+      --success: #3fb950;
+      --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      margin: 0;
+      padding: 2rem 1.5rem;
+      max-width: 52rem;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .byline {
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-top: 0.6rem;
+    }
+
+    section {
+      margin-bottom: 2rem;
+    }
+
+    section h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin: 0 0 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    p {
+      margin: 0 0 1rem 0;
+      text-align: justify;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    ul {
+      margin: 0 0 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    li:last-child {
+      margin-bottom: 0;
+    }
+
+    .refs {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .refs p {
+      margin-bottom: 0.5rem;
+      text-align: left;
+    }
+
+    .refs [data-ref] {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>OpenFairStack: A Provably Fair Framework for Server-Authoritative Online Gaming</h1>
+    <p class="subtitle">Reducing Verification Friction and Counterparty Risk through Hardened Commit–Reveal, Client-Side Verification, and Optional Blockchain Anchoring</p>
+    <p class="byline">Author · Shawn Marck</p>
+  </header>
+
+  <section>
+    <p>
+      Online gaming platforms, including social casinos, sweepstakes sites, crypto casinos, and virtual card rooms, continue to struggle with persistent challenges in establishing and maintaining player trust.[1][2][3] Current provably fair implementations frequently create significant user friction: players are required to manually manage cryptographic seeds, run custom verification scripts, wait through delayed batch reveals, or rely heavily on operator honesty concerning outcome integrity, timely payouts, and seed handling.[4][5][6][7] These shortcomings reduce accessibility and independent verifiability, undermine perceived fairness, and allow proprietary or narrowly game-specific designs to prevent the emergence of any consistent industry standard.[8][9][10]
+    </p>
+    <p>
+      This paper presents OpenFairStack, an open-source framework and reference implementation for building provably fair, server-authoritative online gaming systems that emphasize transparency, usability, security, and long-term extensibility. The core protocol is a hardened commit–reveal RNG system that includes pre-commitment of server seeds in publicly logged batches, flexible reveal timing (immediate per-hand or scheduled), deterministic byte-stream expansion via HMAC, explicit anti-abort safeguards (with public incident signaling on non-reveal), and game-agnostic randomness mapping templates.
+    </p>
+    <p>
+      The framework provides a lightweight, fully client-side browser verifier activated by a simple hand or session UUID—no code execution or technical expertise required—an append-only event ledger with strong idempotency guarantees, and extensible mapping examples across several game types:
+    </p>
+    <ul>
+      <li>Blackjack: 8-deck shoe shuffled via Fisher–Yates with 32-bit big-endian rejection sampling and a reshuffle-after-every-hand policy</li>
+      <li>Community-card poker: deterministic dealing sequence for hole cards, flop, turn, and river</li>
+      <li>Simple dice rolls and uniform RNG outcomes: direct mapping from secure byte stream to result space</li>
+    </ul>
+    <p>
+      Principal contributions include near-zero verification friction (paste UUID and receive instant recomputation with pass/fail result plus visualizations), robust protection against selective-reveal and abort attacks while retaining web-scale performance, and optional hybrid blockchain mechanisms (periodic Merkle-root anchoring of commitments for immutable public audit trails; on-chain escrow or attribution for deposits and redemptions to reduce custodial counterparty risk without forcing on-chain gameplay latency).
+    </p>
+    <p>
+      By combining fast server-side execution, genuinely user-friendly independent verification, strong anti-cheat properties, and a credible path toward lower trust assumptions, OpenFairStack provides a practical foundation for the next generation of online gaming fairness systems. The full framework, reference verifier library, and protocol specifications are released open source to support adoption, community improvement, and progress toward a more transparent industry standard.
+    </p>
+  </section>
+
+  <section>
+    <h2>References</h2>
+    <div class="refs">
+      <p><span data-ref>[1]</span> Riskonnect. (2025). <em>Gambling Compliance and Risk Management Report</em>.</p>
+      <p><span data-ref>[2]</span> Casino Life Magazine. (2024). <em>Building Trust in Online Casinos</em>.</p>
+      <p><span data-ref>[3]</span> UK Gambling Commission. (2024). <em>Player Trust and Protection in Online Gambling</em>.</p>
+      <p><span data-ref>[4]</span> Bitcoin Forum. (2014–ongoing). <em>Provably Fair Implementation Flaws and Manipulation Risks</em>.</p>
+      <p><span data-ref>[5]</span> Stake Forum. (2020). <em>Limitations of Provably Fair in Practice</em>.</p>
+      <p><span data-ref>[6]</span> Dot Esports. (2025). <em>How Provably Fair Verification Actually Works for Players</em>.</p>
+      <p><span data-ref>[7]</span> Watechnology. (2024). <em>Post-Game Reveal Processes and User Friction in Provably Fair Systems</em>.</p>
+      <p><span data-ref>[8]</span> ClueCan. (undated). <em>The Role of Open Source in Casino Transparency</em>.</p>
+      <p><span data-ref>[9]</span> Affnook. (2025). <em>Challenges in Verifying Provably Fair Outcomes in Complex Games</em>.</p>
+      <p><span data-ref>[10]</span> SDLC Corp. (undated). <em>Blockchain and RNG Limitations in Traditional Gambling Platforms</em>.</p>
+    </div>
+  </section>
+
+  <footer>
+    OpenFairStack abstract · Shawn Marck · 2026
+  </footer>
+</body>
+</html>
