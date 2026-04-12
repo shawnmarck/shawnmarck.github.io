@@ -332,6 +332,53 @@
             padding-top: 10px;
         }
 
+        /* Collapsible code examples */
+        .code-example {
+            margin-top: 20px;
+            border: 1px solid var(--gray-400);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        .code-example summary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-700);
+            background: var(--gray-100);
+            user-select: none;
+            list-style: none;
+            outline: none;
+        }
+        .code-example summary::-webkit-details-marker { display: none; }
+        .code-example summary:hover { color: var(--gray-900); background: var(--gray-200); }
+        .code-example[open] summary { border-bottom: 1px solid var(--gray-400); }
+        .code-example-icon {
+            font-size: 10px;
+            color: var(--gray-500);
+            transition: transform 0.15s;
+            display: inline-block;
+        }
+        .code-example[open] .code-example-icon { transform: rotate(90deg); }
+        .code-example pre {
+            margin: 0;
+            padding: 16px 18px;
+            background: var(--bg-200);
+            overflow-x: auto;
+            font-family: 'Geist Mono', 'SF Mono', monospace;
+            font-size: 12px;
+            line-height: 1.65;
+            color: var(--gray-900);
+        }
+        .code-example .tok-key  { color: var(--blue-400); }
+        .code-example .tok-str  { color: var(--green-400); }
+        .code-example .tok-num  { color: var(--amber-400); }
+        .code-example .tok-bool { color: var(--purple-400); }
+        .code-example .tok-cmt  { color: var(--gray-500); font-style: italic; }
+
         /* Info callout */
         .callout {
             background: rgba(0,112,243,0.06);
@@ -389,40 +436,101 @@
 
     <!-- MINI ARTICLE -->
     <div class="article">
-        <div class="article-label">Strategy Update — April 2026</div>
-        <h2>Maximizing a Prepaid ZAI Plan Without Queuing Everything</h2>
+        <div class="article-label">Strategy Update: April 2026</div>
+        <h2>One Slot Per Model: Routing Around the ZAI Concurrency Limit</h2>
         <p>
-            Running a <strong>ZAI GLM Coding Plan (Max tier)</strong> is excellent value — you get GLM-5.1, GLM-5-Turbo,
-            and the wider 4.7 family for a flat monthly rate. The catch: <strong>every GLM model is capped at 1 concurrent
-            request</strong>. In a multi-agent setup where explore, atlas, librarian, and sisyphus-junior can all fire at
-            once, that single-slot limit creates invisible queues and 429 timeouts that silently kill throughput.
+            The <strong>ZAI GLM Coding Plan (Max tier)</strong> gives you GLM-5.1, GLM-5-Turbo, and the 4.7 family at a
+            flat monthly rate. Each model allows one concurrent request. In a multi-agent setup where explore, atlas,
+            librarian, and sisyphus-junior can all run at once, that limit produces silent queuing and 429 errors.
         </p>
         <p>
-            The fix is a two-layer strategy. First, <strong>push latency-sensitive but less-reasoning-heavy agents
-            (document-writer, frontend-ui-ux-engineer) onto Google Gemini 3 Flash</strong> — it supports 10 concurrent
-            requests and is faster for prose and UI work anyway. Second, <strong>enable runtime fallback</strong> so that
-            when a ZAI model is occupied, agents automatically retry on the next model in their fallback chain — Gemini
-            3 Flash, then Kimi — without surfacing errors to the user.
+            The solution has two parts. First, agents that do prose or UI work do not need GLM's reasoning depth. Moving
+            <strong>document-writer</strong> and <strong>frontend-ui-ux-engineer</strong> to Google Gemini 3 Flash removes
+            them from the ZAI slot entirely. Gemini 3 Flash supports 10 concurrent requests and is faster for this class
+            of output. Second, <strong>runtime fallback</strong> handles cases where two agents need the same ZAI model
+            at the same time. When a primary model returns a 429 or 503, the agent retries down its fallback chain with
+            no error surfaced to the user.
         </p>
         <p>
-            High-reasoning agents (<strong>sisyphus, prometheus, metis</strong>) stay on <strong>GLM-5.1 max</strong>
-            because the deep-thinking variant is where the prepaid plan earns its keep. They run sequentially anyway —
-            you don't plan and execute in parallel — so the concurrency limit is rarely a problem in practice.
-            Execution agents (<strong>atlas, explore, librarian, sisyphus-junior</strong>) move to
-            <strong>GLM-5-Turbo</strong>, which is faster and cheaper on the prepaid plan, with Gemini as the high-volume
-            escape valve when turbo slots fill.
+            High-reasoning agents (<strong>sisyphus, prometheus, metis</strong>) stay on <strong>GLM-5.1 max</strong>.
+            Planning and gap analysis run sequentially. The one-slot limit is not a practical bottleneck for them, and
+            the deep-thinking variant is where the prepaid plan earns its cost. Execution agents
+            (<strong>atlas, explore, librarian, sisyphus-junior</strong>) move to <strong>GLM-5-Turbo</strong>. Turbo is
+            faster for task dispatch and draws from the same prepaid balance. Gemini 3 Flash is the fallback when a
+            turbo slot is already occupied.
         </p>
         <p>
-            A new <code>turbo-exec</code> category joins <code>quick</code> for high-frequency parallel sub-task
-            dispatch, both routing to GLM-5-Turbo with Gemini fallback. The <code>writing</code> category switches
-            to Gemini 3 Flash as primary — the original GLM-4.7-Flash was noticeably slow for document generation.
+            Two categories use GLM-5-Turbo as primary: <code>quick</code> and the new <code>turbo-exec</code>. Both fall
+            back to Gemini under load. The <code>writing</code> category now uses Gemini 3 Flash as primary.
+            GLM-4.7-Flash was slow for document generation. Gemini handles prose output faster with no concurrency
+            constraint.
         </p>
         <p>
-            This configuration is managed via the
-            <a href="https://github.com/techno/opencode-omo-plugin" target="_blank" rel="noopener">opencode-omo-plugin</a>
-            — an OpenCode plugin that ships the <code>/omo</code> command and <code>omo-config</code> skill for
-            interactive config management directly from the terminal.
+            This configuration is managed with
+            <a href="https://github.com/shawnmarck/omo-config-manager" target="_blank" rel="noopener">omo-config-manager</a>,
+            an OpenCode plugin that ships the <code>/omo</code> command and <code>omo-config</code> skill for managing
+            <code>oh-my-openagent.json</code> directly from the terminal.
         </p>
+
+        <details class="code-example">
+            <summary><span class="code-example-icon">&#9658;</span> Example: runtime_fallback config</summary>
+<pre><span class="tok-cmt">// oh-my-openagent.json (top-level key)</span>
+<span class="tok-key">"runtime_fallback"</span>: {
+  <span class="tok-key">"enabled"</span>:              <span class="tok-bool">true</span>,
+  <span class="tok-key">"retry_on_errors"</span>:      [<span class="tok-num">429</span>, <span class="tok-num">503</span>, <span class="tok-num">504</span>, <span class="tok-num">400</span>, <span class="tok-num">1310</span>, <span class="tok-num">1320</span>],
+  <span class="tok-key">"max_fallback_attempts"</span>: <span class="tok-num">3</span>,
+  <span class="tok-key">"cooldown_ms"</span>:          <span class="tok-num">800</span>,
+  <span class="tok-key">"notify_on_fallback"</span>:   <span class="tok-bool">true</span>
+}</pre>
+        </details>
+
+        <details class="code-example">
+            <summary><span class="code-example-icon">&#9658;</span> Example: per-agent fallback_models</summary>
+<pre><span class="tok-cmt">// Execution agents: turbo primary, Gemini high-concurrency fallback</span>
+<span class="tok-key">"atlas"</span>: {
+  <span class="tok-key">"model"</span>:           <span class="tok-str">"zai-coding-plan/glm-5-turbo"</span>,
+  <span class="tok-key">"fallback_models"</span>: [<span class="tok-str">"google/gemini-3-flash-preview"</span>, <span class="tok-str">"opencode/kimi-k2.5"</span>]
+},
+
+<span class="tok-cmt">// Research agent: turbo primary, Kimi for depth, Gemini as last resort</span>
+<span class="tok-key">"librarian"</span>: {
+  <span class="tok-key">"model"</span>:           <span class="tok-str">"zai-coding-plan/glm-5-turbo"</span>,
+  <span class="tok-key">"fallback_models"</span>: [<span class="tok-str">"opencode/kimi-k2.5"</span>, <span class="tok-str">"google/gemini-3-flash-preview"</span>]
+},
+
+<span class="tok-cmt">// High-reasoning agents: GLM-5.1 max, Sonnet/xAI if unavailable</span>
+<span class="tok-key">"prometheus"</span>: {
+  <span class="tok-key">"model"</span>:           <span class="tok-str">"zai-coding-plan/glm-5.1"</span>,
+  <span class="tok-key">"variant"</span>:         <span class="tok-str">"max"</span>,
+  <span class="tok-key">"fallback_models"</span>: [<span class="tok-str">"opencode/claude-sonnet-4-6"</span>, <span class="tok-str">"xai/grok-4-fast-non-reasoning"</span>]
+}</pre>
+        </details>
+
+        <details class="code-example">
+            <summary><span class="code-example-icon">&#9658;</span> Example: modelConcurrency and providerConcurrency</summary>
+<pre><span class="tok-key">"background_task"</span>: {
+  <span class="tok-cmt">// modelConcurrency takes priority over providerConcurrency</span>
+  <span class="tok-key">"modelConcurrency"</span>: {
+    <span class="tok-key">"zai-coding-plan/glm-5.1"</span>:          <span class="tok-num">1</span>,
+    <span class="tok-key">"zai-coding-plan/glm-5"</span>:            <span class="tok-num">1</span>,
+    <span class="tok-key">"zai-coding-plan/glm-5-turbo"</span>:      <span class="tok-num">1</span>,
+    <span class="tok-key">"zai-coding-plan/glm-4.7"</span>:          <span class="tok-num">1</span>,
+    <span class="tok-key">"zai-coding-plan/glm-4.7-flash"</span>:    <span class="tok-num">1</span>,
+    <span class="tok-key">"google/gemini-3-flash-preview"</span>:    <span class="tok-num">10</span>,  <span class="tok-cmt">// high-concurrency fallback target</span>
+    <span class="tok-key">"google/gemini-2.5-flash-image"</span>:    <span class="tok-num">5</span>,
+    <span class="tok-key">"opencode/claude-sonnet-4-6"</span>:       <span class="tok-num">3</span>,
+    <span class="tok-key">"opencode/claude-opus-4-6"</span>:         <span class="tok-num">1</span>
+  },
+  <span class="tok-cmt">// providerConcurrency is a soft safety net</span>
+  <span class="tok-key">"providerConcurrency"</span>: {
+    <span class="tok-key">"zai-coding-plan"</span>: <span class="tok-num">3</span>,
+    <span class="tok-key">"google"</span>:          <span class="tok-num">10</span>,
+    <span class="tok-key">"opencode"</span>:        <span class="tok-num">5</span>,
+    <span class="tok-key">"anthropic"</span>:       <span class="tok-num">3</span>
+  }
+}</pre>
+        </details>
+
         <div class="article-meta">
             <span class="article-meta-item"><strong>Config file:</strong> oh-my-openagent.json</span>
             <span class="article-meta-item"><strong>Plan:</strong> ZAI Coding Plan Max (prepaid)</span>
