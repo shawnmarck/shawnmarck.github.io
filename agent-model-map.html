@@ -3,1087 +3,704 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Model Map - OpenCode Configuration Strategies</title>
+    <title>Agent Model Map — Oh My OpenAgent</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --background: 240 10% 3.9%;
-            --foreground: 0 0% 98%;
-            --card: 240 10% 3.9%;
-            --card-foreground: 0 0% 98%;
-            --popover: 240 10% 3.9%;
-            --popover-foreground: 0 0% 98%;
-            --primary: 0 0% 98%;
-            --primary-foreground: 240 5.9% 10%;
-            --secondary: 240 3.7% 15.9%;
-            --secondary-foreground: 0 0% 98%;
-            --muted: 240 3.7% 15.9%;
-            --muted-foreground: 240 5% 64.9%;
-            --accent: 240 3.7% 15.9%;
-            --accent-foreground: 0 0% 98%;
-            --destructive: 0 62.8% 30.6%;
-            --destructive-foreground: 0 0% 98%;
-            --border: 240 3.7% 15.9%;
-            --input: 240 3.7% 15.9%;
-            --ring: 240 4.9% 83.9%;
-            --radius: 0.5rem;
-            --success: 142 76% 36%;
-            --warning: 38 92% 50%;
+            --bg-100: #000000;
+            --bg-200: #0a0a0a;
+            --gray-100: #1a1a1a;
+            --gray-200: #1f1f1f;
+            --gray-300: #292929;
+            --gray-400: #2e2e2e;
+            --gray-500: #454545;
+            --gray-600: #878787;
+            --gray-700: #999999;
+            --gray-900: #c8c8c8;
+            --gray-1000: #ededed;
+            --blue-400: #52a8ff;
+            --blue-700: #0070f3;
+            --green-400: #4cc38a;
+            --green-700: #1a7f4b;
+            --amber-400: #f5a623;
+            --amber-700: #c47d00;
+            --red-400: #ff6166;
+            --red-700: #e00;
+            --purple-400: #c084fc;
+            --purple-700: #7928ca;
+            --teal-400: #2de0d0;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-full: 9999px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: hsl(var(--background));
-            color: hsl(var(--foreground));
+            font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-100);
+            color: var(--gray-1000);
+            font-size: 14px;
             line-height: 1.6;
-            padding: 2rem;
+            padding: 48px 24px;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1280px; margin: 0 auto; }
 
-        header {
-            margin-bottom: 2rem;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .subtitle {
-            color: hsl(var(--muted-foreground));
-            font-size: 1.1rem;
-        }
-
-        .section {
-            margin-bottom: 3rem;
-        }
-
-        h2 {
-            font-size: 1.5rem;
+        /* Header */
+        header { margin-bottom: 48px; border-bottom: 1px solid var(--gray-400); padding-bottom: 32px; }
+        .header-eyebrow {
+            font-size: 11px;
             font-weight: 600;
-            margin-bottom: 1rem;
-            letter-spacing: -0.01em;
-        }
-
-        h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.01em;
-        }
-
-        .card {
-            background-color: hsl(var(--card));
-            border: 1px solid hsl(var(--border));
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid hsl(var(--border));
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background: none;
-            border: none;
-            color: hsl(var(--muted-foreground));
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-
-        .tab:hover {
-            color: hsl(var(--foreground));
-            background-color: hsl(var(--accent));
-        }
-
-        .tab.active {
-            color: hsl(var(--primary));
-            border-bottom-color: hsl(var(--primary));
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Status badges */
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-left: 0.5rem;
+            color: var(--blue-400);
+            margin-bottom: 12px;
         }
-
-        .status-active {
-            background-color: hsl(var(--success) / 20%);
-            color: hsl(var(--success));
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            color: var(--gray-1000);
+            line-height: 1.1;
+            margin-bottom: 10px;
         }
+        .subtitle { color: var(--gray-600); font-size: 15px; }
 
-        .status-standby {
-            background-color: hsl(var(--warning) / 20%);
-            color: hsl(var(--warning));
-        }
-
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-            border: 1px solid hsl(var(--border));
-            border-radius: var(--radius);
-            margin-bottom: 1.5rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-        }
-
-        th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid hsl(var(--border));
-        }
-
-        th {
+        /* Section */
+        .section { margin-bottom: 56px; }
+        .section-label {
+            font-size: 11px;
             font-weight: 600;
-            background-color: hsl(var(--secondary));
-            color: hsl(var(--secondary-foreground));
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            margin-bottom: 16px;
+        }
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--gray-1000);
+            margin-bottom: 4px;
+        }
+        .section-desc { color: var(--gray-600); margin-bottom: 24px; font-size: 13px; }
+
+        /* Group headers */
+        .group-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            margin: 32px 0 10px;
+            padding-left: 2px;
+        }
+        .group-label:first-child { margin-top: 0; }
+
+        /* Table */
+        .table-wrap {
+            border: 1px solid var(--gray-400);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 2px;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: var(--gray-100); }
+        th {
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-400);
+            white-space: nowrap;
+        }
+        td {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--gray-300);
+            vertical-align: middle;
+            color: var(--gray-900);
+        }
+        tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background 0.1s; }
+        tbody tr:hover { background: var(--gray-100); }
+
+        /* Agent name */
+        .agent {
+            font-weight: 600;
+            color: var(--gray-1000);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .agent-star { color: var(--amber-400); font-size: 12px; }
+
+        /* Model pill */
+        .model {
+            font-family: 'Geist Mono', 'SF Mono', 'Fira Code', monospace;
+            font-size: 12px;
+            background: var(--gray-200);
+            border: 1px solid var(--gray-400);
+            color: var(--blue-400);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            display: inline-block;
             white-space: nowrap;
         }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover {
-            background-color: hsl(var(--accent));
-        }
-
-        .agent-name {
-            font-weight: 600;
-            color: hsl(var(--primary));
-            font-size: 0.95rem;
-        }
-
-        .model-name {
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-            font-size: 0.85rem;
-            background-color: hsl(var(--secondary));
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
+        /* Variant badge */
+        .variant {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
             display: inline-block;
         }
+        .variant-max    { background: rgba(124,58,237,0.15); color: var(--purple-400); border: 1px solid rgba(124,58,237,0.3); }
+        .variant-high   { background: rgba(0,112,243,0.15);  color: var(--blue-400);   border: 1px solid rgba(0,112,243,0.3); }
+        .variant-medium { background: rgba(245,166,35,0.15); color: var(--amber-400);  border: 1px solid rgba(245,166,35,0.3); }
+        .variant-none   { color: var(--gray-500); font-size: 12px; }
 
+        /* Price */
         .price {
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-            color: hsl(var(--muted-foreground));
+            font-family: 'Geist Mono', monospace;
+            font-size: 12px;
+            white-space: nowrap;
         }
-
-        .price-low {
-            color: hsl(142 76% 36%);
-        }
-
-        .price-medium {
-            color: hsl(38 92% 50%);
-        }
-
-        .price-high {
-            color: hsl(0 84% 60%);
-        }
-
-        /* Info boxes */
-        .info-box {
-            background-color: hsl(217 91% 60% / 10%);
-            border: 1px solid hsl(217 91% 60% / 30%);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .info-box h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: hsl(217 91% 60%);
-        }
-
-        .info-box p {
-            font-size: 0.9rem;
-            color: hsl(var(--foreground));
-            margin-bottom: 0.5rem;
-        }
-
-        .info-box ul {
-            list-style: none;
-            font-size: 0.875rem;
-            margin-left: 1rem;
-        }
-
-        .info-box li {
-            padding: 0.25rem 0;
-            color: hsl(var(--muted-foreground));
-        }
-
-        .info-box li::before {
-            content: "→ ";
-            color: hsl(217 91% 60%);
-        }
-
-        /* Comparison grid */
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .comparison-card {
-            background-color: hsl(var(--card));
-            border: 1px solid hsl(var(--border));
-            border-radius: var(--radius);
-            padding: 1.25rem;
-        }
-
-        .comparison-card h4 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .comparison-card ul {
-            list-style: none;
-            font-size: 0.875rem;
-        }
-
-        .comparison-card li {
-            padding: 0.25rem 0;
-            padding-left: 1.25rem;
-            position: relative;
-            color: hsl(var(--muted-foreground));
-        }
-
-        .comparison-card li::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: hsl(var(--muted-foreground));
-        }
+        .price-free   { color: var(--green-400); }
+        .price-low    { color: var(--teal-400); }
+        .price-medium { color: var(--amber-400); }
+        .price-high   { color: var(--red-400); }
 
         /* Tags */
+        .tags { display: flex; flex-wrap: wrap; gap: 4px; }
         .tag {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
+            font-size: 11px;
             font-weight: 500;
-            margin-right: 0.25rem;
-            margin-bottom: 0.25rem;
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
+            white-space: nowrap;
         }
+        .tag-blue   { background: rgba(0,112,243,0.12);   color: var(--blue-400);   border: 1px solid rgba(0,112,243,0.25); }
+        .tag-green  { background: rgba(76,195,138,0.12);  color: var(--green-400);  border: 1px solid rgba(76,195,138,0.25); }
+        .tag-purple { background: rgba(124,58,237,0.12);  color: var(--purple-400); border: 1px solid rgba(124,58,237,0.25); }
+        .tag-amber  { background: rgba(245,166,35,0.12);  color: var(--amber-400);  border: 1px solid rgba(245,166,35,0.25); }
+        .tag-red    { background: rgba(224,0,0,0.12);     color: var(--red-400);    border: 1px solid rgba(224,0,0,0.25); }
+        .tag-teal   { background: rgba(45,224,208,0.12);  color: var(--teal-400);   border: 1px solid rgba(45,224,208,0.25); }
 
-        .tag-blue {
-            background-color: hsl(217 91% 60% / 20%);
-            color: hsl(217 91% 60%);
+        /* Category grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
         }
-
-        .tag-green {
-            background-color: hsl(142 76% 36% / 20%);
-            color: hsl(142 76% 36%);
+        .category-card {
+            background: var(--bg-200);
+            border: 1px solid var(--gray-400);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            transition: border-color 0.15s;
         }
-
-        .tag-purple {
-            background-color: hsl(262 83% 58% / 20%);
-            color: hsl(262 83% 58%);
-        }
-
-        .tag-orange {
-            background-color: hsl(38 92% 50% / 20%);
-            color: hsl(38 92% 50%);
-        }
-
-        .tag-red {
-            background-color: hsl(0 84% 60% / 20%);
-            color: hsl(0 84% 60%);
-        }
-
-        .section-header {
-            font-size: 1rem;
+        .category-card:hover { border-color: var(--gray-500); }
+        .category-name {
             font-weight: 600;
-            color: hsl(var(--muted-foreground));
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
-            margin-top: 1.5rem;
+            font-size: 13px;
+            color: var(--gray-1000);
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+        .category-meta { display: flex; flex-direction: column; gap: 6px; }
+        .meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .meta-label { font-size: 11px; color: var(--gray-600); }
+        .meta-value { font-size: 11px; color: var(--gray-900); }
+        .category-purpose {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--gray-600);
+            line-height: 1.5;
+            border-top: 1px solid var(--gray-300);
+            padding-top: 10px;
         }
 
+        /* Info callout */
+        .callout {
+            background: rgba(0,112,243,0.06);
+            border: 1px solid rgba(0,112,243,0.2);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 32px;
+            font-size: 13px;
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+        .callout strong { color: var(--blue-400); }
+
+        /* Footer */
         footer {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid hsl(var(--border));
-            color: hsl(var(--muted-foreground));
-            font-size: 0.875rem;
+            margin-top: 64px;
+            padding-top: 24px;
+            border-top: 1px solid var(--gray-300);
+            color: var(--gray-500);
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .footer-right { font-family: 'Geist Mono', monospace; font-size: 11px; }
+
+        code {
+            font-family: 'Geist Mono', monospace;
+            font-size: 12px;
+            background: var(--gray-200);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: var(--gray-900);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 24px 16px; }
+            h1 { font-size: 26px; }
+            .category-grid { grid-template-columns: 1fr; }
+            td, th { padding: 9px 10px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Agent Model Map</h1>
-            <p class="subtitle">OpenCode Configuration Strategies - Multi-Tier Setup</p>
-        </header>
+<div class="container">
 
-        <section class="section">
-            <h2>Configuration Strategies</h2>
-            <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1.5rem;">
-                Three configuration variants optimized for different scenarios. Switch between them using symlinks for instant strategy changes.
-            </p>
+    <header>
+        <div class="header-eyebrow">Oh My OpenAgent</div>
+        <h1>Agent Model Map</h1>
+        <p class="subtitle">Live configuration — <code>oh-my-openagent.json</code></p>
+    </header>
 
-            <div class="tabs">
-                <button class="tab active" onclick="showTab('option-a')">
-                    Option A: Cost Optimization
-                    <span class="status-badge status-active">Active</span>
-                </button>
-                <button class="tab" onclick="showTab('option-b')">
-                    Option B: Balanced Quality
-                    <span class="status-badge status-standby">Standby</span>
-                </button>
-                <button class="tab" onclick="showTab('option-c')">
-                    Option C: Hybrid Adaptive
-                    <span class="status-badge status-standby">Standby</span>
-                </button>
-            </div>
-
-            <!-- Option A: Cost Optimization -->
-            <div id="option-a" class="tab-content active">
-                <div class="info-box">
-                    <h4>💰 Pure Cost Optimization Strategy</h4>
-                    <p><strong>Location:</strong> <code>~/.config/opencode/oh-my-opencode-option-a.json</code></p>
-                    <p><strong>Cost Reduction:</strong> 85-90% vs. Opus-heavy config</p>
-                    <p><strong>Prerequisites:</strong></p>
-                    <ul>
-                        <li>OpenCode Zen API key (for GPT-5.2, Claude, and Gemini models)</li>
-                        <li>zai-coding-plan API key (for GLM-4.7)</li>
-                    </ul>
-                    <p><strong>Best For:</strong> Daily work, cost-conscious development, learning, when Anthropic rate limits are a concern</p>
-                </div>
-
-                <div class="section-header">Orchestration Layer</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>Model</th>
-                                <th>Input Price</th>
-                                <th>Output Price</th>
-                                <th>Role</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="agent-name">Sisyphus</span></td>
-                                <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
-                                <td><span class="price price-low">$0.40/M</span></td>
-                                <td><span class="price price-medium">$1.50/M</span></td>
-                                <td>Main orchestrator</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Prometheus</span></td>
-                                <td><span class="model-name">zai-coding-plan/glm-4.7</span></td>
-                                <td><span class="price price-low">$0.40/M</span></td>
-                                <td><span class="price price-medium">$1.50/M</span></td>
-                                <td>Strategic planner</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Metis</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td>Pre-planning analyst</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Momus</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td>Plan validator</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="section-header">Worker Agents</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>Model</th>
-                                <th>Context</th>
-                                <th>Input Price</th>
-                                <th>Output Price</th>
-                                <th>Tags</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="agent-name">oracle</span></td>
-                                <td><span class="model-name">opencode/gpt-5.2</span></td>
-                                <td>400K</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$14.00/M</span></td>
-                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">reasoning</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">oracle-lite</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td><span class="tag tag-orange">medium-tier</span> <span class="tag tag-purple">escalation</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">librarian</span></td>
-                                <td><span class="model-name">google/gemini-3-flash</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-low">$0.50/M</span></td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="tag tag-purple">research</span> <span class="tag tag-blue">fast</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">explore</span></td>
-                                <td><span class="model-name">opencode/grok-code</span></td>
-                                <td>256K</td>
-                                <td><span class="price price-low">$0.20/M</span></td>
-                                <td><span class="price price-low">$1.50/M</span></td>
-                                <td><span class="tag tag-blue">code-search</span> <span class="tag tag-green">cheapest</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">frontend-ui-ux-engineer</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td><span class="tag tag-orange">visual</span> <span class="tag tag-purple">UI/UX</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">document-writer</span></td>
-                                <td><span class="model-name">google/gemini-3-flash</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-low">$0.50/M</span></td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="tag tag-purple">docs</span> <span class="tag tag-blue">fast</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">multimodal-looker</span></td>
-                                <td><span class="model-name">google/gemini-3-flash</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-low">$0.50/M</span></td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="tag tag-blue">vision</span> <span class="tag tag-purple">multimodal</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="section-header">Semantic Categories</div>
-                <div class="comparison-grid">
-                    <div class="comparison-card">
-                        <h4>quick</h4>
-                        <ul>
-                            <li>Model: Claude Haiku 4.5</li>
-                            <li>Temp: 0.3</li>
-                            <li>Use: Simple tasks, refactoring</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>general</h4>
-                        <ul>
-                            <li>Model: GLM-4.7</li>
-                            <li>Temp: 0.2</li>
-                            <li>Use: 90% of standard work</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>ultrabrain</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/gpt-5.2</span></li>
-                            <li>Temp: 0.1</li>
-                            <li>Use: Complex architecture</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>visual-engineering</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/gemini-3-pro</span></li>
-                            <li>Temp: 0.7</li>
-                            <li>Use: UI/UX, design systems</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>writing</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/gemini-3-flash</span></li>
-                            <li>Temp: 0.5</li>
-                            <li>Use: Documentation, blogs</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Option B: Balanced Quality -->
-            <div id="option-b" class="tab-content">
-                <div class="info-box">
-                    <h4>⚖️ Balanced Quality/Cost Strategy</h4>
-                    <p><strong>Location:</strong> <code>~/.config/opencode/oh-my-opencode-option-b.json</code></p>
-                    <p><strong>Cost Reduction:</strong> 60-70% vs. all-Opus config</p>
-                    <p><strong>Prerequisites:</strong></p>
-                    <ul>
-                        <li><strong>OpenCode Zen API key</strong> (for Claude Opus/Sonnet/Haiku, GPT-5.2, and Gemini models)</li>
-                    </ul>
-                    <p><strong>Best For:</strong> Production work, complex projects with tight deadlines, when planning quality is critical</p>
-                </div>
-
-                <div class="section-header">Orchestration Layer</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>Model</th>
-                                <th>Input Price</th>
-                                <th>Output Price</th>
-                                <th>Role</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="agent-name">Sisyphus</span></td>
-                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
-                                <td>200K</td>
-                                <td><span class="price price-high">$5.00/M</span></td>
-                                <td><span class="price price-high">$25.00/M</span></td>
-                                <td>Main orchestrator (robust)</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Prometheus</span></td>
-                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
-                                <td>200K</td>
-                                <td><span class="price price-high">$5.00/M</span></td>
-                                <td><span class="price price-high">$25.00/M</span></td>
-                                <td>Strategic planner (high-quality)</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Metis</span></td>
-                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="price price-high">$15.00/M</span></td>
-                                <td>Pre-planning analyst</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Momus</span></td>
-                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="price price-high">$15.00/M</span></td>
-                                <td>Plan validator (precision)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="section-header">Worker Agents</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>Model</th>
-                                <th>Context</th>
-                                <th>Input Price</th>
-                                <th>Output Price</th>
-                                <th>Tags</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="agent-name">oracle</span></td>
-                                <td><span class="model-name">opencode/gpt-5.2</span></td>
-                                <td>400K</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$14.00/M</span></td>
-                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">logical-reasoning</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">oracle-lite</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td><span class="tag tag-orange">medium-tier</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Prometheus</span></td>
-                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
-                                <td>200K</td>
-                                <td><span class="price price-high">$5.00/M</span></td>
-                                <td><span class="price price-high">$25.00/M</span></td>
-                                <td>Strategic planner (high-quality)</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Metis</span></td>
-                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="price price-medium">$15.00/M</span></td>
-                                <td>Pre-planning analyst</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Momus</span></td>
-                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="price price-medium">$15.00/M</span></td>
-                                <td>Plan validator (precision)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="section-header">Worker Agents</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>Model</th>
-                                <th>Context</th>
-                                <th>Input Price</th>
-                                <th>Output Price</th>
-                                <th>Tags</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="agent-name">oracle</span></td>
-                                <td><span class="model-name">opencode/gpt-5.2</span></td>
-                                <td>400K</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$14.00/M</span></td>
-                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">logical-reasoning</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">oracle-lite</span></td>
-                                <td><span class="model-name">opencode/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td><span class="tag tag-orange">medium-tier</span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: hsl(var(--muted-foreground)); font-style: italic;">
-                                    Worker agents (librarian, explore, frontend-ui-ux-engineer, document-writer, multimodal-looker) same as Option A
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="section-header">Semantic Categories</div>
-                <div class="comparison-grid">
-                    <div class="comparison-card">
-                        <h4>quick</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/claude-haiku-4-5</span></li>
-                            <li>Temp: 0.3</li>
-                            <li>Use: Simple, fast tasks</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>ultrabrain</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/gpt-5.2</span></li>
-                            <li>Temp: 0.1</li>
-                            <li>Use: Complex architecture, business logic</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>visual-engineering</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">google/gemini-3-pro</span></li>
-                            <li>Temp: 0.7</li>
-                            <li>Use: UI/UX, design systems</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>writing</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">google/gemini-3-flash</span></li>
-                            <li>Temp: 0.5</li>
-                            <li>Use: Documentation, blogs</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>visual-engineering</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/gemini-3-pro</span></li>
-                            <li>Temp: 0.7</li>
-                            <li>Use: Frontend, UI/UX</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>most-capable</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/claude-opus-4-5</span></li>
-                            <li>Temp: 0.1</li>
-                            <li>Use: Highest quality output</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Option C: Hybrid Adaptive -->
-            <div id="option-c" class="tab-content">
-                <div class="info-box">
-                    <h4>🔄 Hybrid Adaptive Strategy</h4>
-                    <p><strong>Location:</strong> <code>~/.config/opencode/oh-my-opencode-option-c.json</code></p>
-                    <p><strong>Cost Reduction:</strong> 75-85% vs. all-Opus config</p>
-                    <p><strong>Prerequisites:</strong></p>
-                    <ul>
-                        <li><strong>OpenCode Zen API key</strong> (for Claude Opus/Sonnet/Haiku and Gemini models)</li>
-                        <li>zai-coding-plan API key (for GLM-4.7)</li>
-                    </ul>
-                    <p><strong>Best For:</strong> Balanced orchestration with cost controls, multi-tier escalation, best of both worlds</p>
-                </div>
-
-                <div class="section-header">Orchestration Layer</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>Model</th>
-                                <th>Input Price</th>
-                                <th>Output Price</th>
-                                <th>Role</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="agent-name">Sisyphus</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td>Main orchestrator (balanced)</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Prometheus</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td>Strategic planner (balanced)</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Metis</span></td>
-                                <td><span class="model-name">google/gemini-3-flash</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-low">$0.50/M</span></td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td>Pre-planning (fast)</td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">Momus</span></td>
-                                <td><span class="model-name">opencode/claude-sonnet-4-5</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$3.00/M</span></td>
-                                <td><span class="price price-high">$15.00/M</span></td>
-                                <td>Plan validator (quality)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="section-header">Worker Agents</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Agent</th>
-                                <th>Model</th>
-                                <th>Context</th>
-                                <th>Input Price</th>
-                                <th>Output Price</th>
-                                <th>Tags</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><span class="agent-name">oracle</span></td>
-                                <td><span class="model-name">opencode/claude-opus-4-5</span></td>
-                                <td>200K</td>
-                                <td><span class="price price-high">$5.00/M</span></td>
-                                <td><span class="price price-high">$25.00/M</span></td>
-                                <td><span class="tag tag-red">premium</span> <span class="tag tag-purple">best-for-coding</span></td>
-                            </tr>
-                            <tr>
-                                <td><span class="agent-name">oracle-lite</span></td>
-                                <td><span class="model-name">google/gemini-3-pro</span></td>
-                                <td>1M</td>
-                                <td><span class="price price-medium">$2.00/M</span></td>
-                                <td><span class="price price-high">$12.00/M</span></td>
-                                <td><span class="tag tag-orange">medium-tier</span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: hsl(var(--muted-foreground)); font-style: italic;">
-                                    Worker agents (librarian, explore, frontend-ui-ux-engineer, document-writer, multimodal-looker) same as Option A
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="section-header">Semantic Categories (Multi-Tier)</div>
-                <div class="comparison-grid">
-                    <div class="comparison-card">
-                        <h4>quick (Tier 1)</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/claude-haiku-4-5</span></li>
-                            <li>Temp: 0.3</li>
-                            <li>Use: Simple tasks</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>general (Tier 2)</h4>
-                        <ul>
-                            <li>Model: zai-coding-plan/glm-4.7</li>
-                            <li>Temp: 0.2</li>
-                            <li>Use: Most work (90%)</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>medium (Tier 3)</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">google/gemini-3-pro</span></li>
-                            <li>Temp: 0.2</li>
-                            <li>Use: Medium complexity</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>ultrabrain (Tier 4)</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/claude-opus-4-5</span></li>
-                            <li>Temp: 0.1</li>
-                            <li>Use: Complex architecture</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>visual-engineering</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">google/gemini-3-pro</span></li>
-                            <li>Temp: 0.7</li>
-                            <li>Use: UI/UX, design</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>writing</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">google/gemini-3-flash</span></li>
-                            <li>Temp: 0.5</li>
-                            <li>Use: Documentation</li>
-                        </ul>
-                    </div>
-                    <div class="comparison-card">
-                        <h4>most-capable</h4>
-                        <ul>
-                            <li>Model: <span class="model-name">opencode/claude-opus-4-5</span></li>
-                            <li>Temp: 0.1</li>
-                            <li>Use: Critical tasks</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>Strategy Comparison</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Aspect</th>
-                            <th>Option A</th>
-                            <th>Option B</th>
-                            <th>Option C</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Orchestrator</strong></td>
-                            <td>GLM-4.7</td>
-                            <td>Claude Opus 4.5</td>
-                            <td>Gemini 3 Pro Medium</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Planner</strong></td>
-                            <td>GLM-4.7</td>
-                            <td>Claude Opus 4.5</td>
-                            <td>Gemini 3 Pro Medium</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Validator</strong></td>
-                            <td>Gemini Pro Medium</td>
-                            <td>Claude Sonnet 4.5</td>
-                            <td>Flash + Sonnet</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Oracle</strong></td>
-                            <td><span class="model-name">opencode/gpt-5.2</span></td>
-                            <td><span class="model-name">opencode/gpt-5.2</span></td>
-                            <td><span class="model-name">opencode/claude-opus-4-5</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Cost Reduction</strong></td>
-                            <td><span class="tag tag-green">85-90%</span></td>
-                            <td><span class="tag tag-orange">60-70%</span></td>
-                            <td><span class="tag tag-green">75-85%</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Provider Key</strong></td>
-                            <td>OpenCode Zen</td>
-                            <td><span class="tag tag-green">OpenCode Zen</span></td>
-                            <td><span class="tag tag-green">OpenCode Zen</span></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Categories</strong></td>
-                            <td>5 total</td>
-                            <td>4 total</td>
-                            <td>7 total (multi-tier)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Best Use Case</strong></td>
-                            <td>Daily work, learning</td>
-                            <td>Production, quality</td>
-                            <td>Balanced, flexible</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>Switching Between Strategies</h2>
-            <div class="card">
-                <h3 style="margin-bottom: 1rem;">Quick Switch Commands</h3>
-                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
-                    Switch configurations instantly using symlinks. The active config is at <code>~/.config/opencode/oh-my-opencode.json</code>
-                </p>
-
-                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
-                        # Check current configuration:
-                    </p>
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
-                        readlink ~/.config/opencode/oh-my-opencode.json
-                    </p>
-                </div>
-
-                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
-                        # Switch to Option A (cost-optimized):
-                    </p>
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
-                        cd ~/.config/opencode && ln -sf oh-my-opencode-option-a.json oh-my-opencode.json
-                    </p>
-                </div>
-
-                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem;">
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
-                        # Switch to Option B (balanced quality):
-                    </p>
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
-                        cd ~/.config/opencode && ln -sf oh-my-opencode-option-b.json oh-my-opencode.json
-                    </p>
-                </div>
-
-                <div style="background-color: hsl(var(--secondary)); padding: 1rem; border-radius: var(--radius);">
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--muted-foreground)); margin-bottom: 0.5rem;">
-                        # Switch to Option C (hybrid adaptive):
-                    </p>
-                    <p style="font-family: monospace; font-size: 0.875rem; color: hsl(var(--foreground));">
-                        cd ~/.config/opencode && ln -sf oh-my-opencode-option-c.json oh-my-opencode.json
-                    </p>
-                </div>
-
-                <p style="color: hsl(var(--muted-foreground)); margin-top: 1rem; font-size: 0.9rem;">
-                    📖 For detailed switching instructions, see <code>configs/CONFIG_SWITCHING_GUIDE.md</code>
-                </p>
-            </div>
-        </section>
-
-        <footer>
-            <p>Generated on <span id="date"></span> • OpenCode Multi-Configuration Strategy</p>
-            <p style="margin-top: 0.5rem;">Active: Option A (Pure Cost Optimization) • Symlink-based switching enabled</p>
-        </footer>
+    <div class="callout">
+        Pricing via <strong>OpenCode Zen</strong> (pay-per-use) or <strong>ZAI GLM Coding Plan</strong> (prepaid ~$10–30/month).
+        ZAI models show <strong>$0.00</strong> — consumed from subscription (API-rate equivalents: GLM-5/5.1 ~$1.00/$3.20 per 1M, GLM-4.7 ~$0.10/$0.30 per 1M).
     </div>
 
-    <script>
-        function showTab(tabId) {
-            // Hide all tab contents
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-            });
+    <!-- AGENTS -->
+    <section class="section">
+        <div class="section-label">Agents</div>
+        <h2>Agent Roster</h2>
+        <p class="section-desc">14 specialized agents organized by function. ⭐ marks primary orchestration agents.</p>
 
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
+        <!-- Orchestrators -->
+        <div class="group-label">Orchestration</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Role</th>
+                        <th>Model</th>
+                        <th>Variant</th>
+                        <th>IN / OUT per 1M</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="agent"><span class="agent-star">⭐</span>sisyphus</span></td>
+                        <td>Generic / orchestrator consistency</td>
+                        <td><span class="model">zai-coding-plan/glm-5.1</span></td>
+                        <td><span class="variant variant-max">max</span></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">atlas</span></td>
+                        <td>Execution manager — distributes tasks to subagents, verifies completion</td>
+                        <td><span class="model">opencode/kimi-k2.5</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-low">$0.60 / $3.00</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">sisyphus-junior</span></td>
+                        <td>Delegated task executor — completes end-to-end, no sub-orchestration</td>
+                        <td><span class="model">zai-coding-plan/glm-5-turbo</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-            // Show selected tab content
-            document.getElementById(tabId).classList.add('active');
+        <!-- Planning Pipeline -->
+        <div class="group-label">Planning Pipeline</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Role</th>
+                        <th>Model</th>
+                        <th>Variant</th>
+                        <th>IN / OUT per 1M</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="agent"><span class="agent-star">⭐</span>prometheus</span></td>
+                        <td>Strategic planner — interviews, surfaces scope gaps, builds verified plan</td>
+                        <td><span class="model">zai-coding-plan/glm-5.1</span></td>
+                        <td><span class="variant variant-max">max</span></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">metis</span></td>
+                        <td>Pre-planning gap analyst — catches ambiguities before plan generation</td>
+                        <td><span class="model">zai-coding-plan/glm-5.1</span></td>
+                        <td><span class="variant variant-max">max</span></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">momus</span></td>
+                        <td>Ruthless plan validator — rejects plans failing clarity or feasibility criteria</td>
+                        <td><span class="model">opencode/claude-sonnet-4-6</span></td>
+                        <td><span class="variant variant-medium">medium</span></td>
+                        <td><span class="price price-medium">$3.00 / $15.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-            // Add active class to clicked tab
-            event.target.closest('.tab').classList.add('active');
-        }
+        <!-- Consultants -->
+        <div class="group-label">Consultants (read-only)</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Role</th>
+                        <th>Model</th>
+                        <th>Variant</th>
+                        <th>IN / OUT per 1M</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="agent">oracle</span></td>
+                        <td>Premium architecture consultant — complex decisions, security, deep debugging</td>
+                        <td><span class="model">opencode/gpt-5.4</span></td>
+                        <td><span class="variant variant-high">high</span></td>
+                        <td><span class="price price-high">$2.50 / $15.00</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">oracle-lite</span></td>
+                        <td>Mid-tier escalation — architecture &amp; debugging when GLM-5 struggles</td>
+                        <td><span class="model">opencode/claude-sonnet-4-6</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-medium">$3.00 / $15.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-        document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    </script>
+        <!-- Specialists -->
+        <div class="group-label">Engineering Specialists</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Role</th>
+                        <th>Model</th>
+                        <th>Variant</th>
+                        <th>IN / OUT per 1M</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="agent">hephaestus</span></td>
+                        <td>Autonomous deep coder — give it a goal, not a recipe</td>
+                        <td><span class="model">opencode/gpt-5.3-codex</span></td>
+                        <td><span class="variant variant-medium">medium</span></td>
+                        <td><span class="price price-medium">$1.75 / $14.00</span></td>
+                        <td><div class="tags"><span class="tag tag-red">codex-only</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">frontend-ui-ux-engineer</span></td>
+                        <td>UI/UX implementation — visual design, aesthetics, design fidelity (temp 0.6)</td>
+                        <td><span class="model">opencode/kimi-k2.5</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-low">$0.60 / $3.00</span></td>
+                        <td><div class="tags"><span class="tag tag-amber">visual</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">document-writer</span></td>
+                        <td>Documentation specialist — README, API docs, technical guides</td>
+                        <td><span class="model">zai-coding-plan/glm-4.7-flash</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="tags"><span class="tag tag-blue">fast</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Utility -->
+        <div class="group-label">Utility / Speed Agents</div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Agent</th>
+                        <th>Role</th>
+                        <th>Model</th>
+                        <th>Variant</th>
+                        <th>IN / OUT per 1M</th>
+                        <th>Tags</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="agent">explore</span></td>
+                        <td>Codebase search — rapid pattern discovery, contextual grep. Run 10+ in parallel.</td>
+                        <td><span class="model">google/gemini-3-flash-preview</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-low">$0.50 / $3.00</span></td>
+                        <td><div class="tags"><span class="tag tag-green">10x concurrency</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">librarian</span></td>
+                        <td>Research &amp; documentation — external docs, multi-repo analysis, API knowledge</td>
+                        <td><span class="model">opencode/kimi-k2.5</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-low">$0.60 / $3.00</span></td>
+                        <td><div class="tags"><span class="tag tag-purple">research</span></div></td>
+                    </tr>
+                    <tr>
+                        <td><span class="agent">multimodal-looker</span></td>
+                        <td>Vision analyst — images, PDFs, screenshots, architectural diagrams</td>
+                        <td><span class="model">google/gemini-2.5-flash-image</span></td>
+                        <td><span class="variant-none">—</span></td>
+                        <td><span class="price price-low">~$0.039 / image</span></td>
+                        <td><div class="tags"><span class="tag tag-teal">multimodal</span></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="section">
+        <div class="section-label">Categories</div>
+        <h2>Semantic Categories</h2>
+        <p class="section-desc">Sisyphus delegates tasks to categories. Category selects the model — sisyphus-junior executes.</p>
+
+        <div class="category-grid">
+
+            <div class="category-card">
+                <div class="category-name">general</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">zai-coding-plan/glm-5</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-free" style="font-size:12px;">$0.00 / $0.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.2</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="meta-value">—</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Standard coding tasks. Default for ~90% of work.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">quick</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">google/gemini-3-flash-preview</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-low" style="font-size:12px;">$0.50 / $3.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.3</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="meta-value">—</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Fast execution. Tests, refactoring, scripts. 78% SWE-bench. 10x concurrency.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">deep</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">opencode/gpt-5.3-codex</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-medium" style="font-size:12px;">$1.75 / $14.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">—</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="variant variant-medium" style="font-size:11px;">medium</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Deep technical work requiring Codex-level code understanding.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">ultrabrain</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">opencode/gpt-5.4</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-high" style="font-size:12px;">$2.50 / $15.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.1</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="variant variant-high" style="font-size:11px;">xhigh</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Max reasoning. Architecture decisions, multi-system tradeoffs.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">visual-engineering</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">google/gemini-3-flash-preview</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-low" style="font-size:12px;">$0.50 / $3.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.7</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="variant variant-high" style="font-size:11px;">high</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Frontend, UI/UX, animations, design systems.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">artistry</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">google/gemini-3-flash-preview</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-low" style="font-size:12px;">$0.50 / $3.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.8</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="variant variant-max" style="font-size:11px;">max</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Creative work, experimental designs, artistic explorations.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">writing</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">zai-coding-plan/glm-4.7-flash</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-free" style="font-size:12px;">$0.00 / $0.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.5</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="meta-value">—</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Docs, blogs, guides. Natural writing flow with technical accuracy.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">unspecified-low</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">zai-coding-plan/glm-4.7</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-free" style="font-size:12px;">$0.00 / $0.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.0</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="meta-value">—</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Fallback for unclassified low-complexity tasks.</div>
+            </div>
+
+            <div class="category-card">
+                <div class="category-name">unspecified-high</div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">opencode/claude-sonnet-4-6</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-medium" style="font-size:12px;">$3.00 / $15.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.0</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="meta-value">—</span>
+                    </div>
+                </div>
+                <div class="category-purpose">Fallback for unclassified high-complexity tasks.</div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <span>Updated <span id="date"></span> · Oh My OpenAgent · <code>oh-my-openagent.json</code></span>
+        <span class="footer-right">14 agents · 9 categories</span>
+    </footer>
+
+</div>
+<script>
+    document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
+</script>
 </body>
 </html>
