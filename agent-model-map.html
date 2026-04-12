@@ -70,6 +70,73 @@
         }
         .subtitle { color: var(--gray-600); font-size: 15px; }
 
+        /* Article */
+        .article {
+            background: var(--bg-200);
+            border: 1px solid var(--gray-400);
+            border-radius: var(--radius-md);
+            padding: 28px 32px;
+            margin-bottom: 48px;
+            max-width: 820px;
+        }
+        .article-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--blue-400);
+            margin-bottom: 10px;
+        }
+        .article h2 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--gray-1000);
+            margin-bottom: 14px;
+            line-height: 1.2;
+        }
+        .article p {
+            font-size: 13.5px;
+            color: var(--gray-700);
+            line-height: 1.75;
+            margin-bottom: 14px;
+        }
+        .article p:last-child { margin-bottom: 0; }
+        .article strong { color: var(--gray-900); }
+        .article a {
+            color: var(--blue-400);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(82,168,255,0.3);
+            transition: border-color 0.15s;
+        }
+        .article a:hover { border-bottom-color: var(--blue-400); }
+        .article-meta {
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid var(--gray-300);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .article-meta-item {
+            font-size: 11px;
+            color: var(--gray-600);
+        }
+        .article-meta-item strong { color: var(--gray-700); }
+
+        /* Fallback legend */
+        .fallback-legend {
+            background: rgba(82,168,255,0.05);
+            border: 1px solid rgba(82,168,255,0.18);
+            border-radius: var(--radius-md);
+            padding: 14px 18px;
+            margin-bottom: 32px;
+            font-size: 13px;
+            color: var(--gray-700);
+            line-height: 1.7;
+        }
+        .fallback-legend strong { color: var(--blue-400); }
+
         /* Section */
         .section { margin-bottom: 56px; }
         .section-label {
@@ -155,6 +222,26 @@
             white-space: nowrap;
         }
 
+        /* Fallback models list */
+        .fallback-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .fallback-item {
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .fallback-num {
+            font-size: 10px;
+            color: var(--gray-500);
+            min-width: 14px;
+        }
+
         /* Variant badge */
         .variant {
             font-size: 11px;
@@ -209,12 +296,28 @@
             transition: border-color 0.15s;
         }
         .category-card:hover { border-color: var(--gray-500); }
+        .category-card.cat-new { border-color: rgba(76,195,138,0.35); }
+        .category-card.cat-new:hover { border-color: var(--green-400); }
         .category-name {
             font-weight: 600;
             font-size: 13px;
             color: var(--gray-1000);
             margin-bottom: 10px;
             letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .new-badge {
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: rgba(76,195,138,0.15);
+            color: var(--green-400);
+            border: 1px solid rgba(76,195,138,0.3);
+            padding: 1px 5px;
+            border-radius: var(--radius-full);
         }
         .category-meta { display: flex; flex-direction: column; gap: 6px; }
         .meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -271,6 +374,7 @@
             h1 { font-size: 26px; }
             .category-grid { grid-template-columns: 1fr; }
             td, th { padding: 9px 10px; }
+            .article { padding: 20px 18px; }
         }
     </style>
 </head>
@@ -283,16 +387,67 @@
         <p class="subtitle">Live configuration — <code>oh-my-openagent.json</code></p>
     </header>
 
+    <!-- MINI ARTICLE -->
+    <div class="article">
+        <div class="article-label">Strategy Update — April 2026</div>
+        <h2>Maximizing a Prepaid ZAI Plan Without Queuing Everything</h2>
+        <p>
+            Running a <strong>ZAI GLM Coding Plan (Max tier)</strong> is excellent value — you get GLM-5.1, GLM-5-Turbo,
+            and the wider 4.7 family for a flat monthly rate. The catch: <strong>every GLM model is capped at 1 concurrent
+            request</strong>. In a multi-agent setup where explore, atlas, librarian, and sisyphus-junior can all fire at
+            once, that single-slot limit creates invisible queues and 429 timeouts that silently kill throughput.
+        </p>
+        <p>
+            The fix is a two-layer strategy. First, <strong>push latency-sensitive but less-reasoning-heavy agents
+            (document-writer, frontend-ui-ux-engineer) onto Google Gemini 3 Flash</strong> — it supports 10 concurrent
+            requests and is faster for prose and UI work anyway. Second, <strong>enable runtime fallback</strong> so that
+            when a ZAI model is occupied, agents automatically retry on the next model in their fallback chain — Gemini
+            3 Flash, then Kimi — without surfacing errors to the user.
+        </p>
+        <p>
+            High-reasoning agents (<strong>sisyphus, prometheus, metis</strong>) stay on <strong>GLM-5.1 max</strong>
+            because the deep-thinking variant is where the prepaid plan earns its keep. They run sequentially anyway —
+            you don't plan and execute in parallel — so the concurrency limit is rarely a problem in practice.
+            Execution agents (<strong>atlas, explore, librarian, sisyphus-junior</strong>) move to
+            <strong>GLM-5-Turbo</strong>, which is faster and cheaper on the prepaid plan, with Gemini as the high-volume
+            escape valve when turbo slots fill.
+        </p>
+        <p>
+            A new <code>turbo-exec</code> category joins <code>quick</code> for high-frequency parallel sub-task
+            dispatch, both routing to GLM-5-Turbo with Gemini fallback. The <code>writing</code> category switches
+            to Gemini 3 Flash as primary — the original GLM-4.7-Flash was noticeably slow for document generation.
+        </p>
+        <p>
+            This configuration is managed via the
+            <a href="https://github.com/techno/opencode-omo-plugin" target="_blank" rel="noopener">opencode-omo-plugin</a>
+            — an OpenCode plugin that ships the <code>/omo</code> command and <code>omo-config</code> skill for
+            interactive config management directly from the terminal.
+        </p>
+        <div class="article-meta">
+            <span class="article-meta-item"><strong>Config file:</strong> oh-my-openagent.json</span>
+            <span class="article-meta-item"><strong>Plan:</strong> ZAI Coding Plan Max (prepaid)</span>
+            <span class="article-meta-item"><strong>Agents:</strong> 14</span>
+            <span class="article-meta-item"><strong>Categories:</strong> 10</span>
+            <span class="article-meta-item"><strong>Fallback:</strong> enabled · 3 attempts · 800ms cooldown</span>
+        </div>
+    </div>
+
     <div class="callout">
         Pricing via <strong>OpenCode Zen</strong> (pay-per-use) or <strong>ZAI GLM Coding Plan</strong> (prepaid ~$10–30/month).
         ZAI models show <strong>$0.00</strong> — consumed from subscription (API-rate equivalents: GLM-5/5.1 ~$1.00/$3.20 per 1M, GLM-4.7 ~$0.10/$0.30 per 1M).
+        <strong>Runtime fallback</strong> is active: on 429/503/504 errors agents automatically cascade through their fallback chain.
+    </div>
+
+    <div class="fallback-legend">
+        <strong>Concurrency model:</strong> ZAI GLM models = 1 concurrent slot each · Google Gemini 3 Flash = 10 slots · providerConcurrency[zai-coding-plan] = 3 (soft safety net).
+        When a primary model is occupied, <strong>runtime_fallback</strong> retries up to 3 times across the fallback chain (cooldown: 800ms). Fallback events are surfaced as notifications.
     </div>
 
     <!-- AGENTS -->
     <section class="section">
         <div class="section-label">Agents</div>
         <h2>Agent Roster</h2>
-        <p class="section-desc">14 specialized agents organized by function. ⭐ marks primary orchestration agents.</p>
+        <p class="section-desc">14 specialized agents organized by function. ⭐ marks primary orchestration agents. Fallback models cascade in listed order on rate-limit or service errors.</p>
 
         <!-- Orchestrators -->
         <div class="group-label">Orchestration</div>
@@ -302,9 +457,10 @@
                     <tr>
                         <th>Agent</th>
                         <th>Role</th>
-                        <th>Model</th>
+                        <th>Primary Model</th>
                         <th>Variant</th>
                         <th>IN / OUT per 1M</th>
+                        <th>Fallback Chain</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -314,13 +470,21 @@
                         <td><span class="model">zai-coding-plan/glm-5.1</span></td>
                         <td><span class="variant variant-max">max</span></td>
                         <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">opencode/claude-sonnet-4-6</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">xai/grok-4-fast-non-reasoning</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">atlas</span></td>
                         <td>Execution manager — distributes tasks to subagents, verifies completion</td>
-                        <td><span class="model">opencode/kimi-k2.5</span></td>
+                        <td><span class="model">zai-coding-plan/glm-5-turbo</span></td>
                         <td><span class="variant-none">—</span></td>
-                        <td><span class="price price-low">$0.60 / $3.00</span></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">google/gemini-3-flash-preview</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">opencode/kimi-k2.5</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">sisyphus-junior</span></td>
@@ -328,6 +492,10 @@
                         <td><span class="model">zai-coding-plan/glm-5-turbo</span></td>
                         <td><span class="variant-none">—</span></td>
                         <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">google/gemini-3-flash-preview</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">opencode/kimi-k2.5</span></div>
+                        </div></td>
                     </tr>
                 </tbody>
             </table>
@@ -341,9 +509,10 @@
                     <tr>
                         <th>Agent</th>
                         <th>Role</th>
-                        <th>Model</th>
+                        <th>Primary Model</th>
                         <th>Variant</th>
                         <th>IN / OUT per 1M</th>
+                        <th>Fallback Chain</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -353,6 +522,10 @@
                         <td><span class="model">zai-coding-plan/glm-5.1</span></td>
                         <td><span class="variant variant-max">max</span></td>
                         <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">opencode/claude-sonnet-4-6</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">xai/grok-4-fast-non-reasoning</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">metis</span></td>
@@ -360,6 +533,10 @@
                         <td><span class="model">zai-coding-plan/glm-5.1</span></td>
                         <td><span class="variant variant-max">max</span></td>
                         <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">opencode/claude-sonnet-4-6</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">xai/grok-4-1-fast-reasoning</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">momus</span></td>
@@ -367,6 +544,10 @@
                         <td><span class="model">opencode/claude-sonnet-4-6</span></td>
                         <td><span class="variant variant-medium">medium</span></td>
                         <td><span class="price price-medium">$3.00 / $15.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">opencode/claude-opus-4-6</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">xai/grok-3</span></div>
+                        </div></td>
                     </tr>
                 </tbody>
             </table>
@@ -380,9 +561,10 @@
                     <tr>
                         <th>Agent</th>
                         <th>Role</th>
-                        <th>Model</th>
+                        <th>Primary Model</th>
                         <th>Variant</th>
                         <th>IN / OUT per 1M</th>
+                        <th>Fallback Chain</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -392,6 +574,10 @@
                         <td><span class="model">opencode/gpt-5.4</span></td>
                         <td><span class="variant variant-high">high</span></td>
                         <td><span class="price price-high">$2.50 / $15.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">opencode/claude-opus-4-6</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">xai/grok-4-0709</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">oracle-lite</span></td>
@@ -399,6 +585,10 @@
                         <td><span class="model">opencode/claude-sonnet-4-6</span></td>
                         <td><span class="variant-none">—</span></td>
                         <td><span class="price price-medium">$3.00 / $15.00</span></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">opencode/claude-opus-4-6</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">xai/grok-4-1-fast-reasoning</span></div>
+                        </div></td>
                     </tr>
                 </tbody>
             </table>
@@ -412,10 +602,11 @@
                     <tr>
                         <th>Agent</th>
                         <th>Role</th>
-                        <th>Model</th>
+                        <th>Primary Model</th>
                         <th>Variant</th>
                         <th>IN / OUT per 1M</th>
                         <th>Tags</th>
+                        <th>Fallback Chain</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -426,14 +617,19 @@
                         <td><span class="variant variant-medium">medium</span></td>
                         <td><span class="price price-medium">$1.75 / $14.00</span></td>
                         <td><div class="tags"><span class="tag tag-red">codex-only</span></div></td>
+                        <td><span class="variant-none">—</span></td>
                     </tr>
                     <tr>
                         <td><span class="agent">frontend-ui-ux-engineer</span></td>
                         <td>UI/UX implementation — visual design, aesthetics, design fidelity (temp 0.6)</td>
-                        <td><span class="model">opencode/kimi-k2.5</span></td>
+                        <td><span class="model">google/gemini-3-flash-preview</span></td>
                         <td><span class="variant-none">—</span></td>
-                        <td><span class="price price-low">$0.60 / $3.00</span></td>
-                        <td><div class="tags"><span class="tag tag-amber">visual</span></div></td>
+                        <td><span class="price price-low">$0.50 / $3.00</span></td>
+                        <td><div class="tags"><span class="tag tag-amber">visual</span><span class="tag tag-blue">changed</span></div></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">zai-coding-plan/glm-5-turbo</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">opencode/kimi-k2.5</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">document-writer</span></td>
@@ -442,6 +638,10 @@
                         <td><span class="variant-none">—</span></td>
                         <td><span class="price price-low">$0.50 / $3.00</span></td>
                         <td><div class="tags"><span class="tag tag-blue">fast</span></div></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">zai-coding-plan/glm-5-turbo</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">opencode/kimi-k2.5</span></div>
+                        </div></td>
                     </tr>
                 </tbody>
             </table>
@@ -455,28 +655,36 @@
                     <tr>
                         <th>Agent</th>
                         <th>Role</th>
-                        <th>Model</th>
+                        <th>Primary Model</th>
                         <th>Variant</th>
                         <th>IN / OUT per 1M</th>
                         <th>Tags</th>
+                        <th>Fallback Chain</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><span class="agent">explore</span></td>
-                        <td>Codebase search — rapid pattern discovery, contextual grep. Run 10+ in parallel.</td>
-                        <td><span class="model">google/gemini-3-flash-preview</span></td>
+                        <td>Codebase search — rapid pattern discovery, contextual grep</td>
+                        <td><span class="model">zai-coding-plan/glm-5-turbo</span></td>
                         <td><span class="variant-none">—</span></td>
-                        <td><span class="price price-low">$0.50 / $3.00</span></td>
-                        <td><div class="tags"><span class="tag tag-green">10x concurrency</span></div></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="tags"><span class="tag tag-green">prepaid</span><span class="tag tag-blue">changed</span></div></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">google/gemini-3-flash-preview</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">librarian</span></td>
                         <td>Research &amp; documentation — external docs, multi-repo analysis, API knowledge</td>
-                        <td><span class="model">opencode/kimi-k2.5</span></td>
+                        <td><span class="model">zai-coding-plan/glm-5-turbo</span></td>
                         <td><span class="variant-none">—</span></td>
-                        <td><span class="price price-low">$0.60 / $3.00</span></td>
-                        <td><div class="tags"><span class="tag tag-purple">research</span></div></td>
+                        <td><span class="price price-free">$0.00 / $0.00</span></td>
+                        <td><div class="tags"><span class="tag tag-purple">research</span><span class="tag tag-blue">changed</span></div></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">google/gemini-3-flash-preview</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">opencode/kimi-k2.5</span></div>
+                        </div></td>
                     </tr>
                     <tr>
                         <td><span class="agent">multimodal-looker</span></td>
@@ -485,6 +693,10 @@
                         <td><span class="variant-none">—</span></td>
                         <td><span class="price price-low">~$0.039 / image</span></td>
                         <td><div class="tags"><span class="tag tag-teal">multimodal</span></div></td>
+                        <td><div class="fallback-list">
+                            <div class="fallback-item"><span class="fallback-num">1.</span><span class="model" style="font-size:10px;">google/gemini-2.5-pro</span></div>
+                            <div class="fallback-item"><span class="fallback-num">2.</span><span class="model" style="font-size:10px;">xai/grok-2-vision-1212</span></div>
+                        </div></td>
                     </tr>
                 </tbody>
             </table>
@@ -495,7 +707,7 @@
     <section class="section">
         <div class="section-label">Categories</div>
         <h2>Semantic Categories</h2>
-        <p class="section-desc">Sisyphus delegates tasks to categories. Category selects the model — sisyphus-junior executes.</p>
+        <p class="section-desc">Sisyphus delegates tasks to categories. Category selects the model — sisyphus-junior executes. <code>turbo-exec</code> is new; <code>quick</code> and <code>writing</code> have updated primaries.</p>
 
         <div class="category-grid">
 
@@ -525,11 +737,11 @@
                 <div class="category-meta">
                     <div class="meta-row">
                         <span class="meta-label">Model</span>
-                        <span class="model" style="font-size:11px;">google/gemini-3-flash-preview</span>
+                        <span class="model" style="font-size:11px;">zai-coding-plan/glm-5-turbo</span>
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Price</span>
-                        <span class="price price-low" style="font-size:12px;">$0.50 / $3.00</span>
+                        <span class="price price-free" style="font-size:12px;">$0.00 / $0.00</span>
                     </div>
                     <div class="meta-row">
                         <span class="meta-label">Temp</span>
@@ -538,7 +750,28 @@
                         <span class="meta-value">—</span>
                     </div>
                 </div>
-                <div class="category-purpose">Fast execution. Tests, refactoring, scripts. 78% SWE-bench. 10x concurrency.</div>
+                <div class="category-purpose">Fast focused execution. Tests, refactoring, scripts. Falls back to Gemini under ZAI pressure.</div>
+            </div>
+
+            <div class="category-card cat-new">
+                <div class="category-name">turbo-exec <span class="new-badge">new</span></div>
+                <div class="category-meta">
+                    <div class="meta-row">
+                        <span class="meta-label">Model</span>
+                        <span class="model" style="font-size:11px;">zai-coding-plan/glm-5-turbo</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Price</span>
+                        <span class="price price-free" style="font-size:12px;">$0.00 / $0.00</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Temp</span>
+                        <span class="meta-value">0.4</span>
+                        <span class="meta-label">Variant</span>
+                        <span class="meta-value">—</span>
+                    </div>
+                </div>
+                <div class="category-purpose">High-velocity parallel sub-tasks. No orchestration — execute and report. Gemini fallback for concurrency.</div>
             </div>
 
             <div class="category-card">
@@ -643,7 +876,7 @@
                         <span class="meta-value">—</span>
                     </div>
                 </div>
-                <div class="category-purpose">Docs, blogs, guides. Natural writing flow with technical accuracy.</div>
+                <div class="category-purpose">Docs, blogs, guides. Gemini primary — faster than GLM-4.7-Flash for prose.</div>
             </div>
 
             <div class="category-card">
@@ -692,8 +925,8 @@
     </section>
 
     <footer>
-        <span>Updated <span id="date"></span> · Oh My OpenAgent · <code>oh-my-openagent.json</code></span>
-        <span class="footer-right">14 agents · 9 categories</span>
+        <span>Updated <span id="date"></span> · Oh My OpenAgent · <a href="https://github.com/techno/opencode-omo-plugin" target="_blank" rel="noopener" style="color:var(--gray-500);border-bottom:1px solid var(--gray-400);">opencode-omo-plugin</a></span>
+        <span class="footer-right">14 agents · 10 categories · runtime_fallback: on</span>
     </footer>
 
 </div>
