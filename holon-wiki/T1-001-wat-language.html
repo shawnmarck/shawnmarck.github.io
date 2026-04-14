@@ -1,0 +1,257 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>The wat Language — forms, evaluation, and structural types — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html" active>The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>The wat Language — forms, evaluation, and structural types <span class="badge badge-describe">DESCRIBE</span></h1><h1>The wat Language — forms, evaluation, and structural types</h1>
+<p><strong>Verified leaf: T1-001</strong></p>
+<p><strong>Sources:</strong> <code>wat/LANGUAGE.md</code> (341 lines), <code>wat/core/structural.wat</code> (115 lines)</p>
+<hr>
+<h2>What wat is</h2>
+<p>Wat is "an s-expression language for algebraic cognition." It is not a general-purpose language, not Turing complete, and not interpreted at runtime — it "specifies Rust implementations." It is "Lisp with a purpose: algebraic cognition from named thoughts."</p>
+<ul>
+<li>"A specification language for Holon programs."</li>
+<li>"A shared language between human intuition and machine implementation."</li>
+<li>"The intermediate representation between thought and execution."</li>
+</ul>
+<h2>Grammar</h2>
+<p>EBNF grammar from <code>LANGUAGE.md</code> lines 7–16:</p>
+<pre><code>
+program    = form*
+form       = atom | number | string | list | typed-param | comment
+atom       = letter (letter | digit | '-' | '?' | '!' | '>')*
+number     = digit+ ('.' digit+)? 
+string     = '"' char* '"'
+list       = '(' form* ')'
+typed-param = '[' atom ':' atom ']'
+comment    = ';' char* newline
+</code></pre>
+<p>A <code>form</code> is the fundamental unit: an atom, number, string, list, typed parameter, or comment.</p>
+<h2>Type annotations (optional)</h2>
+<p>"Parseable but not enforced." The source says: "The annotations are metadata on a free algebra — they name which carrier set a variable lives in."</p>
+<p>Two forms:</p>
+<ul>
+<li>Typed parameter: <code>[name : Type]</code></li>
+<li>Return type: <code>: Type</code> after the parameter list</li>
+</ul>
+<p>"Tooling may extract annotations when present. The language never demands them." "Types are documentation, not enforcement. The algebra doesn't type-check — the curve validates."</p>
+<h2>Host language forms</h2>
+<p>Wat "inherits standard forms from the host" Lisp. These are enumerated in the source and include:</p>
+<p><strong>Arithmetic:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>abs</code>, <code>sqrt</code>, <code>mod</code>, <code>max</code>, <code>min</code>, <code>round</code>, <code>clamp</code>, <code>exp</code>, <code>ln</code>, <code>signum</code>, <code>f64-infinity</code>, <code>f64-neg-infinity</code></p>
+<p><strong>Comparison:</strong> <code>=</code>, <code>!=</code>, <code>></code>, <code><</code>, <code>>=</code>, <code><=</code></p>
+<p><strong>Logical:</strong> <code>and</code>, <code>or</code>, <code>not</code>, <code>true</code>, <code>false</code></p>
+<p><strong>Sequencing:</strong> <code>begin</code></p>
+<p><strong>Iteration:</strong> <code>for-each</code>, <code>map</code>, <code>filter</code>, <code>filter-map</code>, <code>fold</code>, <code>fold-left</code>, <code>count</code>, <code>pmap</code>, <code>pfor-each</code></p>
+<p>The source specifies that <code>pmap</code> and <code>pfor-each</code> are parallel variants: "Semantically identical — same results, same order. The parallelism is a permission, not a directive." Constraints:</p>
+<ul>
+<li><code>pmap</code>: "the mapped function must be pure (no set!, push!, inc!). Ward-enforced at compile time."</li>
+<li><code>pfor-each</code>: "each element's mutations must be disjoint."</li>
+<li>"No pfold: a fold is inherently sequential." The pattern is <code>(fold f init (pmap g xs))</code>.</li>
+</ul>
+<p><strong>Collections:</strong> <code>list</code>, <code>cons</code>, <code>len</code>, <code>length</code>, <code>nth</code>, <code>first</code>, <code>second</code>, <code>rest</code>, <code>last</code>, <code>last-n</code>, <code>take</code>, <code>append</code>, <code>take-last</code>, <code>empty?</code>, <code>reverse</code>, <code>sort</code>, <code>sort-by</code>, <code>flatten</code>, <code>range</code>, <code>unzip</code>, <code>zeros</code>, <code>member?</code>, <code>some?</code>, <code>quantile</code>, <code>apply</code></p>
+<p>Note on <code>zeros</code>: "nullary: zero vector at dims; <code>(zeros n)</code>: zero-filled array of size n"</p>
+<p><strong>Maps:</strong> <code>map-of</code>, <code>get</code>, <code>assoc</code>, <code>keys</code>, <code>dissoc</code>. <code>map-of</code> takes flat key-value pairs. <code>assoc</code> is variadic with sequential semantics — "later entries see earlier changes."</p>
+<p><strong>Queues:</strong> <code>deque</code>, <code>push-back</code>, <code>pop-front</code></p>
+<p><strong>Strings:</strong> <code>format</code>, <code>substring</code></p>
+<p><strong>Control:</strong> <code>let</code> (with destructuring), <code>let*</code>, <code>define</code>, <code>if</code>, <code>when</code>, <code>when-let</code>, <code>cond</code> (with <code>else</code> catch-all), <code>match</code>, <code>lambda</code></p>
+<p><strong>Quote:</strong> <code>'(...)</code> or <code>(quote ...)</code>. The source emphasizes: "The s-expression IS the tree." "Recursive structure is natural." "No special type needed. The parentheses ARE the tree."</p>
+<p><strong>Optionals:</strong> <code>(Some value)</code>, <code>None</code> — maps to Rust's <code>Option<T></code>.</p>
+<p><strong>Mutation:</strong> <code>set!</code> (single and indexed forms), <code>push!</code>, <code>pop!</code>, <code>inc!</code> — these "map to &mut self" in Rust.</p>
+<p><strong>Pipes:</strong> <code>make-pipe</code>, <code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code></p>
+<p><strong>Fan-out:</strong> <code>make-topic</code></p>
+<p><strong>Threads:</strong> <code>spawn</code>, <code>join</code></p>
+<h2>Concurrency model: pipes, topics, threads</h2>
+<h3>Pipes</h3>
+<p>"Pipes are CSP (communicating sequential processes)."</p>
+<p><code>make-pipe</code> takes <code>:capacity</code> (a number or <code>:unbounded</code>) and <code>:carries</code> (a type declaration). Returns a <code>(tx, rx)</code> pair. "Destructure at creation."</p>
+<ul>
+<li><code>send</code>: blocking write.</li>
+<li><code>recv</code>: blocking read → value.</li>
+<li><code>try-recv</code>: non-blocking → <code>(Some value)</code> or <code>None</code>.</li>
+<li><code>select</code>: multiplexes N rx ends → <code>(Some (idx value))</code> or <code>:closed</code>. "Parks when idle — zero CPU."</li>
+</ul>
+<h3>Topics</h3>
+<p><code>make-topic</code> wires 1→N fan-out over existing pipes. "A topic is a write-only value." The source states: "The caller's send IS the fan-out — synchronous, no thread, no queue." Maps to a Rust struct holding <code>Vec<Sender<T>></code> with a for loop.</p>
+<h3>Threads</h3>
+<ul>
+<li><code>spawn</code>: "run a function on a thread" → Handle. "A process is a function."</li>
+<li><code>join</code>: "block until all handles in a list complete" → list of return values. "Always takes a list. Always returns a list."</li>
+</ul>
+<h3>Design principle</h3>
+<p>"No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions." Everything is regular functions using the seven forms listed above.</p>
+<h2>Core forms (corelib)</h2>
+<p>The source describes "Two algebras and one structural form. The algebras transform values. The structural form carries them."</p>
+<h3>The free algebra (vector operations)</h3>
+<ul>
+<li><code>(atom "name")</code> → Vector — "Naming"</li>
+<li><code>(bind role filler)</code> → Vector — "Composition" — "two things become one relationship"</li>
+<li><code>(bundle fact1 fact2 ...)</code> → Vector — "Composition" — "many facts become one thought"</li>
+<li><code>(cosine thought discriminant)</code> → Float — "Measurement" — returns value in [-1.0, +1.0]</li>
+</ul>
+<h3>The reckoner coalgebra (learning)</h3>
+<p>Constructor: <code>Reckoner::new(name, dims, recalib_interval, config)</code> in holon-rs. Config is <code>ReckConfig</code>: either <code>Discrete(labels)</code> or <code>Continuous(default_value)</code>.</p>
+<table>
+<tr><th>Form</th><th>Returns</th><th>Description</th></tr>
+<tr><td><code>(reckoner name dims recalib-interval config)</code></td><td>Reckoner</td><td>Constructor</td></tr>
+<tr><td><code>(observe reckoner thought observation weight)</code></td><td><code>()</code></td><td>Feed labeled observation</td></tr>
+<tr><td><code>(predict reckoner thought)</code></td><td>Prediction</td><td>Discrete: scores + conviction. Continuous: value + experience</td></tr>
+<tr><td><code>(decay reckoner rate)</code></td><td><code>()</code></td><td>Decay learned state</td></tr>
+<tr><td><code>(experience reckoner)</code></td><td>f64</td><td>"how much has this reckoner learned? 0.0 = ignorant."</td></tr>
+</table>
+<p>Introspection:</p>
+<table>
+<tr><th>Form</th><th>Returns</th></tr>
+<tr><td><code>(recalib-count reckoner)</code></td><td>Integer — prototype rebuild count</td></tr>
+<tr><td><code>(discriminant reckoner label)</code></td><td>Vector or None</td></tr>
+<tr><td><code>(labels reckoner)</code></td><td>[Label] — in registration order</td></tr>
+<tr><td><code>(label-count reckoner label)</code></td><td>Integer</td></tr>
+</table>
+<p>Curve (self-evaluation, methods on the reckoner):</p>
+<table>
+<tr><th>Form</th><th>Returns</th></tr>
+<tr><td><code>(resolve reckoner conviction correct?)</code></td><td><code>()</code></td></tr>
+<tr><td><code>(edge-at reckoner conviction)</code></td><td>f64 — "how accurate at this conviction level?"</td></tr>
+<tr><td><code>(proven? reckoner min-samples)</code></td><td>bool — "enough data to trust the curve?"</td></tr>
+</table>
+<h3>Structural forms</h3>
+<p>From <code>structural.wat</code>: "The ambient category's three constructions: Product (struct), Coproduct (enum), Type class (defprotocol)."</p>
+<p>The source states these are "orthogonal to the vector algebra and journal coalgebra." "A struct cannot be bound, bundled, or cosined." "Protocols never enter the algebra."</p>
+<h4>Struct (product type)</h4>
+<p><code>(struct name field1 field2 ...)</code></p>
+<ul>
+<li>"Untyped: the wat struct names the shape, the Rust struct names the types."</li>
+<li>"Opaque: no destructuring, no pattern matching on fields. Projections only."</li>
+<li>"A field name ending in ? is optional" — maps to <code>Option<T></code> in Rust, initialized to <code>None</code>.</li>
+<li>Constructors follow the <code>make-<name></code> convention: <code>(make-broker ...)</code>.</li>
+</ul>
+<p>Field access: <code>(:field record)</code> → value — "keyword as function."</p>
+<p>Functional update: <code>(update record :field1 value1 ...)</code> → record. "Variadic, parallel semantics — all field expressions evaluate against the ORIGINAL record."</p>
+<h4>Enum (coproduct / sum type)</h4>
+<p><code>(enum name variant1 variant2 ...)</code></p>
+<ul>
+<li>"Exactly one of several alternatives."</li>
+<li>"Simple variants are keywords. Tagged variants carry data."</li>
+<li><code>match</code> must be exhaustive — "missing an arm on a closed set is a spec violation."</li>
+<li>"Wildcard _ is forbidden on closed enums — it defeats exhaustiveness."</li>
+</ul>
+<h4>Newtype</h4>
+<p><code>(newtype name inner-type)</code> — "A newtype is about MEANING, not structure." "Maps to Rust's tuple struct: struct TradeId(usize)."</p>
+<h4>Protocol (type class)</h4>
+<p><code>(defprotocol name (fn-name [params] "docstring"))</code> — "Check-only — no dispatch machinery."</p>
+<p><code>(satisfies struct-name protocol-name :fn1 impl1 :fn2 impl2 ...)</code> — "Maps ALL protocol functions — exhaustive, explicit."</p>
+<p>The source specifies:</p>
+<ul>
+<li>"One satisfies per (struct, protocol) pair. Duplicate = error."</li>
+<li>"No convention-based inference. The mapping IS the spec."</li>
+<li>"The forge checks: does impl-fn exist? Correct arity?"</li>
+<li>Maps to Rust trait and <code>impl Trait for Struct</code>.</li>
+</ul>
+<h2>Module system</h2>
+<p><code>(require module-name)</code> — for corelib, stdlib, and domain vocabularies.</p>
+<h2>File layout</h2>
+<pre><code>
+core/
+  primitives.wat      — the four algebra generators + reckoner coalgebra
+  structural.wat      — struct, enum, newtype, defprotocol
+std/
+  vectors.wat         — derived vector operations
+  scalars.wat         — scalar encoding
+  memory.wat          — OnlineSubspace (CCIPCA anomaly detection)
+  statistics.wat      — statistical functions
+  fields.wat          — field access utilities (RETIRED)
+</code></pre></div></body></html>

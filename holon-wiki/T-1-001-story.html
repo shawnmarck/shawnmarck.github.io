@@ -1,0 +1,474 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>The Story — History of Decisions from algebraic-intelligence.dev — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html" active>The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>The Story — History of Decisions from algebraic-intelligence.dev <span class="badge badge-why">WHY</span></h1><h1>The Story — History of Decisions from algebraic-intelligence.dev</h1>
+<p><strong>Verification Tier:</strong> -1 (full read, honest extraction)</p>
+<p><strong>Source:</strong> 20 files under <code>src/content/docs/blog/story/</code></p>
+<p><strong>Date verified:</strong> 2026-04-14</p>
+<hr>
+<h2>Prologue: "The Idea That Wouldn't Leave"</h2>
+<p><strong>Series:</strong> Prologue</p>
+<p><strong>Problem:</strong> Author spent years at AWS Shield unable to convince leadership that VSA-based anomaly detection could work for DDoS. VSA discovered via Clojure/conj talk. Left AWS to build full-time.</p>
+<p><strong>Decision:</strong> Solo after-hours project. Two site tracks: primers (fundamentals) and story posts (development arc). Python-first for LLM compatibility despite Clojure preference.</p>
+<p><strong>Concept produced:</strong> The project itself — Holon. "Build it in Python first, then translate."</p>
+<p><strong>Key quote:</strong> No explicit single quote, but the framing establishes the entire project as a bet on algebraic structure over statistical pattern matching.</p>
+<hr>
+<h2>Series 002-001: "Python: The Foundation"</h2>
+<p><strong>Series:</strong> 002 (Python Foundation)</p>
+<p><strong>Problem:</strong> Original goal was a database for structural sub-document queries (DynamoDB/ES alternative), not anomaly detection. Day 1: full HTTP API with FAISS.</p>
+<p><strong>Decision:</strong> The encoding proved more powerful for pattern recognition than database queries. Pivot to anomaly detection. Python chosen as "Rosetta Stone" despite author's Clojure preference.</p>
+<p><strong>Concept produced:</strong> The primitive algebra: bind, bundle, prototype, difference, blend, amplify, negate. Proven across tasks, recipes, graph topology, text, and (failed) Sudoku.</p>
+<p><strong>Key quote:</strong> "Build it in Python first, then translate."</p>
+<hr>
+<h2>Series 002-002: "The NP Wall"</h2>
+<p><strong>Series:</strong> 002 (Python Foundation)</p>
+<p><strong>Problem:</strong> Batch 004 attempted Sudoku (NP-hard) with VSA. Result: 14× slower than standard backtracking.</p>
+<p><strong>Decision:</strong> Accepted failure. Mapped the boundary: approximate geometric similarity cannot do exact combinatorial search. Everything on the "approximately correct" side is where the algebra works.</p>
+<p><strong>Concept produced:</strong> The NP-hard boundary precisely established. The primitives forged in the attempt (bind, bundle, etc.) were the real output, not the Sudoku solver.</p>
+<p><strong>Key quote:</strong> "Approximate geometric similarity cannot do exact combinatorial search."</p>
+<p><strong>What was learned:</strong> Token cost acknowledged as expensive. The failure was productive — the primitives became permanent.</p>
+<hr>
+<h2>Series 002-003: "Scale, Detection, and the Python Ceiling"</h2>
+<p><strong>Series:</strong> 002 (Python Foundation)</p>
+<p><strong>Problem:</strong> Scaling from experiments to real detection workloads. Batches 006–012.</p>
+<p><strong>Decision:</strong> Multiple key decisions:</p>
+<ul>
+<li>Batch 006: LLM memory augmentation — 82% context token reduction, 95% decision recall.</li>
+<li>Batch 007: Qdrant integration, $time marker, 16k dimension selection (σ_cos ≈ 1/√d = 0.0079 at 16k, fitting 10,000+ near-orthogonal atoms).</li>
+<li>Batch 008: Enterprise challenges — 100% routing accuracy, config drift detection (2747× ratio), 5 attack types at 3.88ms.</li>
+<li>Batch 009: GPU rejected — transfer overhead made CPU faster.</li>
+<li>Batch 010: Accumulator primitive breakthrough (frequency-preserving streaming).</li>
+<li>Batch 011: 5M records in 7.5 min.</li>
+<li>Batch 012: Zero-hardcode detection — 100% recall, 4% FP. Python ceiling: 3,100 pkt/sec. Rust port started Feb 6.</li>
+<p><strong>Concept produced:</strong> Accumulator primitive. 16k dimensions as default. Python ceiling established.</p>
+<p><strong>Key quote:</strong> "GPU lost to CPU due to transfer overhead."</p>
+<p><strong>What was learned:</strong> Two-implementation validation strategy (Python + Rust cross-checking) established.</p>
+</ul>
+<hr>
+<h2>Series 003-001: "The Rust Port"</h2>
+<p><strong>Series:</strong> 003 (Rust & Production)</p>
+<p><strong>Problem:</strong> Python ceiling at 3,100 pkt/sec. Needed 10-15× speedup.</p>
+<p><strong>Decision:</strong> Feb 6: 2,554 lines across 13 files in one evening. Python as "Rosetta Stone" — 239 passing tests as behavioral spec. Flat facade pattern. SIMD from day 1. SHA256+ChaCha8 for deterministic atom hashing.</p>
+<p><strong>Concept produced:</strong> holon-rs. Two-implementation validation strategy (Python + Rust with independent test suites catching different bug classes).</p>
+<p><strong>Key quote:</strong> "Python as 'Rosetta Stone' — 239 passing tests as behavioral spec."</p>
+<hr>
+<h2>Series 003-002: "The Labs"</h2>
+<p><strong>Series:</strong> 003 (Rust & Production)</p>
+<p><strong>Problem:</strong> Synthetic challenge data had taken the algebra as far as it could. Needed real packets on real interfaces for DDoS detection.</p>
+<p><strong>Decision:</strong> Built two labs in one weekend (Feb 7–8):</p>
+<ul>
+<li>holon-lab-ddos: XDP sampling, AF_PACKET generator (raw sockets failed — kernel routing drops packets with non-local source IPs), macvlan hairpin, perf buffer, sendmmsg batching. 45k PPS validated.</li>
+<li>holon-lab-baseline: WordPress + nginx + MariaDB on Docker, 23 source IPs via Squid + ipvlan, LLM-driven Playwright agents (20 user + 3 admin), 80% Chromium / 15% WebKit / 5% Firefox.</li>
+<p><strong>Concept produced:</strong> The four-repo development pattern (holon, holon-rs, holon-lab-ddos, veth-lab). Walkable trait with zero-allocation visitor. Batch 013 rate limiting in both languages simultaneously.</p>
+<p><strong>Key quote:</strong> "This is the first challenge developed in parallel across both implementations from the start."</p>
+<p><strong>What was learned:</strong> Raw sockets don't work for spoofed traffic — kernel routing drops them silently. AF_PACKET (layer 2) is the fix. Full-day LLM-assisted development is "genuinely taxing."</p>
+</ul>
+<hr>
+<h2>Series 003-003: "1.3 Million Packets Per Second"</h2>
+<p><strong>Series:</strong> 003 (Rust & Production)</p>
+<p><strong>Problem:</strong> Integrate holon-rs into the DDoS lab sidecar. Validate detection at line rate.</p>
+<p><strong>Decision:</strong> Feb 9: veth lab — 2,873 lines, 20 files. Sidecar architecture: XDP samples packets → perf buffer → holon-rs encode → drift detection → BPF map rules → XDP enforce.</p>
+<p><strong>Concept produced:</strong></p>
+<ul>
+<li>Bitmask Rete: O(fields), capped at 64 rules.</li>
+<li>BPF tail-call DFS: 1,000,000 rules at line rate with ~5 tail calls per packet.</li>
+<li>p0f field fingerprinting for autonomous attack classification.</li>
+<li>s-expression rule format (Clara-style LHS ⇒ RHS).</li>
+<p><strong>Key numbers:</strong> 1.3M PPS, 99.5% drop rate, 52ms detection latency.</p>
+<p><strong>Key quote:</strong> "Per-packet cost is identical at 50K and 1M rules: ~5 tail calls either way."</p>
+<p><strong>What was learned:</strong> The tree is self-optimizing — no rule ordering needed. Adding rules that share constraints shares tree nodes.</p>
+</ul>
+<hr>
+<h2>Series 003-004: "The Rule Engine"</h2>
+<p><strong>Series:</strong> 003 (Rust & Production)</p>
+<p><strong>Problem:</strong> Rules needed richer predicates. Detection needed to extend beyond equality matching. Windows were too slow for continuous detection.</p>
+<p><strong>Decision:</strong> Feb 13–16. Four major additions:</p>
+<ul>
+<li>EDN replaces JSON for rules (streaming parseable, Clara-idiomatic). "Biased choice" acknowledged honestly.</li>
+<li>Range, mask, and L4 byte-match predicates added.</li>
+<li>Real-time dashboard with live DAG visualization (surfaced two bugs: sawtooth flapping from unnamed rate-limit buckets, compound range predicates silently dropping constraints).</li>
+<li>IPv4 header fingerprinting: 6 new dimensions (ip-id, ip-len, dscp, ecn, mf-bit, frag-offset) added to PacketSample. "The detection code didn't change. The Walkable implementation picked them up automatically."</li>
+<li>Full L4 payload analysis: 2048 bytes, 32 windows of 64 bytes, autonomous byte-match rule derivation.</li>
+<li>The decay model: continuous per-packet accumulation replacing fixed windows. Dual accumulator (direction with per-packet decay, rate with time-based decay). Hybrid trigger (200 packets OR 200ms).</li>
+<p><strong>Concept produced:</strong> The decay model (establishing 750ms as the honest detection baseline). EDN as rule language. Data-first design proven: "Adding signal doesn't touch behavior."</p>
+<p><strong>Key quote:</strong> "The detection code didn't change. [...] That's what data-first means in practice: the abstraction boundary is at the data, not the logic."</p>
+<p><strong>What was learned:</strong> Vector-derived rate estimation from batch 013 was rendered structurally inapplicable by the decay model. "Sometimes the better design makes the clever technique irrelevant." Dashboard surfaced bugs invisible in log files.</p>
+</ul>
+<hr>
+<h2>Series 003-005: "Engrams and the 765ms → 3ms Moment"</h2>
+<p><strong>Series:</strong> 003 (Rust & Production)</p>
+<p><strong>Problem:</strong> 750ms detection latency from decay model was the honest baseline. Could remembered patterns be matched faster?</p>
+<p><strong>Decision:</strong> Feb 17–20. CCIPCA online subspace learning. Engram = durable trace of learned pattern (manifold snapshot). Two-tier matching: eigenvalue pre-filter + full residual scoring. Three-layer architecture refactor (kernel/memory/highlevel) in both Python and Rust.</p>
+<p><strong>Concept produced:</strong></p>
+<ul>
+<li>Engram: "programmatic neural memory" refined to "engram" (neuroscience term for physical memory trace).</li>
+<li>Two-tier matching: eigenvalue pre-filter (fast, cheap) + full residual scoring (expensive, thorough).</li>
+<li>Three-layer architecture: kernel/ (stateless math), memory/ (subspace, engram, library), highlevel/ (convenience wrappers).</li>
+<p><strong>Key numbers:</strong> 765ms baseline → 3ms on engram hit. 100% accuracy, variant resilience, eager activation.</p>
+<p><strong>Key quote:</strong> "750ms to accumulate signal versus 3ms to match a single packet against a remembered pattern."</p>
+<p><strong>What was learned:</strong> Experiments 014–018 validated the approach. Speculative drone autopilot application noted in commits.</p>
+</ul>
+<hr>
+<h2>Series 004-001: "The L7 Lab: Building the HTTP WAF"</h2>
+<p><strong>Series:</strong> 004 (L7 WAF)</p>
+<p><strong>Problem:</strong> Move from L4 packet inspection (veth-lab) to L7 HTTP/TLS inspection. The same detection architecture, one layer up.</p>
+<p><strong>Decision:</strong> Feb 23–26. TLS-terminating proxy with lossless ClientHello capture (ReplayStream wrapper tees raw bytes before rustls processes them). Dual SubspaceDetector (TLS + REQ) with independent tuning. EDN rules with string keys. Per-IP token bucket rate limiting.</p>
+<p><strong>Concept produced:</strong></p>
+<ul>
+<li>Lossless ClientHello capture: full wire-order extension bytes preserved, not reduced to JA3/JA4 hashes. "We don't reduce anything. The full TlsContext gets encoded into the 4096-dimensional vector."</li>
+<li>HTTP data model preserving duplicates: <code>headers: Vec<(String, String)></code> not HashMap. Enables smuggling detection.</li>
+<li>Adaptive ordered-vs-set TLS field selection: detect whether attacker is randomizing, choose ordered or set-based constraint accordingly.</li>
+<li>Specificity ranking via <code>derive(Ord)</code>: cross-layer > HTTP > TLS, more constraints > fewer.</li>
+<p><strong>What was learned / bugs found:</strong></p>
+<li>Per-IP rate limiting is a memory exhaustion DoS vector at scale. Documented honestly: "This is exactly the kind of thing that works in a demo and breaks in deployment."</li>
+<li>14-second stall from RwLock in drain loop. Fixed by batching writes.</li>
+<li>"The LLM doesn't have 3 AM. It has training data, and the training data says token buckets are per-IP. The sorcerer still has to review the spellbook."</li>
+</ul>
+<hr>
+<h2>Series 004-002: "No Rules, No Signatures: The Expression Tree"</h2>
+<p><strong>Series:</strong> 004 (L7 WAF)</p>
+<p><strong>Problem:</strong> Rules were flat structs with 13 hard-coded FieldDim variants. Couldn't express composition like <code>(first (header "user-agent"))</code> or <code>(count (nth path-parts 2))</code>. Concentration-based detection fails for high-cardinality content (random product IDs).</p>
+<p><strong>Decision:</strong> Feb 27–28. Complete rewrite of rule language as composable s-expressions over EDN. Three orthogonal concepts: domain accessors (26 dimensions), generic functions (first, last, nth, count, keys, vals, set, lower), operators (=, prefix, suffix, contains, regex, gt, lt, subset, superset). Expression tree compiler dimension-agnostic, O(depth) evaluation.</p>
+<p><strong>Concept produced:</strong></p>
+<ul>
+<li>Expression tree: Rete-spirit DAG compilation. 1M rules evaluated in under 3µs (hit) / 50ns (miss). "No production router or firewall I know of can host a million rules while maintaining sub-microsecond evaluation."</li>
+<li>VSA surprise probing: <code>bind(anomalous_component, role_vector)</code> recovers per-field anomaly contribution. Hierarchical sweep: top-level → positional → nested.</li>
+<li>Shape encoding: field <em>lengths</em> encoded alongside values. Catches attacks where content is random but structure is fixed.</li>
+<li>SurpriseHistory: cross-tick consistency gate requiring anomalous fields to persist across 3+ consecutive ticks.</li>
+<li>Engram resilience: parallel fast-path deployment AND fresh rule generation. Stored engram rules never inherited by new engrams.</li>
+<p><strong>Key numbers:</strong> 287 tests, 7/7 attack waves mitigated autonomously. 1M rules at 2.57µs hit / 50ns miss (6 dimensions).</p>
+<p><strong>Key quote:</strong> "The tree is the check. Irrelevant branches are never reached. This is what makes the tree self-optimizing."</p>
+<p><strong>What was learned / bugs found:</strong></p>
+<li>Bug A: <code>is_redundant</code> check rejecting surgical rules that were supersets of broader ones. Wrong for tree evaluation (tree picks most specific match). Fixed by removing subsumption check.</li>
+<li>Bug B: Engram fast-path deploying stale rules for geometrically similar but semantically unrelated attacks. Fixed by parallel fresh rule generation alongside engram deployment.</li>
+</ul>
+<hr>
+<h2>Series 005-001: "The Spectral Firewall"</h2>
+<p><strong>Series:</strong> 005 (Spectral Firewall)</p>
+<p><strong>Problem:</strong> The manifold firewall concept doc needed to become working code. Four layers of geometric anomaly detection.</p>
+<p><strong>Decision:</strong> Mar 1–3. Last Python experiment (batch 018, 16 experiments, 8,152 insertions). Validated four-layer architecture. Built in Rust in one commit (2,457 insertions, 19 files). Live Nikto scan against DVWA.</p>
+<p><strong>Concept produced:</strong></p>
+<ul>
+<li>Four-layer geometric WAF: Layer 3 rule tree (~50ns), Layer 0 residual score, Layer 1 deny threshold, Layer 2 async window spectrum. NaN → Deny (conservative default).</li>
+<li>AES-256-GCM sealed denial tokens: encrypted verdict context in 403 response. Avg 1.6KB, URL-safe base64.</li>
+<li>Dual-signal spectral pre-filter: eigenvalue spectrum (magnitude) × principal angle alignment (direction). 100% accuracy at 75% compute savings.</li>
+<li>Normal manifold allow list with freeze at sample 49 (prevents attack poisoning of baseline).</li>
+<p><strong>Key numbers:</strong> 41µs p50 during DDoS. 10,121 Nikto requests denied, 0 exploitable vulnerabilities through proxy (17 without). 0% FPR on synthetic scenarios.</p>
+<p><strong>Key quote:</strong> "Neither metric alone has been sufficient in any experiment. Combined, neither has failed."</p>
+<p><strong>What was learned / honest caveats:</strong></p>
+<li>Attribution was "garbage" — all fields within a 1.2-point spread (47.5–48.7). The denial was correct; the explanation was useless.</li>
+<li>Three problems remained: monolithic encoding (capacity ceiling), magic numbers (sigma_mult=3.5, deny_mult=2.0), single scanner diversity (Nikto only).</li>
+</ul>
+<hr>
+<h2>Series 005-002: "Self-Calibrating"</h2>
+<p><strong>Series:</strong> 005 (Spectral Firewall)</p>
+<p><strong>Problem:</strong> Magic numbers calibrated by hand against one lab's traffic. Attribution crosstalk from ~100 bindings packed into one 4096-dimensional vector. Nikto-only testing.</p>
+<p><strong>Decision:</strong> Mar 4–6. Three problems, three solutions:</p>
+<ol>
+<li>Striped encoding: FNV-1a hash of fully-qualified domain name assigns bindings to stripes. 32 stripes × ~1.7 bindings per stripe. <code>StripedSubspace</code> into holon-rs core. Cosine similarity drilldown (not L2-norm — LLM had applied wrong VSA family's technique). Removed <code>body_len</code> (client-declared, not observed).</li>
+<li>Parameter sweep: K (deflation steps) dominates quality, not DIM. Winner: DIM=1024, K=32, STRIPES=32 → 997µs, 13× separation. Later re-optimized to K=20 after char_list.</li>
+<li>Self-calibrating boundaries: ResidualBuffer derives thresholds from observed traffic. <code>deny_threshold = sqrt(buf_max × CCIPCA_threshold)</code>. Anomaly breadth gate (concentration, Shannon entropy, Gini) prevents poisoning. 20 LLM browser agents + 3 vulnerability scanners concurrently.</li>
+<p><strong>Concept produced:</strong></p>
+</ol>
+<ul>
+<li>StripedSubspace: generic holon-rs primitive for crosstalk-free attribution.</li>
+<li>Self-calibrating decision boundaries via geometric mean.</li>
+<li>char_list encoding: character-level positional binding for fuzzy string matching. <code>Spread</code> WalkableValue variant.</li>
+<li>Von Neumann automaton framing: engram as simultaneously description and program (data-is-policy).</li>
+<p><strong>Key numbers:</strong> 99.1% precision. 5,118 attack denials. Sub-millisecond after optimization.</p>
+<p><strong>Key quote:</strong> "The LLM's knowledge is vast but not always grounded in your system. When the results don't make sense, challenge the method, not just the parameters."</p>
+<p><strong>What was learned:</strong> First run of concurrent lab: 0 denials (attack traffic being learned as normal). Three cascading parameter failures. Run 2 with tightened params: 3,605 denials, 0 FP. Led to eliminating magic numbers entirely.</p>
+</ul>
+<hr>
+<h2>Series 005-003: "The Residual Profile"</h2>
+<p><strong>Series:</strong> 005 (Spectral Firewall)</p>
+<p><strong>Problem:</strong> Geometric mean threshold had 99.1% precision but ~48 FP. Minority browsers (WebKit/Firefox) after Chrome-dominated warmup had similar residuals to Nikto scanners — same magnitude, different cause.</p>
+<p><strong>Decision:</strong> Mar 8. Two efforts:</p>
+<ol>
+<li>21-strategy threshold sweep: simulation (21→5), live validation (5→1). Logarithmic mean <code>(ccipca - buf_max) / ln(ccipca / buf_max)</code> won: 1.9% FPR (43% fewer than geometric), fastest settling.</li>
+<li>Structural ratio experiment: classify fields as "structural" (TLS fingerprint) vs "content" (path, headers). Hypothesis: minority browsers would have high structural ratios. Result: <strong>inverted</strong>. Scanners had higher structural ratios (0.72–0.77) vs minority browsers (0.50–0.52). Reverted.</li>
+<p><strong>Concept produced:</strong></p>
+</ol>
+<ul>
+<li>Residual profile: dual-signal deny gate. Magnitude + direction. ~3000× cheaper than primary baseline.</li>
+<li>Logarithmic mean threshold strategy.</li>
+<li>Systematic threshold evaluation methodology: simulation → live isolation funnel → temporal FP analysis.</li>
+<p><strong>Key numbers:</strong> 0.1% FPR. 4,351 attack denials. 1 browser FP (early convergence only, +42s). 0 late FPs. 17 adaptive learns during active concurrent attacks with zero poisoning.</p>
+<p><strong>Key quote:</strong> "This is the fourth time this project has proved the same thing: magnitude and direction together. Always."</p>
+<p><strong>What was learned:</strong> "The structural ratio didn't work because it was a single-signal approach — one ratio, one threshold, one number. The same pattern as every other failure in this project." The fix was to stop discarding what was already being computed.</p>
+</ul>
+<hr>
+<h2>Series 006-001: "The Thought Machine"</h2>
+<p><strong>Series:</strong> 006 (Markets)</p>
+<p><strong>Problem:</strong> Prove the algebra works beyond network security. Markets chosen as proving ground — "DDoS detection and trading are structurally identical. A DDoS attack is an anomaly on a trend line. A market reversal is the same signal in a different stream."</p>
+<p><strong>Decision:</strong> Mar 15–24. Started with pixel obsession (viewport encoding: 48-candle chart as pixel grid, 10,000-dimensional vector). Two weeks of Python bashing, then frustration-driven pivot to Rust. trader → trader2 → trader3. v10 breakthrough: PELT change-point detection on 17 indicator streams producing 120+ compositional facts.</p>
+<p><strong>Concept produced:</strong></p>
+<ul>
+<li>Visual encoding: 50.5% accuracy (barely above random). Gap between win-win and win-loss cosine: 0.0004. Dead end.</li>
+<li>Thought encoding: 57.1% accuracy. d'=0.734 separation. Regime-invariant (explained ratio stable at 53% across bull/bear/choppy).</li>
+<li>PELT segment narrative: indicator × direction × log-magnitude × log-duration × position × chrono-anchor. Each fact a compositional binding.</li>
+<li>Mean-stripping: subtract (buy+sell)/2 before cosine. Fixes prototype convergence cascade (cos(buy,sell) went 0.79→0.99 without it).</li>
+<li>The Journal: 238 lines. Two accumulators, discriminant, cosine. Mean-stripped input. The complexity is in the encoding, not the learning.</li>
+<p><strong>Key quote:</strong> "Charts don't predict; interpretations of charts predict. Visual engrams are a dead end."</p>
+<p><strong>What was learned / honest admissions:</strong></p>
+<li>The +228% P&L was a lie: "record_trade now uses outcome_pct (signed price return at first threshold crossing), not peak_abs_pct. Previous +228% was fiction." Honest number: +5.49%.</li>
+<li>"I genuinely thought the project was going to join the pile of attempts that burned in a fiery death."</li>
+<li>Every adaptation experiment failed. Fact pruning hurt by 2.3%. Weighted bundling created positive feedback loop. Higher dimensions showed no improvement.</li>
+</ul>
+<hr>
+<h2>Series 006-002: "The Conviction Curve"</h2>
+<p><strong>Series:</strong> 006 (Markets)</p>
+<p><strong>Problem:</strong> 57.1% accuracy with zero selectivity — trading every candle. Is there a way to know <em>when</em> the system is right?</p>
+<p><strong>Decision:</strong> Mar 25–27. trader3 lands. The conviction flip (high confidence about continuation = trend extreme = reversal likely). q99 discovery at 59.7% (from explainability commit, not tuning). Exponential curve fit: <code>accuracy = 0.50 + a × exp(b × conviction)</code>. One economic parameter (min_edge) derives everything. 652k candle validation. Vocabulary expansion to 107 atoms (62.1% at 100k).</p>
+<p><strong>Concept produced:</strong></p>
+<ul>
+<li>The conviction-accuracy curve: continuous, monotonic, exponential. Three phases: noise (50.3%), signal (54.5%), exponential (63%+).</li>
+<li>Self-derived threshold from conviction distribution.</li>
+<li>Vocabulary as model: 23 atoms added → 57% to 62%, same algorithm. "The discriminant discovers which thoughts predict. The human's job is to name the thoughts."</li>
+<li>Self-supervised walk-forward: no train/test split. Every candle simultaneously training and test data.</li>
+<p><strong>Key numbers:</strong> 652,362 candles, 5,298 trades, 56.5% accuracy across 6 years. Best year: 2022 bear market at 60.3%. Worst: 2023 choppy recovery at 50.1%.</p>
+<p><strong>Key quote:</strong> "The geometry doesn't care about the regime. It cares about the measurement basis."</p>
+</ul>
+<hr>
+<h2>Series 006-003: "The Enterprise"</h2>
+<p><strong>Series:</strong> 006 (Markets)</p>
+<p><strong>Problem:</strong> Monolithic trader3.rs needed to become an organization. Visual encoding was dead code degrading throughput. Risk management was unexplored.</p>
+<p><strong>Decision:</strong> Mar 27–28. 80+ commits.</p>
+<ul>
+<li>Drop visual: 3.7× speedup. Dead visual_groups code was degrading throughput from 376/s to 83/s (zero-vector comparisons against growing centroid pile). Three deletions fixed it.</li>
+<li>Expert panel: 4 specialized observers (momentum, structure, volume, narrative) + generalist. 200+ atoms total.</li>
+<li>Risk journey: risk bundled with market = noise (immediate rejection). Risk as anomaly detection = the answer. Five OnlineSubspace branches (drawdown, accuracy, volatility, correlation, panel shape). Gated updates — only learns during healthy moments.</li>
+<li>Monolith extraction: treasury.rs, portfolio.rs, market/manager.rs, market/observer.rs, risk/mod.rs, sizing.rs, ledger.rs.</li>
+<li>Proof gates: observers start muted, earn voice through accuracy > 52%.</li>
+<p><strong>Concept produced:</strong></p>
+<li>Two-template architecture: Journal (prediction) and OnlineSubspace (reaction) as the only two learning primitives.</li>
+<li>Manager-over-observers: second-order discriminant over discriminants.</li>
+<li>Proof gates as immune system.</li>
+<li>$10,000 → $68,088 headline (+580.9%) — with honest caveats about venue costs.</li>
+<p><strong>Key quote:</strong> "A thought that produces no signal is not inert. It occupies space. It accumulates state. It steals cycles from the thoughts that predict."</p>
+<p><strong>What was learned / bugs found:</strong></p>
+<li>SELL P&L bug: every stop loss showed -100.35% because <code>wbtc_held</code> was zero for SELL positions.</li>
+<li>Exit direction bug: every exit logged as "Sell" — BUY stops invisible. 1,302 BUY opens, zero BUY stop losses in DB.</li>
+<li>"The instrument that reveals truth" was a SQL query against the run database.</li>
+</ul>
+<hr>
+<h2>Series 006-004: "The Datamancer"</h2>
+<p><strong>Series:</strong> 006 (Markets)</p>
+<p><strong>Problem:</strong> Spec contradiction led to channel architecture, which led to designers, which led to folds, which led to language layers, which led to Journal promotion, which led to the Fact interface.</p>
+<p><strong>Decision:</strong> Mar 29. 102 commits.</p>
+<ul>
+<li>Journal promoted to holon-rs: N-ary Label symbols, coalgebra opacity (five operations: observe, predict, decay, resolve, curve). 596 lines.</li>
+<li>Fact interface: 13 vocab modules across 1,060 lines returning <code>Vec<Fact></code>. Modules don't touch vectors. "Adding a new vocabulary module means writing a function that takes candles and returns Vec<Fact>. No vector knowledge required."</li>
+<li>trader3 → enterprise rename.</li>
+<li>The enterprise builds its own senses: <code>build-candles</code> reads raw parquet (6 columns) → computes 60 indicators in 2.1 seconds. No Python.</li>
+<li>Streaming fold: <code>on_candle()</code> takes state + one candle, returns LogEntry. Pure function.</li>
+<li>The wards: /sever, /reap, /scry, /gaze, /forge — five automated skills. Runes for conscious suppression.</li>
+<li>Wat repo revived as specification language. <code>/scry</code> verifies wat vs Rust. When they disagree, the wat wins.</li>
+<p><strong>Concept produced:</strong></p>
+<li>Journal as promoted VSA primitive with N-ary labels.</li>
+<li>Fact interface for vocabulary scaling.</li>
+<li>Specification-as-source via wat.</li>
+<li>Ward system for architectural honesty.</li>
+<p><strong>Key numbers:</strong> 405 lines of dead code removed from one file. 35 visual ghosts eliminated. 19 dead thoughts reaped. Throughput 222 candles/sec (up from 139/s) — from removing lies, not from optimization.</p>
+<p><strong>Key quote:</strong> "Honest architecture produces honest results."</p>
+</ul>
+<hr>
+<h2>Series 006-005: "The Forging"</h2>
+<p><strong>Series:</strong> 006 (Markets)</p>
+<p><strong>Problem:</strong> Wat files existed but were "descriptions, not programs. S-expression-shaped prose. Comments wearing parentheses."</p>
+<p><strong>Decision:</strong> Mar 31 – Apr 3. Four days.</p>
+<ul>
+<li>213 phantom runes (forms that don't exist in the language) dissolved to zero. LLM replaced phantoms with new phantoms (6 new ones) — "fluently, and wrong."</li>
+<li>Wards expanded to 7 (assay: measures substance vs description; temper: finds efficient waste).</li>
+<li>Journal sign bug: <code>.abs()</code> on sort comparator meant every prediction was Buy. 4,279 positive cosines, 4,844 negative cosines, all predictions: Buy. "A working program that does nothing useful."</li>
+<li>Streaming indicators: 52 fields computed as fold step. Two canonical violations caught: EMA seeded from first value (not SMA), Wilder RSI returning partial averages during warmup.</li>
+<li>272 tests at 92.5% coverage.</li>
+<li>Risk gets a Journal: Healthy/Unhealthy labels over 25-dimensional risk feature vector.</li>
+<li>Symmetric positions: source/target asset pairs. Generic treasury (HashMap<String, f64>).</li>
+<li>Parallel everything: 7 parallel sites via rayon.</li>
+<p><strong>Concept produced:</strong></p>
+<li>Ward-driven development with quantitative metrics (213→0 phantom runes).</li>
+<li>Streaming indicator pipeline with causal guarantee.</li>
+<li>Symmetric position primitive.</li>
+<p><strong>Key quote:</strong> "The sign bug is the one that matters most. Four days of forging [...] and the biggest fix was deleting <code>.abs()</code> from one sort comparator."</p>
+</ul>
+<hr>
+<h2>Series 006-006: "The Guide"</h2>
+<p><strong>Series:</strong> 006 (Markets)</p>
+<p><strong>Problem:</strong> Labels were lies. A trade up 3% then crashed to -1% was "Win" because threshold was crossed first. 91% of candles labeled "Loss" — not because market went down, but because threshold was crossed on adverse side first 91% of the time.</p>
+<p><strong>Decision:</strong> Apr 4–7. Seven proposals in four days.</p>
+<ul>
+<li>Proposal 004: MFE/MAE (max favorable excursion / max adverse excursion) over full horizon.</li>
+<li>Proposal 006: Dual-sided excursion — play both Buy and Sell, market decides which was better.</li>
+<li>Proposal 007: Exit observer architecture. Market observers predict direction. Exit observers predict distances (stop, TP, runner). Brokers bind one market observer to one exit observer (accountability unit). Grace and Violence replace Win and Lose.</li>
+<li>The Reckoner: unified primitive with discrete and continuous readout. Replaces Journal + proposed Gauge. <code>accuracy = 1/N + a × exp(b × conviction)</code> as method.</li>
+<li>GUIDE.md: 2,138 lines. Every struct, every interface, every dependency, construction order.</li>
+<li>The ignorant ward: eighth ward. Stranger reads documentation with no context. 32 passes to zero findings.</li>
+<li>37 wat files inscribed leaves to root (4,804 lines).</li>
+<p><strong>Concept produced:</strong></p>
+<li>Reckoner as unified discriminant primitive (discrete classification + continuous scalar regression). Five primitives: atom, bind, bundle, cosine, reckoner.</li>
+<li>Grace/Violence as accountability labels.</li>
+<li>The ignorant ward.</li>
+<li>Guide-driven specification construction: guide → wat → Rust. "f(guide) = guide."</li>
+<li>The disposable machine: wat can be thrown away and regenerated from the guide.</li>
+<p><strong>Key quote:</strong> "The guide is the DNA. The spells are the ribosomes. The wat is the protein. The Rust is the organism."</p>
+<p><strong>What was learned:</strong> The LLM's bias IS the vocabulary expansion. LLM training data provides hundreds of indicator concepts. The inscribe agent names them. The Reckoner judges them. Natural selection on the LLM's bias.</p>
+</ul>
+<hr>
+<h2>Cross-Cutting Patterns</h2>
+<h3>Recurrent Discovery: Magnitude + Direction</h3>
+<p>Proved four times across the project. Every successful discrimination used both signals. Every failure used only one.</p>
+<ul>
+<li>Batch 017: cosine-to-centroid (mag) + reconstruction residual (dir)</li>
+<li>Batch 018: eigenvalue spectrum (mag) + principal angle alignment (dir)</li>
+<li>Spectral firewall pre-filter: spectrum × alignment</li>
+<li>Residual profile: RSS magnitude (mag) + cross-stripe direction (dir)</li>
+</ul>
+<h3>Recurrent Bug Pattern: Lies Revealed by Instruments</h3>
+<ul>
+<li>+228% P&L: <code>peak_abs_pct</code> instead of <code>outcome_pct</code> (DB query caught it)</li>
+<li>SELL P&L: <code>wbtc_held</code> was zero for SELL positions (DB query)</li>
+<li>BUY stops invisible: exit direction hardcoded to "Sell" (DB query)</li>
+<li>Journal sign bug: <code>.abs()</code> on sort comparator (DB query)</li>
+<li>Dead visual_groups: 376→83 candles/sec degradation (performance monitoring)</li>
+<li>14-second stall: RwLock in drain loop (dashboard timing)</li>
+<li>Compound range silently dropping constraints (dashboard visualization)</li>
+</ul>
+<h3>Honest Caveats Documented Throughout</h3>
+<ul>
+<li>Per-IP rate limiting is a memory exhaustion DoS at scale</li>
+<li>Synthetic traffic inflates apparent accuracy ("clean boundaries between normal and attack")</li>
+<li>Attribution was "garbage" in the spectral firewall's early form</li>
+<li>LLM context auto-compaction caused regressions (wrong VSA family techniques applied)</li>
+<li>Token cost acknowledged as expensive</li>
+<li>Visual encoding was a dead end (weeks wasted)</li>
+<li>Several honest admissions of bias (EDN choice, Clojure preference)</li>
+</ul>
+<h3>Architecture Evolution</h3>
+<ol>
+<li>Python experiments → primitive algebra proven</li>
+<li>Rust port (10-15× speedup, SIMD from day 1)</li>
+<li>L4 DDoS lab (XDP, eBPF, sidecar, 1.3M PPS)</li>
+<li>L7 HTTP WAF (proxy, TLS, expression tree, 7/7 waves)</li>
+<li>Spectral firewall (four-layer geometric WAF, self-calibrating, 0.1% FPR)</li>
+<li>Market trading (thought encoding, conviction curve, enterprise architecture)</li>
+<li>Specification language (wat, wards, guide, disposable machine)</li>
+</ol>
+<h3>Timeline</h3>
+<ul>
+<li>Jan 16, 2026: First commit (Python)</li>
+<li>Feb 6: Rust port (2,554 lines, 13 files, one evening)</li>
+<li>Feb 7–8: Two labs built in one weekend</li>
+<li>Feb 9: 1.3M PPS, 99.5% drop rate</li>
+<li>Feb 13–16: Rule engine, decay model, L4 payload analysis</li>
+<li>Feb 17–20: Engrams, 765ms → 3ms</li>
+<li>Feb 23–26: L7 HTTP WAF</li>
+<li>Feb 27–28: Expression tree, 7/7 waves mitigated</li>
+<li>Mar 1–3: Spectral firewall, Nikto zero vulnerabilities</li>
+<li>Mar 4–6: Self-calibrating, striped encoding, parameter sweep</li>
+<li>Mar 8: Residual profile, 0.1% FPR</li>
+<li>Mar 15–24: Thought machine, visual vs thought encoding</li>
+<li>Mar 25–27: Conviction curve, 652k validation</li>
+<li>Mar 27–28: Enterprise architecture, $10k→$68k</li>
+<li>Mar 29: Journal promoted, Fact interface, wards</li>
+<li>Mar 31–Apr 3: Forging, 272 tests, Journal sign bug</li>
+<li>Apr 4–7: Guide, Reckoner, Grace/Violence, 37 wat files</li>
+</ul>
+<p>Total: ~11 weeks from first commit to the guide. Solo, after-hours.</p></div></body></html>

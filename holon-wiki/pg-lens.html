@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Lens — the vocabulary subset selector. — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html" active>Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Lens — the vocabulary subset selector. <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<p>A <strong>lens</strong> selects which <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> modules fire for a given <a class="wikilink" href="pg-market-observer.html">observer</a>. The system has two lens types:</p>
+<table>
+<tr><th>Lens Type</th><th>Enum</th><th>Variants</th><th>Purpose</th></tr>
+<tr><td><strong>MarketLens</strong></td><td><code>MarketLens</code></td><td>11 (3 schools × 3 specialists + 2 generalists)</td><td>Which market-data vocab atoms an observer attends to</td></tr>
+<tr><td><strong>PositionLens</strong></td><td><code>PositionLens</code></td><td>2 (<code>Core</code>, <code>Full</code>)</td><td>Which trade-state vocab atoms a position observer uses</td></tr>
+</table>
+<p>Every market lens includes <code>shared/time</code> (5 temporal atoms). Specialist lenses target 3–5 modules (22–39 atoms). Generalist lenses are the union of their school's specialists (48–56 atoms). Position lenses encode exit context (10–13 vocab atoms) with trade atoms arriving separately through the trade pipe.</p>
+<p><strong>Two market modules exist but are unwired:</strong> <code>ichimoku</code> and <code>stochastic</code> (removed per Proposals 041+042). See <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> for the full atom catalog.</p>
+<hr></div><h1>Lens — the vocabulary subset selector.</h1>
+<hr>
+<h2>Overview</h2>
+<blockquote>"Lens wiring. Maps MarketLens/PositionLens to vocabulary facts. Extracted from orchestration/post.rs. These are the live functions that the wat-vm programs call to wire vocab modules to observer lenses."</blockquote>
+<blockquote>— <code>src/domain/lens.rs</code> lines 1–4</blockquote>
+<blockquote>"Proposals 041+042: three schools (Dow, Pring, Wyckoff), 11 lenses."</blockquote>
+<blockquote>— <code>src/domain/lens.rs</code> line 38</blockquote>
+<p>Lenses are the mechanism by which different observers in the same system attend to different subsets of the <a class="wikilink" href="pg-vocabulary.html">vocabulary</a>. Rather than every observer seeing all ~100 available atoms, each lens wires only the relevant modules — controlling information flow and enabling school-specific reasoning.</p>
+<hr>
+<h2>MarketLens — 11 Variants in 3 Schools</h2>
+<p>Source: <code>src/types/enums.rs</code> lines 58–93. Traits: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code>.</p>
+<h3>School Structure</h3>
+<pre><code>
+Dow School (4)            Pring School (4)           Wyckoff School (3)
+├── DowTrend              ├── PringImpulse            ├── WyckoffEffort
+├── DowVolume             ├── PringConfirmation       ├── WyckoffPersistence
+├── DowCycle              ├── PringRegime             └── WyckoffPosition
+└── DowGeneralist         └── PringGeneralist          (no generalist)
+</code></pre>
+<p>Each school has three specialist lenses plus a generalist — except <strong>Wyckoff has no generalist</strong>.</p>
+<h3>Generalist Property</h3>
+<blockquote>Each <code>*Generalist</code> is the union of its school's three specialist lenses (superset of modules).</blockquote>
+<blockquote>— T0-012</blockquote>
+<p>Tests enforce this: <code>DowGeneralist ≥ each Dow specialist</code> and <code>PringGeneralist ≥ each Pring specialist</code> by fact count.</p>
+<h3>Display Names</h3>
+<table>
+<tr><th>Variant</th><th>Display</th></tr>
+<tr><td><code>DowTrend</code></td><td><code>dow-trend</code></td></tr>
+<tr><td><code>DowVolume</code></td><td><code>dow-volume</code></td></tr>
+<tr><td><code>DowCycle</code></td><td><code>dow-cycle</code></td></tr>
+<tr><td><code>DowGeneralist</code></td><td><code>dow-generalist</code></td></tr>
+<tr><td><code>PringImpulse</code></td><td><code>pring-impulse</code></td></tr>
+<tr><td><code>PringConfirmation</code></td><td><code>pring-confirmation</code></td></tr>
+<tr><td><code>PringRegime</code></td><td><code>pring-regime</code></td></tr>
+<tr><td><code>PringGeneralist</code></td><td><code>pring-generalist</code></td></tr>
+<tr><td><code>WyckoffEffort</code></td><td><code>wyckoff-effort</code></td></tr>
+<tr><td><code>WyckoffPersistence</code></td><td><code>wyckoff-persistence</code></td></tr>
+<tr><td><code>WyckoffPosition</code></td><td><code>wyckoff-position</code></td></tr>
+</table>
+<hr>
+<h2>Market Lens Wiring — Module Map</h2>
+<p>Source: <code>src/domain/lens.rs</code> function <code>market_lens_facts</code> (lines 42–165).</p>
+<blockquote>"Shared: time facts (all lenses get these)" — line 43–44</blockquote>
+<p>Every market lens includes <code>encode_time_facts(candle)</code> — the 5 shared temporal atoms (minute, hour, day-of-week, day-of-month, month-of-year) — encoded once before the match, not repeated per arm.</p>
+<h3>Dow School</h3>
+<table>
+<tr><th>Lens</th><th>Modules</th><th>Atoms</th></tr>
+<tr><td><strong>DowTrend</strong></td><td>shared/time, momentum, persistence, regime, timeframe</td><td><strong>28</strong></td></tr>
+<tr><td><strong>DowVolume</strong></td><td>shared/time, flow, standard, keltner</td><td><strong>25</strong></td></tr>
+<tr><td><strong>DowCycle</strong></td><td>shared/time, oscillators, keltner, momentum, standard, timeframe</td><td><strong>39</strong></td></tr>
+<tr><td><strong>DowGeneralist</strong></td><td>shared/time, momentum, persistence, regime, timeframe, flow, standard, keltner, oscillators</td><td><strong>56</strong></td></tr>
+</table>
+<h3>Pring School</h3>
+<table>
+<tr><th>Lens</th><th>Modules</th><th>Atoms</th></tr>
+<tr><td><strong>PringImpulse</strong></td><td>shared/time, oscillators, momentum, persistence</td><td><strong>22</strong></td></tr>
+<tr><td><strong>PringConfirmation</strong></td><td>shared/time, flow, oscillators, divergence, timeframe</td><td><strong>25–28</strong></td></tr>
+<tr><td><strong>PringRegime</strong></td><td>shared/time, regime, persistence, keltner</td><td><strong>22</strong></td></tr>
+<tr><td><strong>PringGeneralist</strong></td><td>shared/time, oscillators, momentum, persistence, flow, divergence, timeframe, regime, keltner</td><td><strong>48–51</strong></td></tr>
+</table>
+<blockquote><strong>Note:</strong> <code>divergence</code> uses conditional emission (0–3 atoms), so PringConfirmation and PringGeneralist have variable fact counts.</blockquote>
+<h3>Wyckoff School</h3>
+<table>
+<tr><th>Lens</th><th>Modules</th><th>Atoms</th></tr>
+<tr><td><strong>WyckoffEffort</strong></td><td>shared/time, flow, price_action, oscillators, standard</td><td><strong>34</strong></td></tr>
+<tr><td><strong>WyckoffPersistence</strong></td><td>shared/time, persistence, regime, momentum, oscillators</td><td><strong>30</strong></td></tr>
+<tr><td><strong>WyckoffPosition</strong></td><td>shared/time, momentum, standard, regime, divergence, fibonacci</td><td><strong>35–38</strong></td></tr>
+</table>
+<blockquote><code>fibonacci</code> is used only by WyckoffPosition — the sole consumer of this module.</blockquote>
+<hr>
+<h2>Module Popularity — How Many Lenses Use Each</h2>
+<table>
+<tr><th>Market Module</th><th>Lens Count</th><th>Used By</th></tr>
+<tr><td><code>shared/time</code></td><td><strong>11/11</strong></td><td>All market lenses</td></tr>
+<tr><td><code>oscillators</code></td><td>7</td><td>DowCycle, DowGeneralist, PringImpulse, PringConfirmation, PringGeneralist, WyckoffEffort, WyckoffPersistence</td></tr>
+<tr><td><code>momentum</code></td><td>7</td><td>DowTrend, DowCycle, DowGeneralist, PringImpulse, PringGeneralist, WyckoffPersistence, WyckoffPosition</td></tr>
+<tr><td><code>persistence</code></td><td>6</td><td>DowTrend, DowGeneralist, PringImpulse, PringRegime, PringGeneralist, WyckoffPersistence</td></tr>
+<tr><td><code>regime</code></td><td>6</td><td>DowTrend, DowGeneralist, PringRegime, PringGeneralist, WyckoffPersistence, WyckoffPosition</td></tr>
+<tr><td><code>timeframe</code></td><td>5</td><td>DowTrend, DowCycle, DowGeneralist, PringConfirmation, PringGeneralist</td></tr>
+<tr><td><code>flow</code></td><td>5</td><td>DowVolume, DowGeneralist, PringConfirmation, PringGeneralist, WyckoffEffort</td></tr>
+<tr><td><code>standard</code></td><td>5</td><td>DowVolume, DowCycle, DowGeneralist, WyckoffEffort, WyckoffPosition</td></tr>
+<tr><td><code>keltner</code></td><td>5</td><td>DowVolume, DowCycle, DowGeneralist, PringRegime, PringGeneralist</td></tr>
+<tr><td><code>divergence</code></td><td>3</td><td>PringConfirmation, PringGeneralist, WyckoffPosition</td></tr>
+<tr><td><code>fibonacci</code></td><td>1</td><td>WyckoffPosition only</td></tr>
+<tr><td><code>price_action</code></td><td>1</td><td>WyckoffEffort only</td></tr>
+<tr><td><code>ichimoku</code></td><td><strong>0</strong></td><td>⚠️ Removed — module exists but unwired</td></tr>
+<tr><td><code>stochastic</code></td><td><strong>0</strong></td><td>⚠️ Removed — module exists but unwired</td></tr>
+</table>
+<hr>
+<h2>PositionLens — 2 Variants</h2>
+<p>Source: <code>src/types/enums.rs</code> lines 95–103.</p>
+<blockquote>"Core: lean — regime + time. 5 trade atoms downstream."</blockquote>
+<blockquote>"Full: rich — regime + time + phase series. 13 trade atoms downstream."</blockquote>
+<blockquote>— <code>src/domain/lens.rs</code> lines 169–170</blockquote>
+<blockquote>"The '5 trade atoms' and '13 trade atoms' arrive through the trade pipe, not through this vocab function. The vocab function produces only the regime/time/phase atoms. Trade atoms are injected separately by the broker."</blockquote>
+<blockquote>— T2-005</blockquote>
+<h3><code>Core</code> — Lean exit context</h3>
+<table>
+<tr><th>Module</th><th>Encoder</th><th>Atoms</th></tr>
+<tr><td>exit/regime</td><td><code>encode_exit_regime_facts</code></td><td>8 (kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim)</td></tr>
+<tr><td>exit/time</td><td><code>encode_exit_time_facts</code></td><td>2 (hour, day-of-week)</td></tr>
+</table>
+<p><strong>Vocab atoms: 10. Plus 5 trade atoms downstream.</strong></p>
+<h3><code>Full</code> — Rich exit context with phase biography</h3>
+<table>
+<tr><th>Module</th><th>Encoder</th><th>Atoms</th></tr>
+<tr><td>exit/regime</td><td><code>encode_exit_regime_facts</code></td><td>8</td></tr>
+<tr><td>exit/time</td><td><code>encode_exit_time_facts</code></td><td>2</td></tr>
+<tr><td>exit/phase (current)</td><td><code>encode_phase_current_facts</code></td><td>2 (phase label, phase-duration)</td></tr>
+<tr><td>exit/phase (series)</td><td><code>phase_series_thought</code></td><td>1 Sequential thought (variable-length Bundle per PhaseRecord)</td></tr>
+<tr><td>exit/phase (scalars)</td><td><code>phase_scalar_facts</code></td><td>0–4 (phase-valley-trend, phase-peak-trend, phase-range-trend, phase-spacing-trend)</td></tr>
+</table>
+<p><strong>Vocab atoms: 12–15. Plus 13 trade atoms downstream.</strong></p>
+<h3>Test Assertions</h3>
+<pre><code>
+assert_eq!(core_facts.len(), 10);  // regime(8) + time(2)
+assert_eq!(full_facts.len(), 13);  // regime(8) + time(2) + phase(3)
+</code></pre>
+<p>— <code>src/domain/lens.rs</code> lines 250–255</p>
+<hr>
+<h2>GUIDE vs Rust Divergence</h2>
+<p>The GUIDE describes a flat 6-variant <code>MarketLens</code> (<code>:momentum</code>, <code>:structure</code>, <code>:volume</code>, <code>:narrative</code>, <code>:regime</code>, <code>:generalist</code>) and a 4-variant exit lens (<code>:volatility</code>, <code>:structure</code>, <code>:timing</code>, <code>:generalist</code>) mapped to wat modules. The live Rust has completely replaced both with:</p>
+<table>
+<tr><th>System</th><th>GUIDE Says</th><th>Rust Actually Does</th></tr>
+<tr><td>MarketLens</td><td>6 flat variants</td><td>11 variants in 3 named schools</td></tr>
+<tr><td>PositionLens</td><td>4 exit variants → exit wat modules</td><td>2 variants (Core, Full) → Rust-only exit modules</td></tr>
+<tr><td>Exit vocab</td><td><code>volatility.wat</code>, <code>structure.wat</code>, <code>timing.wat</code></td><td><code>exit_regime.rs</code>, <code>exit_time.rs</code>, <code>exit_phase.rs</code> — no corresponding wat files</td></tr>
+<tr><td>Removed modules</td><td>Not mentioned</td><td><code>ichimoku</code>, <code>stochastic</code> — modules exist but no lens calls them</td></tr>
+</table>
+<p>The exit wat files exist in the spec but are <strong>not wired</strong> into the running system. See <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> for the full spec-vs-implementation details.</p>
+<hr>
+<h2>Removed Modules</h2>
+<p>Per <code>src/domain/lens.rs</code> comments:</p>
+<blockquote>"Proposals 041+042: ichimoku, stochastic removed from all lenses. Their modules still exist but are no longer called."</blockquote>
+<ul>
+<li><code>ichimoku</code> — 6 atoms, module file exists, zero consumers</li>
+<li><code>stochastic</code> — 4 atoms, module file exists, zero consumers</li>
+</ul>
+<hr>
+<h2>Sources</h2>
+<ul>
+<li><code>src/domain/lens.rs</code> (258 lines) — lens wiring functions, test assertions</li>
+<li><code>src/types/enums.rs</code> (247 lines) — <code>MarketLens</code> and <code>PositionLens</code> enum definitions</li>
+<li>T0-012: Lens (Rust) — context-free ignorant verification of lens.rs and enums.rs</li>
+<li>T2-005: Lens — detailed module maps, atom counts, GUIDE-vs-Rust divergence</li>
+<li>T2-004: Vocabulary — complete atom catalog, encoding schemes, exit module divergence</li>
+</ul>
+<h2>See Also</h2>
+<ul>
+<li><a class="wikilink" href="pg-vocabulary.html">vocabulary</a> — the complete atom set and module organization</li>
+<li><a class="wikilink" href="pg-market-observer.html">observer</a> — consumers of lens-selected vocab facts</li>
+</ul></div></body></html>

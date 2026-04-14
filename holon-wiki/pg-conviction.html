@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Conviction — the strength of a prediction — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html" active>Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Conviction — the strength of a prediction <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<p>Conviction is the absolute value of the winning cosine similarity in a <a class="wikilink" href="pg-reckoner.html">Reckoner</a>'s discrete prediction. It measures how strongly the reckoner leans toward one classification direction, on a scale of 0.0 (no preference) to 1.0 (maximum alignment). It is the primary input to the reckoner's self-evaluation mechanism — the <a class="wikilink" href="pg-curve.html">conviction–accuracy curve</a> — which validates whether the reckoner's confidence is well-calibrated.</p>
+<hr></div><h1>Conviction — the strength of a prediction</h1>
+<blockquote><strong>Composite wiki page.</strong> Every claim below is traced to verified source documents.</blockquote>
+<hr>
+<h2>Definition</h2>
+<p>In discrete mode, a <a class="wikilink" href="pg-reckoner.html">Reckoner</a> computes the cosine similarity between the input thought and each label's learned <a class="wikilink" href="pg-reckoner.html">discriminant</a> direction. The label with the highest raw cosine becomes the predicted <code>direction</code>. The <strong>conviction</strong> is the absolute value of that cosine:</p>
+<pre><code>
+conviction = |best_raw_cosine|
+</code></pre>
+<p>The <code>Prediction</code> struct carries conviction as a first-class field:</p>
+<pre><code>
+pub struct Prediction {
+    pub scores: Vec<LabelScore>,      // cosine per label, ordered descending
+    pub direction: Option<Label>,     // label with highest raw cosine
+    pub conviction: f64,              // |max cosine|
+    pub raw_cos: f64,                 // raw signed cosine of winning direction
+}
+</code></pre>
+<p>— T0-008 §3.2</p>
+<p>Conviction is always non-negative <code>[0.0, 1.0]</code>. A conviction of 0.0 means the thought is orthogonal to all discriminant directions (the reckoner has no opinion). A conviction of 1.0 means perfect alignment with the winning discriminant.</p>
+<hr>
+<h2>Computation</h2>
+<p>The prediction path in <code>Reckoner::predict()</code>:</p>
+<ol>
+<li>For each label, compute cosine similarity between the (mean-stripped) thought and that label's discriminant vector.</li>
+<li>Sort all scores by raw cosine descending.</li>
+<li>The winning label = highest raw cosine.</li>
+</ol>
+<p>An important subtlety: scores are sorted by <strong>raw</strong> cosine (not absolute), but conviction is the absolute value of the winner. This means a strongly <em>negative</em> cosine also produces high conviction — the reckoner is equally sure it is <em>not</em> that direction. As T0-008 notes:</p>
+<blockquote>"Scores are sorted by raw cosine descending … but conviction is set to <code>best.cosine.abs()</code>. This means the winning label is the one with the highest raw cosine, and conviction measures magnitude."</blockquote>
+<blockquote>— T0-008 §3.2</blockquote>
+<hr>
+<h2>The conviction–accuracy curve</h2>
+<p>Conviction's deeper purpose is self-evaluation. Through the <code>resolve(conviction, correct)</code> method, the reckoner records a sliding window of <code>(conviction, was_it_right?)</code> pairs. Once enough data accumulates (≥500 resolved predictions), <code>curve()</code> fits the empirical relationship:</p>
+<pre><code>
+accuracy = (1/N) + a × exp(b × conviction)
+</code></pre>
+<p>where <code>N</code> is the number of labels and <code>1/N</code> is random-chance baseline. The WAT spec states:</p>
+<blockquote>"At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal."</blockquote>
+<blockquote>— <code>primitives.wat</code>, quoted in T0-008 §3.6</blockquote>
+<p>A positive <code>b</code> coefficient means higher conviction genuinely predicts higher accuracy — the reckoner knows what it knows. The fitted curve enables <code>accuracy_at(conviction)</code>, letting downstream systems ask: <em>"If this reckoner says conviction = 0.7, how often is it actually right?"</em></p>
+<p>This is the curve-fitting input point: <code>resolve()</code> is the only way external code feeds conviction data back into the reckoner for self-calibration.</p>
+<blockquote>"By recording (conviction, correct) pairs and fitting accuracy = 1/N + a·exp(b·conviction), the system gets a self-calibration measure."</blockquote>
+<blockquote>— T0-008 §6.7</blockquote>
+<hr>
+<h2>Relationship to cosine similarity</h2>
+<p>Conviction is a direct application of <a class="wikilink" href="T0-003-cosine.html">cosine similarity</a> — the singular measurement primitive in the holon system. The WAT spec declares:</p>
+<blockquote>"The only measurement. One number."</blockquote>
+<blockquote>— <code>primitives.wat</code>, quoted in T0-003</blockquote>
+<p>Cosine returns a value in <code>[-1, 1]</code> measuring the angle between two vectors, independent of magnitude. Conviction folds the sign away to produce a scalar confidence measure: alignment with the discriminant direction, regardless of polarity.</p>
+<p>The cosine similarity in this context operates on the f64 pipeline (<code>cosine_f64</code>), since discriminants are normalized f64 vectors, not the i8 bipolar <code>Vector</code> type used elsewhere.</p>
+<hr>
+<h2>Role in the system</h2>
+<p>Conviction appears in three contexts:</p>
+<ol>
+<li><strong><a class="wikilink" href="pg-reckoner.html">Reckoner</a> prediction output</strong> — as <code>Prediction.conviction</code>, the immediate confidence signal accompanying every discrete classification.</li>
+<li><strong>Self-evaluation input</strong> — via <code>resolve(conviction, correct)</code>, feeding the sliding window that trains the conviction–accuracy curve.</li>
+<li><strong>Calibrated downstream decisions</strong> — via <code>accuracy_at(conviction)</code>, which lets application code use the reckoner's self-assessed reliability rather than raw cosine.</li>
+</ol>
+<p>The primers frame the Reckoner (and thus conviction) within the memory layer:</p>
+<blockquote>"Where OnlineSubspace learns what <em>normal</em> looks like (anomaly detection), Reckoner learns what <em>separates classes</em> or <em>predicts values</em>."</blockquote>
+<blockquote>— Primer 003, quoted in T-1-000</blockquote>
+<p>Conviction is how that separation expresses its confidence.</p>
+<hr>
+<h2>Sources</h2>
+<table>
+<tr><th>Claim</th><th>Source</th></tr>
+<tr><td><code>Prediction</code> struct with <code>conviction: f64</code> field</td><td>T0-008 §3.2</td></tr>
+<tr><td>`conviction = \</td><td>best.cosine\</td><td>` computation</td><td>T0-008 §3.2</td></tr>
+<tr><td>Sorting by raw cosine, conviction as absolute value</td><td>T0-008 §3.2</td></tr>
+<tr><td>Curve model: <code>accuracy = 1/N + a·exp(b·conviction)</code></td><td>T0-008 §3.6, <code>primitives.wat</code></td></tr>
+<tr><td>"The curve IS the proof. Monotonically increasing = real signal."</td><td><code>primitives.wat</code>, via T0-008 §3.6</td></tr>
+<tr><td><code>resolve()</code> sliding window (cap 5000, min 500)</td><td>T0-008 §3.5</td></tr>
+<tr><td>Self-calibration interpretation</td><td>T0-008 §6.7</td></tr>
+<tr><td>Cosine as "the only measurement. One number."</td><td>T0-003, <code>primitives.wat</code></td></tr>
+<tr><td>Reckoner as class-separation learner (vs. anomaly detection)</td><td>T-1-000 (Primer 003)</td></tr>
+</table></div></body></html>

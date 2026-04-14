@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T0-011 — ThoughtEncoder (Rust) — Verification — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html" active>T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>T0-011 — ThoughtEncoder (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><h1>T0-011 — ThoughtEncoder (Rust) — Verification</h1>
+<blockquote>Source: <code>holon-lab-trading/src/encoding/thought_encoder.rs</code> (638 lines)</blockquote>
+<blockquote>Ward: ignorant — reads only what is written.</blockquote>
+<hr>
+<h2>Module doc comment (lines 1–6)</h2>
+<blockquote>"the AST that vocabulary modules produce, and the evaluator that walks it into vectors. Compiled from wat/thought-encoder.wat."</blockquote>
+<blockquote>"The ThoughtEncoder is stateless — no cache. Production encoding goes through encoding::encode::encode() which checks the LRU. This struct exists for tests and IncrementalBundle."</blockquote>
+<p><strong>Key claim: ThoughtEncoder itself holds no cache.</strong> The LRU cache lives in <code>encoding::encode::encode()</code>, a separate function. This struct is a pure evaluator.</p>
+<hr>
+<h2>Imports (lines 8–14)</h2>
+<table>
+<tr><th>Import</th><th>Path</th></tr>
+<tr><td><code>HashMap</code></td><td><code>std::collections::HashMap</code></td></tr>
+<tr><td><code>Primitives</code></td><td><code>holon::kernel::primitives::Primitives</code></td></tr>
+<tr><td><code>ScalarEncoder</code></td><td><code>holon::kernel::scalar::{ScalarEncoder, ScalarMode}</code></td></tr>
+<tr><td><code>Similarity</code></td><td><code>holon::kernel::similarity::Similarity</code></td></tr>
+<tr><td><code>Vector</code></td><td><code>holon::kernel::vector::Vector</code></td></tr>
+<tr><td><code>VectorManager</code></td><td><code>holon::kernel::vector_manager::VectorManager</code></td></tr>
+</table>
+<hr>
+<h2>Enum: <code>ThoughtAST</code> (line 16–27)</h2>
+<p>Derives: <code>Clone</code>, <code>Debug</code>, <code>PartialEq</code>. Manually implements <code>Eq</code> (line 84) and <code>Hash</code> (lines 86–113).</p>
+<table>
+<tr><th>Variant</th><th>Fields</th><th>Purpose</th></tr>
+<tr><td><code>Atom(String)</code></td><td><code>name: String</code></td><td>A named symbol. No scalar value.</td></tr>
+<tr><td><code>Linear { value: f64, scale: f64 }</code></td><td>—</td><td>Linear scalar encoding.</td></tr>
+<tr><td><code>Log { value: f64 }</code></td><td>—</td><td>Logarithmic scalar encoding.</td></tr>
+<tr><td><code>Circular { value: f64, period: f64 }</code></td><td>—</td><td>Circular/wrapping scalar encoding.</td></tr>
+<tr><td><code>Bind(Box<ThoughtAST>, Box<ThoughtAST>)</code></td><td><code>left</code>, <code>right</code></td><td>Two vectors bound together via <code>Primitives::bind</code>.</td></tr>
+<tr><td><code>Bundle(Vec<ThoughtAST>)</code></td><td><code>children</code></td><td>Unordered set-bundle via <code>Primitives::bundle</code>.</td></tr>
+<tr><td><code>Sequential(Vec<ThoughtAST>)</code></td><td><code>items</code></td><td>Position-sensitive sequence. Each item is permuted by its index, then bundled. Comment: "Position-sensitive: [A, B] != [B, A]. Used for pivot biography."</td></tr>
+</table>
+<h3>Eq implementation (line 84)</h3>
+<p>Blank <code>impl Eq for ThoughtAST {}</code>. Relies on the derived <code>PartialEq</code>. Safe because <code>PartialEq</code> for <code>f64</code> uses bit equality, and the derived impl compares all fields structurally.</p>
+<h3>Hash implementation (lines 86–113)</h3>
+<p>Uses <code>std::mem::discriminant</code> first, then hashes fields by variant. For <code>f64</code> fields, calls <code>to_bits()</code> to get integer representation before hashing — avoids NaN-related issues and ensures consistent hashing.</p>
+<hr>
+<h2>Enum method: <code>ThoughtAST::name(&self) -> String</code> (lines 34–44)</h2>
+<p>Returns a human-readable label for each variant:</p>
+<ul>
+<li><code>Atom("rsi")</code> → <code>"rsi"</code></li>
+<li><code>Linear { value: 1.0, scale: 1.0 }</code> → <code>"linear(1,1)"</code></li>
+<li><code>Log { value: 2.0 }</code> → <code>"log(2)"</code></li>
+<li><code>Circular { value: 14.0, period: 24.0 }</code> → <code>"circular(14,24)"</code></li>
+<li><code>Bind(left, right)</code> → <code>"bind(<left.name()>:<right.name()>)"</code> (recursive)</li>
+<li><code>Bundle(children)</code> → <code>"bundle(<len>)"</code></li>
+<li><code>Sequential(items)</code> → <code>"sequential(<len>)"</code></li>
+</ul>
+<h2>Enum method: <code>ThoughtAST::to_edn(&self) -> String</code> (lines 48–80)</h2>
+<p>Renders AST as EDN (extensible data notation). Delegates to <code>to_edn_depth(0)</code>. Recursive, depth-aware indentation with 2-space indent per level. Each variant produces an s-expression form.</p>
+<hr>
+<h2>Free function: <code>round_to(v: f64, digits: u32) -> f64</code> (lines 119–122)</h2>
+<pre><code>
+let factor = 10f64.powi(digits as i32);
+(v * factor).round() / factor
+</code></pre>
+<p>Used by vocabulary modules at emission time. Comment: "the ThoughtAST carries the rounded value. The cache key IS the exact AST. The rounding happens at emission."</p>
+<hr>
+<h2>Struct: <code>ThoughtEncoder</code> (lines 127–133)</h2>
+<p>Derives: <code>Clone</code>.</p>
+<table>
+<tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+<tr><td><code>scalar_encoder</code></td><td><code>ScalarEncoder</code></td><td>Encodes <code>Linear</code>/<code>Log</code>/<code>Circular</code> nodes.</td></tr>
+<tr><td><code>vm</code></td><td><code>VectorManager</code></td><td>Manages atom vector allocation.</td></tr>
+</table>
+<h3>Constructor: <code>ThoughtEncoder::new(vm: VectorManager) -> Self</code> (lines 137–143)</h3>
+<p>Creates a <code>ScalarEncoder</code> from <code>vm.dimensions()</code>. Stores both.</p>
+<h3>Method: <code>ThoughtEncoder::encode(&self, ast: &ThoughtAST) -> Vector</code> (lines 147–198)</h3>
+<p>Recursive AST walk. No caching. Each call re-evaluates the entire subtree.</p>
+<p><strong>How <code>encode()</code> walks the AST, branch by branch:</strong></p>
+<table>
+<tr><th>AST variant</th><th>Action</th></tr>
+<tr><td><code>Atom(name)</code></td><td>Calls <code>self.vm.get_vector(name)</code> — direct lookup from VectorManager.</td></tr>
+<tr><td><code>Linear { value, scale }</code></td><td>Calls <code>self.scalar_encoder.encode(value, ScalarMode::Linear { scale })</code>.</td></tr>
+<tr><td><code>Log { value }</code></td><td>Calls <code>self.scalar_encoder.encode_log(value)</code>.</td></tr>
+<tr><td><code>Circular { value, period }</code></td><td>Calls <code>self.scalar_encoder.encode(value, ScalarMode::Circular { period })</code>.</td></tr>
+<tr><td><code>Bind(left, right)</code></td><td>Recursively encodes <code>left</code> → <code>l_vec</code>, encodes <code>right</code> → <code>r_vec</code>, then <code>Primitives::bind(&l_vec, &r_vec)</code>.</td></tr>
+<tr><td><code>Bundle(children)</code></td><td>Maps <code>encode()</code> over all children, collects into <code>Vec<Vector></code>, then <code>Primitives::bundle(&refs)</code>. If empty, returns <code>Vector::zeros(dims)</code>.</td></tr>
+<tr><td><code>Sequential(items)</code></td><td>Maps <code>encode()</code> + <code>Primitives::permute(&v, index as i32)</code> over enumerated items, collects, then <code>Primitives::bundle(&refs)</code>. If empty, returns <code>Vector::zeros(dims)</code>.</td></tr>
+</table>
+<p><strong>Key detail for Sequential:</strong> each item is first encoded to a vector, then permuted by its positional index (<code>i as i32</code>) via <code>Primitives::permute</code>, THEN all permuted vectors are bundled. This makes <code>[A, B]</code> ≠ <code>[B, A]</code> because A gets permute(0) in position 0 and permute(1) in position 1, etc.</p>
+<hr>
+<h2>Struct: <code>IncrementalBundle</code> (lines 212–221)</h2>
+<p>Comment: "Incremental bundling — maintains sums across candles. Optimization, not cognition. Can be reconstructed from one full encode."</p>
+<table>
+<tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+<tr><td><code>sums</code></td><td><code>Vec<i32></code></td><td>Running element-wise sums. <code>threshold(sums) == bundle(all facts)</code>.</td></tr>
+<tr><td><code>last_facts</code></td><td><code>HashMap<ThoughtAST, Vector></code></td><td>Previous candle's facts: AST → its evaluated vector.</td></tr>
+<tr><td><code>dims</code></td><td><code>usize</code></td><td>Vector dimensions.</td></tr>
+<tr><td><code>initialized</code></td><td><code>bool</code></td><td>Whether at least one full encode has been performed.</td></tr>
+</table>
+<h3>Constructor: <code>IncrementalBundle::new(dims: usize) -> Self</code> (lines 224–231)</h3>
+<p>Zeroes the sums buffer, empty HashMap, not initialized.</p>
+<h3>Method: <code>IncrementalBundle::encode(&mut self, new_facts: &[ThoughtAST], encoder: &ThoughtEncoder) -> Vector</code> (lines 240–283)</h3>
+<p><strong>First candle</strong> (<code>!self.initialized</code>): delegates to <code>full_encode()</code>.</p>
+<p><strong>Subsequent candles</strong> — incremental diff:</p>
+<ol>
+<li>Build a <code>HashSet<&ThoughtAST></code> from <code>new_facts</code> for O(1) lookup.</li>
+<li><strong>Removed facts</strong>: for each <code>(old_ast, old_vec)</code> in <code>last_facts</code> not present in the new set, subtract <code>old_vec</code> from <code>sums</code>.</li>
+<li><strong>New/changed facts</strong>: for each fact in <code>new_facts</code>:</li>
+</ol>
+<ul>
+<li>If it existed in <code>last_facts</code> with the same key (Eq+Hash match): skip — sums already has this contribution.</li>
+<li>Otherwise: encode it via <code>encoder.encode(fact)</code>, add to <code>sums</code>, insert into new <code>last_facts</code>.</li>
+</ul>
+<ol>
+<li>Replace <code>self.last_facts</code> with <code>new_last_facts</code>.</li>
+<li>Call <code>self.threshold()</code>.</li>
+</ol>
+<p><strong>Critical invariant from comments (lines 208–211):</strong> "round_to at vocab emission is load-bearing for the AST diff. Quantized floats compare reliably. Remove round_to and this degrades to full recompute (correct, but no savings)." The <code>HashMap<ThoughtAST, ...></code> key equality depends on <code>f64::to_bits()</code> — which is bitwise. Without <code>round_to</code>, floating-point drift would cause false "changed" detections.</p>
+<h3>Method: <code>IncrementalBundle::full_encode(&mut self, facts: &[ThoughtAST], encoder: &ThoughtEncoder) -> Vector</code> (lines 286–304)</h3>
+<p>Zeroes sums, clears last_facts. Encodes every fact, accumulates into sums, stores in last_facts. Sets <code>initialized = true</code>. Returns <code>threshold()</code>.</p>
+<h3>Method: <code>IncrementalBundle::threshold(&self) -> Vector</code> (lines 307–313)</h3>
+<p>Sign-threshold the sums buffer: <code>sign(s)</code> → <code>1 if s > 0, -1 if s < 0, 0 if s == 0</code>. This is how bundling works: the bundle of a set of vectors is the element-wise sum, then sign-threshold to get back to {-1, 0, +1} values. Proven "bit-identical" to a full bundle from scratch (comment line 207).</p>
+<hr>
+<h2>Free function: <code>extract<F>(thought_vec: &Vector, forms: &[ThoughtAST], encode_fn: F) -> Vec<(ThoughtAST, f64)></code> (lines 323–332)</h2>
+<p>Generic over <code>F: Fn(&ThoughtAST) -> Vector</code>. For each form in <code>forms</code>, encodes it via <code>encode_fn</code>, computes <code>Similarity::cosine</code> between the form vector and <code>thought_vec</code>. Returns all <code>(ast, cosine_score)</code> pairs — <strong>no threshold, no filtering</strong>. The consumer decides.</p>
+<p>Comment: "On hot paths, pass encoding::encode::encode (which checks the LRU). At startup or in tests, pass ThoughtEncoder::encode directly."</p>
+<p>Marked: <code>rune:reap(scaffolding)</code> — "awaiting Phase 6 discriminant decode. Not dead, ahead of its consumer."</p>
+<hr>
+<h2>Free function: <code>collect_facts(ast: &ThoughtAST) -> Vec<ThoughtAST></code> (lines 341–352)</h2>
+<p>Recursively collects factual statements from the AST:</p>
+<table>
+<tr><th>Variant</th><th>Action</th></tr>
+<tr><td><code>Bundle(children)</code></td><td>Recurse into children, flatten.</td></tr>
+<tr><td><code>Sequential(items)</code></td><td>Recurse into items, flatten.</td></tr>
+<tr><td><code>Atom(_)</code></td><td>Skip — "name without value — not a fact".</td></tr>
+<tr><td><code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code></td><td>Return <code>vec![ast.clone()]</code> — these ARE factual statements.</td></tr>
+</table>
+<p>Returns only leaf-level facts. Bundles are transparent. Atoms are excluded. Bind nodes (named scalar facts like "rsi is 0.73") are included as-is.</p>
+<hr>
+<h2>Tests (lines 354–638)</h2>
+<p>14 tests. All use <code>DIMS = 4096</code>. Helper <code>make_encoder()</code> creates a <code>VectorManager::new(DIMS)</code> then <code>ThoughtEncoder::new(vm)</code>.</p>
+<table>
+<tr><th>Test</th><th>What it checks</th></tr>
+<tr><td><code>test_thought_ast_variants</code></td><td>Construction of Atom, Bind (×4 kinds), Bundle.</td></tr>
+<tr><td><code>test_encode_atom_returns_vector</code></td><td>Atom encode produces a DIMS-dimensional vector with non-zero entries.</td></tr>
+<tr><td><code>test_encode_atom_deterministic</code></td><td>Same Atom encoded twice → identical vector.</td></tr>
+<tr><td><code>test_encode_bind_atom_log_produces_bound_vector</code></td><td>Bind(Atom, Log) produces a valid vector.</td></tr>
+<tr><td><code>test_encode_bundle</code></td><td>Bundle of two Atoms produces a valid vector.</td></tr>
+<tr><td><code>test_encode_bind</code></td><td>Bind(Atom, Atom) produces a valid vector.</td></tr>
+<tr><td><code>test_encode_deterministic_across_calls</code></td><td>Same Bind encoded twice → identical.</td></tr>
+<tr><td><code>test_thought_ast_name</code></td><td>All 7 variants produce expected <code>name()</code> strings.</td></tr>
+<tr><td><code>test_extract_flat_self_cosine</code></td><td>Self-cosine of an encoded form against itself > 0.9.</td></tr>
+<tr><td><code>test_extract_flat_multiple_forms</code></td><td>Each form in a bundle has positive cosine with the bundle.</td></tr>
+<tr><td><code>test_extract_flat_unrelated_low_cosine</code></td><td>Unrelated form has cosine < 0.2 with the target.</td></tr>
+<tr><td><code>test_extract_flat_no_threshold</code></td><td>extract returns ALL forms, even unrelated ones.</td></tr>
+<tr><td><code>test_extract_flat_bind_form</code></td><td>Bind form self-cosine > 0.9.</td></tr>
+<tr><td><code>test_collect_facts_atom_skipped</code></td><td>Bare Atom produces 0 facts.</td></tr>
+<tr><td><code>test_collect_facts_bundle</code></td><td>Bundle with 2 Binds + 1 Atom → 2 facts (Atom skipped).</td></tr>
+<tr><td><code>test_collect_facts_nested_bundles</code></td><td>Nested bundles → flattened, no Bundle/Atom leaves.</td></tr>
+<tr><td><code>test_collect_facts_bind_is_fact</code></td><td>Bind inside a Bundle is returned as a fact.</td></tr>
+</table>
+<hr>
+<h2>How caching works (the full picture from source)</h2>
+<p><strong>ThoughtEncoder has zero caching.</strong> The struct holds only a <code>ScalarEncoder</code> and a <code>VectorManager</code> — both stateless evaluators.</p>
+<p><strong>Production caching is external.</strong> The module doc (line 5) says: "Production encoding goes through encoding::encode::encode() which checks the LRU." The <code>extract</code> function's doc (line 321) confirms: "On hot paths, pass encoding::encode::encode (which checks the LRU)."</p>
+<p><strong>IncrementalBundle has its own caching mechanism</strong> — the <code>last_facts: HashMap<ThoughtAST, Vector></code> field. But this is an optimization cache (avoiding re-encoding unchanged facts between candles), not the production LRU. It depends on <code>round_to</code> at vocab emission to ensure AST key equality is bitwise-reliable.</p>
+<hr>
+<h2>Summary of all public items</h2>
+<table>
+<tr><th>Item</th><th>Kind</th><th>Lines</th></tr>
+<tr><td><code>ThoughtAST</code></td><td>enum (7 variants)</td><td>17–27</td></tr>
+<tr><td><code>ThoughtAST::name(&self) -> String</code></td><td>method</td><td>34–44</td></tr>
+<tr><td><code>ThoughtAST::to_edn(&self) -> String</code></td><td>method</td><td>48–49</td></tr>
+<tr><td><code>round_to(v: f64, digits: u32) -> f64</code></td><td>free fn</td><td>119–122</td></tr>
+<tr><td><code>ThoughtEncoder</code></td><td>struct (2 fields)</td><td>128–133</td></tr>
+<tr><td><code>ThoughtEncoder::new(vm: VectorManager) -> Self</code></td><td>method</td><td>137–143</td></tr>
+<tr><td><code>ThoughtEncoder::encode(&self, ast: &ThoughtAST) -> Vector</code></td><td>method</td><td>147–198</td></tr>
+<tr><td><code>IncrementalBundle</code></td><td>struct (4 fields)</td><td>212–221</td></tr>
+<tr><td><code>IncrementalBundle::new(dims: usize) -> Self</code></td><td>method</td><td>224–231</td></tr>
+<tr><td><code>IncrementalBundle::encode(&mut self, ...) -> Vector</code></td><td>method</td><td>240–283</td></tr>
+<tr><td><code>IncrementalBundle::full_encode(&mut self, ...) -> Vector</code></td><td>method (private)</td><td>286–304</td></tr>
+<tr><td><code>IncrementalBundle::threshold(&self) -> Vector</code></td><td>method (private)</td><td>307–313</td></tr>
+<tr><td><code>extract<F>(...) -> Vec<(ThoughtAST, f64)></code></td><td>free fn</td><td>323–332</td></tr>
+<tr><td><code>collect_facts(ast: &ThoughtAST) -> Vec<ThoughtAST></code></td><td>free fn</td><td>341–352</td></tr>
+</table>
+<hr>
+<p><em>Verified context-free. Read every line. Quoted where possible.</em></p></div></body></html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Wards — the principle of scoped, disposable cognition — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html" active>Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Wards — the principle of scoped, disposable cognition <span class="badge badge-explain">EXPLAIN</span></h1><h1>Wards — the principle of scoped, disposable cognition</h1>
+<p><strong>TL;DR:</strong> Wards are automated verification skills — named, invoked, and discarded. They are how the holon system enforces architectural honesty without accumulating permanent process. Each ward is a <em>cognitive scope</em>: it receives a specific task, executes against the codebase, reports findings, and is dissolved. The system that polices the specification is itself disposable — the guide is the DNA, the wards are the immune response.</p>
+<hr>
+<h2>What it is</h2>
+<blockquote><em>"The wards: /sever, /reap, /scry, /gaze, /forge — five automated skills. Runes for conscious suppression."</em> — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-004</blockquote>
+<blockquote><em>"Wat is a specification language. It describes programs in s-expression form — what a module reads, what it emits, what it does not read. The wat leads. The Rust follows."</em> — <a class="wikilink" href="T-1-000-primers.html">T-1-000-primers</a></blockquote>
+<hr>
+<h2>The Eight Wards</h2>
+<p>The system grew from five to eight wards across Series 006-004 through 006-006:</p>
+<table>
+<tr><th>Ward</th><th>Function</th><th>Origin</th></tr>
+<tr><td><strong>/sever</strong></td><td>Cut dead code</td><td>Series 006-004 (Mar 29)</td></tr>
+<tr><td><strong>/reap</strong></td><td>Remove unused thoughts</td><td>Series 006-004 (Mar 29)</td></tr>
+<tr><td><strong>/scry</strong></td><td>Verify wat vs Rust — when they disagree, the wat wins</td><td>Series 006-004 (Mar 29)</td></tr>
+<tr><td><strong>/gaze</strong></td><td>Inspect state</td><td>Series 006-004 (Mar 29)</td></tr>
+<tr><td><strong>/forge</strong></td><td>Build</td><td>Series 006-004 (Mar 29)</td></tr>
+<tr><td><strong>/assay</strong></td><td>Measure substance vs description</td><td>Series 006-005 (Mar 31–Apr 3)</td></tr>
+<tr><td><strong>/temper</strong></td><td>Find efficient waste</td><td>Series 006-005 (Mar 31–Apr 3)</td></tr>
+<tr><td><strong>/ignorant</strong></td><td>Read documentation with no context — the stranger test</td><td>Series 006-006 (Apr 4–7)</td></tr>
+</table>
+<p><strong>Source:</strong> <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-004 through 006-006; <a class="wikilink" href="pg-vocabulary-evolution.html">pg-vocabulary-evolution</a></p>
+<hr>
+<h2>Scoped Cognition</h2>
+<p>Wards embody a key architectural principle: <em>cognition should be scoped and disposable</em>, not accumulated.</p>
+<p>Each ward invocation creates a fresh cognitive context — an agent that knows exactly what it needs for its task and nothing more. The /ignorant ward is the purest expression of this: it reads the <a class="wikilink" href="T-1-003-web-guide.html">guide</a> with <strong>zero prior context</strong>, simulating a stranger encountering the system for the first time. If the stranger can reconstruct the system from the document alone, the document is honest.</p>
+<blockquote><em>"32 passes of the ignorant reader on the guide. Findings dropped from 18 to 0."</em> — <a class="wikilink" href="T-1-002-book.html">T-1-002-book</a>, Act IV</blockquote>
+<p>This produced the fixed point:</p>
+<blockquote><em>"The guide is the fixed point. <code>f(guide) = guide</code>. The ignorant ward applied to the guide produces the guide. No changes needed."</em> — <a class="wikilink" href="T-1-002-book.html">T-1-002-book</a></blockquote>
+<hr>
+<h2>Ward-Enforced Constraints</h2>
+<p>Wards enforce constraints at the language level, not just through post-hoc review. In the <a class="wikilink" href="T1-001-wat-language.html">wat-language</a>, parallelism constraints are ward-enforced at compile time:</p>
+<blockquote><em>"pmap: the mapped function must be pure (no set!, push!, inc!). Ward-enforced at compile time."</em> — <a class="wikilink" href="T1-001-wat-language.html">T1-001-wat-language</a></blockquote>
+<p>This is the pattern: wards are not suggestions or linters. They are structural guarantees. The wat language defines what purity means; the wards verify that code conforms. When code violates the spec, it does not compile.</p>
+<hr>
+<h2>Quantitative Impact</h2>
+<p>The ward system produced measurable results during the Forging phase (Series 006-005):</p>
+<ul>
+<li><strong>213 phantom runes</strong> (forms referenced in code that don't exist in the language) dissolved to zero</li>
+<li>The LLM, when asked to fix phantoms, "replaced phantoms with new phantoms (6 new ones) — <em>fluently, and wrong</em>" — demonstrating why automated verification, not trust, is required</li>
+<li><strong>405 lines of dead code</strong> removed from a single file</li>
+<li><strong>35 visual ghosts</strong> eliminated</li>
+<li><strong>19 dead thoughts</strong> reaped</li>
+<li>Throughput improved from 139 to 222 candles/sec — "from removing lies, not from optimization" — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-004</li>
+</ul>
+<blockquote><em>"Honest architecture produces honest results."</em> — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-004</blockquote>
+<hr>
+<h2>Wards as Vocabulary Guardians</h2>
+<ul>
+<li>/sever removes code that names things that aren't real</li>
+<li>/scry ensures the specification and implementation use the same vocabulary</li>
+<li>/assay measures whether a named concept has the substance its description claims</li>
+<li>/temper finds concepts that are <em>almost</em> useful — efficient waste that looks like signal but isn't</li>
+</ul>
+<p>The 213 phantom runes dissolved by the wards were vocabulary errors: the LLM had written code referencing forms that do not exist in the language. The wards caught every one. The LLM then generated new phantoms when asked to fix them — proving that verification must be mechanical, not interpersonal.</p>
+<hr>
+<h2>Relationship to the Disposable Machine</h2>
+<p>This is not metaphor. The architecture specifies:</p>
+<blockquote><em>"The disposable machine: wat can be thrown away and regenerated from the guide."</em> — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-006</blockquote>
+<p>If the wat (and by extension the Rust) can be regenerated, then the wards that verify them must also be regenerable. They are not hand-curated tooling — they are skills invoked from the guide's specification of what correctness means. The guide describes the language; the wards verify conformance; both are disposable outputs of the same specification process.</p>
+<hr>
+<h2>Key Quotes</h2>
+<ol>
+<li><em>"The wards: /sever, /reap, /scry, /gaze, /forge — five automated skills. Runes for conscious suppression."</em> — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-004</li>
+</ol>
+<ol>
+<li><em>"When they disagree, the wat wins."</em> — <a class="wikilink" href="T-1-000-primers.html">T-1-000-primers</a></li>
+</ol>
+<ol>
+<li><em>"Ward-driven development with quantitative metrics (213→0 phantom runes)."</em> — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-005</li>
+</ol>
+<ol>
+<li><em>"The /ignorant ward caught type mismatches the expert missed, found design questions the guide couldn't answer."</em> — <a class="wikilink" href="T-1-002-book.html">T-1-002-book</a>, Act IV</li>
+</ol>
+<ol>
+<li><em>"405 lines of dead code removed from one file. 35 visual ghosts eliminated. 19 dead thoughts reaped. Throughput 222 candles/sec (up from 139/s) — from removing lies, not from optimization."</em> — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-004</li>
+</ol>
+<hr>
+<h2>Sources</h2>
+<ul>
+<li><a class="wikilink" href="T-1-000-primers.html">T-1-000-primers</a> — Wat language overview, ward definitions</li>
+<li><a class="wikilink" href="T-1-001-story.html">T-1-001-story</a> — Series 006-004 (Datamancer), 006-005 (Forging), 006-006 (Guide)</li>
+<li><a class="wikilink" href="T-1-002-book.html">T-1-002-book</a> — Act IV (Guide Becomes Atom), Act VI (Meta-Architecture)</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">T1-001-wat-language</a> — Ward-enforced compile-time constraints</li>
+<li><a class="wikilink" href="pg-vocabulary-evolution.html">pg-vocabulary-evolution</a> — Wards as vocabulary guardians, phantom rune dissolution</li>
+</ul></div></body></html>

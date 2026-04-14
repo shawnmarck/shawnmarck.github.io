@@ -1,0 +1,275 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Thought System — how candles become thoughts and thoughts become meaning — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html" active>Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Thought System — how candles become thoughts and thoughts become meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> (atoms) or <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where "similar market conditions live near each other." The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> then observes and learns from these thoughts over time.</p>
+<hr></div><h1>Thought System — how candles become thoughts and thoughts become meaning</h1>
+<h2>1. The Pipeline: Candle → Facts → AST → Vector → Thought</h2>
+<pre><code>
+candle ──► vocab module (pure fn) ──► Vec<ThoughtAST> ──► ThoughtEncoder.encode() ──► Vector
+                                                                          │
+                                                                          ▼
+                                                                   IncrementalBundle
+                                                                   (across candles)
+</code></pre>
+<h3>Step 1: Vocabulary modules emit facts</h3>
+<p>Vocabulary modules are <strong>pure functions</strong> — something in, facts out, no state. Each domain (market, exit, shared) observes different aspects of a candle and emits a <code>Vec<ThoughtAST></code>.</p>
+<blockquote>"Pure functions. Something in, facts out. No state. Each domain thinks about different things." — T2-004</blockquote>
+<p>Each fact is a <code>ThoughtAST</code> node carrying an encoding scheme:</p>
+<table>
+<tr><th>Scheme</th><th>When to use</th><th>Examples</th></tr>
+<tr><td><code>Linear { scale }</code></td><td>Naturally bounded scalars</td><td>RSI [0,1], Bollinger position [-1,1]</td></tr>
+<tr><td><code>Log</code></td><td>Unbounded positive scalars</td><td>ATR ratio, volume ratio</td></tr>
+<tr><td><code>Circular { period }</code></td><td>Periodic scalars</td><td>minute (60), hour (24), day-of-week (7)</td></tr>
+</table>
+<blockquote>"The encoding scheme IS the bounding strategy." — T2-004</blockquote>
+<p>Every relationship is a <strong>signed scalar</strong>, not a boolean. No "above" or "below" atoms — just the number with sign and magnitude.</p>
+<blockquote>"No zones. No categories. Only scalars. 'Overbought' is a magic number wearing a name." — T2-004</blockquote>
+<h3>Step 2: ThoughtAST — the thought expression tree</h3>
+<p>The <code>ThoughtAST</code> enum (T0-011) is the intermediate representation between vocabulary and vector:</p>
+<table>
+<tr><th>Variant</th><th>Purpose</th><th>Example</th></tr>
+<tr><td><code>Atom(String)</code></td><td>Named symbol, no scalar</td><td><code>"rsi"</code></td></tr>
+<tr><td><code>Linear { value, scale }</code></td><td>Bounded scalar</td><td><code>Linear { value: 0.73, scale: 1.0 }</code></td></tr>
+<tr><td><code>Log { value }</code></td><td>Unbounded positive scalar</td><td><code>Log { value: 1.5 }</code></td></tr>
+<tr><td><code>Circular { value, period }</code></td><td>Wrapping periodic scalar</td><td><code>Circular { value: 14.0, period: 24.0 }</code></td></tr>
+<tr><td><code>Bind(Box, Box)</code></td><td>Two concepts composed into a relationship</td><td><code>Bind(Atom("rsi"), Log(1.5))</code></td></tr>
+<tr><td><code>Bundle(Vec)</code></td><td>Superposition of multiple relationships</td><td><code>Bundle([fact1, fact2, fact3])</code></td></tr>
+<tr><td><code>Sequential(Vec)</code></td><td>Position-sensitive sequence</td><td><code>[A, B] ≠ [B, A]</code></td></tr>
+</table>
+<p>A typical market candle might produce ~60–80 individual facts across all vocabulary modules, bundled into a single thought vector.</p>
+<p><code>collect_facts()</code> recursively flattens nested Bundles/Sequentials, skipping bare Atoms (names without values are not facts).</p>
+<h3>Step 3: ThoughtEncoder walks the AST</h3>
+<p>The <code>ThoughtEncoder</code> (T0-011) is <strong>stateless</strong> — no cache. It holds only a <code>ScalarEncoder</code> and a <code>VectorManager</code>. Each <code>encode()</code> call re-evaluates the entire subtree:</p>
+<table>
+<tr><th>AST variant</th><th>Encoding action</th></tr>
+<tr><td><code>Atom(name)</code></td><td><code>VectorManager.get_vector(name)</code> — SHA-256 → ChaCha8Rng → bipolar vector</td></tr>
+<tr><td><code>Linear { value, scale }</code></td><td><code>ScalarEncoder.encode(value, Linear { scale })</code> — rotational interpolation</td></tr>
+<tr><td><code>Log { value }</code></td><td><code>ScalarEncoder.encode_log(value)</code> — log₁₀ then rotational</td></tr>
+<tr><td><code>Circular { value, period }</code></td><td><code>ScalarEncoder.encode(value, Circular { period })</code> — modulo wrap</td></tr>
+<tr><td><code>Bind(left, right)</code></td><td>Recursively encode both, then <code>Primitives::bind(&l, &r)</code></td></tr>
+<tr><td><code>Bundle(children)</code></td><td>Encode all children, then <code>Primitives::bundle(&refs)</code></td></tr>
+<tr><td><code>Sequential(items)</code></td><td>Encode each item, <code>permute</code> by position index, then <code>bundle</code></td></tr>
+</table>
+<blockquote>"Production encoding goes through <code>encoding::encode::encode()</code> which checks the LRU. This struct exists for tests and IncrementalBundle." — T0-011</blockquote>
+<hr>
+<h2>2. The Vector Algebra — how thoughts are composed</h2>
+<p>The foundation is a <strong>Vector Algebra</strong> defined in the WAT spec (T0-002) as:</p>
+<blockquote>"A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism."</blockquote>
+<h3>atom — concept identity</h3>
+<blockquote>"Name a concept → deterministic bipolar vector. Same seed + same name = same vector everywhere."</blockquote>
+<p>Implemented by <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>: <code>SHA-256(global_seed ∥ name)[0..8] → ChaCha8Rng → {-1, 0, +1}^dim</code>.</p>
+<h3>bind — compose relationships</h3>
+<p>Element-wise multiplication of bipolar vectors. Self-inverse: <code>bind(bind(A, B), A) = B</code> (exact for bipolar, not approximate).</p>
+<p>This is how "rsi is 0.73" becomes a single vector: <code>bind(atom("rsi"), encode_linear(0.73, 1.0))</code>.</p>
+<h3>bundle — superimpose facts</h3>
+<p>Element-wise majority vote (sum then sign-threshold): <code>>0 → +1</code>, <code><0 → -1</code>, <code>==0 → 0</code>. Associative and commutative. This is how ~60 individual facts collapse into <strong>one thought vector</strong>.</p>
+<p><strong>Divergence noted</strong>: WAT says "identity = zero vector" but Rust panics on empty input.</p>
+<h3>cosine — measure similarity</h3>
+<p>The only measurement. Returns <code>[-1.0, +1.0]</code>. How the system determines that "this market state is similar to that one."</p>
+<hr>
+<h2>3. Scalar Encoding — mapping numbers into meaning-space</h2>
+<p>Scalar encoding ensures that <strong>similar values produce similar vectors</strong> (T0-004). Two independent systems exist:</p>
+<h3>Rotational encoding (ScalarEncoder)</h3>
+<p>Generates two random bipolar vectors (<code>base</code>, <code>ortho</code>) via ChaCha8Rng, then rotates between them:</p>
+<pre><code>
+frac = value / scale
+angle = frac × 2π
+result[i] = sign(base[i] × cos(angle) + ortho[i] × sin(angle))
+</code></pre>
+<p>Used by <code>ThoughtEncoder</code> for <code>Linear</code>, <code>Log</code>, and <code>Circular</code> nodes.</p>
+<h3>Positional encoding (Encoder/Walkable path)</h3>
+<p>Transformer-style sinusoidal encoding with geometrically spaced frequencies:</p>
+<pre><code>
+freq = 1.0 / scale^(i / dim)
+if i is even: sin(position × freq)
+if i is odd:  cos(position × freq)
+</code></pre>
+<p>Used by the <code>Walkable</code>/<code>Encoder</code> path for <code>LinearFloat</code>, <code>LogFloat</code>, <code>TimeFloat</code> scalars.</p>
+<p>These produce <strong>different vectors for the same input</strong> — they are separate code paths.</p>
+<h3>Key encoding properties</h3>
+<ul>
+<li><strong>Similarity gradient</strong>: Closer values → higher cosine. Verified: <code>sim(0,10) > sim(0,50)</code>.</li>
+<li><strong>Circular wrap</strong>: Hour 23 is more similar to hour 0 than hour 12.</li>
+<li><strong>Log ratio preservation</strong>: Equal ratios → approximately equal similarity drops.</li>
+<li><strong>Quantization awareness</strong>: Bipolar thresholding causes quantization; accumulators that average multiple samples recover gradient behavior.</li>
+</ul>
+<hr>
+<h2>4. Walkable — zero-serialization encoding</h2>
+<p>The <code>Walkable</code> trait (T0-006) enables any Rust type to be directly encoded into vectors <strong>without JSON/EDN serialization</strong>. It defines a structural type system (<code>WalkType</code>) that the encoder recursively walks:</p>
+<table>
+<tr><th>WalkType</th><th>Encoding semantics</th></tr>
+<tr><td><code>Scalar</code></td><td>Atom lookup or special numeric encoding</td></tr>
+<tr><td><code>Map</code></td><td>Role-filler binding: each key bound to its value's vector, then all bundled</td></tr>
+<tr><td><code>List</code></td><td>Position-encoded: each element bound to its indexed path, then bundled</td></tr>
+<tr><td><code>Set</code></td><td>Items bundled directly, then bound with <code>"set_indicator"</code> role</td></tr>
+<tr><td><code>Spread</code></td><td>Fan-out: each element becomes an independent leaf binding</td></tr>
+</table>
+<blockquote>"The key insight is <strong>role-filler binding</strong>: we bind each value (filler) with its key (role) before bundling." — T0-006</blockquote>
+<p>This is an alternative path to <code>ThoughtAST</code> — both produce the same vector algebra operations, but Walkable works on native Rust types while ThoughtAST works on the explicit tree.</p>
+<hr>
+<h2>5. IncrementalBundle — efficiency across candles</h2>
+<p>For streaming data (one candle at a time), re-encoding ~60 facts every tick is expensive. <code>IncrementalBundle</code> (T0-011) maintains running <code>Vec<i32></code> sums:</p>
+<ol>
+<li><strong>First candle</strong>: Full encode — encode every fact, accumulate sums, store <code>HashMap<ThoughtAST, Vector></code>.</li>
+<li><strong>Subsequent candles</strong>: Diff — remove vectors for facts that disappeared, encode only new/changed facts, update sums.</li>
+<li><strong>Threshold</strong>: <code>sign(sum)</code> produces the bundle — proven <strong>bit-identical</strong> to a full bundle from scratch.</li>
+</ol>
+<blockquote>"round_to at vocab emission is load-bearing for the AST diff. Quantized floats compare reliably." — T0-011</blockquote>
+<p>Without <code>round_to</code>, floating-point drift would cause false "changed" detections, degrading to full recompute.</p>
+<hr>
+<h2>6. The Full Vocabulary Landscape</h2>
+<p>Three domains, scoped subfiles (T2-004):</p>
+<table>
+<tr><th>Domain</th><th>Modules</th><th>Live atoms</th></tr>
+<tr><td><strong>shared/</strong></td><td>time (5 atoms)</td><td>5 — all wired</td></tr>
+<tr><td><strong>market/</strong></td><td>standard (8), oscillators (8), flow (6), persistence (3), regime (8), divergence (3), fibonacci (8), keltner (6), momentum (6), price_action (7), timeframe (6)</td><td>~69 — ichimoku & stochastic removed</td></tr>
+<tr><td><strong>exit/</strong> (Rust)</td><td>regime (8), time (2), phase (2+variable)</td><td>~12+ — wat spec exit modules not wired</td></tr>
+</table>
+<p><strong>~86+ atoms fire per candle</strong> across a typical lens configuration. Each atom becomes one <code>ThoughtAST</code> leaf. All leaves are bundled into one thought vector.</p>
+<h3>Known divergences</h3>
+<ul>
+<li><strong>Exit domain</strong>: GUIDE describes <code>volatility.wat</code>, <code>structure.wat</code>, <code>timing.wat</code> — none are wired in live Rust. The Rust exit vocab uses separate regime/time/phase modules instead.</li>
+<li><strong>Ichimoku & stochastic</strong>: Removed from all lenses per Proposals 041+042. Modules exist but are not called.</li>
+</ul>
+<hr>
+<h2>7. Caching Architecture</h2>
+<p>Three distinct caching layers:</p>
+<table>
+<tr><th>Layer</th><th>Location</th><th>Purpose</th></tr>
+<tr><td><strong>VectorManager cache</strong></td><td><code>Arc<RwLock<HashMap<String, Vector>>></code></td><td>Atom → vector mapping. Persistent across all encodes. Shared via <code>Arc</code>.</td></tr>
+<tr><td><strong>Production LRU</strong></td><td><code>encoding::encode::encode()</code></td><td>Avoids re-evaluating identical <code>ThoughtAST</code> subtrees on hot paths.</td></tr>
+<tr><td><strong>IncrementalBundle facts cache</strong></td><td><code>HashMap<ThoughtAST, Vector></code></td><td>Avoids re-encoding unchanged facts between candles. Depends on <code>round_to</code>.</td></tr>
+</table>
+<p><code>ThoughtEncoder</code> itself holds <strong>zero caching</strong> — it is a pure evaluator.</p>
+<hr>
+<h2>8. What Makes a Thought Meaningful</h2>
+<p>A thought vector is meaningful because of the algebraic properties of its construction:</p>
+<ol>
+<li><strong>Bind is self-inverse</strong>: You can decompose a thought to recover its components. <code>bind(bound_thought, role_vector) ≈ filler_vector</code>.</li>
+<li><strong>Bundle preserves similarity</strong>: A bundled thought is similar (by cosine) to each of its constituent facts.</li>
+<li><strong>Cosine is the only measurement</strong>: One number determines similarity. No thresholds, no categories in the encoding itself.</li>
+<li><strong>The vocabulary owns encode AND decode</strong>: "It put the value on the scalar, it can take it back. That's why scalar accumulators work."</li>
+<li><strong>The Reckoner learns boundaries</strong>: The vocabulary emits raw scalars. The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> learns where boundaries are via <code>observe</code>, <code>predict</code>, and <code>resolve</code> — no human-chosen thresholds.</li>
+</ol>
+<blockquote>"The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are." — T2-004</blockquote>
+<hr>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> — deterministic atom-to-vector registry</li>
+<li><a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> — mapping continuous values to bipolar vectors</li>
+<li><a class="wikilink" href="T0-006-walkable.html">Walkable</a> — zero-serialization encoding trait for Rust types</li>
+<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — the intermediate representation between vocabulary and vector</li>
+<li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — efficient streaming bundling across candles</li>
+<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the vector algebra: atom, bind, bundle, cosine</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> — the learning subsystem that observes thoughts over time</li>
+<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — the complete atom catalog organized by domain</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — product/coproduct/protocol (orthogonal to vector algebra)</li>
+</ul>
+<hr>
+<h2>Sources</h2>
+<ul>
+<li>T0-002 (Primitives) — atom, bind, bundle, cosine; Reckoner Coalgebra declaration</li>
+<li>T0-004 (Scalar Encoding) — rotational and positional encoding; linear, log, circular</li>
+<li>T0-005 (VectorManager) — SHA-256 → ChaCha8Rng deterministic atom vectors</li>
+<li>T0-006 (Walkable) — structural type system and recursive tree walking</li>
+<li>T0-011 (ThoughtEncoder) — ThoughtAST enum, encoder evaluation, IncrementalBundle</li>
+<li>T2-004 (Vocabulary) — complete atom catalog, domain organization, encoding schemes</li>
+</ul></div></body></html>

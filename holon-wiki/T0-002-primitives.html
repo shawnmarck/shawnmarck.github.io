@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html" active>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs <span class="badge badge-how">HOW</span></h1><h1>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</h1>
+<h2>What It Is</h2>
+<p>The holon-rs kernel defines two structures. The WAT spec (<code>wat/core/primitives.wat</code>) declares them as <strong>two algebraic structures</strong>:</p>
+<blockquote>"Two algebraic structures. Nothing here is derivable from the others."</blockquote>
+<ol>
+<li><strong>Vector Algebra</strong> — four generators: <code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code></li>
+<li><strong>Reckoner Coalgebra</strong> — opaque state machine with co-generators for learning</li>
+</ol>
+<p>The Rust file (<code>holon-rs/src/kernel/primitives.rs</code>) implements the <strong>vector operations</strong> portion of the Vector Algebra. It does <em>not</em> implement <code>atom</code> or any part of the Reckoner Coalgebra.</p>
+<hr>
+<h2>Vector Algebra (WAT spec — canonical)</h2>
+<p>The WAT defines the Vector Algebra as:</p>
+<blockquote>"A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism."</blockquote>
+<h3>atom</h3>
+<blockquote>"(atom name) → Vector"</blockquote>
+<blockquote>"Name a concept → deterministic bipolar vector."</blockquote>
+<blockquote>"Same seed + same name = same vector everywhere."</blockquote>
+<p><code>atom</code> maps a name to a deterministic bipolar vector. It is the ground truth for concept identity. The Rust <code>primitives.rs</code> does <strong>not</strong> implement <code>atom</code>. It is a declared primitive with no corresponding method in this file.</p>
+<h3>bind</h3>
+<blockquote>"(bind role filler) → Vector"</blockquote>
+<blockquote>"Compose two concepts into a relationship."</blockquote>
+<blockquote>"Self-inverse: (bind (bind A B) A) = B"</blockquote>
+<p>The Rust implementation agrees:</p>
+<pre><code>
+/// Bind two vectors (element-wise multiplication for bipolar).
+///
+/// Creates an association between two concepts. The result is
+/// dissimilar to both inputs, but `unbind(bind(A, B), A) ≈ B`.
+///
+/// For bipolar vectors, this is element-wise multiplication.
+pub fn bind(a: &Vector, b: &Vector) -> Vector {
+    let mut out = Vector::zeros(a.dimensions());
+    Self::bind_into(a, b, &mut out);
+    out
+}
+</code></pre>
+<p>The implementation is literally <code><em>o = x </em> y</code> for each dimension — element-wise multiplication of bipolar (<code>{-1, 0, +1}</code>) values. The self-inverse property is tested:</p>
+<pre><code>
+#[test]
+fn test_bind_self_inverse() {
+    // ...
+    let ab = Primitives::bind(&a, &b);
+    let b_recovered = Primitives::bind(&ab, &a);
+    assert_eq!(b, b_recovered);
+}
+</code></pre>
+<p>Rust also exposes <code>unbind</code> as an explicit alias:</p>
+<pre><code>
+/// Unbind a key from a bound vector.
+/// For bipolar vectors, unbind is identical to bind (self-inverse property):
+/// `unbind(bind(A, B), A) = B`
+pub fn unbind(bound: &Vector, key: &Vector) -> Vector {
+    Self::bind(bound, key)
+}
+</code></pre>
+<h3>bundle</h3>
+<blockquote>"(bundle fact1 fact2 ...) → Vector"</blockquote>
+<blockquote>"Superimpose multiple relationships into one thought."</blockquote>
+<blockquote>"Associative, commutative, identity = zero vector."</blockquote>
+<p>The Rust implementation uses <strong>element-wise majority vote</strong> (sum then sign-threshold):</p>
+<pre><code>
+/// Bundle multiple vectors (element-wise majority vote).
+/// Creates a superposition that is similar to ALL input vectors.
+pub fn bundle(vectors: &[&Vector]) -> Vector {
+    // sums each dimension, then: >0 → +1, <0 → -1, ==0 → 0
+}
+</code></pre>
+<p><strong>Divergence noted:</strong> The WAT says "identity = zero vector," implying bundling nothing yields zero. The Rust <code>bundle</code> <em>panics</em> on an empty input:</p>
+<pre><code>
+if vectors.is_empty() {
+    panic!("Cannot bundle empty vector list");
+}
+</code></pre>
+<p>Associativity and commutativity hold in practice because majority vote over signed integers is order-independent.</p>
+<h3>cosine</h3>
+<blockquote>"(cosine thought direction) → Float  ; [-1.0, +1.0]"</blockquote>
+<blockquote>"Measure similarity between two thoughts."</blockquote>
+<blockquote>"The only measurement. One number."</blockquote>
+<p>Rust's cosine similarity is <strong>not</strong> in <code>primitives.rs</code>. It lives in <code>crate::similarity::Similarity::cosine</code>. The Rust file calls it extensively from tests and from helper methods (<code>cleanup</code>, <code>invert</code>, <code>topk_similar</code>, etc.) but does not define it here.</p>
+<hr>
+<h2>Reckoner Coalgebra (WAT spec — canonical)</h2>
+<p>The WAT declares a second structure: the <strong>Reckoner Coalgebra</strong>. The spec says:</p>
+<blockquote>"Opaque state. The co-generators produce all observable behavior. Removing any one makes the external characterization incomplete."</blockquote>
+<p>Generators declared:</p>
+<table>
+<tr><th>Operation</th><th>Signature</th><th>Role</th></tr>
+<tr><td><code>reckoner</code></td><td><code>(name dims refit-interval) → Reckoner</code></td><td>Create learning primitive</td></tr>
+<tr><td><code>register</code></td><td><code>(reckoner name) → Label</code></td><td>Register label, get symbol handle</td></tr>
+<tr><td><code>observe</code></td><td><code>(reckoner thought label weight)</code></td><td>Accumulate observation (state transition)</td></tr>
+<tr><td><code>predict</code></td><td><code>(reckoner thought) → Prediction</code></td><td>Query (observation function)</td></tr>
+<tr><td><code>decay</code></td><td><code>(reckoner rate)</code></td><td>Fade old observations (aging function)</td></tr>
+<tr><td><code>resolve</code></td><td><code>(reckoner conviction correct)</code></td><td>Record prediction outcome</td></tr>
+<tr><td><code>recalib-count</code></td><td><code>(reckoner) → Integer</code></td><td>Monotonically increasing rebuild count</td></tr>
+<tr><td><code>discriminant</code></td><td>`(reckoner label) → Vector \</td><td>None`</td><td>Learned separation between prototypes</td></tr>
+<tr><td><code>curve</code></td><td><code>(reckoner) → (amplitude, exponent)</code></td><td>Conviction-accuracy curve fit</td></tr>
+</table>
+<p>The conviction-accuracy curve formula is given explicitly:</p>
+<blockquote>"accuracy = (1/N) + a × exp(b × conviction), N = number of labels."</blockquote>
+<blockquote>"At zero conviction, accuracy = 1/N (random chance among N labels)."</blockquote>
+<blockquote>"The curve IS the proof. Monotonically increasing = real signal."</blockquote>
+<p><strong>None of the Reckoner Coalgebra is implemented in <code>primitives.rs</code>.</strong> This file is purely vector operations. The reckoner lives elsewhere in the kernel.</p>
+<hr>
+<h2>Rust-Only Operations (not in WAT spec)</h2>
+<p>The Rust <code>primitives.rs</code> defines many operations absent from the WAT spec. These are the <strong>implementation's extended algebra</strong>:</p>
+<h3>negate (three methods)</h3>
+<pre><code>
+pub enum NegateMethod { Subtract, Zero, Invert }
+</code></pre>
+<ul>
+<li><strong>Subtract</strong> (default): clamp <code>superposition - component</code> to <code>[-1, +1]</code></li>
+<li><strong>Zero</strong>: zero out dimensions where component is non-zero</li>
+<li><strong>Invert</strong>: invert component and add (bundle with negated component)</li>
+</ul>
+<p>The WAT does not define negate. There is also <code>negate_f64</code> using <strong>orthogonal projection</strong> (<code>result = a - (dot(a,b)/dot(b,b)) * b</code>).</p>
+<h3>permute</h3>
+<pre><code>
+/// Circular shift (permutation) of vector dimensions.
+/// Used for encoding sequential position.
+pub fn permute(vec: &Vector, k: i32) -> Vector
+</code></pre>
+<p>Element-wise circular shift. The module doc lists permute as a core VSA primitive, but the WAT spec does not include it in its four generators.</p>
+<h3>weighted_bundle</h3>
+<pre><code>
+pub fn weighted_bundle(vectors: &[&Vector], weights: &[f64]) -> Vector
+</code></pre>
+<p>Same majority-vote semantics but with per-vector weight scaling before thresholding.</p>
+<h3>Other extended operations</h3>
+<table>
+<tr><th>Method</th><th>What it does</th></tr>
+<tr><td><code>amplitude</code> / <code>amplify</code></td><td>Strengthen a component's presence in a superposition</td></tr>
+<tr><td><code>prototype(vectors, threshold)</code></td><td>Keep dimensions where ≥ threshold fraction agree</td></tr>
+<tr><td><code>prototype_add(prototype, example, count)</code></td><td>Incremental prototype update with weight <code>1/(count+1)</code></td></tr>
+<tr><td><code>difference(before, after)</code></td><td>Clamp difference per dimension to <code>[-1, +1]</code></td></tr>
+<tr><td><code>blend(vec1, vec2, alpha)</code></td><td>Weighted interpolation, then threshold</td></tr>
+<tr><td><code>resonance(vec, reference)</code></td><td>Keep only agreeing dimensions</td></tr>
+<tr><td><code>cleanup(noisy, codebook)</code></td><td>Find nearest codebook vector by cosine</td></tr>
+<tr><td><code>similarity_profile(a, b)</code></td><td>Element-wise product (agreement pattern as vector)</td></tr>
+<tr><td><code>attend(query, memory, strength, mode)</code></td><td>Soft attention: Hard/Soft/Amplify modes</td></tr>
+<tr><td><code>analogy(a, b, c)</code></td><td><code>C + difference(B, A)</code> — relational transfer</td></tr>
+<tr><td><code>project(vec, subspace, orthogonalize)</code></td><td>Gram-Schmidt projection onto subspace</td></tr>
+<tr><td><code>reject(vec, subspace, orthogonalize)</code></td><td>Residual after projection (orthogonal complement)</td></tr>
+<tr><td><code>conditional_bind(a, b, gate, mode)</code></td><td>Element-wise bind gated by a third vector</td></tr>
+<tr><td><code>complexity(vec)</code></td><td><code>0.5 <em> density + 0.5 </em> balance</code>, normalized to [0, 1]</td></tr>
+<tr><td><code>invert(vec, codebook, top_k, threshold)</code></td><td>Find top-k codebook matches above threshold</td></tr>
+<tr><td><code>sparsify(vec, k)</code></td><td>Keep only k highest-absolute-value dimensions</td></tr>
+<tr><td><code>centroid(vectors)</code></td><td>Normalize mean, then threshold (vs. majority vote)</td></tr>
+<tr><td><code>flip(vec)</code></td><td>Negate every element (logical NOT)</td></tr>
+<tr><td><code>topk_similar(query, candidates, k)</code></td><td>Generalized cleanup</td></tr>
+<tr><td><code>similarity_matrix(vectors)</code></td><td>All pairwise cosine similarities</td></tr>
+<tr><td><code>entropy(vec)</code></td><td>Shannon entropy of {+1, -1, 0} distribution, normalized</td></tr>
+<tr><td><code>random_project(vec, target_dims, seed)</code></td><td>Sparse random projection (Achlioptas 2003)</td></tr>
+<tr><td><code>power(vec, exponent)</code></td><td>Fractional/exponential power on bipolar values</td></tr>
+<tr><td><code>autocorrelate(stream, max_lag)</code></td><td>Lagged self-similarity</td></tr>
+<tr><td><code>cross_correlate(stream_a, stream_b, max_lag)</code></td><td>Lagged cross-similarity</td></tr>
+<tr><td><code>segment(stream, window, threshold, method)</code></td><td>Breakpoint detection (Diff or Prototype)</td></tr>
+<tr><td><code>bundle_with_confidence(vectors)</code></td><td>Bundle + per-dimension agreement margins</td></tr>
+<tr><td><code>coherence(vectors)</code></td><td>Mean pairwise cosine (cluster tightness)</td></tr>
+<tr><td><code>reflect_about_mean(vec)</code></td><td><code>2*mean - x</code> (Grover's diffusion)</td></tr>
+<tr><td><code>grover_amplify(signal, background, iterations)</code></td><td>Iterative mark + diffuse</td></tr>
+<tr><td><code>drift_rate(stream, window)</code></td><td>Temporal derivative of similarity</td></tr>
+</table>
+<h3>f64 Pipeline</h3>
+<p>Rust maintains a parallel pipeline in <code>f64</code> space for "scalar extraction from accumulated prototypes":</p>
+<blockquote>"The i8 pipeline is for encoding and prediction. The f64 pipeline is for extraction and analysis."</blockquote>
+<table>
+<tr><th>i8 method</th><th>f64 equivalent</th><th>Difference</th></tr>
+<tr><td><code>bind</code></td><td><code>bind_f64</code></td><td>Identical (element-wise multiply)</td></tr>
+<tr><td><code>bundle</code></td><td><code>bundle_f64</code></td><td>No thresholding — raw sum</td></tr>
+<tr><td><code>negate</code> (Subtract)</td><td><code>negate_f64</code></td><td>Orthogonal projection instead of clamped subtraction</td></tr>
+<tr><td>—</td><td><code>cosine_f64</code></td><td>Standard dot-product cosine</td></tr>
+</table>
+<hr>
+<h2>Key Properties</h2>
+<h3>Bind is self-inverse (exact, not approximate)</h3>
+<p>Both the WAT spec and Rust tests confirm exact recovery for bipolar vectors:</p>
+<ul>
+<li>WAT: <code>"(bind (bind A B) A) = B"</code></li>
+<li>Rust: <code>assert_eq!(b, b_recovered)</code> in <code>test_bind_self_inverse</code></li>
+</ul>
+<p>This holds because bipolar element-wise multiplication is its own inverse: <code>(a<em>b)</em>a = a²*b = b</code> when <code>a ∈ {-1, +1}</code>.</p>
+<h3>Bundle is majority vote (not sum)</h3>
+<p>Bundle sums dimension values into <code>i32</code>, then thresholds: positive → +1, negative → -1, zero → 0. This is not a plain sum; it is a <strong>sign function applied to the sum</strong>.</p>
+<h3>Bundle identity divergence</h3>
+<ul>
+<li>WAT: <code>"identity = zero vector"</code></li>
+<li>Rust: panics on empty input</li>
+</ul>
+<p>The Rust implementation does not provide a bundling identity. An empty bundle is undefined behavior, not the zero vector.</p>
+<h3>Cosine is the only measurement</h3>
+<ul>
+<li>WAT: <code>"The only measurement. One number."</code></li>
+<li>Rust: cosine is the sole similarity metric used throughout, even though it is defined in a separate module.</li>
+</ul>
+<hr>
+<h2>Enums (Rust-only)</h2>
+<pre><code>
+pub enum AttendMode   { Hard, Soft, Amplify }
+pub enum GateMode     { Positive, Negative, NonZero }
+pub enum SegmentMethod { Diff, Prototype }
+pub enum NegateMethod { Subtract, Zero, Invert }
+</code></pre>
+<p>None of these appear in the WAT spec.</p>
+<hr>
+<h2>Summary of WAT ↔ Rust Alignment</h2>
+<table>
+<tr><th>WAT generator</th><th>Rust status</th><th>Notes</th></tr>
+<tr><td><code>atom</code></td><td><strong>Not implemented</strong> in this file</td><td>Lives elsewhere</td></tr>
+<tr><td><code>bind</code></td><td>✅ <code>Primitives::bind</code></td><td>Exact agreement on self-inverse, element-wise multiply</td></tr>
+<tr><td><code>bundle</code></td><td>⚠️ <code>Primitives::bundle</code></td><td>Agree on majority vote / superposition. Disagree on empty-input behavior</td></tr>
+<tr><td><code>cosine</code></td><td>⚠️ <code>crate::similarity::Similarity::cosine</code></td><td>Implemented but not in this file</td></tr>
+<tr><td><code>reckoner</code></td><td><strong>Not implemented</strong> in this file</td><td>Reckoner Coalgebra is a separate module</td></tr>
+<tr><td><code>register</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<tr><td><code>observe</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<tr><td><code>predict</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<tr><td><code>decay</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<tr><td><code>resolve</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<tr><td><code>recalib-count</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<tr><td><code>discriminant</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<tr><td><code>curve</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+</table>
+<hr>
+<h2>Source Files</h2>
+<ul>
+<li><code>wat/core/primitives.wat</code> — 83 lines. Canonical specification.</li>
+<li><code>holon-rs/src/kernel/primitives.rs</code> — 1911 lines (1255 code + 656 tests). Implementation.</li>
+</ul></div></body></html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Signal Propagation — How Learning Flows Backward Through the Organism — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html" active>Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Signal Propagation — How Learning Flows Backward Through the Organism <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<hr></div><h1>Signal Propagation — How Learning Flows Backward Through the Organism</h1>
+<p><strong>Wiki composite · Sources: T0-018 (broker-rust), T0-013 (market-observer-rust), T0-014 (exit-observer-rust), T0-008 (reckoner), pg-broker, pg-programs, pg-market-observer, pg-exit-observer</strong></p>
+<hr>
+<h2>The Backward Path</h2>
+<pre><code>
+Price moves against paper → Outcome resolved (Grace or Violence)
+    │
+    ▼
+Broker.tick_papers() → produces Resolution (15 fields)
+    │
+    ▼
+Post collects Resolutions from all N×M brokers
+    │
+    ▼
+Broker.propagate(outcome, weight, optimal_distances, thoughts, direction)
+    ├── Step 1: Track record (cumulative grace/violence, counts)
+    ├── Step 2: Scalar accumulators learn (optimal trail/stop distances)
+    ├── Step 3: Dollar P&L → EMA → expected_value
+    └── Returns PropagationFacts (which observers learn, with what data)
+    │
+    ▼
+Post routes PropagationFacts via mailboxes
+    ├── ObsLearn → market observer's mailbox
+    │       └── observer.resolve(market_thought, direction, weight)
+    │             ├── Reckoner observes labeled anomaly
+    │             ├── Conviction curve updates (accuracy proof)
+    │             └── Engram gate evaluates long-term memory
+    │
+    └── PositionLearn → position observer's mailbox
+            └── observer.observe_distances(position_thought, optimal_distances)
+                  ├── Trail reckoner observes optimal trail
+                  └── Stop reckoner observes optimal stop
+</code></pre>
+<p>— T0-018 (§7.7, §7.8, §10); pg-programs (§Data flow through the grid)</p>
+<hr>
+<h2>The Resolution — What Triggers Learning</h2>
+<p>Every settled paper produces a <code>Resolution</code> struct carrying 15 fields. The three resolution paths:</p>
+<table>
+<tr><th>Path</th><th>Trigger</th><th>Outcome</th><th>Signal destination</th><th>Position batch?</th></tr>
+<tr><td>Stop fires before trail crosses</td><td>Price hits safety stop</td><td><a class="wikilink" href="pg-grace-and-violence.html">Violence</a></td><td><code>market_signals</code> → market observer</td><td>No</td></tr>
+<tr><td>Trail crosses (first time)</td><td>Trailing stop reached</td><td><a class="wikilink" href="pg-grace-and-violence.html">Grace</a> signal</td><td><code>market_signals</code> → market observer</td><td>Runner begins</td></tr>
+<tr><td>Runner finishes</td><td>Reversal hits trailing stop</td><td><a class="wikilink" href="pg-grace-and-violence.html">Grace</a> resolution</td><td><code>runner_resolutions</code> → position observer</td><td>Yes — deferred batch</td></tr>
+</table>
+<p><strong>Key ordering:</strong> Violence is checked before Grace. If both fire on the same tick, Violence wins. (T0-018, §7.7)</p>
+<h3>What Each Observer Learns</h3>
+<p><strong>Market observer</strong> receives the <code>market_thought</code> — the raw market anomaly before composition with position data. Per <a class="wikilink" href="pg-signal-propagation.html">Proposal 024</a>:</p>
+<blockquote><em>"market observer learns from the anomaly, not composed thought"</em> — T0-018, line 112</blockquote>
+<p><strong>Position observer</strong> receives the <code>position_thought</code> — its own encoded facts only. Per <a class="wikilink" href="pg-signal-propagation.html">Proposal 026</a>:</p>
+<blockquote><em>"position learns from position_thought, not composed"</em> — T0-018, line 39</blockquote>
+<p>This separation ensures each observer learns from what it actually produced, not from downstream mixing.</p>
+<hr>
+<h2>PropagationFacts — The Return Value</h2>
+<pre><code>
+pub struct PropagationFacts {
+    pub market_idx: usize,       // Which market observer should learn
+    pub position_idx: usize,     // Which position observer should learn
+    pub direction: Direction,    // For the market observer (Up/Down label)
+    pub composed_thought: Vector,// For both observers
+    pub market_thought: Vector,  // Proposal 024: market learns from anomaly
+    pub position_thought: Vector,// Proposal 026: position learns from this
+    pub optimal: Distances,      // For the position observer
+    pub weight: f64,             // For both observers
+}
+</code></pre>
+<p>— T0-018, §5</p>
+<p>The Post collects these from all brokers and routes them to the correct observers via <a class="wikilink" href="pg-services.html">mailbox</a> channels. The broker does <strong>not</strong> talk to observers directly.</p>
+<blockquote><em>"Values up — the broker does not talk to observers directly."</em> — T0-018, §5</blockquote>
+<hr>
+<h2>The Three Propagation Steps</h2>
+<h3>Step 1 — Track Record</h3>
+<pre><code>
+match outcome {
+    Outcome::Grace => { self.cumulative_grace += weight; self.grace_count += 1; }
+    Outcome::Violence => { self.cumulative_violence += weight; self.violence_count += 1; }
+}
+self.trade_count += 1;
+</code></pre>
+<p>— T0-018, §7.8 (Step 1)</p>
+<p>Pure accounting. Cumulative grace/violence values and counts feed the <a class="wikilink" href="T2-003-engram-gate.html">gate</a> decision.</p>
+<h3>Step 2 — Scalar Accumulators Learn</h3>
+<pre><code>
+self.trail_accum.observe(optimal.trail, outcome, weight, scalar_encoder);
+self.stop_accum.observe(optimal.stop, outcome, weight, scalar_encoder);
+</code></pre>
+<p>— T0-018, §7.8 (Step 2)</p>
+<p>The accumulators observe <strong>hindsight-optimal</strong> distances (what trail/stop <em>would</em> have been ideal), not the distances that were actually used. This teaches the <a class="wikilink" href="pg-broker.html">distance cascade</a> what to aim for.</p>
+<h3>Step 3 — Dollar P&L and Expected Value</h3>
+<p>Against a $10,000 reference capital including swap fees on entry and exit:</p>
+<p><strong>Grace:</strong> <code>net = weight × 10,000 − entry_fee − exit_fee</code> (weight = excursion fraction)</p>
+<p><strong>Violence:</strong> <code>net = −(weight × 10,000 + entry_fee + exit_fee)</code> (weight = stop distance)</p>
+<p>EMA update (α=0.038, half-life ~50 papers):</p>
+<pre><code>
+avg_grace_net   = (1 − 0.038) × avg_grace_net   + 0.038 × net
+avg_violence_net = (1 − 0.038) × avg_violence_net + 0.038 × net
+expected_value   = grace_rate × avg_grace_net + (1 − grace_rate) × avg_violence_net
+</code></pre>
+<p>— T0-018, §7.8 (Step 3); pg-broker (§The Gate)</p>
+<p>This expected value drives the <a class="wikilink" href="T2-003-engram-gate.html">gate</a>: brokers with negative EV are suppressed from proposing funded trades.</p>
+<hr>
+<h2>Market Observer Learning Path</h2>
+<p>When <code>PropagationFacts</code> arrive at a <a class="wikilink" href="pg-market-observer.html">market observer</a>'s mailbox via <code>ObsLearn</code>:</p>
+<ol>
+<li><strong>Map direction to label</strong> — <code>Direction::Up</code> → index 0, <code>Direction::Down</code> → index 1</li>
+<li><strong>Check correctness</strong> — compare <code>last_prediction</code> against actual market direction</li>
+<li><strong>Reckoner learns</strong> — <code>reckoner.observe(market_thought, label, weight)</code> feeds the labeled anomaly to the discrete <a class="wikilink" href="pg-reckoner.html">Reckoner</a>, updating its accumulated prototypes</li>
+<li><strong>Conviction curve updates</strong> — a second predict+resolve cycle updates the <code>accuracy = 1/N + a·exp(b·conviction)</code> fit, self-calibrating the observer's confidence</li>
+<li><strong>Engram gate evaluates</strong> — accumulates win rate and discriminant state quality; observers that prove themselves get knowledge gated into long-term memory</li>
+</ol>
+<blockquote><em>"Its own teacher. The market is the judge."</em> — T0-013</blockquote>
+<p>— pg-market-observer (§Learning)</p>
+<hr>
+<h2>Position Observer Learning Path</h2>
+<p>When <code>PropagationFacts</code> arrive at a <a class="wikilink" href="pg-exit-observer.html">position observer</a>'s mailbox via <code>PositionLearn</code>:</p>
+<ol>
+<li><strong>Pre-learning prediction</strong> — query each reckoner for what it currently predicts</li>
+<li><strong>Trail reckoner observes</strong> — <code>trail_reckoner.observe_scalar(position_thought, optimal.trail, 1.0)</code></li>
+<li><strong>Stop reckoner observes</strong> — <code>stop_reckoner.observe_scalar(position_thought, optimal.stop, 1.0)</code></li>
+</ol>
+<p>Weight is always 1.0 — each observation counts once. The "optimal" distances come from hindsight simulation that sweeps candidate values against actual price histories.</p>
+<p>— pg-exit-observer (§Learning)</p>
+<hr>
+<h2>Deferred Batch Training — Runner Learning</h2>
+<p>When a paper signals <a class="wikilink" href="pg-grace-and-violence.html">Grace</a> (trail crosses), it becomes a <strong>runner</strong>. The broker accumulates a <code>RunnerHistory</code> — parallel arrays of composed thoughts, distances, and prices at each candle while the runner is active.</p>
+<p>When the runner resolves, <code>compute_position_batch()</code> produces deferred training data:</p>
+<ol>
+<li>Compute optimal stop via full <a class="wikilink" href="pg-paper-trade.html">simulation</a> over the runner's price history</li>
+<li><strong>Suffix extremum pass</strong> — O(n) backward scan for the best remaining price from each candle</li>
+<li>Per-candle optimal trail from the suffix extremum</li>
+<li><strong>Sparse sampling</strong> — emit a training sample only when optimal trail changed by >10% relative, avoiding redundant samples</li>
+<li>Weight = the optimal trail value (residue that distance would capture)</li>
+</ol>
+<p>Each batch entry: <code>(thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight)</code>. Included in the <code>Resolution</code> as <code>position_batch</code> and routed to the position observer by the Post.</p>
+<blockquote><em>"Only emit a training sample when the optimal trail changed by >10% relative. If the answer is the same candle over candle, there's nothing to learn."</em> — T0-018, §8.2</blockquote>
+<p>— T0-018 (§3, §8.2); pg-broker (§Runners and Deferred Training)</p>
+<hr>
+<h2>The Wire — How Signals Travel Between Threads</h2>
+<table>
+<tr><th>Stage</th><th>Wire type</th><th>Mechanism</th></tr>
+<tr><td>Main → Market observer</td><td><a class="wikilink" href="pg-chain-types.html">MarketChain</a></td><td>Bounded <a class="wikilink" href="pg-services.html">Queue</a> (capacity 1)</td></tr>
+<tr><td>Market observer → Position observers</td><td><a class="wikilink" href="pg-chain-types.html">MarketChain</a></td><td><a class="wikilink" href="pg-services.html">Topic</a> (1→N fan-out)</td></tr>
+<tr><td>Position observer → Broker</td><td><a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a></td><td>Bounded <a class="wikilink" href="pg-services.html">Queue</a></td></tr>
+<tr><td>Broker → Market observer (learn)</td><td><code>ObsLearn</code></td><td>Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td></tr>
+<tr><td>Broker → Position observer (learn)</td><td><code>PositionLearn</code></td><td>Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td></tr>
+<tr><td>Broker → Position observer (trade)</td><td><code>TradeUpdate</code></td><td>Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a></td></tr>
+</table>
+<blockquote><em>"Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire."</em> — chain.rs, via T0-017</blockquote>
+<p>— pg-programs (§Data flow through the grid, §Chain Types); pg-services (§Mailbox)</p>
+<hr>
+<h2>Direction Flip — Forced Grace Propagation</h2>
+<p>When the <a class="wikilink" href="pg-market-observer.html">market observer</a>'s active direction flips (was Up, now Down), <code>close_all_runners()</code> force-resolves all active runners with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip and hit their stop naturally. This ensures learning signals propagate promptly when regime changes, rather than waiting for runners to expire organically.</p>
+<p>— T0-018, §7.6; pg-broker (§Direction Flip)</p>
+<hr>
+<h2>Verified Properties</h2>
+<ol>
+<li><strong>No shared mutation.</strong> <code>propagate()</code> returns <code>PropagationFacts</code>. <code>tick_papers()</code> returns <code>Vec<Resolution></code>. The broker never touches observer state. (T0-018, §12)</li>
+<li><strong>Thought separation is enforced.</strong> Market observer learns from <code>market_thought</code>; position observer learns from <code>position_thought</code>. Neither sees the composed thought for learning purposes. (Proposals 024, 026)</li>
+<li><strong>Runner history is scoped.</strong> Created at Grace signal, accumulated per-candle, consumed at runner resolution. Keyed by <code>paper_id</code>, preventing stale data. (T0-018, §12)</li>
+<li><strong>Sparse sampling avoids noise.</strong> Only meaningful changes (>10%) in optimal distances generate training samples. (T0-018, line 556)</li>
+<li><strong>All learning signals are typed values on wires.</strong> No <code>Mutex</code>, no shared state, no direct observer mutation. (pg-services, pg-programs)</li>
+</ol>
+<hr>
+<h2>Sources</h2>
+<ul>
+<li><strong>T0-018</strong> — <code>broker.rs</code> (887 lines). Full verification of <code>Resolution</code>, <code>PropagationFacts</code>, <code>propagate()</code>, <code>tick_papers()</code>, <code>compute_position_batch()</code>.</li>
+<li><strong>T0-013</strong> — <code>market_observer.rs</code>. Market observer learning via <code>resolve()</code>, conviction curve, engram gate.</li>
+<li><strong>T0-014</strong> — <code>exit_observer.rs</code>. Position observer learning via <code>observe_distances()</code>, continuous reckoners.</li>
+<li><strong>T0-008</strong> — <code>reckoner.rs</code> (1107 lines). The learning primitive underlying both observer types.</li>
+<li><strong>pg-broker</strong> — Wiki composite on the broker accountability unit.</li>
+<li><strong>pg-programs</strong> — Wiki composite on the concurrent pipeline architecture and chain types.</li>
+<li><strong>pg-market-observer</strong> — Wiki composite on market direction perception.</li>
+<li><strong>pg-exit-observer</strong> — Wiki composite on exit distance perception.</li>
+<li><strong>pg-services</strong> — Wiki composite on Queue, Topic, and Mailbox primitives.</li>
+</ul></div></body></html>

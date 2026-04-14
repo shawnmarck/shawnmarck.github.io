@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Fact — a scalar claim about the world, encoded as a vector. — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html" active>Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Fact — a scalar claim about the world, encoded as a vector. <span class="badge badge-explain">EXPLAIN</span></h1><h1>Fact — a scalar claim about the world, encoded as a vector.</h1>
+<p><strong>TL;DR</strong>: A fact is a named scalar value emitted by a <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> module, represented as a <a href="#thoughtast-representation"><code>ThoughtAST</code></a> leaf node, and encoded into a fixed-width bipolar vector via the <a class="wikilink" href="T0-004-encoder.html">scalar encoder</a>. Facts are the atomic inputs to <a class="wikilink" href="pg-thought-space.html">holonic cognition</a> — no booleans, no categories, only signed scalars. The discriminant learns where the boundaries are.</p>
+<hr>
+<h2>What a fact is</h2>
+<p>From the GUIDE:</p>
+<blockquote>"No zones. No categories. Only scalars. 'Overbought' is a human label on a continuous value — a magic number wearing a name. WHO decided 70 was the boundary? The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are."</blockquote>
+<blockquote>— T2-004 (vocabulary), GUIDE lines 1398–1402</blockquote>
+<blockquote>"Every relationship is a signed scalar. Not 'close is above SMA20' — the relative distance, with sign. [...] The sign IS the direction. The magnitude IS the distance. No 'above' atom. No 'below' atom. No boolean. Just the number."</blockquote>
+<blockquote>— T2-004 (vocabulary), GUIDE lines 1346–1356</blockquote>
+<p>A fact has three components:</p>
+<table>
+<tr><th>Component</th><th>Example</th><th>Role</th></tr>
+<tr><td><strong>Name</strong></td><td><code>rsi</code>, <code>dist-from-sma200</code>, <code>phase</code></td><td>Identifies what is being measured</td></tr>
+<tr><td><strong>Scalar value</strong></td><td><code>0.73</code>, <code>-0.023</code>, <code>peak</code></td><td>The quantitative claim</td></tr>
+<tr><td><strong>Encoding scheme</strong></td><td><code>Linear { scale: 1.0 }</code>, <code>Log</code>, <code>Circular { period: 24 }</code></td><td>Determines how value maps to vector space</td></tr>
+</table>
+<p>Vocabulary modules are "pure functions. Something in, facts out. No state." (T2-004, GUIDE line 1245).</p>
+<hr>
+<h2>ThoughtAST representation</h2>
+<p>Facts are represented as leaf nodes in the <a href="T0-011-thought-encoder-rust.md"><code>ThoughtAST</code></a> enum. The four factual variants are:</p>
+<table>
+<tr><th>AST Variant</th><th>Fields</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><code>Linear { value: f64, scale: f64 }</code></td><td>value, scale</td><td>Naturally bounded scalar</td><td><code>Linear { value: 0.73, scale: 1.0 }</code></td></tr>
+<tr><td><code>Log { value: f64 }</code></td><td>value</td><td>Unbounded positive scalar (log-compressed)</td><td><code>Log { value: 5.2 }</code></td></tr>
+<tr><td><code>Circular { value: f64, period: f64 }</code></td><td>value, period</td><td>Periodic/wrapping scalar</td><td><code>Circular { value: 14.0, period: 24.0 }</code></td></tr>
+<tr><td><code>Bind(Atom, …)</code></td><td>left, right</td><td>A named scalar fact (name bound to value)</td><td><code>Bind(Atom("rsi"), Linear { … })</code></td></tr>
+</table>
+<p>Bare <code>Atom(name)</code> nodes are <strong>not</strong> facts — they are names without values. The <code>collect_facts</code> function explicitly skips them: "name without value — not a fact" (T0-011, line 174).</p>
+<p>All four factual variants — <code>Linear</code>, <code>Log</code>, <code>Circular</code>, and <code>Bind</code> — are returned as-is by <code>collect_facts</code>, while <code>Bundle</code> and <code>Sequential</code> containers are transparently flattened (T0-011, lines 341–352).</p>
+<hr>
+<h2>Encoding schemes</h2>
+<p>The encoding scheme determines how a scalar value maps into vector space. Three schemes exist (T2-004, GUIDE lines 1376–1395):</p>
+<blockquote>"The encoding scheme IS the bounding strategy."</blockquote>
+<table>
+<tr><th>Scheme</th><th>Use case</th><th>Key property</th><th>Examples</th></tr>
+<tr><td><strong><code>Linear { scale }</code></strong></td><td>Naturally bounded scalars</td><td>Equal absolute differences → equal similarity drops</td><td>RSI <code>[0,1]</code>, Bollinger position <code>[-1,1]</code>, distances <code>scale: 0.1</code></td></tr>
+<tr><td><strong><code>Log</code></strong></td><td>Unbounded positive scalars</td><td>Equal ratios → equal similarity drops</td><td>Volume ratio, ATR ratio, band widths</td></tr>
+<tr><td><strong><code>Circular { period }</code></strong></td><td>Periodic scalars</td><td>Endpoint wraps to start</td><td>Hour (24), day-of-week (7), minute (60)</td></tr>
+</table>
+<blockquote>"Linear: Equal absolute differences have equal similarity drops — 100 → 200 has same similarity drop as 1000 → 1100."</blockquote>
+<blockquote>— T0-004 (scalar encoding), scalar.rs:9–11</blockquote>
+<blockquote>"Logarithmic: Equal ratios have equal similarity drops — 100 → 1000 has same similarity drop as 1000 → 10000."</blockquote>
+<blockquote>— T0-004 (scalar encoding), scalar.rs:13–15</blockquote>
+<blockquote>"For periodic quantities (hour of day, day of week, angle), use circular encoding where the endpoint wraps to the start."</blockquote>
+<blockquote>— T0-004 (scalar encoding), scalar.rs:19–20</blockquote>
+<h3>The bounding philosophy</h3>
+<blockquote>"Some facts are bounded. Some aren't. That's honest. The log doesn't bound — it compresses. The circular doesn't bound — it wraps. Only linear needs bounds, and linear's bounds come from the math."</blockquote>
+<blockquote>— T2-004 (vocabulary), GUIDE lines 1393–1395</blockquote>
+<hr>
+<h2>How a fact becomes a vector</h2>
+<p>When <code>ThoughtEncoder::encode()</code> walks a factual AST leaf (T0-011, lines 147–198):</p>
+<ol>
+<li><strong><code>Linear { value, scale }</code></strong> → calls <code>ScalarEncoder::encode(value, ScalarMode::Linear { scale })</code></li>
+<li><strong><code>Log { value }</code></strong> → calls <code>ScalarEncoder::encode_log(value)</code> (log₁₀ then rotational encoding)</li>
+<li><strong><code>Circular { value, period }</code></strong> → calls <code>ScalarEncoder::encode(value, ScalarMode::Circular { period })</code></li>
+<li><strong><code>Bind(left, right)</code></strong> → encodes both children, then <code>Primitives::bind(&l_vec, &r_vec)</code></li>
+</ol>
+<p>The output is always a fixed-width bipolar vector in <code>{−1, 0, +1}^dim</code> (typically dim=4096). Closer scalar values produce more similar vectors — verified by tests confirming <code>sim(0,10) > sim(0,50)</code> (T0-004, scalar.rs:331).</p>
+<h3>Quantization awareness</h3>
+<blockquote>"bipolar thresholding causes quantization; use accumulator averaging to recover gradient behavior."</blockquote>
+<blockquote>— T0-004 (scalar encoding), scalar.rs:206–207</blockquote>
+<p>Log encoding in particular "works best when used with accumulators that average multiple samples, recovering gradient behavior" (T0-004, scalar.rs:364–365).</p>
+<hr>
+<h2>Fact lifecycle in the system</h2>
+<pre><code>
+Vocabulary module (pure function)
+    ↓ emits Vec<ThoughtAST>
+collect_facts() — flattens bundles, strips bare atoms
+    ↓ produces leaf-level facts only
+ThoughtEncoder::encode() — walks AST to vectors
+    ↓ cached via external LRU in encoding::encode::encode()
+IncrementalBundle — maintains running sums across ticks
+    ↓ threshold(sums) == bundle(all facts)
+Downstream: lens observers, discriminants, accumulators
+</code></pre>
+<p>The <code>IncrementalBundle</code> optimizes repeated encoding by maintaining element-wise sums and diffing facts between ticks. It depends on <code>round_to</code> at vocabulary emission time — "load-bearing for the AST diff. Quantized floats compare reliably" (T0-011, lines 208–211).</p>
+<hr>
+<h2>The full fact catalog</h2>
+<p>~99 unique atom names exist in the live Rust system across three domains (T2-004):</p>
+<table>
+<tr><th>Domain</th><th>Modules</th><th>Atom count</th><th>Notes</th></tr>
+<tr><td><strong>shared</strong></td><td>time</td><td>5</td><td>Universal temporal context</td></tr>
+<tr><td><strong>market</strong></td><td>standard, oscillators, flow, persistence, regime, divergence, fibonacci, keltner, momentum, price-action, timeframe</td><td>~73</td><td>Core market observation</td></tr>
+<tr><td><strong>exit</strong></td><td>regime, time, phase</td><td>~18</td><td>Position management context</td></tr>
+</table>
+<p>Two additional market modules (ichimoku, stochastic) exist in the wat spec but were removed from live wiring via Proposals 041+042.</p>
+<hr>
+<h2>Key properties of facts</h2>
+<ol>
+<li><strong>Deterministic</strong>: Same seed → same vector. <code>ScalarEncoder::with_seed(4096, 42)</code> is reproducible (T0-004, scalar.rs:403).</li>
+<li><strong>Stateless emission</strong>: Vocabulary modules are pure functions — no cache, no side effects (T2-004, GUIDE line 1244).</li>
+<li><strong>Similarity gradient</strong>: Nearby values → high cosine similarity; distant values → low similarity. This is the core property that enables discriminant learning.</li>
+<li><strong>Conditional emission</strong>: Some facts fire only when a condition is active (e.g., <code>rsi-divergence-bull</code> only when divergence > 0). The number of facts per tick can vary.</li>
+<li><strong>Named, not categorized</strong>: The vocabulary emits the raw scalar. It does not label "overbought" or "trending." Those interpretations belong to the discriminant layer.</li>
+</ol>
+<hr>
+<h2>Sources</h2>
+<ul>
+<li>T0-004 — Scalar Encoding: bipolar vector representations, rotational and positional algorithms, encoding properties</li>
+<li>T0-011 — ThoughtEncoder (Rust): AST representation, <code>collect_facts</code>, <code>IncrementalBundle</code>, encoding walk</li>
+<li>T2-004 — Vocabulary: atom catalog, encoding schemes, GUIDE design principles, domain organization</li>
+</ul></div></body></html>

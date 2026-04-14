@@ -1,0 +1,545 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T0-018: Broker (Rust) — Context-Free Verification — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html" active>T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>T0-018: Broker (Rust) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><h1>T0-018: Broker (Rust) — Context-Free Verification</h1>
+<p><strong>Source:</strong> <code>/root/projects/holon-workspace/holon-lab-trading/src/domain/broker.rs</code></p>
+<p><strong>Lines:</strong> 887 (489 production + 398 test)</p>
+<p><strong>Compiled from:</strong> <code>wat/broker.wat</code></p>
+<p><strong>Verdict:</strong> Accountable. Complete. Quoted below.</p>
+<hr>
+<h2>1. Module Purpose (Lines 1–6)</h2>
+<pre><code>
+/// broker.rs — The accountability primitive. Binds one market observer + one
+/// position observer. Compiled from wat/broker.wat.
+///
+/// The broker IS the accountability unit. It owns paper trades, scalar
+/// accumulators, and a Grace/Violence reckoner. Values up, not effects down.
+</code></pre>
+<p><strong>What it is:</strong> The broker binds exactly one market observer to one position observer. It is the accountability unit. It owns paper trades, scalar accumulators for distances, and does dollar-P&L reckoning. All outputs flow upward as return values — no shared mutation during parallel phases.</p>
+<hr>
+<h2>2. Imports (Lines 7–17)</h2>
+<table>
+<tr><th>Import</th><th>From</th><th>Purpose</th></tr>
+<tr><td><code>HashMap, VecDeque</code></td><td><code>std::collections</code></td><td>Runner histories, paper queue</td></tr>
+<tr><td><code>ScalarEncoder</code></td><td><code>holon::kernel::scalar</code></td><td>Encoding scalar values for accumulator updates</td></tr>
+<tr><td><code>Vector</code></td><td><code>holon::kernel::vector</code></td><td>High-dimensional thought vectors</td></tr>
+<tr><td><code>Distances</code></td><td><code>crate::types::distances</code></td><td>Trail/stop distance pair</td></tr>
+<tr><td><code>Direction, Outcome</code></td><td><code>crate::types::enums</code></td><td>Up/Down prediction, Grace/Violence outcome</td></tr>
+<tr><td><code>simulation</code></td><td><code>crate::domain::simulation</code></td><td><code>compute_optimal_distances</code> for runner resolution</td></tr>
+<tr><td><code>Price</code></td><td><code>crate::types::newtypes</code></td><td>Newtype wrapper around f64</td></tr>
+<tr><td><code>PaperEntry</code></td><td><code>crate::trades::paper_entry</code></td><td>Individual paper trade lifecycle</td></tr>
+<tr><td><code>ScalarAccumulator</code></td><td><code>crate::learning::scalar_accumulator</code></td><td>Outcome-weighted scalar learning</td></tr>
+</table>
+<hr>
+<h2>3. Struct: <code>RunnerHistory</code> (Lines 19–26)</h2>
+<pre><code>
+pub struct RunnerHistory {
+    pub thoughts: Vec<Vector>,
+    pub distances: Vec<Distances>,
+    pub prices: Vec<f64>,
+}
+</code></pre>
+<p><strong>Purpose:</strong> Per-candle accumulated data for a runner paper. Created when a paper signals Grace (trail crossed). Stores three parallel arrays — the composed thought, the distances used, and the actual price — at each candle during the runner phase. Used at runner resolution for deferred batch training of the position observer.</p>
+<p><strong>Lifecycle:</strong> Created empty at signal time (line 343–347). Accumulated each tick while the runner is active (lines 351–357). Consumed at runner resolution via <code>compute_position_batch()</code> (line 374).</p>
+<hr>
+<h2>4. Struct: <code>Resolution</code> (Lines 28–98)</h2>
+<h3>Fields (15 total)</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Description</th></tr>
+<tr><td><code>broker_slot_idx</code></td><td><code>usize</code></td><td>Which broker produced this</td></tr>
+<tr><td><code>composed_thought</code></td><td><code>Vector</code></td><td>The composed thought (market + position) that was tested</td></tr>
+<tr><td><code>market_thought</code></td><td><code>Vector</code></td><td>Raw market thought (for market observer learning)</td></tr>
+<tr><td><code>position_thought</code></td><td><code>Vector</code></td><td>Position observer's own encoded facts (Proposal 026: position learns from this, not composed)</td></tr>
+<tr><td><code>prediction</code></td><td><code>Direction</code></td><td>What the market observer predicted (Up/Down)</td></tr>
+<tr><td><code>outcome</code></td><td><code>Outcome</code></td><td>Grace or Violence</td></tr>
+<tr><td><code>amount</code></td><td><code>f64</code></td><td>How much value — excursion for Grace, stop distance for Violence</td></tr>
+<tr><td><code>optimal_distances</code></td><td><code>Distances</code></td><td>Hindsight optimal trail/stop distances</td></tr>
+<tr><td><code>entry_price</code></td><td><code>f64</code></td><td>Paper's entry price</td></tr>
+<tr><td><code>extreme</code></td><td><code>f64</code></td><td>Best price the paper achieved</td></tr>
+<tr><td><code>excursion</code></td><td><code>f64</code></td><td>The excursion value</td></tr>
+<tr><td><code>trail_distance</code></td><td><code>f64</code></td><td>Trail distance used by the paper</td></tr>
+<tr><td><code>stop_distance</code></td><td><code>f64</code></td><td>Stop distance used by the paper</td></tr>
+<tr><td><code>duration</code></td><td><code>usize</code></td><td>Paper age in candles</td></tr>
+<tr><td><code>was_runner</code></td><td><code>bool</code></td><td>Did the trail cross before resolution?</td></tr>
+<tr><td><code>position_batch</code></td><td><code>Vec<(Vector, Distances, Distances, f64)></code></td><td>Deferred batch training data. Empty for non-runners. Each entry: (thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight).</td></tr>
+</table>
+<h3>Constructor: <code>Resolution::from_paper()</code> (Lines 67–98)</h3>
+<pre><code>
+fn from_paper(
+    paper: &PaperEntry,
+    broker_slot_idx: usize,
+    outcome: Outcome,
+    optimal_distances: Distances,
+    was_runner: bool,
+    position_batch: Vec<(Vector, Distances, Distances, f64)>,
+) -> Self
+</code></pre>
+<p>Single construction site for all 15 fields. The <code>amount</code> is derived from outcome:</p>
+<ul>
+<li><strong>Grace:</strong> <code>paper.excursion()</code> (the realized gain fraction)</li>
+<li><strong>Violence:</strong> <code>paper.distances.stop</code> (the stop distance that was hit)</li>
+</ul>
+<p>All other fields copied directly from the paper entry or passed through.</p>
+<hr>
+<h2>5. Struct: <code>PropagationFacts</code> (Lines 100–121)</h2>
+<pre><code>
+pub struct PropagationFacts {
+    pub market_idx: usize,       // Which market observer should learn
+    pub position_idx: usize,     // Which position observer should learn
+    pub direction: Direction,    // For the market observer
+    pub composed_thought: Vector,// For both observers
+    pub market_thought: Vector,  // Proposal 024: market learns from anomaly, not composed
+    pub position_thought: Vector,// Proposal 026: position learns from position_thought only
+    pub optimal: Distances,      // For the position observer
+    pub weight: f64,             // For both observers
+}
+</code></pre>
+<p><strong>Purpose:</strong> The return value of <code>propagate()</code>. The post collects these from all brokers and routes them to the correct observers via mailbox channels. Values up — the broker does not talk to observers directly.</p>
+<hr>
+<h2>6. Struct: <code>Broker</code> (Lines 123–173)</h2>
+<h3>Fields (24 total)</h3>
+<table>
+<tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>observer_names</code></td><td><code>Vec<String></code></td><td>constructor arg</td><td>Diagnostic identity for the ledger, e.g. <code>["momentum", "volatility"]</code></td></tr>
+<tr><td><code>slot_idx</code></td><td><code>usize</code></td><td>constructor arg</td><td>Position in the N×M grid. <strong>THE identity.</strong></td></tr>
+<tr><td><code>position_count</code></td><td><code>usize</code></td><td>constructor arg</td><td>M — needed to derive market-idx and position-idx from slot_idx</td></tr>
+<tr><td><code>cumulative_grace</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>Cumulative grace value (weighted sum)</td></tr>
+<tr><td><code>cumulative_violence</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>Cumulative violence value (weighted sum)</td></tr>
+<tr><td><code>trade_count</code></td><td><code>usize</code></td><td><code>0</code></td><td>Total trade count</td></tr>
+<tr><td><code>grace_count</code></td><td><code>usize</code></td><td><code>0</code></td><td>Count of Grace outcomes</td></tr>
+<tr><td><code>violence_count</code></td><td><code>usize</code></td><td><code>0</code></td><td>Count of Violence outcomes</td></tr>
+<tr><td><code>active_direction</code></td><td><code>Option<Direction></code></td><td><code>None</code></td><td>Current active direction. <code>None</code> = cold start</td></tr>
+<tr><td><code>papers</code></td><td><code>VecDeque<PaperEntry></code></td><td>empty</td><td>Capped paper trade queue</td></tr>
+<tr><td><code>trail_accum</code></td><td><code>ScalarAccumulator</code></td><td>constructor arg</td><td>Scalar accumulator for trail-distance</td></tr>
+<tr><td><code>stop_accum</code></td><td><code>ScalarAccumulator</code></td><td>constructor arg</td><td>Scalar accumulator for stop-distance</td></tr>
+<tr><td><code>default_distances</code></td><td><code>Distances</code></td><td>constructor arg</td><td>Default trail/stop — tier 3 fallback in the cascade</td></tr>
+<tr><td><code>avg_paper_duration</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>Running average paper duration (candles). Self-assessment vocab</td></tr>
+<tr><td><code>avg_excursion</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>Running average excursion. Self-assessment vocab</td></tr>
+<tr><td><code>last_trail</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>Last trail distance used. Self-assessment vocab</td></tr>
+<tr><td><code>last_stop</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>Last stop distance used. Self-assessment vocab</td></tr>
+<tr><td><code>resolution_count</code></td><td><code>usize</code></td><td><code>0</code></td><td>Count of resolved sides (for running average computation)</td></tr>
+<tr><td><code>next_paper_id</code></td><td><code>usize</code></td><td><code>0</code></td><td>Monotonic counter for paper IDs</td></tr>
+<tr><td><code>runner_histories</code></td><td><code>HashMap<usize, RunnerHistory></code></td><td>empty</td><td>Per-runner accumulated history for deferred batch training. Keyed by <code>paper_id</code></td></tr>
+<tr><td><code>avg_grace_net</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>EMA of net dollars per Grace paper (Proposal 035)</td></tr>
+<tr><td><code>avg_violence_net</code></td><td><code>f64</code></td><td><code>0.0</code></td><td>EMA of net dollars per Violence paper (Proposal 035)</td></tr>
+<tr><td><code>expected_value</code></td><td><code>f64</code></td><td><code>0.0</code></td><td><code>grace_rate × avg_grace_net + (1-grace_rate) × avg_violence_net</code></td></tr>
+<tr><td><code>swap_fee</code></td><td><code>f64</code></td><td>constructor arg</td><td>Venue fee per swap (fraction, e.g. 0.0010)</td></tr>
+</table>
+<hr>
+<h2>7. Methods</h2>
+<h3>7.1 <code>Broker::new()</code> — Constructor (Lines 178–214)</h3>
+<pre><code>
+pub fn new(
+    observer_names: Vec<String>,
+    slot_idx: usize,
+    position_count: usize,
+    trail_accum: ScalarAccumulator,
+    stop_accum: ScalarAccumulator,
+    default_distances: Distances,
+    swap_fee: f64,
+) -> Self
+</code></pre>
+<p><strong>Contract:</strong> Asserts <code>position_count > 0</code> (divide-by-zero guard). All counters start at zero. No reckoner, no noise subspace — "Pure accounting + gate + log" (Proposal 035).</p>
+<hr>
+<h3>7.2 <code>market_idx()</code> / <code>position_idx()</code> — Grid Derivation (Lines 217–224)</h3>
+<pre><code>
+pub fn market_idx(&self) -> usize {
+    self.slot_idx / self.position_count    // integer division
+}
+pub fn position_idx(&self) -> usize {
+    self.slot_idx % self.position_count
+}
+</code></pre>
+<p><strong>Semantics:</strong> The N×M broker grid maps flat slot indices to (market, position) pairs. With <code>position_count = M</code>:</p>
+<ul>
+<li><code>slot_idx = market_idx * M + position_idx</code></li>
+<li>Therefore: <code>market_idx = slot_idx / M</code>, <code>position_idx = slot_idx % M</code></li>
+</ul>
+<p><strong>Test confirmation (line 615–626):</strong> <code>slot_idx=5, position_count=3</code> → <code>market_idx=1, position_idx=2</code>.</p>
+<hr>
+<h3>7.3 <code>gate_open()</code> — The Gate (Lines 229–232)</h3>
+<pre><code>
+pub fn gate_open(&self) -> bool {
+    let cold_start = self.grace_count < 50 || self.violence_count < 50;
+    cold_start || self.expected_value > 0.0
+}
+</code></pre>
+<p><strong>Two-phase gate:</strong></p>
+<ol>
+<li><strong>Cold start:</strong> If either outcome count is below 50, the gate is always open. The broker hasn't seen enough data to make a statistical judgment.</li>
+<li><strong>Warm:</strong> After ≥50 of both outcomes, the gate opens only when <code>expected_value > 0.0</code>. A broker with negative expected value is suppressed — it cannot propose funded trades.</li>
+</ol>
+<p><strong>Comment (line 228):</strong> <code>// rune:reap(scaffolding) — awaiting Phase 5 treasury.</code></p>
+<hr>
+<h3>7.4 <code>cascade_distances()</code> — The Distance Cascade (Lines 236–255)</h3>
+<pre><code>
+pub fn cascade_distances(&self, reckoner_answer: Option<Distances>, se: &ScalarEncoder) -> Distances
+</code></pre>
+<p><strong>Three-tier fallback:</strong></p>
+<table>
+<tr><th>Tier</th><th>Source</th><th>Condition</th></tr>
+<tr><td>1</td><td><code>reckoner_answer</code> (passed in)</td><td><code>Some(dists)</code> → return immediately</td></tr>
+<tr><td>2</td><td>Scalar accumulators</td><td>If <code>trail_accum.count > 0</code>, extract trail; same for stop. Bounds: <code>(0.001, 0.10)</code>.</td></tr>
+<tr><td>3</td><td><code>default_distances</code></td><td>If accumulator has no observations, use the constructor-provided default</td></tr>
+</table>
+<p><strong>Key detail:</strong> The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned.</p>
+<p><strong>Accumulator extraction:</strong> <code>self.trail_accum.extract(100, (0.001, 0.10), se)</code> — 100 samples, clamped to [0.1%, 10%].</p>
+<hr>
+<h3>7.5 <code>register_paper()</code> — Paper Creation (Lines 260–282)</h3>
+<pre><code>
+pub fn register_paper(
+    &mut self,
+    composed: Vector,
+    market_thought: Vector,
+    position_thought: Vector,
+    prediction: Direction,
+    entry_price: Price,
+    distances: Distances,
+    candle_num: usize,
+)
+</code></pre>
+<p><strong>Called:</strong> Every candle, for every broker. Creates a new <code>PaperEntry</code> with a monotonic <code>paper_id</code>, pushes it onto the <code>papers</code> VecDeque. The paper records the composed thought (market+position), the raw market thought, and the position thought separately (Proposal 026 — position observer learns from its own thought).</p>
+<hr>
+<h3>7.6 <code>close_all_runners()</code> — Direction Flip Handler (Lines 286–315)</h3>
+<pre><code>
+pub fn close_all_runners(&mut self, _current_price: Price) -> Vec<Resolution>
+</code></pre>
+<p><strong>Called when:</strong> The market observer's active direction flips (e.g., was predicting Up, now predicts Down).</p>
+<p><strong>Behavior:</strong> Iterates all papers. Force-resolves any that are <code>signaled && !resolved</code> (active runners) with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally). Computes optimal distances via <code>simulation::compute_optimal_distances()</code> on the paper's full price history. Computes the position batch from accumulated runner history if available.</p>
+<p><strong>Note:</strong> The <code>_current_price</code> parameter is accepted but unused (prefixed with underscore). The resolution uses the paper's own tracked data.</p>
+<hr>
+<h3>7.7 <code>tick_papers()</code> — The Core Tick (Lines 320–406)</h3>
+<pre><code>
+pub fn tick_papers(&mut self, current_price: Price) -> (Vec<Resolution>, Vec<Resolution>)
+</code></pre>
+<p><strong>Returns two vectors:</strong></p>
+<ol>
+<li><code>market_signals</code> — for market observer learning (Grace signal or Violence stop)</li>
+<li><code>runner_resolutions</code> — for position observer + broker learning (runner finished)</li>
+</ol>
+<p><strong>Algorithm (per paper):</strong></p>
+<pre><code>
+1. Snapshot was_signaled, was_resolved
+2. Call paper.tick(current_price)
+3. IF just signaled (trail crossed for first time):
+   - Emit Grace market_signal
+   - Create empty RunnerHistory for this paper_id
+4. IF active runner (signaled && !resolved):
+   - Accumulate composed_thought, distances, price into RunnerHistory
+5. IF just resolved:
+   - IF !signaled: Emit Violence market_signal
+   - IF signaled (runner finished):
+     - Compute position_batch from RunnerHistory
+     - Emit runner_resolution (Grace)
+   - Update self-assessment running averages:
+     - resolution_count += 1
+     - avg_paper_duration: Welford-style running average
+     - avg_excursion: Welford-style running average
+     - last_trail = paper.distances.trail
+     - last_stop = paper.distances.stop
+6. Remove resolved papers, keep the rest
+</code></pre>
+<p><strong>Resolution categories:</strong></p>
+<table>
+<tr><th>Path</th><th>Signal</th><th>Resolution</th><th>Goes to</th><th>Position batch?</th></tr>
+<tr><td>Stop fires before trail crosses</td><td>—</td><td>Violence</td><td><code>market_signals</code></td><td>No</td></tr>
+<tr><td>Trail crosses (first time)</td><td>Grace</td><td>—</td><td><code>market_signals</code></td><td>No (runner begins)</td></tr>
+<tr><td>Runner trail fires</td><td>—</td><td>Grace</td><td><code>runner_resolutions</code></td><td>Yes</td></tr>
+</table>
+<hr>
+<h3>7.8 <code>propagate()</code> — Learning Propagation (Lines 413–483)</h3>
+<pre><code>
+pub fn propagate(
+    &mut self,
+    thought: &Vector,
+    market_thought: &Vector,
+    position_thought: &Vector,
+    outcome: Outcome,
+    weight: f64,
+    direction: Direction,
+    optimal: &Distances,
+    scalar_encoder: &ScalarEncoder,
+) -> PropagationFacts
+</code></pre>
+<p><strong>Three responsibilities:</strong></p>
+<h4>Step 1 — Track Record (Lines 425–435)</h4>
+<pre><code>
+match outcome {
+    Outcome::Grace => { self.cumulative_grace += weight; self.grace_count += 1; }
+    Outcome::Violence => { self.cumulative_violence += weight; self.violence_count += 1; }
+}
+self.trade_count += 1;
+</code></pre>
+<h4>Step 2 — Scalar Accumulators Learn (Lines 437–439)</h4>
+<pre><code>
+self.trail_accum.observe(optimal.trail, outcome, weight, scalar_encoder);
+self.stop_accum.observe(optimal.stop, outcome, weight, scalar_encoder);
+</code></pre>
+<p>The accumulators observe the <strong>optimal</strong> (hindsight) distances, weighted by outcome. This teaches the accumulators what trail/stop would have been ideal.</p>
+<h4>Step 3 — Dollar P&L and EMA (Lines 441–470)</h4>
+<p><strong>Reference capital:</strong> <code>10_000.0</code> (constant).</p>
+<p><strong>Grace P&L:</strong></p>
+<pre><code>
+residue_usd = weight × 10_000        // weight IS excursion for Grace
+entry_fee   = 10_000 × swap_fee
+exit_fee    = (10_000 + residue_usd) × swap_fee
+net         = residue_usd - entry_fee - exit_fee
+</code></pre>
+<p><strong>Violence P&L:</strong></p>
+<pre><code>
+loss_usd    = weight × 10_000        // weight IS stop_distance for Violence
+entry_fee   = 10_000 × swap_fee
+exit_fee    = (10_000 - loss_usd) × swap_fee
+net         = -(loss_usd + entry_fee + exit_fee)
+</code></pre>
+<p><strong>EMA update:</strong></p>
+<pre><code>
+let alpha = 0.038; // half-life ~50 papers
+self.avg_grace_net   = (1 - alpha) × avg_grace_net   + alpha × net;  // for Grace
+self.avg_violence_net = (1 - alpha) × avg_violence_net + alpha × net;  // for Violence
+</code></pre>
+<p><strong>Expected value:</strong></p>
+<pre><code>
+let gr = grace_count / trade_count;
+self.expected_value = gr × avg_grace_net + (1 - gr) × avg_violence_net;
+</code></pre>
+<p><strong>Return:</strong> <code>PropagationFacts</code> containing which observers should learn and with what data.</p>
+<hr>
+<h3>7.9 <code>paper_count()</code> — Active Papers (Lines 486–488)</h3>
+<pre><code>
+pub fn paper_count(&self) -> usize {
+    self.papers.len()
+}
+</code></pre>
+<hr>
+<h2>8. Free Functions</h2>
+<h3>8.1 <code>approximate_optimal_distances()</code> (Lines 493–508)</h3>
+<pre><code>
+fn approximate_optimal_distances(entry: f64, extreme: f64, prediction: Direction) -> Distances
+</code></pre>
+<p><strong>Used for:</strong> Market signal resolutions (Grace signal, Violence stop). Quick approximation without full simulation.</p>
+<p><strong>Logic:</strong></p>
+<pre><code>
+excursion = (extreme - entry) / entry     for Up
+excursion = (entry - extreme) / entry     for Down
+excursion = max(excursion, 0.001)         // floor at 0.1%
+trail     = (excursion × 0.5).clamp(0.001, 0.10)  // 50% of excursion, clamped
+stop      = 0.001                                  // bootstrap — always near-zero
+</code></pre>
+<p><strong>Comment (line 503–505):</strong> "Stop is learned independently — near-zero bootstrap. The simulation (compute_optimal_distances) teaches the real value. This approximation doesn't have enough information to derive stop."</p>
+<h3>8.2 <code>compute_position_batch()</code> (Lines 513–572)</h3>
+<pre><code>
+fn compute_position_batch(
+    history: &RunnerHistory,
+    prediction: Direction,
+    swap_fee: f64,
+) -> Vec<(Vector, Distances, Distances, f64)>
+</code></pre>
+<p><strong>Purpose:</strong> Deferred batch training data for the position observer from a completed runner's full candle-by-candle history.</p>
+<p><strong>Algorithm (O(n)):</strong></p>
+<ol>
+<li><strong>Compute optimal stop</strong> for the whole runner via <code>simulation::compute_optimal_distances(&history.prices, prediction, swap_fee)</code>. Stop is a property of the full trade, not per-candle.</li>
+</ol>
+<ol>
+<li><strong>Suffix extremum pass</strong> — O(n) backward scan:</li>
+</ol>
+<ul>
+<li>For <code>Up</code>: <code>suffix_ext[i] = max(prices[i], suffix_ext[i+1])</code></li>
+<li>For <code>Down</code>: <code>suffix_ext[i] = min(prices[i], suffix_ext[i+1])</code></li>
+</ul>
+<ol>
+<li><strong>Per-candle optimal trail computation:</strong></li>
+<pre><code>
+   optimal_trail = (suffix_ext[k] - price_k) / price_k     for Up
+   optimal_trail = (price_k - suffix_ext[k]) / price_k     for Down
+   optimal_trail = clamp(optimal_trail, 0.001, 0.10)
+</code></pre>
+</ol>
+<ol>
+<li><strong>Sparse sampling — only when optimal changed meaningfully:</strong></li>
+<pre><code>
+   let changed = last_optimal_trail.is_nan()
+       || ((optimal_trail - last_optimal_trail).abs() / last_optimal_trail.max(0.001)) > 0.10;
+</code></pre>
+<p>Only emit a training sample when the optimal trail changed by >10% relative. If the answer is the same candle over candle, there's nothing to learn.</p>
+</ol>
+<ol>
+<li><strong>Weight:</strong> <code>weight = optimal_trail</code> (the residue this optimal distance would capture).</li>
+</ol>
+<p><strong>Batch entry:</strong> <code>(thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight)</code>.</p>
+<hr>
+<h2>9. Tests (Lines 574–887, 15 tests)</h2>
+<table>
+<tr><th>Test</th><th>Lines</th><th>What it verifies</th></tr>
+<tr><td><code>test_broker_new</code></td><td>601–612</td><td>Constructor defaults: slot_idx=0, counts=0, EMAs=0.0</td></tr>
+<tr><td><code>test_market_position_idx</code></td><td>615–626</td><td>Grid derivation: slot=5, M=3 → market=1, position=2</td></tr>
+<tr><td><code>test_gate_open_cold_start</code></td><td>629–633</td><td>Gate open when counts < 50</td></tr>
+<tr><td><code>test_gate_open_negative_ev</code></td><td>636–644</td><td>Gate closed after warm-up with negative EV</td></tr>
+<tr><td><code>test_gate_open_positive_ev</code></td><td>647–654</td><td>Gate open after warm-up with positive EV</td></tr>
+<tr><td><code>test_register_paper</code></td><td>657–665</td><td>Paper created, count increments to 1</td></tr>
+<tr><td><code>test_tick_papers_no_resolution</code></td><td>668–681</td><td>Small price move → no resolution, paper survives</td></tr>
+<tr><td><code>test_tick_papers_violence</code></td><td>684–700</td><td>Price drops below stop → Violence, paper removed</td></tr>
+<tr><td><code>test_tick_papers_grace_then_runner_resolution</code></td><td>703–726</td><td>Two-phase: Grace signal (trail crossed), then runner resolves (trail fires)</td></tr>
+<tr><td><code>test_propagate_updates_track_record</code></td><td>729–753</td><td>Grace propagate: cumulative_grace=1.0, trade_count=1, correct indices</td></tr>
+<tr><td><code>test_propagate_violence_updates_violence</code></td><td>756–778</td><td>Violence propagate: cumulative_violence=2.5, grace stays 0</td></tr>
+<tr><td><code>test_dollar_pnl_grace</code></td><td>781–806</td><td>Grace P&L: 5% excursion, swap_fee=0.001 → net ≈ 479.5, avg_grace_net ≈ 18.22</td></tr>
+<tr><td><code>test_dollar_pnl_violence</code></td><td>809–834</td><td>Violence P&L: 3% stop, swap_fee=0.001 → net ≈ -319.7, avg_violence_net ≈ -12.15</td></tr>
+<tr><td><code>test_ema_updates_correctly</code></td><td>837–856</td><td>Two consecutive Grace propagations: second avg_grace_net > first (EMA converging)</td></tr>
+<tr><td><code>test_scalar_accums_named</code></td><td>859–863</td><td>Accumulator names: "trail-distance", "stop-distance"</td></tr>
+<tr><td><code>test_approximate_optimal_distances_up</code></td><td>866–871</td><td>Up: entry=100, extreme=110 → trail=0.05, stop=0.001</td></tr>
+<tr><td><code>test_approximate_optimal_distances_down</code></td><td>874–879</td><td>Down: entry=100, extreme=90 → trail=0.05, stop=0.001</td></tr>
+<tr><td><code>test_approximate_optimal_distances_clamped</code></td><td>882–886</td><td>Zero excursion → trail=0.001, stop=0.001 (floors)</td></tr>
+</table>
+<hr>
+<h2>10. Data Flow Summary</h2>
+<pre><code>
+Candle arrives
+    │
+    ▼
+register_paper() ─── creates PaperEntry with thoughts + distances
+    │
+    ▼ (next candle)
+tick_papers()
+    ├── Paper signals Grace  ──► market_signals (Resolution)
+    │   └── creates RunnerHistory, starts accumulation
+    ├── Paper hits stop       ──► market_signals (Resolution, Violence)
+    └── Runner resolves       ──► runner_resolutions (Resolution, Grace + position_batch)
+         └── compute_position_batch() → deferred training data
+    │
+    ▼
+propagate() (called by Post with Resolution data)
+    ├── Updates cumulative_grace / cumulative_violence
+    ├── Feeds trail_accum / stop_accum with optimal distances
+    ├── Computes dollar P&L, updates avg_grace_net / avg_violence_net EMAs
+    ├── Recomputes expected_value
+    └── Returns PropagationFacts → Post routes to observers
+    │
+    ▼
+gate_open() (consulted before proposals)
+    ├── Cold start (< 50 of either) → always open
+    └── Warm (≥ 50 of both) → open iff expected_value > 0
+</code></pre>
+<hr>
+<h2>11. Key Design Decisions (Quoted)</h2>
+<table>
+<tr><th>Decision</th><th>Source</th><th>Quote</th></tr>
+<tr><td>Proposal 024</td><td>Line 112</td><td>"market observer learns from the anomaly, not composed thought"</td></tr>
+<tr><td>Proposal 026</td><td>Line 39</td><td>"position learns from position_thought, not composed"</td></tr>
+<tr><td>Proposal 035</td><td>Line 176</td><td>"no reckoner, no noise subspace. Pure accounting + gate + log"</td></tr>
+<tr><td>Proposal 035</td><td>Line 411</td><td>"no reckoner. Pure accounting — dollar P&L, EMA, counts"</td></tr>
+<tr><td>Proposal 051</td><td>CLAUDE.md</td><td>"deleted the binary Grace/Violence reckoner — continuous reckoners only"</td></tr>
+<tr><td>EMA alpha</td><td>Line 456</td><td><code>0.038</code> — "half-life ~50 papers"</td></tr>
+<tr><td>Reference capital</td><td>Line 442</td><td><code>10_000.0</code> (constant)</td></tr>
+<tr><td>Cold start threshold</td><td>Line 230</td><td><code>50</code> of either outcome</td></tr>
+<tr><td>Stop bootstrap</td><td>Line 506</td><td><code>0.001</code> — "The simulation teaches the real value"</td></tr>
+<tr><td>Sparse sampling threshold</td><td>Line 556</td><td><code>> 0.10</code> — 10% relative change before emitting batch sample</td></tr>
+</table>
+<hr>
+<h2>12. Findings</h2>
+<ol>
+<li><strong>Complete.</strong> All 24 fields documented. All 9 methods (including 2 free functions) documented. Every code path traced.</li>
+<li><strong>No hidden mutation.</strong> <code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state. <code>tick_papers()</code> returns <code>Vec<Resolution></code> — the broker does not call propagate itself.</li>
+<li><strong>Runner history is correctly scoped.</strong> Created at Grace signal, accumulated per-candle, consumed and removed at runner resolution. The <code>HashMap</code> key is <code>paper_id</code>, preventing stale data.</li>
+<li><strong>The gate has two distinct modes</strong> with a clear boundary at 50 resolved trades of each outcome.</li>
+<li><strong>The distance cascade has exactly three tiers</strong> with clean fallback semantics.</li>
+<li><strong>P&L computation includes swap fees</strong> on both entry and exit, against a fixed $10,000 reference.</li>
+<li><strong><code>close_all_runners</code> accepts <code>_current_price</code> unused</strong> — all resolution data comes from the paper's own tracked price history.</li>
+<li><strong>15 tests</strong> cover construction, grid math, gate logic, paper lifecycle (no-resolution, violence, grace→runner), propagation accounting, dollar P&L (both directions), EMA convergence, accumulator naming, and optimal distance approximation (both directions + clamping). No test for <code>compute_position_batch</code> or <code>close_all_runners</code>.</li>
+</ol></div></body></html>

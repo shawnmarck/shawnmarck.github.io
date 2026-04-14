@@ -1,0 +1,217 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T3 — Treasury (wat spec) — Context-Free Verification — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html" active>T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>T3 — Treasury (wat spec) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><h1>T3 — Treasury (wat spec) — Context-Free Verification</h1>
+<p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines)</p>
+<p><strong>Ward:</strong> ignorant — knows nothing, reads as a stranger.</p>
+<hr>
+<h2>Struct: <code>treasury</code></h2>
+<p>8 fields:</p>
+<table>
+<tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+<tr><td><code>denomination</code></td><td><code>Asset</code></td><td>What "value" means (e.g. USD)</td></tr>
+<tr><td><code>available</code></td><td><code>Map<Asset, f64></code></td><td>Capital free to deploy</td></tr>
+<tr><td><code>reserved</code></td><td><code>Map<Asset, f64></code></td><td>Capital locked by active trades</td></tr>
+<tr><td><code>proposals</code></td><td><code>Vec<Proposal></code></td><td>Proposals received each candle; cleared after funding</td></tr>
+<tr><td><code>trades</code></td><td><code>Map<TradeId, Trade></code></td><td>Active trades — funded proposals become trades</td></tr>
+<tr><td><code>trade-origins</code></td><td><code>Map<TradeId, TradeOrigin></code></td><td>Stashes origin for propagation at settlement</td></tr>
+<tr><td><code>swap-fee</code></td><td><code>f64</code></td><td>Per-swap venue cost as fraction</td></tr>
+<tr><td><code>slippage</code></td><td><code>f64</code></td><td>Per-swap slippage estimate</td></tr>
+<tr><td><code>next-trade-id</code></td><td><code>usize</code></td><td>Monotonic counter</td></tr>
+</table>
+<p><strong>Dependencies:</strong> enums, newtypes, distances, proposal, trade, trade-origin, settlement, log-entry.</p>
+<hr>
+<h2>Constructor</h2>
+<pre><code>
+(make-treasury denomination initial-balances swap-fee slippage) → Treasury
+</code></pre>
+<p>Initializes all maps empty, proposals empty, next-trade-id to 0.</p>
+<hr>
+<h2>Methods (7)</h2>
+<h3>1. <code>submit-proposal</code> (line 55)</h3>
+<p>Pushes a proposal onto the treasury's proposal barrage.</p>
+<ul>
+<li>Input: treasury, proposal</li>
+<li>Output: <code>()</code></li>
+<li>Side-effect: mutates <code>proposals</code> vector</li>
+</ul>
+<h3>2. <code>fund-proposals</code> (line 63) — Core funding logic</h3>
+<p>Evaluates all proposals, sorted by edge (descending). Funds those that pass two gates; rejects the rest. Drains proposals after processing.</p>
+<p><strong>Funding gates (checked per proposal):</strong></p>
+<ol>
+<li><strong>Edge gate:</strong> <code>edge < venue-cost-rate</code> → rejected ("edge below venue cost")</li>
+<li><strong>Capital gate:</strong> <code>available-capital <= 0.0</code> → rejected ("insufficient capital")</li>
+</ol>
+<p><strong>Venue cost rate:</strong> <code>2.0 × (swap-fee + slippage)</code> — the round-trip cost (open + close).</p>
+<p><strong>Funding math:</strong></p>
+<ul>
+<li><code>reserve-amount = amount + (amount × venue-cost-rate)</code> — the total capital locked</li>
+<li><code>actual-reserve = min(reserve-amount, available-capital)</code> — clamped to what's available</li>
+<li><code>trade-amount = actual-reserve / (1.0 + venue-cost-rate)</code> — back-computed principal</li>
+<li>Capital moves: <code>available → reserved</code> by <code>trade-amount</code></li>
+<li>Entry price initialized to <code>0.0</code> (set later by enterprise from current price)</li>
+<li>Stop levels computed via <code>distances-to-levels(distances, entry-price, side)</code></li>
+<li>Trade stored in <code>trades</code> map, origin stored in <code>trade-origins</code> map</li>
+<li>Proposals vector drained (set to empty list) after processing</li>
+</ul>
+<p><strong>Returns:</strong> <code>Vec<LogEntry></code> — one per proposal (funded or rejected).</p>
+<h3>3. <code>settle-triggered</code> (line 133) — Settlement logic</h3>
+<p>Checks all active trades against their stop-levels using current prices.</p>
+<p><strong>Input:</strong> treasury, <code>Map<(Asset, Asset), f64></code> (current prices)</p>
+<p><strong>Two trigger paths:</strong></p>
+<p><strong>Path A — Safety stop fires</strong> (line 146):</p>
+<ul>
+<li>Condition: trade is <code>:active</code>, price crosses safety-stop in the adverse direction</li>
+<li>Buy: <code>price ≤ safety-stop</code>; Sell: <code>price ≥ safety-stop</code></li>
+<li>Exit value: <code>amount × (1.0 - venue-cost-per-swap)</code> — loses the venue cost on exit</li>
+<li>Loss: <code>amount - exit-value</code></li>
+<li>Capital: exit-value returns to <code>available</code>; full <code>amount</code> removed from <code>reserved</code></li>
+<li>Outcome: <code>:settled-violence</code>, reason <code>:violence</code></li>
+</ul>
+<p><strong>Path B — Trailing stop fires</strong> (line 172):</p>
+<ul>
+<li>Condition: trade is <code>:active</code> or <code>:runner</code>, price crosses trail-stop in the adverse direction</li>
+<li>Buy: <code>price ≤ trail-stop</code>; Sell: <code>price ≥ trail-stop</code></li>
+<li>Exit value: <code>amount × (price / entry-price) × (1.0 - venue-cost-per-swap)</code> — proportional P&L minus cost</li>
+<li>Outcome: <code>:grace</code> if exit-value > amount (profit), <code>:violence</code> otherwise (loss)</li>
+<li>Residue: <code>exit-value - amount</code> (positive = profit, negative = loss)</li>
+<li>Capital: <code>min(exit-value, amount)</code> returns to <code>available</code>; full <code>amount</code> removed from <code>reserved</code></li>
+<li>Phase: <code>:settled-grace</code> or <code>:settled-violence</code> depending on outcome</li>
+</ul>
+<p><strong>Both paths:</strong> trade and origin removed from their maps.</p>
+<p><strong>Returns:</strong> <code>(Vec<TreasurySettlement>, Vec<LogEntry>)</code> — parallel lists.</p>
+<h3>4. <code>update-trade-stops</code> (line 212)</h3>
+<p>Replaces stop-levels on a specific trade. Also handles the <strong>runner transition</strong>:</p>
+<ul>
+<li>If trade is <code>:active</code> and the new trail-stop would recover principal (trail-stop past entry-price), phase transitions to <code>:runner</code>.</li>
+<li>Buy: <code>trail-stop > entry-price</code>; Sell: <code>trail-stop < entry-price</code>.</li>
+</ul>
+<h3>5. <code>available-capital</code> (line 230)</h3>
+<p>Simple accessor: returns the available balance for an asset, defaulting to <code>0.0</code>.</p>
+<h3>6. <code>deposit</code> (line 236)</h3>
+<p>Adds amount to available capital for an asset.</p>
+<h3>7. <code>total-equity</code> (line 244)</h3>
+<p>Sums all available and reserved balances across all assets. Returns raw sum (does not convert to denomination — the comment says "converted to denomination" but the code just sums f64 values directly).</p>
+<h3>8. <code>trades-for-post</code> (line 252)</h3>
+<p>Returns all active/runner trades belonging to a given post-idx.</p>
+<hr>
+<h2>Bounded Loss — How It Works</h2>
+<p>The spec declares bounded loss through a capital reservation model:</p>
+<ol>
+<li><strong>At funding:</strong> Capital is moved from <code>available</code> to <code>reserved</code>. The amount reserved equals the trade's principal (<code>trade-amount</code>). The reserve-amount includes a buffer for venue costs, but only the principal is actually moved.</li>
+</ol>
+<ol>
+<li><strong>At settlement (safety stop):</strong> The maximum loss is <code>amount × venue-cost-per-swap</code> — the cost of one swap (exit only). The rest of the principal (<code>amount × (1 - venue-cost-per-swap)</code>) returns to available. This is the <strong>hard bound</strong>: the system cannot lose more than one venue-cost fraction of the trade principal.</li>
+</ol>
+<ol>
+<li><strong>At settlement (trailing stop):</strong> The trade's P&L is proportional to price movement. If the trade wins, profit returns as available capital. If the trade loses beyond venue cost on exit, the loss is bounded by the same formula as the safety stop case.</li>
+</ol>
+<ol>
+<li><strong>The bound is structural, not policy.</strong> The reserve map is the accounting enforcement: capital in <code>reserved</code> cannot be deployed. It only returns (to <code>available</code>) through settlement. No double-spending is possible because proposals are drained after funding.</li>
+</ol>
+<hr>
+<h2>Observations (stranger's eye)</h2>
+<ul>
+<li><code>total-equity</code> comment says "converted to denomination" but the code sums raw f64 values without conversion. If multiple assets exist, this is a bug or an incomplete spec.</li>
+<li><code>fund-proposals</code> sorts by edge descending and greedily funds top-to-bottom. First proposal to deplete an asset's capital blocks subsequent proposals for that asset.</li>
+<li>The runner transition is checked inside <code>update-trade-stops</code>, which is called from outside the treasury (by the post's tick step 3c).</li>
+<li>Entry price is set to <code>0.0</code> at funding time; the comment says "set by the enterprise from current price." This means the enterprise must update the trade's entry-price between funding and the first tick. If it doesn't, stop-level computation in <code>settle-triggered</code> would divide by zero (<code>price / entry-price</code>).</li>
+<li>Trade origins are stored purely for propagation at settlement time — composed-thought and prediction are extracted and embedded in the settlement.</li>
+</ul></div></body></html>

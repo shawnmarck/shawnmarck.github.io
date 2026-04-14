@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Services — Queue, Topic, and Mailbox — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html" active>Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Services — Queue, Topic, and Mailbox <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<p>Holon's messaging layer provides three primitives built on <a class="wikilink" href="pg-services.html">crossbeam::channel</a>: <strong>Queue</strong> (1→1 point-to-point), <strong>Topic</strong> (1→N fan-out), and <strong>Mailbox</strong> (N→1 fan-in). All concurrency is achieved through message passing — zero <code>Mutex</code>. In the <a class="wikilink" href="T1-001-wat-language.html">wat language</a>, these appear as values created by <code>make-pipe</code>, <code>make-topic</code>, and <code>select</code>, with no special declarations needed. Shutdown propagates automatically by dropping senders/receivers.</p>
+<hr></div><h1>Services — Queue, Topic, and Mailbox</h1>
+<p><strong>Wiki composite · Sources: T0-016 (services-rust), T1-001 (wat-language)</strong></p>
+<hr>
+<h2>Architecture</h2>
+<table>
+<tr><th>Primitive</th><th>Pattern</th><th>Mechanism</th><th>Mutex?</th><th>wat form</th></tr>
+<tr><td><a class="wikilink" href="pg-services.html">Queue</a></td><td>1→1</td><td><code>crossbeam::channel</code> (bounded or unbounded)</td><td>No</td><td><code>make-pipe</code></td></tr>
+<tr><td><a class="wikilink" href="pg-services.html">Topic</a></td><td>1→N</td><td>Bounded input → spawned thread → clone to N outputs</td><td>No</td><td><code>make-topic</code></td></tr>
+<tr><td><a class="wikilink" href="pg-services.html">Mailbox</a></td><td>N→1</td><td>Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output</td><td>No</td><td><code>select</code> over N rx ends</td></tr>
+</table>
+<p>All three use <a class="wikilink" href="pg-services.html">crossbeam::channel</a> as their sole concurrency primitive — a lock-free MPSC channel built on atomic compare-and-swap operations (T0-016, §"How Concurrency Is Achieved Without Mutex").</p>
+<hr>
+<h2>Queue — Point-to-Point</h2>
+<p>The atom of the system. One producer, one consumer.</p>
+<p><strong>Rust types:</strong></p>
+<ul>
+<li><code>QueueSender<T></code> — wraps <code>crossbeam::Sender<T></code></li>
+<li><code>QueueReceiver<T></code> — wraps <code>crossbeam::Receiver<T></code></li>
+</ul>
+<p><strong>Constructors:</strong></p>
+<ul>
+<li><code>queue_bounded(capacity)</code> — bounded channel; sender blocks when full (backpressure)</li>
+<li><code>queue_unbounded()</code> — unbounded channel; no backpressure</li>
+</ul>
+<p><strong>Sender API:</strong> <code>send(value: T)</code> — blocks if bounded and full; returns <code>SendError<T></code> if receiver dropped.</p>
+<p><strong>Receiver API:</strong></p>
+<ul>
+<li><code>recv()</code> — blocking; returns <code>RecvError::Disconnected</code> when sender dropped and queue empty</li>
+<li><code>try_recv()</code> — non-blocking; returns raw <code>crossbeam::TryRecvError</code></li>
+<li><code>inner()</code> — <code>pub(crate)</code> raw <code>&Receiver<T></code>, used by <a class="wikilink" href="pg-services.html">Mailbox</a> and the <a class="wikilink" href="pg-encoding-cache.html">cache</a> for <code>crossbeam::Select</code></li>
+</ul>
+<p><strong>Error types</strong> (<code>SendError<T></code>, <code>RecvError</code>) are custom wrappers that decouple the public API from crossbeam's types (T0-016, §Queue).</p>
+<p><strong>wat layer:</strong> <code>(make-pipe :capacity N :carries T)</code> returns <code>(tx rx)</code>. Send via <code>(send tx value)</code>, receive via <code>(recv rx)</code> or <code>(try-recv rx)</code>. "Destructure at creation" (T1-001, §Pipes). Pipes are values — "no defpipe, no defprocess, no defservice" (T1-001, §Design principle).</p>
+<hr>
+<h2>Topic — Fan-Out (1→N)</h2>
+<p>One producer, N consumers. A proxy that writes to N queues by cloning each message.</p>
+<p><strong>How it works (T0-016, §Topic):</strong></p>
+<ol>
+<li>Caller provides <code>Vec<QueueSender<T>></code> — write ends of queues whose read ends belong to subscriber programs. Subscribers see plain queues; they don't know a topic exists.</li>
+<li><code>topic(capacity, outputs)</code> creates an internal bounded input queue and spawns a fan-out thread that loops: <code>recv()</code> from input, <code>send(msg.clone())</code> to each output.</li>
+<li>Returns <code>(TopicSender<T>, TopicHandle)</code>.</li>
+</ol>
+<p><strong><code>TopicSender<T></code></strong> — wraps the input <code>QueueSender</code>. Same <code>.send()</code> interface. Writing here clones to all subscribers.</p>
+<p><strong><code>TopicHandle</code></strong> — holds the <code>JoinHandle<()></code> for the fan-out thread. When the producer drops <code>TopicSender</code>, the input disconnects, the thread exits, and all output <code>QueueSender</code>s are dropped — cascading disconnection to every subscriber.</p>
+<p><strong>Bounds:</strong> <code>T: Send + Clone + 'static</code>. Clone is required because the message is cloned to each subscriber.</p>
+<p><strong>Backpressure:</strong> Bounded send to each subscriber. One slow subscriber stalls all others — intentional backpressure propagation (T0-016, §Topic).</p>
+<p><strong>wat layer:</strong> <code>(make-topic)</code> wires 1→N fan-out over existing pipes. The wat spec notes this is <em>synchronous, no thread, no queue</em> at the specification level — "The caller's send IS the fan-out" (T1-001, §Topics). The Rust implementation adds the thread and internal queue for execution.</p>
+<hr>
+<h2>Mailbox — Fan-In (N→1)</h2>
+<p>N producers, one consumer. A proxy that reads from N queues via <code>crossbeam::Select</code>.</p>
+<p><strong>How it works (T0-016, §Mailbox):</strong></p>
+<ol>
+<li>Caller provides <code>Vec<QueueReceiver<T>></code> — read ends of queues whose write ends belong to producer programs. Producers see plain queues; they don't know a mailbox exists.</li>
+<li><code>mailbox(inputs)</code> creates an internal unbounded output queue and spawns a fan-in thread using <code>crossbeam::channel::Select</code>.</li>
+<li>Returns <code>MailboxReceiver<T></code>.</li>
+</ol>
+<p><strong>Fan-in thread logic:</strong></p>
+<ul>
+<li>Maintains a <code>Vec<QueueReceiver<T>></code> called <code>alive</code>.</li>
+<li>Each iteration: builds a fresh <code>Select</code> over all alive receivers, calls <code>select()</code>, identifies which fired via <code>oper.index()</code>, receives the message, forwards to output.</li>
+<li>Disconnected receivers are removed from <code>alive</code>.</li>
+<li>Loop breaks when <code>alive</code> is empty — all inputs disconnected. Output sender drops; consumer sees <code>Disconnected</code>.</li>
+</ul>
+<p><strong>Partial disconnect resilience:</strong> If some producers drop but others remain, the mailbox continues receiving from the living ones. Only when <em>all</em> are gone does it signal disconnection (T0-016, §Mailbox).</p>
+<p><strong>Bounds:</strong> <code>T: Send + 'static</code>. No <code>Clone</code> needed — messages are moved, not copied.</p>
+<p><strong><code>MailboxReceiver<T></code></strong> — wraps <code>QueueReceiver<T></code> with the same interface: <code>recv()</code>, <code>try_recv()</code>, <code>inner()</code>.</p>
+<p><strong>wat layer:</strong> <code>(select rx1 rx2 ...)</code> multiplexes N receive ends → <code>(Some (idx value))</code> or <code>:closed</code>. "Parks when idle — zero CPU" (T1-001, §Pipes). This is the wat-level expression of what the Rust <a class="wikilink" href="pg-services.html">Mailbox</a> implements as a dedicated composing thread.</p>
+<hr>
+<h2>Design Principles</h2>
+<h3>Concurrency without Mutex</h3>
+<p>"Threads communicate by sending messages, not by sharing memory" (T0-016). The pattern:</p>
+<ul>
+<li><strong>Ownership transfer via types.</strong> <code>QueueSender</code> and <code>QueueReceiver</code> are separate, moveable types. Rust's type system enforces producer/consumer separation.</li>
+<li><strong>Shutdown by disconnection.</strong> Dropping a sender/receiver propagates as <code>Disconnected</code>. No explicit coordination, no <code>Arc<Mutex<bool>></code> shutdown flags.</li>
+<li><strong>Backpressure via bounded channels.</strong> Topics use bounded inputs; mailboxes use unbounded outputs (never stall producers).</li>
+</ul>
+<h3>Everything is a Value</h3>
+<p>In wat, pipes, topics, and processes are all plain values created by regular functions — not special declarations (T1-001, §Design principle):</p>
+<blockquote>"No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions."</blockquote>
+<p>The seven concurrency forms are: <code>make-pipe</code>, <code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>.</p>
+<h3>Composition via <code>inner()</code></h3>
+<p><code>QueueReceiver::inner()</code> and <code>MailboxReceiver::inner()</code> expose the raw crossbeam <code>Receiver</code> as <code>pub(crate)</code>, allowing composing code (e.g., the <a class="wikilink" href="pg-encoding-cache.html">cache</a>) to treat queue receivers and mailbox receivers uniformly in a multi-channel <code>crossbeam::Select</code> — without leaking the internal implementation through the public API (T0-016, §"One subtle design choice").</p>
+<hr>
+<h2>Tests</h2>
+<table>
+<tr><th>Primitive</th><th>Count</th><th>Coverage</th></tr>
+<tr><td>Queue</td><td>4</td><td>send/receive, ordering, bounded backpressure, shutdown on sender drop</td></tr>
+<tr><td>Topic</td><td>3</td><td>fan-out delivery, ordering per subscriber, shutdown cascade</td></tr>
+<tr><td>Mailbox</td><td>4</td><td>multiple senders, interleaved threads, full shutdown, partial sender drop</td></tr>
+</table>
+<p>Total: <strong>11 tests</strong> across the three primitives (T0-016).</p>
+<hr>
+<h2>Source Files</h2>
+<ul>
+<li><code>src/services/queue.rs</code> — 123 lines</li>
+<li><code>src/services/topic.rs</code> — 129 lines</li>
+<li><code>src/services/mailbox.rs</code> — 200 lines</li>
+</ul>
+<p>Total: <strong>452 lines</strong> of Rust implementing the full messaging layer (T0-016).</p></div></body></html>

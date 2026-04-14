@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Bundle — the lossy consensus operator — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html" active>Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Bundle — the lossy consensus operator <span class="badge badge-explain">EXPLAIN</span></h1><h1>Bundle — the lossy consensus operator</h1>
+<p><strong>TL;DR:</strong> Bundle superimposes multiple vectors into one by element-wise majority vote. It is the commutative monoid identity of the <a class="wikilink" href="pg-thought-space.html">Vector Algebra</a>: associative, commutative, and lossy. Every structured encoding in holon terminates with a bundle. It is how thoughts become single vectors.</p>
+<hr>
+<h2>Algebraic role</h2>
+<p>The WAT spec defines the Vector Algebra as:</p>
+<blockquote>"A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism."</blockquote>
+<blockquote>— <code>wat/core/primitives.wat</code> via T0-002</blockquote>
+<p>Bundle is the monoid operation. The WAT declares its properties:</p>
+<table>
+<tr><th>Property</th><th>WAT claim</th></tr>
+<tr><td>Associativity</td><td>Yes (order-independent)</td></tr>
+<tr><td>Commutativity</td><td>Yes (input order irrelevant)</td></tr>
+<tr><td>Identity</td><td>Zero vector</td></tr>
+</table>
+<p>These follow mechanically from majority vote over signed integers — the sum <code>a + b + c</code> is the same regardless of grouping or permutation, and the sign function applied afterward preserves those properties.</p>
+<h2>Implementation: element-wise majority vote</h2>
+<p>Rust implements bundle in <code>Primitives::bundle</code>:</p>
+<pre><code>
+/// Bundle multiple vectors (element-wise majority vote).
+/// Creates a superposition that is similar to ALL input vectors.
+pub fn bundle(vectors: &[&Vector]) -> Vector {
+    // sums each dimension into i32, then: >0 → +1, <0 → -1, ==0 → 0
+}
+</code></pre>
+<p>The algorithm: sum each dimension across all input vectors, then apply a sign threshold:</p>
+<table>
+<tr><th>Sum per dimension</th><th>Output</th></tr>
+<tr><td><code>> 0</code></td><td><code>+1</code></td></tr>
+<tr><td><code>< 0</code></td><td><code>-1</code></td></tr>
+<tr><td><code>== 0</code></td><td><code>0</code></td></tr>
+</table>
+<p>This is <strong>not</strong> a plain sum — it is <code>sign(Σ)</code>. The result stays in the bipolar set <code>{-1, 0, +1}</code>.</p>
+<p><strong>Source:</strong> T0-002, <code>holon-rs/src/kernel/primitives.rs</code>.</p>
+<h3>Weighted variant</h3>
+<p><code>Primitives::weighted_bundle(vectors, weights)</code> applies per-vector weight scaling before the same sign threshold. Same majority-vote semantics, but with unequal influence.</p>
+<h3>f64 variant</h3>
+<p><code>bundle_f64</code> skips the sign threshold entirely — it returns the raw sum in f64 space. Used for the extraction and analysis pipeline:</p>
+<blockquote>"The i8 pipeline is for encoding and prediction. The f64 pipeline is for extraction and analysis."</blockquote>
+<blockquote>— T0-002</blockquote>
+<h2>Lossiness — why it's called "lossy consensus"</h2>
+<p>Bundle is <strong>not</strong> invertible. Given <code>bundle(A, B) = C</code>, there is no operation that recovers A and B from C alone. Information is destroyed by the sign threshold. This is by design: a bundled thought is a <strong>consensus</strong> — the dimensions where most inputs agree survive; where they conflict, the majority wins and the minority is erased.</p>
+<p>This makes bundle fundamentally different from <a class="wikilink" href="pg-bind.html">bind</a> (which is exact and self-inverse). Bind creates structure; bundle destroys structure to produce summary.</p>
+<h2>Where bundle appears in the encoding pipeline</h2>
+<h3><a class="wikilink" href="T0-006-walkable.html">Walkable</a> map encoding</h3>
+<p>Every <code>Map</code>-typed Walkable encodes as role-filler bindings, then bundles:</p>
+<pre><code>
+for each (key, value):
+    bound = bind(role_vector(key), encode(value))
+    push bound
+bundle(all bounds)
+</code></pre>
+<p>The final bundle is the single vector that represents the entire map. Removing any binding degrades but does not destroy the vector — it still partially matches all remaining keys.</p>
+<p><strong>Source:</strong> T0-006, <code>holon-rs/src/kernel/encoder.rs</code>.</p>
+<h3><a class="wikilink" href="T0-006-walkable.html">Walkable</a> list and set encoding</h3>
+<ul>
+<li><strong>List</strong>: position-encode each element (<code>bind(pos_vec, item_vec)</code>), then bundle.</li>
+<li><strong>Set</strong>: bundle items directly, then bind with a <code>"set_indicator"</code> role vector to distinguish sets from random bundles.</li>
+<li><strong>Spread</strong>: position-encode each element, but each becomes an <strong>independent</strong> leaf binding (fan-out), not a single bundle.</li>
+</ul>
+<p><strong>Source:</strong> T0-006.</p>
+<h3><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> bundle node</h3>
+<p>The <code>ThoughtAST::Bundle(children)</code> variant maps <code>encode()</code> over all children, then calls <code>Primitives::bundle</code>. If empty, returns <code>Vector::zeros(dims)</code>.</p>
+<p><strong>Source:</strong> T0-011, <code>holon-lab-trading/src/encoding/thought_encoder.rs</code>.</p>
+<h3><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> sequential node</h3>
+<p><code>Sequential(items)</code> encodes each item, permutes it by its positional index (<code>Primitives::permute(v, i)</code>), then bundles all permuted vectors. The permutation breaks symmetry so <code>[A, B] ≠ [B, A]</code>.</p>
+<p><strong>Source:</strong> T0-011.</p>
+<h2><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — streaming optimization</h2>
+<p><code>IncrementalBundle</code> maintains a running <code>sums: Vec<i32></code> buffer across candles (time steps). Instead of re-encoding and re-bundling every fact each tick, it diffs the new fact set against <code>last_facts</code>, subtracts removed contributions, adds new ones, and re-thresholds.</p>
+<blockquote>"Incremental bundling — maintains sums across candles. Optimization, not cognition. Can be reconstructed from one full encode."</blockquote>
+<blockquote>— T0-011</blockquote>
+<p>The <code>threshold()</code> method applies the same sign function as <code>bundle()</code>, producing a result <strong>bit-identical</strong> to a full bundle from scratch.</p>
+<p><strong>Load-bearing invariant:</strong> <code>round_to</code> at vocab emission quantizes floats so AST key equality (via <code>f64::to_bits()</code>) is reliable. Without it, floating-point drift causes false "changed" detections, degrading incremental savings to full recompute.</p>
+<p><strong>Source:</strong> T0-011, lines 212–313.</p>
+<h2>Identity divergence (WAT vs Rust)</h2>
+<table>
+<tr><th>Specification</th><th>Empty bundle behavior</th></tr>
+<tr><td>WAT spec</td><td>Returns zero vector (identity element)</td></tr>
+<tr><td>Rust <code>Primitives::bundle</code></td><td><strong>Panics</strong> on empty input</td></tr>
+</table>
+<p>Rust does not implement the identity. <code>ThoughtEncoder</code> works around this by handling empty <code>Bundle</code> and <code>Sequential</code> nodes explicitly, returning <code>Vector::zeros(dims)</code> before ever calling <code>Primitives::bundle</code>.</p>
+<p><strong>Source:</strong> T0-002.</p>
+<h2>Confident bundle — with agreement margins</h2>
+<p><code>bundle_with_confidence(vectors)</code> returns both the bundled vector and per-dimension agreement margins — how strongly each dimension's sign is supported. Used when the system needs to distinguish strong consensus from weak majority.</p>
+<p><strong>Source:</strong> T0-002, extended operations table.</p>
+<h2>Relationship to other operations</h2>
+<table>
+<tr><th>Operation</th><th>Relationship to bundle</th></tr>
+<tr><td><a class="wikilink" href="pg-bind.html">bind</a></td><td>Bundle destroys information; bind preserves it (self-inverse).</td></tr>
+<tr><td><a class="wikilink" href="T0-003-cosine.html">cosine</a></td><td>Cosine measures how much a bundled thought still resembles its constituents.</td></tr>
+<tr><td><a class="wikilink" href="pg-atom.html">atom</a></td><td>Atoms are the inputs that get bundled into composite thoughts.</td></tr>
+<tr><td><a class="wikilink" href="T0-002-primitives.html">negate</a></td><td>Removes a component's influence from a superposition (approximate inverse of bundling).</td></tr>
+<tr><td><code>weighted_bundle</code></td><td>Bundle with unequal per-vector influence.</td></tr>
+<tr><td><code>bundle_f64</code></td><td>Bundle without thresholding — raw accumulation for analysis.</td></tr>
+<tr><td><code>bundle_with_confidence</code></td><td>Bundle with per-dimension strength margins.</td></tr>
+</table>
+<hr>
+<h2>Sources</h2>
+<ul>
+<li>T0-002 — <code>wat/core/primitives.wat</code> (83 lines), <code>holon-rs/src/kernel/primitives.rs</code> (1911 lines)</li>
+<li>T0-006 — <code>holon-rs/src/kernel/walkable.rs</code> (1002 lines), <code>holon-rs/src/kernel/encoder.rs</code></li>
+<li>T0-011 — <code>holon-lab-trading/src/encoding/thought_encoder.rs</code> (638 lines)</li>
+</ul></div></body></html>

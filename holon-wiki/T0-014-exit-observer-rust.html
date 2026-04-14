@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T0-014 — ExitObserver (Rust) — Verification — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html" active>T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>T0-014 — ExitObserver (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><h1>T0-014 — ExitObserver (Rust) — Verification</h1>
+<p><strong>Source:</strong> <code>holon-lab-trading/src/domain/position_observer.rs</code> (291 lines)</p>
+<p><strong>Context:</strong> None. Read only what the code says.</p>
+<hr>
+<h2>What It Is</h2>
+<p>A <code>PositionObserver</code>. The module docstring calls it "position observer" (not "exit observer"). The file-level comment says: "Estimates position distances. Learned. Two continuous reckoners (trail, stop). Compiled from wat/position-observer.wat."</p>
+<p>It has six fields. It is a struct, not a trait.</p>
+<hr>
+<h2>Fields</h2>
+<table>
+<tr><th>Field</th><th>Type</th><th>What the comment says</th></tr>
+<tr><td><code>lens</code></td><td><code>PositionLens</code></td><td>"Which judgment vocabulary." Enum: <code>Core</code> (5 trade atoms: excursion, retracement, age, peak-age, signaled) or <code>Full</code> (13 trade atoms: all three voices plus phase context).</td></tr>
+<tr><td><code>trail_reckoner</code></td><td><code>Reckoner</code></td><td>"Continuous reckoner -- trailing stop distance." Named <code>"trail-{lens}"</code>. Config: Continuous mode, 10 buckets.</td></tr>
+<tr><td><code>stop_reckoner</code></td><td><code>Reckoner</code></td><td>"Continuous reckoner -- safety stop distance." Named <code>"stop-{lens}"</code>. Config: Continuous mode, 10 buckets.</td></tr>
+<tr><td><code>default_distances</code></td><td><code>Distances</code></td><td>"The crutches (both), returned when empty." A simple <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free.</td></tr>
+<tr><td><code>noise_subspace</code></td><td><code>OnlineSubspace</code></td><td>"Learns the background distribution for this exit lens. 8 principal components. The anomaly is what the subspace cannot explain." Initialized with <code>(dims, 8)</code>.</td></tr>
+<tr><td><code>incremental</code></td><td><code>IncrementalBundle</code></td><td>"Incremental bundling for exit facts — optimization cache, not cognition." Running element-wise sums + last-facts cache for incremental encoding.</td></tr>
+</table>
+<hr>
+<h2>How It Predicts Distances</h2>
+<p>One public prediction method: <code>reckoner_distances(position_thought: &Vector) -> Option<Distances></code>.</p>
+<ol>
+<li>Check experience of both reckoners (trail and stop). If either has zero experience, return <code>None</code>.</li>
+<li>Query <code>trail_reckoner.query(position_thought)</code> → trail distance.</li>
+<li>Query <code>stop_reckoner.query(position_thought)</code> → stop distance.</li>
+<li>Return <code>Some(Distances { trail, stop })</code>.</li>
+</ol>
+<p>The broker owns the full cascade (reckoner → accumulator → default). This method is Tier 1 only — raw reckoner output, no fallback.</p>
+<p>A second method <code>recommended_distances</code> exists but is <code>#[cfg(test)]</code> only. It implements the full cascade: reckoner → broker accumulator → default_distances. Not used in production.</p>
+<p>Both methods query on <code>position_thought</code> only (Proposal 026). No composition with market thought at query time.</p>
+<hr>
+<h2>How It Learns</h2>
+<p>One learning method: <code>observe_distances(position_thought: &Vector, optimal: &Distances) -> (f64, f64, f64, f64, f64, f64)</code>.</p>
+<ol>
+<li><strong>Pre-learning prediction:</strong> Query each reckoner for what it <em>would</em> predict given current state. If no experience, use default.</li>
+<li><strong>Learn:</strong> Call <code>trail_reckoner.observe_scalar(position_thought, optimal.trail, 1.0)</code> and <code>stop_reckoner.observe_scalar(position_thought, optimal.stop, 1.0)</code>. Weight is always 1.0 — each observation counts once. The value (optimal distance) goes to the bucket center; the thought goes to the prototype. Weight does NOT scale by magnitude.</li>
+<li><strong>Return:</strong> <code>(trail_error, stop_error, predicted_trail, predicted_stop, optimal_trail, optimal_stop)</code>.</li>
+</ol>
+<p>The "optimal" distances come from hindsight — simulation sweeps candidate values against actual price histories to determine what would have been ideal (defined in <code>simulation</code> module, not here).</p>
+<hr>
+<h2>Noise Subspace</h2>
+<p><code>strip_noise(thought: &Vector) -> Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as market_observer.</p>
+<hr>
+<h2>Discrepancy With Module Docstring</h2>
+<p>Lines 1–5 state: "Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating."</p>
+<p>The struct actually <strong>has</strong> a <code>noise_subspace</code> field (line 27–28) and a <code>strip_noise</code> method (line 165). The docstring contradicts the code.</p>
+<hr>
+<h2>Tests</h2>
+<p>7 tests in <code>#[cfg(test)] mod tests</code>:</p>
+<ul>
+<li>Construction defaults correct</li>
+<li>Returns defaults when empty</li>
+<li><code>experienced()</code> is false initially, true after one observation</li>
+<li>Reckoner cascade produces non-zero values after 10 training observations</li>
+<li>Two reckoners are independent, both continuous, different names</li>
+<li><code>strip_noise</code> returns correct-dimension vector</li>
+<li>Noise subspace initialized and functional</li>
+</ul>
+<p>All use DIMS=4096, RECALIB=100, DEFAULT_TRAIL=0.02, DEFAULT_STOP=0.05.</p>
+<hr>
+<h2>Summary</h2>
+<p>PositionObserver predicts two continuous values (trailing stop distance, safety stop distance) from a position thought vector using two independent continuous Reckoners. It learns from hindsight-optimal distances with unit weight. It has a noise subspace despite its own docstring claiming it doesn't. The broker owns the production cascade; the observer only exposes raw reckoner queries.</p></div></body></html>

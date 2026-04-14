@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Paper Trade — hypothetical accountability without execution — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html" active>Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>Paper Trade — hypothetical accountability without execution <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by <a class="wikilink" href="pg-broker.html">Broker</a> instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is "hypothetical accountability."</p>
+<hr></div><h1>Paper Trade — hypothetical accountability without execution</h1>
+<h2>Lifecycle</h2>
+<pre><code>
+Created (register_paper)
+  │
+  ├─ price moves against prediction, hits fixed stop
+  │    → Violence (resolved, never signaled)
+  │
+  ├─ price moves in predicted direction far enough to cross trail threshold
+  │    → signaled = true, now a Runner
+  │       │
+  │       ├─ price reverses, crosses trailing stop
+  │       │    → resolved (Grace — was signaled)
+  │       │
+  │       └─ price continues favorably
+  │            → extreme/trail ratchet, keeps running
+  │
+  └─ price never moves enough in either direction
+       → stays open indefinitely
+</code></pre>
+<p>Each paper is created at the candle's entry price. On every subsequent candle, <code>tick(current_price)</code> is called. The paper is removed once resolved.</p>
+<blockquote>Source: T0-015 § Lifecycle Summary; T0-018 § 7.7</blockquote>
+<hr>
+<h2>Resolution Classifications</h2>
+<table>
+<tr><th>Outcome</th><th>Condition</th><th>Meaning</th></tr>
+<tr><td><strong>Grace</strong></td><td><code>signaled == true</code> — trail crossed at some point</td><td>Market confirmed the prediction.</td></tr>
+<tr><td><strong>Violence</strong></td><td><code>resolved && !signaled</code> — stop fired before trail ever crossed</td><td>Prediction was wrong.</td></tr>
+<tr><td><strong>Runner</strong></td><td><code>signaled && !resolved</code> — trail crossed, still running</td><td>Not yet resolved.</td></tr>
+</table>
+<p>These are mutually exclusive in any given state. An unsignaled, unresolved paper matches none of the three.</p>
+<blockquote>Source: T0-015 § Resolution Classifications</blockquote>
+<h3>Stop priority</h3>
+<p>Violence is checked <em>before</em> Grace on each tick. If both triggers would fire simultaneously, Violence wins — a price that hits the stop and the trail-cross threshold on the same tick is classified as Violence, not Grace.</p>
+<blockquote>Source: T0-015 § tick — "Key ordering"</blockquote>
+<hr>
+<h2>Triggers</h2>
+<h3>Trail (Grace)</h3>
+<p>A trailing stop that follows the best price in the predicted direction:</p>
+<ul>
+<li><strong>Up predictions:</strong> <code>trail_level = extreme - extreme × trail_distance</code>. Only ratchets upward.</li>
+<li><strong>Down predictions:</strong> <code>trail_level = extreme + extreme × trail_distance</code>. Only ratchets downward.</li>
+</ul>
+<p>The <code>extreme</code> tracks the best price seen so far (monotonically favorable). The trail level follows with a gap of <code>trail_distance</code> percent.</p>
+<h3>Stop (Violence)</h3>
+<p>A fixed stop loss set at creation, never moves:</p>
+<ul>
+<li><strong>Up predictions:</strong> <code>entry - entry × stop_distance</code> (below entry).</li>
+<li><strong>Down predictions:</strong> <code>entry + entry × stop_distance</code> (above entry).</li>
+</ul>
+<hr>
+<h2>PaperEntry Fields</h2>
+<table>
+<tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
+<tr><td><code>paper_id</code></td><td><code>usize</code></td><td>Unique ID assigned by the <a class="wikilink" href="pg-broker.html">Broker</a>.</td></tr>
+<tr><td><code>composed_thought</code></td><td><code>Vector</code></td><td>Composed thought (market + position) at entry.</td></tr>
+<tr><td><code>market_thought</code></td><td><code>Vector</code></td><td>Raw market thought (for market observer learning at resolution).</td></tr>
+<tr><td><code>position_thought</code></td><td><code>Vector</code></td><td>Position observer's own encoded facts (Proposal 026).</td></tr>
+<tr><td><code>prediction</code></td><td><code>Direction</code></td><td><code>Up</code> or <code>Down</code>.</td></tr>
+<tr><td><code>entry_price</code></td><td><code>Price</code></td><td>Price at creation.</td></tr>
+<tr><td><code>distances</code></td><td><code>Distances</code></td><td><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td></tr>
+<tr><td><code>extreme</code></td><td><code>f64</code></td><td>Best price in predicted direction seen so far.</td></tr>
+<tr><td><code>trail_level</code></td><td><code>Price</code></td><td>Current trailing stop level.</td></tr>
+<tr><td><code>stop_level</code></td><td><code>Price</code></td><td>Fixed stop loss.</td></tr>
+<tr><td><code>signaled</code></td><td><code>bool</code></td><td>Has the trail trigger crossed?</td></tr>
+<tr><td><code>resolved</code></td><td><code>bool</code></td><td>Has any trigger fired?</td></tr>
+<tr><td><code>age</code></td><td><code>usize</code></td><td>Tick count survived.</td></tr>
+<tr><td><code>entry_candle</code></td><td><code>usize</code></td><td>Candle number at creation.</td></tr>
+<tr><td><code>price_history</code></td><td><code>Vec<f64></code></td><td>Every tick's price, starting with entry.</td></tr>
+</table>
+<blockquote>Source: T0-015 § Fields</blockquote>
+<hr>
+<h2>Excursion</h2>
+<p><code>excursion()</code> measures how far price moved in the predicted direction, as a fraction of entry:</p>
+<ul>
+<li>Up: <code>(extreme - entry) / entry</code></li>
+<li>Down: <code>(entry - extreme) / entry</code></li>
+</ul>
+<p>Always ≥ 0. Zero at creation. Used as the "amount" in Grace resolutions — the realized gain fraction.</p>
+<blockquote>Source: T0-015 § excursion()</blockquote>
+<hr>
+<h2>Broker Integration</h2>
+<h3>Creation</h3>
+<p>The <a class="wikilink" href="pg-broker.html">Broker</a> creates a paper every candle via <code>register_paper()</code>, which assigns a monotonic <code>paper_id</code> and pushes the paper onto a <code>VecDeque</code>. Three separate thoughts are recorded: composed, market, and position (Proposal 026 — position observer learns from its own thought, not composed).</p>
+<blockquote>Source: T0-018 § 7.5</blockquote>
+<h3>Ticking</h3>
+<p><code>tick_papers()</code> returns two vectors:</p>
+<ol>
+<li><strong><code>market_signals</code></strong> — Grace signals and Violence stops, for market observer learning.</li>
+<li><strong><code>runner_resolutions</code></strong> — completed runners with position batch data, for position observer + broker learning.</li>
+</ol>
+<p>When a paper first signals Grace (trail crosses), a <a class="wikilink" href="pg-broker.html">RunnerHistory</a> is created and the broker begins accumulating per-candle thoughts, distances, and prices. When the runner resolves, <code>compute_position_batch()</code> produces deferred batch training data using a suffix-extremum pass and sparse sampling (only when optimal trail changed by >10% relative).</p>
+<blockquote>Source: T0-018 § 7.7</blockquote>
+<h3>Direction Flip</h3>
+<p>When the market observer's active direction flips, <code>close_all_runners()</code> force-resolves all active runners as Grace. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally).</p>
+<blockquote>Source: T0-018 § 7.6</blockquote>
+<hr>
+<h2>From Resolution to Learning</h2>
+<p>Resolutions flow through <code>propagate()</code>, which performs three actions:</p>
+<ol>
+<li><strong>Track record</strong> — updates cumulative grace/violence and counts.</li>
+<li><strong>Scalar accumulator learning</strong> — accumulators observe the <em>optimal</em> (hindsight) distances, weighted by outcome, teaching what trail/stop would have been ideal.</li>
+<li><strong>Dollar P&L + EMA</strong> — against a fixed $10,000 reference capital with swap fees on entry and exit. Grace P&L uses excursion as the gain fraction; Violence P&L uses stop distance as the loss fraction. EMA alpha = 0.038 (half-life ~50 papers). Produces <code>expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net</code>.</li>
+</ol>
+<blockquote>Source: T0-018 § 7.8</blockquote>
+<hr>
+<h2>The Gate</h2>
+<p>Paper trade outcomes power the broker's gate via <code>gate_open()</code>:</p>
+<ul>
+<li><strong>Cold start</strong> (< 50 of either outcome): gate always open — not enough data.</li>
+<li><strong>Warm</strong> (≥ 50 of both): gate open only when <code>expected_value > 0.0</code>.</li>
+</ul>
+<p>A broker with negative expected value is suppressed — it cannot propose funded trades.</p>
+<blockquote>Source: T0-018 § 7.3</blockquote>
+<hr>
+<h2>Distance Cascade</h2>
+<p>Trail and stop distances come from a three-tier fallback:</p>
+<table>
+<tr><th>Tier</th><th>Source</th><th>Condition</th></tr>
+<tr><td>1</td><td>Reckoner answer (position observer)</td><td><code>Some(dists)</code> → return immediately</td></tr>
+<tr><td>2</td><td><a class="wikilink" href="T0-007-accumulator.html">ScalarAccumulator</a> extraction</td><td>If accumulator has observations. Clamped to [0.1%, 10%].</td></tr>
+<tr><td>3</td><td>Default distances</td><td>Constructor-provided fallback.</td></tr>
+</table>
+<blockquote>Source: T0-018 § 7.4</blockquote>
+<hr>
+<h2>Design Principles</h2>
+<table>
+<tr><th>Principle</th><th>Source</th><th>Quote</th></tr>
+<tr><td>No real execution</td><td>T0-015 § What is a PaperEntry</td><td>"It does not execute."</td></tr>
+<tr><td>Values up, not effects down</td><td>T0-018 § Module Purpose</td><td>"All outputs flow upward as return values — no shared mutation."</td></tr>
+<tr><td>Broker doesn't touch observers</td><td>T0-018 § Finding 2</td><td>"<code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state."</td></tr>
+<tr><td>Market learns anomaly, not composed</td><td>T0-018 § Key Design Decisions</td><td>Proposal 024: "market observer learns from the anomaly, not composed thought"</td></tr>
+<tr><td>Position learns its own thought</td><td>T0-018 § Key Design Decisions</td><td>Proposal 026: "position learns from position_thought, not composed"</td></tr>
+<tr><td>Pure accounting</td><td>T0-018 § Key Design Decisions</td><td>Proposal 035: "no reckoner, no noise subspace. Pure accounting + gate + log"</td></tr>
+</table>
+<hr>
+<h2>Sources</h2>
+<ul>
+<li>T0-015: <code>PaperEntry</code> verification — <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines, 12 tests)</li>
+<li>T0-018: <code>Broker</code> verification — <code>holon-lab-trading/src/domain/broker.rs</code> (887 lines, 15 tests)</li>
+</ul></div></body></html>

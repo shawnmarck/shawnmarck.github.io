@@ -1,0 +1,474 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T0-008 — Reckoner: The Learning Primitive — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html" active>T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>T0-008 — Reckoner: The Learning Primitive <span class="badge badge-how">HOW</span></h1><h1>T0-008 — Reckoner: The Learning Primitive</h1>
+<blockquote><strong>Verified against source.</strong> Every claim below is traceable to <code>reckoner.rs</code> (1107 lines), <code>core/primitives.wat</code> (lines 28–83), and <code>std/memory.wat</code> (28 lines). Nothing is fabricated.</blockquote>
+<hr>
+<h2>1. What It IS</h2>
+<p>The Reckoner is <strong>one primitive, two readout modes</strong>:</p>
+<ul>
+<li><strong>Discrete mode</strong> — N-ary classification with symbol labels. "Which of these labels does this thought match?" Returns a <code>Prediction</code> with per-label cosine scores, a winning direction, and a conviction strength.</li>
+<li><strong>Continuous mode</strong> — Bucketed nearest-neighbor regression over <code>(thought, scalar)</code> pairs. "Given this thought, what scalar should I predict?" Returns an interpolated float.</li>
+</ul>
+<p>The module docstring states:</p>
+<blockquote><em>"Discrete mode: N-ary discriminant learner with symbol labels. Continuous mode: nearest-neighbor regression over (thought, scalar) pairs. Same accumulation mechanism. Same decay. Same recalibration."</em></blockquote>
+<p>Both modes share a common <code>Reckoner</code> struct. The mode is determined at construction via <code>ReckConfig</code> and is immutable for the lifetime of the instance.</p>
+<h3>The WAT Specification</h3>
+<p>The formal spec calls the Reckoner a <strong>coalgebra</strong> — an opaque state machine with co-generators:</p>
+<blockquote><em>"Opaque state. The co-generators produce all observable behavior. Removing any one makes the external characterization incomplete."</em> — <code>primitives.wat</code></blockquote>
+<p>It defines four operations + three introspection functions:</p>
+<table>
+<tr><th>WAT operation</th><th>Rust equivalent</th><th>Role</th></tr>
+<tr><td><code>(observe reckoner thought label weight)</code></td><td><code>Reckoner::observe()</code></td><td>State transition</td></tr>
+<tr><td><code>(predict reckoner thought)</code></td><td><code>Reckoner::predict()</code></td><td>Observation (query)</td></tr>
+<tr><td><code>(decay reckoner rate)</code></td><td><code>Reckoner::decay()</code></td><td>Aging</td></tr>
+<tr><td><code>(resolve reckoner conviction correct)</code></td><td><code>Reckoner::resolve()</code></td><td>Curve fitting input</td></tr>
+<tr><td><code>(recalib-count reckoner)</code></td><td><code>Reckoner::recalib_count()</code></td><td>Introspection: how many recalibrations</td></tr>
+<tr><td><code>(discriminant reckoner label)</code></td><td><code>Reckoner::discriminant()</code></td><td>Introspection: learned separation vector</td></tr>
+<tr><td><code>(curve reckoner)</code></td><td><code>Reckoner::curve()</code></td><td>Introspection: self-evaluation curve</td></tr>
+</table>
+<hr>
+<h2>2. Construction</h2>
+<h3>The <code>Reckoner</code> struct</h3>
+<pre><code>
+pub struct Reckoner {
+    name: String,           // human-readable name
+    dims: usize,            // vector dimensionality
+    recalib_interval: usize,// how often to rebuild discriminants
+    updates: usize,         // total observe() calls
+    recalib_count: usize,   // times recalibrate() has run
+    last_cos_raw: f64,      // cosine between first two prototypes (diagnostic)
+    last_disc_strength: f64,// discriminant magnitude / sqrt(dims)
+    mode: ReckMode,         // Discrete or Continuous
+}
+</code></pre>
+<h3>Constructor</h3>
+<pre><code>
+Reckoner::new(name, dims, recalib_interval, config) -> Reckoner
+</code></pre>
+<ul>
+<li><strong><code>dims</code></strong>: Must match the dimensionality of all <code>Vector</code> objects passed to observe/predict/query.</li>
+<li><strong><code>recalib_interval</code></strong>: Every N <code>observe()</code> calls in discrete mode, <code>recalibrate()</code> runs automatically.</li>
+<li><strong><code>config</code></strong>: <code>ReckConfig::Discrete(label_names)</code> or <code>ReckConfig::Continuous { default_value, buckets }</code>.</li>
+</ul>
+<h3>Discrete mode initialization</h3>
+<p>On construction with <code>ReckConfig::Discrete(vec![...])</code>:</p>
+<ul>
+<li>Creates one <code>Accumulator</code> per label (all zeroed).</li>
+<li>Creates <code>discriminants</code> as <code>vec![None; N]</code> — no knowledge yet.</li>
+<li>Creates <code>mean_proto</code> as <code>None</code>.</li>
+<li>Initializes the curve-fitting state: <code>resolved</code> = empty vec, <code>resolved_cap</code> = 5000, <code>min_resolved</code> = 500, <code>n_bins</code> = 20, <code>curve_a</code> = 0.0, <code>curve_b</code> = 0.0, <code>curve_valid</code> = false.</li>
+</ul>
+<h3>Continuous mode initialization</h3>
+<p>On construction with <code>ReckConfig::Continuous { default_value, buckets }</code>:</p>
+<ul>
+<li>Creates K <code>ScalarBucket</code> instances, each with an <code>Accumulator(dims)</code> and <code>center: 0.0</code>.</li>
+<li><code>range_min = 0.0</code>, <code>range_max = 0.0</code>, <code>total_observations = 0</code>, <code>obs_since_rebalance = 0</code>, <code>initialized = false</code>.</li>
+<li>The spec notes: <em>"Range is discovered from observations. Decay + rebalance = breathing range. No magic min/max. The data teaches the range. K is the only parameter."</em></li>
+</ul>
+<h3>Chainable configuration</h3>
+<pre><code>
+.with_curve_params(resolved_cap, min_resolved, n_bins) -> Self  // discrete only, no-op for continuous
+.with_max_observations(max) -> Self  // legacy no-op: "Bucketed accumulators don't cap — they compress them."
+</code></pre>
+<hr>
+<h2>3. Discrete Mode</h2>
+<h3>3.1 <code>observe(vec, label, weight)</code> — State Transition</h3>
+<pre><code>
+pub fn observe(&mut self, vec: &Vector, label: Label, weight: f64)
+</code></pre>
+<p><strong>Panics</strong> if called on a continuous-mode reckoner (with message directing to <code>observe_scalar()</code>).</p>
+<p>Computation path:</p>
+<ol>
+<li>Bounds-check: if <code>label.index() >= accumulators.len()</code>, silently returns (no panic).</li>
+<li>Increment <code>self.updates</code>.</li>
+<li>If <code>updates % recalib_interval == 0</code>, call <code>recalibrate()</code>.</li>
+<li>Call <code>accumulators[idx].add_weighted(vec, weight)</code> — adds the vector weighted into the label's accumulator.</li>
+</ol>
+<p>The <code>Accumulator::add_weighted</code> implementation: for each dimension <code>s</code>, <code>s += (v as f64) <em> weight</code>, then <code>count += 1</code>. This is <strong>frequency-preserving</strong>: </em>"Unlike bundling, accumulation preserves frequency information: patterns seen many times contribute proportionally more."*</p>
+<h3>3.2 <code>predict(vec)</code> — Observation</h3>
+<pre><code>
+pub fn predict(&self, vec: &Vector) -> Prediction
+</code></pre>
+<p>Returns <code>Prediction::default()</code> for continuous mode or when no discriminants exist yet.</p>
+<p>Computation path:</p>
+<ol>
+<li>If all discriminants are <code>None</code>, return default prediction (no knowledge).</li>
+<li>For each label <code>i</code>:</li>
+</ol>
+<ul>
+<li>If <code>mean_proto</code> is <code>Some(mean)</code>: compute <code>stripped = vec - mean</code> componentwise, then <code>cosine(stripped, discriminant[i])</code>.</li>
+<li>If <code>mean_proto</code> is <code>None</code>: compute <code>cosine(discriminant[i], vec)</code> directly.</li>
+<li>If discriminant is <code>None</code> for this label, cosine = 0.0.</li>
+</ul>
+<ol>
+<li>Sort scores by cosine <strong>descending</strong> (highest raw cosine wins — not absolute value for sorting).</li>
+<li>The <code>direction</code> = the label with the highest raw cosine.</li>
+<li>The <code>raw_cos</code> = the actual signed cosine of the winning direction.</li>
+</ol>
+<p>The <code>Prediction</code> struct:</p>
+<pre><code>
+pub struct Prediction {
+    pub scores: Vec<LabelScore>,      // cosine per label, ordered by absolute cosine descending
+    pub direction: Option<Label>,     // label with highest absolute cosine
+    pub conviction: f64,              // |max cosine|
+    pub raw_cos: f64,                 // raw signed cosine of winning direction
+}
+</code></pre>
+<p><strong>Important note on sorting vs. direction selection</strong>: Scores are sorted by raw cosine descending in the code (<code>b.cosine.partial_cmp(&a.cosine)</code>), but <code>conviction</code> is set to <code>best.cosine.abs()</code>. This means the winning label is the one with the highest <em>raw</em> cosine, and conviction measures magnitude.</p>
+<h3>3.3 <code>recalibrate()</code> — Internal (called automatically)</h3>
+<pre><code>
+fn recalibrate(&mut self)
+</code></pre>
+<p>No-op for continuous mode. Only meaningful when <code>label_count >= 2</code> and <strong>all accumulators have at least one observation</strong>.</p>
+<p>Computation path:</p>
+<ol>
+<li>Compute <code>mean_proto</code>: the componentwise mean of all N prototypes.</li>
+<li><strong>Diagnostic</strong> (for 2-label case): store <code>cosine(protos[0], protos[1])</code> as <code>last_cos_raw</code>.</li>
+<li>For each label <code>i</code>:</li>
+</ol>
+<ul>
+<li>Compute <code>other_mean</code> = componentwise mean of all other prototypes.</li>
+<li>Compute discriminant: <code>disc = protos[i] - other_mean</code> componentwise.</li>
+</ul>
+<ol>
+<li>Increment <code>recalib_count</code>.</li>
+</ol>
+<p>The discriminant formula per the WAT spec:</p>
+<blockquote><em>"discriminant(label) = prototype(label) - prototype(other)."</em></blockquote>
+<p>For binary classification, this simplifies to <code>prototype(A) - prototype(B)</code>, which is the classic Fisher-like linear discriminant direction.</p>
+<h3>3.4 <code>decay(factor)</code> — Aging</h3>
+<pre><code>
+pub fn decay(&mut self, factor: f64)
+</code></pre>
+<p>Works for <strong>both</strong> modes. Calls <code>accumulator.decay(factor)</code> on every accumulator.</p>
+<p><code>Accumulator::decay</code>: <code>sums *= factor</code>. The count is <strong>not</strong> decremented — it tracks history, not current weight.</p>
+<p><em>"Useful for time-weighted baselines where recent patterns should have more influence."</em></p>
+<h3>3.5 <code>resolve(conviction, correct)</code> — Curve Fitting Input</h3>
+<pre><code>
+pub fn resolve(&mut self, conviction: f64, correct: bool)
+</code></pre>
+<p>Discrete mode only (no-op for continuous).</p>
+<p>Pushes <code>(conviction, correct)</code> onto the <code>resolved</code> vec. If <code>resolved.len() > resolved_cap</code>, the oldest entry is removed (<code>remove(0)</code>). This is a sliding window of bounded size.</p>
+<h3>3.6 <code>curve()</code> — Self-Evaluation</h3>
+<pre><code>
+pub fn curve(&mut self) -> Option<(f64, f64)>
+</code></pre>
+<p>Discrete mode only. Fits the conviction-accuracy relationship.</p>
+<p><strong>Prerequisites</strong> (any failure → returns <code>None</code>):</p>
+<ul>
+<li><code>n_labels >= 2</code></li>
+<li><code>resolved.len() >= min_resolved</code> (default: 500)</li>
+<li><code>bin_size >= 10</code> (i.e., <code>resolved.len() / n_bins >= 10</code>)</li>
+</ul>
+<p><strong>Fitting procedure</strong>:</p>
+<p>The model is: <code>accuracy = base + a × exp(b × conviction)</code>, where <code>base = 1/N</code> (random chance).</p>
+<ol>
+<li>Compute <code>base = 1.0 / n_labels</code>, <code>base_epsilon = base + 0.005</code>.</li>
+<li>Sort resolved entries by conviction ascending.</li>
+<li>Divide into <code>n_bins</code> (default: 20) equal bins. Last bin gets remainder.</li>
+<li>For each bin: compute <code>mean_c</code> (mean conviction) and <code>acc</code> (fraction correct).</li>
+<li>Filter: only keep bins where <code>acc > base_epsilon</code> (accuracy exceeds chance).</li>
+<li>For kept bins: transform <code>y = ln(acc - base)</code>. This linearizes: <code>ln(acc - base) = ln(a) + b × conviction</code>.</li>
+<li>Require at least 3 valid points.</li>
+<li><strong>Linear regression</strong> on <code>(conviction, ln(acc - base))</code> points:</li>
+</ol>
+<ul>
+<li><code>b_val = (n·sxy - sx·sy) / (n·sxx - sx²)</code></li>
+<li><code>ln_a = (sy - b_val · sx) / n</code></li>
+<li><code>a_val = exp(ln_a)</code></li>
+</ul>
+<ol>
+<li>Cache <code>curve_a = a_val</code>, <code>curve_b = b_val</code>, <code>curve_valid = true</code>.</li>
+<li>Return <code>Some((a_val, b_val))</code>.</li>
+</ol>
+<p>The WAT spec confirms:</p>
+<blockquote><em>"accuracy = (1/N) + a × exp(b × conviction), N = number of labels. At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal."</em></blockquote>
+<h3>3.7 <code>accuracy_at(conviction)</code> — Evaluate Curve</h3>
+<pre><code>
+pub fn accuracy_at(&self, conviction: f64) -> Option<f64>
+</code></pre>
+<p>Returns <code>None</code> if curve not valid or fewer than 2 labels.</p>
+<p>Formula: <code>min(base + curve_a × exp(curve_b × conviction), 0.99)</code> — capped at 99%.</p>
+<h3>3.8 Other Discrete Accessors</h3>
+<table>
+<tr><th>Method</th><th>Returns</th></tr>
+<tr><td><code>discriminant(label)</code></td><td><code>Option<&[f64]></code> — the learned separation vector</td></tr>
+<tr><td><code>labels()</code></td><td><code>Vec<Label></code> — all registered label handles</td></tr>
+<tr><td><code>label_name(label)</code></td><td><code>Option<&str></code> — resolve handle to name</td></tr>
+<tr><td><code>label_count(label)</code></td><td><code>usize</code> — observations for this label</td></tr>
+<tr><td><code>prototype(label)</code></td><td><code>Option<Vec<f64>></code> — normalized accumulator as f64</td></tr>
+<tr><td><code>raw_prototype(label)</code></td><td><code>Option<&[f64]></code> — raw accumulated sums</td></tr>
+<tr><td><code>prototype_health()</code></td><td><code>Option<(norm_0, norm_1, cos)></code> — for labels 0 and 1</td></tr>
+<tr><td><code>is_ready()</code></td><td><code>bool</code> — <code>recalib_count > 0</code></td></tr>
+<tr><td><code>curve_valid()</code></td><td><code>bool</code> — whether curve has been fitted</td></tr>
+<tr><td><code>curve_params()</code></td><td><code>Option<(f64, f64)></code> — cached <code>(a, b)</code></td></tr>
+<tr><td><code>resolved_count()</code></td><td><code>usize</code> — number of resolved predictions</td></tr>
+</table>
+<hr>
+<h2>4. Continuous Mode</h2>
+<h3>4.1 <code>observe_scalar(vec, value, weight)</code> — State Transition</h3>
+<pre><code>
+pub fn observe_scalar(&mut self, vec: &Vector, value: f64, weight: f64)
+</code></pre>
+<p><strong>Panics</strong> if called on a discrete-mode reckoner.</p>
+<p>Computation path:</p>
+<ol>
+<li>Increment <code>updates</code> and <code>total_observations</code>.</li>
+<li><strong>Implicit decay</strong>: every observation decays all buckets by <code>0.999</code>. The code comments: <em>"every observation is a tick of time"</em>.</li>
+<li><strong>First observation</strong>: if <code>!initialized</code>:</li>
+</ol>
+<ul>
+<li>Set <code>range_min = value - 0.001</code>, <code>range_max = value + 0.001</code>.</li>
+<li>Distribute K bucket centers uniformly across <code>[range_min, range_max]</code>.</li>
+<li>Set <code>initialized = true</code>.</li>
+</ul>
+<ol>
+<li><strong>Range expansion</strong>: if <code>value < range_min</code> or <code>value > range_max</code>, expand the range and call <code>rebalance_continuous()</code>.</li>
+<li><strong>Bucket assignment</strong>: <code>idx = floor((value - range_min) / width).min(K - 1)</code>. Add the weighted vector to <code>buckets[idx].accumulator</code>. Weight is floored at <code>1e-10</code>.</li>
+<li><strong>Periodic rebalance</strong>: every 100 observations, call <code>rebalance_continuous()</code> and reset <code>obs_since_rebalance</code>.</li>
+</ol>
+<h3>4.2 <code>rebalance_continuous()</code> — Internal</h3>
+<pre><code>
+fn rebalance_continuous(buckets, k, range_min, range_max, dims)
+</code></pre>
+<p>This is the "breathing" mechanism. It contracts the range to where active weight lives.</p>
+<p>Computation path:</p>
+<ol>
+<li>If fewer than 2 alive buckets: just reset bucket centers on current range (no contraction).</li>
+<li>Compute <code>new_min = min(alive_centers)</code>, <code>new_max = max(alive_centers)</code>.</li>
+<li>If range is degenerate (<code>< 1e-10</code>), return.</li>
+<li><strong>Add 10% margin</strong>: <code>margin = (new_max - new_min) × 0.1</code>. Clamp <code>new_min</code> to <code>max(0.0, new_min - margin)</code>. Extend <code>new_max += margin</code>.</li>
+<li><strong>Replace buckets</strong>: allocate K fresh empty accumulators. Set new centers uniformly across <code>[new_min, new_max]</code>.</li>
+<li><strong>Pour old data</strong>: for each alive old bucket, find its nearest new bucket by center position, and <code>merge()</code> the accumulator in.</li>
+</ol>
+<p>This is how the continuous reckoner adapts its range to the data without hardcoded bounds.</p>
+<h3>4.3 <code>query(vec)</code> — Observation</h3>
+<pre><code>
+pub fn query(&self, vec: &Vector) -> f64
+</code></pre>
+<p>Returns <code>default_value</code> if no observations yet, or <code>0.0</code> if called on discrete mode.</p>
+<p>Computation path:</p>
+<ol>
+<li>Convert the thought to f64, compute its norm.</li>
+<li><strong>Score each bucket</strong>: for every bucket with <code>count > 0</code>:</li>
+</ol>
+<ul>
+<li>Compute cosine between the thought and <code>bucket.accumulator.raw_sums()</code>.</li>
+<li>Keep only buckets where <code>cos > 0.0</code>.</li>
+<li>Store <code>(cos, bucket.center)</code> pairs.</li>
+</ul>
+<ol>
+<li>If no scored buckets, return <code>default_value</code>.</li>
+<li><strong>Soft-weight top-3</strong>: sort by cosine descending, take top 3.</li>
+</ol>
+<ul>
+<li>Weighted interpolation: <code>result = Σ(cos_i × center_i) / Σ(cos_i)</code>.</li>
+</ul>
+<ol>
+<li>If weight sum is negligible (<code>< 1e-10</code>), return <code>default_value</code>.</li>
+</ol>
+<p>The docstring explains: <em>"Cosine against K bucket prototypes, soft-weight top-3, interpolate. O(K × D) — constant in observation count."</em></p>
+<p>The interpolation means: <em>"interpolate, don't argmax"</em> — the reckoner returns a blend of the three closest bucket centers, weighted by how well the thought matches each bucket's prototype direction.</p>
+<h3>4.4 Other Continuous Accessors</h3>
+<table>
+<tr><th>Method</th><th>Returns</th></tr>
+<tr><td><code>observation_count()</code></td><td><code>usize</code> — total observations ever (permanent, not decayed)</td></tr>
+<tr><td><code>experience()</code></td><td><code>f64</code> — <code>total_observations</code> (continuous) or <code>updates</code> (discrete)</td></tr>
+</table>
+<hr>
+<h2>5. Introspection — The Full API Surface</h2>
+<h3>Both modes</h3>
+<table>
+<tr><th>Method</th><th>Description</th></tr>
+<tr><td><code>name()</code></td><td>Human-readable name</td></tr>
+<tr><td><code>dims()</code></td><td>Vector dimensionality</td></tr>
+<tr><td><code>total_updates()</code></td><td>Total <code>observe()</code> / <code>observe_scalar()</code> calls</td></tr>
+<tr><td><code>experience()</code></td><td>Total observations as f64</td></tr>
+<tr><td><code>decay(factor)</code></td><td>Age all accumulators</td></tr>
+<tr><td><code>is_discrete()</code></td><td>Mode check</td></tr>
+<tr><td><code>is_continuous()</code></td><td>Mode check</td></tr>
+</table>
+<h3>Discrete-only</h3>
+<table>
+<tr><th>Method</th><th>Description</th></tr>
+<tr><td><code>recalib_count()</code></td><td>How many times discriminants were rebuilt</td></tr>
+<tr><td><code>is_ready()</code></td><td>Whether at least one recalibration has occurred</td></tr>
+<tr><td><code>last_cos_raw()</code></td><td>Cosine between first two prototypes (from last recalib)</td></tr>
+<tr><td><code>last_disc_strength()</code></td><td>`</td><td></td><td>disc</td><td></td><td>/ sqrt(dims)` (from last recalib)</td></tr>
+<tr><td><code>discriminant(label)</code></td><td>The learned separation vector</td></tr>
+<tr><td><code>predict(vec)</code></td><td>Classification prediction</td></tr>
+<tr><td><code>resolve(conviction, correct)</code></td><td>Record outcome for self-evaluation</td></tr>
+<tr><td><code>curve()</code></td><td>Fit conviction-accuracy curve → <code>(a, b)</code></td></tr>
+<tr><td><code>accuracy_at(conviction)</code></td><td>Predicted accuracy at a conviction level</td></tr>
+<tr><td><code>curve_valid()</code></td><td>Whether curve has been fitted</td></tr>
+<tr><td><code>curve_params()</code></td><td>Cached <code>(a, b)</code> if valid</td></tr>
+<tr><td><code>resolved_count()</code></td><td>Resolved predictions in the window</td></tr>
+<tr><td><code>labels()</code></td><td>All label handles</td></tr>
+<tr><td><code>label_name(label)</code></td><td>String name for a handle</td></tr>
+<tr><td><code>n_labels()</code></td><td>Number of labels</td></tr>
+<tr><td><code>label_count(label)</code></td><td>Observation count per label</td></tr>
+<tr><td><code>prototype(label)</code></td><td>Normalized prototype (f64)</td></tr>
+<tr><td><code>raw_prototype(label)</code></td><td>Raw accumulated sums</td></tr>
+<tr><td><code>prototype_health()</code></td><td><code>(norm_0, norm_1, cos_between)</code> for labels 0 and 1</td></tr>
+</table>
+<h3>Continuous-only</h3>
+<table>
+<tr><th>Method</th><th>Description</th></tr>
+<tr><td><code>observe_scalar(vec, value, weight)</code></td><td>Record a (thought, scalar) pair</td></tr>
+<tr><td><code>query(vec)</code></td><td>Predict a scalar from a thought</td></tr>
+<tr><td><code>observation_count()</code></td><td>Total observations (permanent counter)</td></tr>
+</table>
+<hr>
+<h2>6. Key Properties</h2>
+<h3>6.1 Accumulation, not storage</h3>
+<p>The Reckoner never stores individual observations. It uses <code>Accumulator</code>s that maintain <strong>running weighted sums</strong> of vectors. The key insight:</p>
+<blockquote><em>"Unlike bundling, this does NOT threshold after each addition, preserving frequency information."</em> — accumulator.rs</blockquote>
+<h3>6.2 Cosine as the sole measurement</h3>
+<p>All similarity computation uses cosine similarity. The WAT spec states:</p>
+<blockquote><em>"(cosine thought direction) → Float ; [-1.0, +1.0]"</em></blockquote>
+<blockquote><em>"The only measurement. One number."</em></blockquote>
+<p>The discrete discriminant is compared via cosine. The continuous bucket prototypes are compared via cosine. The conviction is an absolute cosine. This is consistent throughout.</p>
+<h3>6.3 Frequency preservation vs. bundling</h3>
+<ul>
+<li><code>bundle([a, a, a, a, a])</code> = <code>a</code> (idempotent — bundling is a set operation).</li>
+<li><code>accumulator.add(a)</code> × 5 preserves that <code>a</code> was seen 5 times (the sum vector has 5× magnitude).</li>
+</ul>
+<h3>6.4 Decay is multiplicative on sums, not on count</h3>
+<p><code>decay(factor)</code> calls <code>sums *= factor</code>. The observation <code>count</code> is never decremented. From the test:</p>
+<blockquote><em>"Count stays — it tracks total observations ever, not current weight. The accumulator sums decay to near-zero but the count is history."</em></blockquote>
+<h3>6.5 Continuous range is data-driven</h3>
+<p>The continuous reckoner has no hardcoded value range. The first observation seeds a tiny range (<code>±0.001</code>). Every out-of-range observation expands the range and triggers rebalancing. Every 100 observations, the range contracts to where alive weight still lives. The comment:</p>
+<blockquote><em>"Range is discovered from observations. Decay + rebalance = breathing range. No magic min/max. The data teaches the range. K is the only parameter."</em></blockquote>
+<h3>6.6 Recalibration is periodic, not event-driven</h3>
+<p>In discrete mode, <code>recalibrate()</code> is called every <code>recalib_interval</code> observations (checked modulo in <code>observe()</code>). It is a batch operation: extract all prototypes, compute discriminants, write them back. There is no incremental update.</p>
+<h3>6.7 Curve fitting validates the reckoner's own confidence</h3>
+<p>The curve mechanism answers: "When this reckoner says it's confident, is it actually right?" By recording <code>(conviction, correct)</code> pairs and fitting <code>accuracy = 1/N + a·exp(b·conviction)</code>, the system gets a self-calibration measure. A positive <code>b</code> means higher conviction correlates with higher accuracy — the reckoner knows what it knows.</p>
+<h3>6.8 Computational complexity</h3>
+<ul>
+<li><strong>Discrete predict</strong>: O(L × D) where L = labels, D = dimensions.</li>
+<li><strong>Continuous query</strong>: O(K × D) where K = buckets, D = dimensions. The top-3 selection is O(K log K) for the sort, but K is typically small (e.g., 10).</li>
+<li><strong>Both are constant in the number of observations</strong> — the accumulator compresses everything into a single D-dimensional sum vector.</li>
+</ul>
+<h3>6.9 The <code>with_max_observations</code> is a no-op</h3>
+<p>The method exists as a legacy API. The code comments:</p>
+<blockquote><em>"Legacy — was max observations for brute-force mode. Now a no-op. Bucketed accumulators don't cap observations — they compress them."</em></blockquote>
+<hr>
+<h2>7. Source Quotes (Verbatim)</h2>
+<p>From <code>reckoner.rs</code>:</p>
+<ul>
+<li>Line 1–2: <em>"Reckoner — one primitive, two readout modes."</em></li>
+<li>Line 3–4: <em>"Discrete mode: N-ary discriminant learner with symbol labels. Continuous mode: nearest-neighbor regression over (thought, scalar) pairs."</em></li>
+<li>Line 6: <em>"Same accumulation mechanism. Same decay. Same recalibration."</em></li>
+<li>Line 147: <em>"One primitive. Two readout modes. Discrete or continuous."</em></li>
+<li>Line 233–234: <em>"Legacy — was max observations for brute-force mode. Now a no-op. Bucketed accumulators don't cap observations — they compress them."</em></li>
+<li>Line 572: <em>"Decay all buckets — every observation is a tick of time"</em></li>
+<li>Line 594: <em>"Range expanded — redistribute all buckets to new grid"</em></li>
+<li>Line 724: <em>"Soft-weight top-3 — interpolate, don't argmax"</em></li>
+<li>Line 686–687: <em>"O(K × D) — constant in observation count."</em></li>
+<li>Line 699–701: <em>"The prototype direction = 'thoughts that produced values in this range looked like THIS.' Cosine measures match quality regardless of accumulated mass. The center carries the value."</em></li>
+</ul>
+<p>From <code>primitives.wat</code>:</p>
+<ul>
+<li>Line 30–31: <em>"Opaque state. The co-generators produce all observable behavior. Removing any one makes the external characterization incomplete."</em></li>
+<li>Line 72–73: <em>"discriminant(label) = prototype(label) - prototype(other)."</em></li>
+<li>Line 75: <em>"The discriminant IS the reckoner's learned knowledge, externalized."</em></li>
+<li>Line 80–82: <em>"accuracy = (1/N) + a × exp(b × conviction), N = number of labels. At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal."</em></li>
+</ul></div></body></html>

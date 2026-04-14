@@ -1,0 +1,233 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>ThoughtEncoder — the AST walker that produces vectors from thought expressions — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html" active>ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>ThoughtEncoder — the AST walker that produces vectors from thought expressions <span class="badge badge-what">WHAT</span></h1><h1>ThoughtEncoder — the AST walker that produces vectors from thought expressions</h1>
+<p><strong>Source:</strong> <code>wat/thought-encoder.wat</code> (198 lines)</p>
+<p><strong>Guide reference:</strong> <code>wat/GUIDE.md</code> lines 1416–1597</p>
+<p><strong>Tier:</strong> 2 — Encoding infrastructure</p>
+<hr>
+<h2>What It IS</h2>
+<p>The ThoughtEncoder evaluates abstract syntax trees produced by the vocabulary modules. The vocabulary answers WHAT to think (trees of named observations); the ThoughtEncoder answers HOW to think efficiently (walk those trees, reuse cached sub-results, produce a high-dimensional vector).</p>
+<blockquote>"The vocabulary produces ASTs — WHAT to think. The ThoughtEncoder evaluates them — HOW to think efficiently. Walks the AST bottom-up, checking its memory at every node. Minimum computation."</blockquote>
+<blockquote>— thought-encoder.wat, lines 1–5</blockquote>
+<p>It depends on <code>VectorManager</code> (for atom allocation) and <code>ScalarEncoder</code> (from holon-rs, for encoding Linear/Log/Circular nodes). It lives on <code>ctx</code> — the immutable world created at startup.</p>
+<blockquote>"Lives on ctx — the immutable world created at startup. Passed to posts via ctx on every on-candle call."</blockquote>
+<blockquote>— GUIDE.md, line 1434–1435</blockquote>
+<hr>
+<h2>Two Kinds of Memory</h2>
+<p>The encoder maintains two separate memory stores with fundamentally different semantics:</p>
+<h3>Atoms — a dictionary</h3>
+<blockquote>"Finite. Known at startup. Pre-computed. Never evicted."</blockquote>
+<blockquote>— thought-encoder.wat, line 8</blockquote>
+<p>Atoms are a <code>Map<String, Vector></code>. The set is closed. Once registered, always available. Atom lookups always succeed.</p>
+<h3>Compositions — a cache</h3>
+<blockquote>"Infinite. Optimistic. Use it if we have it. Compute if we don't."</blockquote>
+<blockquote>— thought-encoder.wat, line 9</blockquote>
+<p>Compositions are a <code>Map<ThoughtAST, Vector></code> with capacity 4096. The set is open and evictable. Cache misses flow upward as return values — the enterprise collects them and inserts between candles.</p>
+<blockquote>"The encode function NEVER writes to the cache. Misses are returned as values — the enterprise collects them and inserts between candles. Values up, not queues down."</blockquote>
+<blockquote>— thought-encoder.wat, lines 11–13</blockquote>
+<p>This is the <strong>one seam</strong> in the otherwise-immutable ctx: the cache mutates on miss, but only during the sequential phase between candles, never during parallel encoding.</p>
+<hr>
+<h2>The AST — <code>thought-ast</code> enum</h2>
+<pre><code>
+(enum thought-ast
+  (Atom name)                           ; dictionary lookup — always succeeds
+  (Linear name value scale)             ; bind(atom, encode-linear)
+  (Log name value)                      ; bind(atom, encode-log)
+  (Circular name value period)          ; bind(atom, encode-circular)
+  (Bind left right)                     ; composition of two sub-trees
+  (Bundle children))                    ; superposition of sub-trees
+</code></pre>
+<p>Six variants, lines 21–27. Each variant maps to a specific evaluation strategy:</p>
+<table>
+<tr><th>Variant</th><th>Strategy</th></tr>
+<tr><td><code>Atom</code></td><td>Direct dictionary lookup. Never misses.</td></tr>
+<tr><td><code>Linear</code></td><td>Look up atom, then <code>bind(atom-vec, encode-linear(value, scale))</code>.</td></tr>
+<tr><td><code>Log</code></td><td>Look up atom, then <code>bind(atom-vec, encode-log(value))</code>.</td></tr>
+<tr><td><code>Circular</code></td><td>Look up atom, then <code>bind(atom-vec, encode-circular(value, period))</code>.</td></tr>
+<tr><td><code>Bind</code></td><td>Recursively encode both sub-trees, then <code>bind(left-vec, right-vec)</code>.</td></tr>
+<tr><td><code>Bundle</code></td><td>Recursively encode all children, then <code>apply bundle</code> (superposition).</td></tr>
+</table>
+<hr>
+<h2>Struct: <code>thought-encoder</code></h2>
+<pre><code>
+(struct thought-encoder
+  [atoms : Map<String, Vector>]                  ; finite, pre-computed, permanent
+  [compositions : Map<ThoughtAST, Vector>]       ; optimistic cache (LRU moved to EncoderService)
+  [scalar-encoder : ScalarEncoder]               ; encodes Linear/Log/Circular nodes
+  [vm : VectorManager])                          ; atom allocation, deterministic
+</code></pre>
+<p>Four fields, lines 41–45. Note the comment on <code>compositions</code>: <em>"LRU moved to EncoderService"</em> — the wat file's local cache is a simple map, while the GUIDE declares <code>LruCache<ThoughtAST, Vector></code>. The encoder-service.wat holds the true LRU; the ThoughtEncoder's composition map is the per-candle working set.</p>
+<h2>Constructor: <code>make-thought-encoder</code></h2>
+<pre><code>
+(define (make-thought-encoder [vm : VectorManager]) : ThoughtEncoder
+  ...)
+</code></pre>
+<p>Lines 49–56. Takes a <code>VectorManager</code>, reads its dimensionality, creates an empty atoms map, a composition map with capacity 4096, and a <code>ScalarEncoder</code> sized to match.</p>
+<blockquote>"compositions — one candle's working set"</blockquote>
+<blockquote>— line 54</blockquote>
+<hr>
+<h2>Core Function: <code>encode</code></h2>
+<pre><code>
+(define (encode [encoder : ThoughtEncoder] [ast : ThoughtAST])
+  : (Vector, Vec<(ThoughtAST, Vector)>)
+  ...)
+</code></pre>
+<p>Lines 64–104. Returns a <strong>tuple</strong>: the computed vector plus a list of cache misses.</p>
+<h3>Algorithm:</h3>
+<ol>
+<li><strong>Cache check first</strong> (line 68): <code>when-let</code> on compositions map. Hit → return vector with empty misses.</li>
+<li><strong>Evaluate the AST node</strong> via pattern match (lines 73–101):</li>
+</ol>
+<ul>
+<li><code>Atom</code>: direct map lookup from atoms dictionary.</li>
+<li><code>Linear</code>/<code>Log</code>/<code>Circular</code>: recursive encode of the <code>Atom</code> variant, then <code>bind</code> with scalar encoding.</li>
+<li><code>Bind</code>: recursive encode of both children, then <code>bind</code> their vectors. Misses are appended.</li>
+<li><code>Bundle</code>: map over all children, encode each, <code>bundle</code> the vectors, concatenate all misses.</li>
+</ul>
+<ol>
+<li><strong>Record the miss</strong> (line 103–104): cons <code>(ast, result)</code> onto the misses list and return.</li>
+</ol>
+<p>The function is recursive and caches at every node. The AST structure IS the cache key — structural equality determines cache identity.</p>
+<blockquote>"Same structure, same vector."</blockquote>
+<blockquote>— GUIDE.md, line 1475</blockquote>
+<hr>
+<h2><code>round-to</code> — Cache Key Quantization</h2>
+<pre><code>
+(define (round-to [v : f64] [digits : u32]) : f64
+  (let ((factor (expt 10 digits)))
+    (/ (round (* v factor)) factor)))
+</code></pre>
+<p>Lines 34–37. Used at vocabulary emission time (not at encode time) to quantize float values. The ThoughtAST carries the rounded value.</p>
+<blockquote>"The cache key IS the exact AST. The rounding happens at emission, not evaluation."</blockquote>
+<blockquote>— lines 30–32</blockquote>
+<p>This is load-bearing: without quantization, floats would compare unreliably and incremental bundle optimization would degrade to full recompute.</p>
+<hr>
+<h2>IncrementalBundle — Optimization, Not Cognition</h2>
+<pre><code>
+(struct incremental-bundle
+  [sums : Vec<i32>]                     ; running element-wise sums
+  [last-facts : Map<ThoughtAST, Vector>] ; previous candle's facts
+  [dims : usize]                        ; dimensions
+  [initialized : bool])                 ; whether we've done at least one full encode
+</code></pre>
+<p>Lines 119–123. Maintains running sums across candles to avoid re-encoding unchanged facts.</p>
+<h3>The Algebra</h3>
+<blockquote>"bundle = threshold(Σ vectors). If fact k changes from old to new, sums_new = sums - old + new. threshold(sums_new) == bundle(all current facts). Proven bit-identical. Integer addition is commutative and associative."</blockquote>
+<blockquote>— lines 110–113</blockquote>
+<h3><code>incremental-encode</code> (lines 141–171)</h3>
+<p>Two paths:</p>
+<ul>
+<li><strong>First candle</strong> (<code>initialized = false</code>): calls <code>full-encode</code> — encodes all facts, populates sums and last-facts.</li>
+<li><strong>Subsequent candles</strong>: diffs against <code>last-facts</code>. Removed facts are subtracted from sums. Unchanged facts require zero work. Changed/added facts are encoded via the ThoughtEncoder and added to sums.</li>
+</ul>
+<h3><code>full-encode</code> (lines 174–187)</h3>
+<p>Encodes every fact from scratch, accumulates sums, stores each fact's vector in <code>last-facts</code>, sets <code>initialized = true</code>, applies <code>threshold</code>.</p>
+<h3><code>threshold</code> (lines 190–198)</h3>
+<pre><code>
+(define (threshold [sums : Vec<i32>] [dims : usize]) : Vector
+  ...)
+</code></pre>
+<p>Sign function: sums > 0 → 1, sums < 0 → -1, sums == 0 → 0. Produces the bundled binary vector.</p>
+<blockquote>"Can be reconstructed from one full encode."</blockquote>
+<blockquote>— line 108</blockquote>
+<hr>
+<h2>GUIDE vs WAT Divergence Note</h2>
+<p>The GUIDE declares <code>compositions</code> as <code>LruCache<ThoughtAST, Vector></code> (line 1440). The wat file declares it as <code>Map<ThoughtAST, Vector></code> with capacity 4096 (line 43), and annotates: <em>"LRU moved to EncoderService"</em>. The EncoderService (encoder-service.wat) holds the actual LRU cache. The ThoughtEncoder's composition map serves as the per-candle working set. Per CLAUDE.md: <em>"When layers diverge, the guide is right."</em></p></div></body></html>

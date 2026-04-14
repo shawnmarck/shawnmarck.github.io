@@ -1,0 +1,327 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T-1-003: The Guide (web version) — The Published Blueprint — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html" active>T-1-003: The Guide (web version) — The Published Blueprint</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav><div id="content"><h1>T-1-003: The Guide (web version) — The Published Blueprint <span class="badge badge-why">WHY</span></h1><h1>T-1-003: The Guide (web version) — The Published Blueprint</h1>
+<p><strong>Source:</strong> <code>algebraic-intelligence.dev/src/content/docs/blog/guide.md</code> (2141 lines, ~103KB)</p>
+<p><strong>Verified by:</strong> Subagent read — full document consumed</p>
+<p><strong>Date:</strong> 2026-04-14</p>
+<hr>
+<h2>What It Is</h2>
+<p>The 007 blueprint. A complete technical specification for the holon trading machine, written as a web-published blog post. It declares every struct, interface, dependency, and construction order. No implementation — only declarations. The document is structured as a walkable path: leaves first, root last, with every dependency satisfied before its consumer is introduced.</p>
+<p>The web version has frontmatter (title, description) for the Astro-based website. It is intended to be read top-to-bottom by a newcomer who knows nothing about the project.</p>
+<hr>
+<h2>Document Structure</h2>
+<h3>Frontmatter</h3>
+<pre><code>
+title: "The Guide"
+description: "The 007 blueprint. Every struct, every interface, every dependency, every construction order."
+</code></pre>
+<h3>Section 1: Holon-rs Primitives</h3>
+<p>The six substrate primitives provided by holon-rs (atom, bind, bundle, cosine, reckoner, curve) plus OnlineSubspace, ScalarEncoder, VectorManager, and utility operations. These are NOT specified in this tree — they are imported.</p>
+<h3>Section 2: Definitions</h3>
+<p>Shared terminology and concepts:</p>
+<ul>
+<li><strong>Labels and measurement</strong> — Outcome (Grace/Violence), Prediction (Discrete/Continuous), TradePhase, MarketLens, ExitLens</li>
+<li><strong>Data and encoding</strong> — Candle fields, ATR, RingBuffers, vocabulary domains</li>
+<li><strong>Observers and learning</strong> — Noise subspace, conviction, the broker, proof curve, the journal</li>
+<li><strong>Trade lifecycle</strong> — Paper trades, settlements, residue, the runner</li>
+<li><strong>Infrastructure</strong> — Window sampler, ctx (immutable shared context), the ledger</li>
+</ul>
+<h3>Section 3: Forward Declarations</h3>
+<p>The path from market to thought (ASCII diagram showing raw-candle → candle → indicators → vocabulary → encoder → thought → observer → broker → proposal).</p>
+<p>The construction order listing every entity in build sequence.</p>
+<h3>Section 4: Structs and Interfaces</h3>
+<p>17 entity definitions in dependency order:</p>
+<ol>
+<li>RawCandle</li>
+<li>Candle</li>
+<li>IndicatorBank (~30+ RingBuffers for all technical indicators)</li>
+<li>WindowSampler</li>
+<li>Vocabulary (16 modules across shared/, market/, exit/ domains)</li>
+<li>ThoughtEncoder</li>
+<li>Distances (4 fields: trail, stop, tp, runner-trail)</li>
+<li>ScalarAccumulator</li>
+<li>MarketObserver</li>
+<li>ExitObserver</li>
+<li>Broker</li>
+<li>Post</li>
+<li>Treasury</li>
+<li>Enterprise</li>
+<li>The Binary</li>
+</ol>
+<p>Each entity declares: type, fields with types, interfaces (functions it provides), dependencies on prior entities, and key design notes.</p>
+<h3>Section 5: The Build Order</h3>
+<p>Summary construction order — reiterates leaves-to-root.</p>
+<h3>Section 6: The CSP Per Candle</h3>
+<p>The Communicating Sequential Process model — four steps per candle:</p>
+<ol>
+<li><strong>Produce</strong> (parallel) — posts observe candles, encode thoughts, brokers propose</li>
+<li><strong>Fund</strong> (sequential) — treasury evaluates proposals, funds proven ones</li>
+<li><strong>Propagate</strong> (sequential) — settlements route outcomes back to observers</li>
+<li><strong>Collect</strong> (sequential) — process logs, drain queues, prepare next candle</li>
+</ol>
+<p>Channel types and typed boundaries between steps.</p>
+<h3>Section 7: The Circuit</h3>
+<p>ASCII art dataflow diagram showing the entire system's data flow.</p>
+<hr>
+<h2>Key Declarations</h2>
+<h3>The reckoner interface</h3>
+<pre><code>
+(make-reckoner config) → Reckoner   ; config = (dims, recalib-interval, mode)
+(observe reckoner thought observation weight)
+(predict reckoner thought) → Prediction
+(decay reckoner factor)
+(experience reckoner) → f64
+</code></pre>
+<p>Two modes: <code>Discrete</code> (labels: Up/Down classification) and <code>Continuous</code> (default-value: scalar regression).</p>
+<h3>The curve (as standalone)</h3>
+<pre><code>
+(make-curve) → Curve
+(record-prediction curve conviction correct?)
+(edge-at curve conviction) → f64
+(proven? curve min-samples) → bool
+</code></pre>
+<p><strong>Note:</strong> The web guide has the curve as a standalone primitive with <code>(make-curve)</code>. The lab guide changed this — the curve became internal to the reckoner.</p>
+<h3>The enterprise expression</h3>
+<pre><code>
+(on-candle enterprise raw-candle ctx)
+</code></pre>
+<p>This is THE function — the single entry point that runs the entire four-step loop.</p>
+<h3>Trade phases (web version)</h3>
+<ul>
+<li>Active → Settled(Violence) on safety-stop</li>
+<li>Active → PrincipalRecovered on take-profit</li>
+<li>PrincipalRecovered → Runner (wider trailing stop, zero cost basis)</li>
+<li>Runner → RunnerSettled(Grace) on runner-trail stop</li>
+</ul>
+<p><strong>Note:</strong> The lab guide significantly changed the trade lifecycle. See comparison below.</p>
+<h3>Distances (web version)</h3>
+<p>4 learnable scalars: <code>trail</code>, <code>stop</code>, <code>tp</code>, <code>runner-trail</code></p>
+<p><strong>Note:</strong> The lab guide reduced this to 2: <code>trail</code> and <code>stop</code>.</p>
+<h3>Exit observers (web version)</h3>
+<p>4 continuous reckoners (one per distance: trail, stop, tp, runner-trail)</p>
+<p><strong>Note:</strong> The lab guide reduced this to 2.</p>
+<h3>N and M (web version)</h3>
+<p>N = 6 market observers, M = 4 exit observers → N×M = 24 brokers</p>
+<p><strong>Note:</strong> The lab guide removed the specific numbers.</p>
+<hr>
+<h2>How It Maps to the Lab Guide</h2>
+<p>See the comparison section below for a detailed analysis.</p>
+<hr>
+<h2>Comparison: Web Guide vs. Lab Guide</h2>
+<p><strong>Web guide:</strong> <code>algebraic-intelligence.dev/src/content/docs/blog/guide.md</code> (2141 lines, ~103KB)</p>
+<p><strong>Lab guide:</strong> <code>holon-lab-trading/wat/GUIDE.md</code> (2568 lines, ~126KB)</p>
+<h3>Same Document, Different Version</h3>
+<p>These are <strong>the same document at different points in time</strong>. The lab guide is the evolved, more mature version. The web guide is the published snapshot. They share the same structure, the same entity names, the same construction order, and the same philosophical framing. The differences are meaningful but architectural, not fundamental.</p>
+<h3>Structural Differences</h3>
+<table>
+<tr><th>Feature</th><th>Web Guide</th><th>Lab Guide</th></tr>
+<tr><td>Lines</td><td>2141</td><td>2568 (+427, ~20% larger)</td></tr>
+<tr><td>Frontmatter</td><td>Astro frontmatter (title/description)</td><td>Markdown heading only</td></tr>
+<tr><td>Sections</td><td>7 major sections</td><td>9 major sections (+Performance, +Forge coordinates)</td></tr>
+<tr><td>Entities defined</td><td>15 struct/interface blocks</td><td>17 (+EngramGate, +Simulation)</td></tr>
+</table>
+<h3>Key Technical Divergences</h3>
+<ol>
+<li><strong>The Curve — Standalone vs. Internal</strong></li>
+</ol>
+<ul>
+<li>Web: <code>(make-curve)</code> → standalone Curve object</li>
+<li>Lab: Curve is internal to the Reckoner. <code>(resolve reckoner conviction correct?)</code> and <code>(edge-at reckoner conviction)</code> — no standalone curve.</li>
+<li><strong>Assessment:</strong> Lab is the evolved design. The book narrative confirms the curve dissolved into the reckoner: "one scalar fact in the bundle."</li>
+</ul>
+<ol>
+<li><strong>Trade Lifecycle — Simplification</strong></li>
+</ol>
+<ul>
+<li>Web: 4 phases with separate runner phase (Active → PrincipalRecovered → Runner → RunnerSettled)</li>
+<li>Lab: Runner is a stop-management phase within a single active position. One exit. One swap. Grace/Violence determined by whether exit amount exceeds principal.</li>
+<li><strong>Assessment:</strong> Lab is significantly more detailed (~100 lines of concrete examples including number flow for USDC→WBTC trades). The web version's PrincipalRecovered and RunnerSettled were collapsed.</li>
+</ul>
+<ol>
+<li><strong>Distances — 4 vs. 2</strong></li>
+</ol>
+<ul>
+<li>Web: 4 distances (trail, stop, tp, runner-trail) with 4 exit reckoners</li>
+<li>Lab: 2 distances (trail, stop) with 2 exit reckoners</li>
+<li><strong>Assessment:</strong> Lab simplified. The take-profit and runner-trail distances were removed. The runner concept was redesigned as a phase, not a separate distance.</li>
+</ul>
+<ol>
+<li><strong>Reckoner Constructor Signature</strong></li>
+</ol>
+<ul>
+<li>Web: <code>(make-reckoner config)</code> — config contains dims, recalib-interval, mode</li>
+<li>Lab: <code>(make-reckoner name dims recalib-interval config)</code> — name, dims, recalib-interval separated from config; config specifies readout mode only</li>
+<li><strong>Assessment:</strong> Lab is more explicit — separates identity and configuration from mode specification.</li>
+</ul>
+<ol>
+<li><strong>Magic Numbers — 4 vs. 2</strong></li>
+</ol>
+<ul>
+<li>Web: k_trail, k_stop, k_tp, k_runner_trail</li>
+<li>Lab: k_trail, k_stop (only)</li>
+<li><strong>Assessment:</strong> Consistent with the distance simplification.</li>
+</ul>
+<ol>
+<li><strong>New Entities in Lab (not in Web)</strong></li>
+</ol>
+<ul>
+<li><strong>EngramGate</strong> — depends on Outcome enum, Reckoner, OnlineSubspace</li>
+<li><strong>Simulation</strong> — depends on Distances</li>
+<li><strong>Performance section</strong> — performance characteristics documentation</li>
+<li><strong>Forge coordinates</strong> — reference to the forge ward</li>
+<li><strong>Assessment:</strong> These are additions discovered during the 32-pass ignorant reader process.</li>
+</ul>
+<ol>
+<li><strong>Stop Breathing</strong></li>
+</ol>
+<ul>
+<li>Lab adds significant detail: "The stops breathe" — every candle, step 3c re-queries the exit observer for updated distances. Stops adapt continuously, not set-and-forget. Includes on-chain update cost consideration.</li>
+<li><strong>Assessment:</strong> Lab is much more operationally detailed.</li>
+</ul>
+<ol>
+<li><strong>Concrete Number Flow Examples</strong></li>
+</ol>
+<ul>
+<li>Lab adds two detailed worked examples (USDC→WBTC long trade, WBTC→USDC short trade) with exact dollar amounts at each stage.</li>
+<li>Web has no such examples.</li>
+<li><strong>Assessment:</strong> Lab is significantly more tutorial in this section.</li>
+</ul>
+<ol>
+<li><strong>The amplify utility signature</strong></li>
+</ol>
+<ul>
+<li>Web: <code>(amplify vec vec weight)</code> — has a duplicated <code>vec</code> parameter</li>
+<li>Lab: <code>(amplify vec weight)</code> — corrected</li>
+<li><strong>Assessment:</strong> Lab fixed a bug found by the ignorant ward.</li>
+</ul>
+<ol>
+<li><strong>N and M — Specific vs. General</strong></li>
+</ol>
+<ul>
+<li>Web: "N is the number of market observers (today: 6, one per MarketLens variant). M is the number of exit observers (today: 4)"</li>
+<li>Lab: "N is the number of market observers (one per MarketLens variant). M is the number of exit observers (one per ExitLens variant). N and M are determined by the lens enums — add a variant, add an observer."</li>
+<li><strong>Assessment:</strong> Lab is more general — removed hardcoded counts, made the system self-describing.</li>
+</ul>
+<h3>What Stayed the Same</h3>
+<ul>
+<li>The philosophical framing ("The coordinates to where the machine is")</li>
+<li>All 15 core entity names and their dependency relationships</li>
+<li>The construction order (leaves to root)</li>
+<li>The CSP per candle (4 steps: produce, fund, propagate, collect)</li>
+<li>The channel type definitions</li>
+<li>The forward declaration section and its ASCII diagram</li>
+<li>The circuit diagram (dataflow)</li>
+<li>The vocabulary domain structure (shared/, market/, exit/)</li>
+<li>The IndicatorBank field list</li>
+<li>The enterprise as root with <code>on-candle</code> as THE function</li>
+<li>The definitions section terminology</li>
+</ul>
+<h3>Summary of Divergence</h3>
+<p>The web guide is a <strong>snapshot</strong> published before the full ignorant reader process completed. The lab guide is the <strong>evolved specification</strong> after 32 passes of the ignorant ward, designer consultations, and architectural refinements. The core structure is identical; the differences are in:</p>
+<ol>
+<li><strong>The curve</strong> — moved from standalone to reckoner-internal</li>
+<li><strong>The trade lifecycle</strong> — simplified from 4 phases to 2 with runner as phase-not-event</li>
+<li><strong>The distances</strong> — reduced from 4 to 2 (tp and runner-trail removed)</li>
+<li><strong>New entities</strong> — EngramGate, Simulation added</li>
+<li><strong>Operational detail</strong> — much more concrete in lab (stop breathing, number flow, update costs)</li>
+<li><strong>Bug fixes</strong> — amplify signature, forward reference ordering</li>
+</ol>
+<p><strong>Verdict:</strong> The lab guide is the authoritative version. The web guide is a published artifact that predates several significant architectural decisions. Anyone implementing the system should use the lab guide as the source of truth.</p></div></body></html>
