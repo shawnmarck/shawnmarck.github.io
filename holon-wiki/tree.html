@@ -166,10 +166,12 @@ flowchart TD
 <p class="text-[#8a8f98] text-sm mb-4">primers, book, lab guides (3 pages)</p>
 <div class="mermaid">
 flowchart TD
-    subgraph focus["Concepts"]
+    subgraph col_Concepts["Concepts"]
         direction TB
         book["The Book"]
+        book ~~~ primers
         primers["The Primers"]
+        primers ~~~ story
         story["The Story"]
     end
     click book "T-1-002-book.html"
@@ -182,21 +184,30 @@ flowchart TD
 <p class="text-[#8a8f98] text-sm mb-4">vector, atom, bind, bundle, cosine, encoder (10 pages)</p>
 <div class="mermaid">
 flowchart TD
-    subgraph src["Sources"]
+    subgraph col_Sources["Sources"]
         direction TB
         primers["The Primers"]
     end
-    subgraph focus["Concepts"]
+    subgraph col_Concepts["Concepts"]
         direction TB
         accumulator["Accumulator"]
+        accumulator ~~~ cosine
         cosine["Cosine Similarity"]
+        cosine ~~~ encoder
         encoder["Scalar Encoding"]
+        encoder ~~~ engram
         engram["Engram"]
+        engram ~~~ primitives
         primitives["Primitives (atom, bind, bundle)"]
+        primitives ~~~ reckoner
         reckoner["Reckoner"]
+        reckoner ~~~ subspace
         subspace["Subspace"]
+        subspace ~~~ vector
         vector["Vector"]
+        vector ~~~ vector_manager
         vector_manager["VectorManager"]
+        vector_manager ~~~ walkable
         walkable["Walkable (AST)"]
     end
     primers --> vector
@@ -207,16 +218,16 @@ flowchart TD
     primers --> engram
     primers --> subspace
     click vector "T0-001-vector.html"
+    click accumulator "T0-007-accumulator.html"
     click reckoner "T0-008-reckoner.html"
-    click primers "T-1-000-primers.html"
     click vector_manager "T0-005-vector-manager.html"
-    click walkable "T0-006-walkable.html"
+    click primers "T-1-000-primers.html"
     click engram "T0-009-engram.html"
     click primitives "T0-002-primitives.html"
-    click accumulator "T0-007-accumulator.html"
-    click cosine "T0-003-cosine.html"
-    click subspace "T0-010-subspace.html"
+    click walkable "T0-006-walkable.html"
     click encoder "T0-004-encoder.html"
+    click subspace "T0-010-subspace.html"
+    click cosine "T0-003-cosine.html"
 </div>
 </div>
 <div id="tier-2" class="mb-12 pt-4">
@@ -224,23 +235,26 @@ flowchart TD
 <p class="text-[#8a8f98] text-sm mb-4">grammar, stdlib, proposals (3 pages)</p>
 <div class="mermaid">
 flowchart TD
-    subgraph src["Sources"]
+    subgraph col_Sources["Sources"]
         direction TB
         primitives["Primitives (atom, bind, bundle)"]
+        primitives ~~~ reckoner
         reckoner["Reckoner"]
     end
-    subgraph focus["Concepts"]
+    subgraph col_Concepts["Concepts"]
         direction TB
         wat_language["wat Language"]
+        wat_language ~~~ wat_proposals
         wat_proposals["wat Proposals"]
+        wat_proposals ~~~ wat_stdlib
         wat_stdlib["wat Standard Library"]
     end
     primitives --> wat_language
     reckoner --> wat_language
-    click reckoner "T0-008-reckoner.html"
+    click wat_stdlib "T1-002-wat-stdlib.html"
     click primitives "T0-002-primitives.html"
     click wat_language "T1-001-wat-language.html"
-    click wat_stdlib "T1-002-wat-stdlib.html"
+    click reckoner "T0-008-reckoner.html"
 </div>
 </div>
 <div id="tier-3" class="mb-12 pt-4">
@@ -248,43 +262,74 @@ flowchart TD
 <p class="text-[#8a8f98] text-sm mb-4">verified Rust transcriptions (25 pages)</p>
 <div class="mermaid">
 flowchart TD
-    subgraph src["Sources"]
+    subgraph col_Sources["Sources"]
         direction TB
         encoder["Scalar Encoding"]
+        encoder ~~~ engram
         engram["Engram"]
+        engram ~~~ primitives
         primitives["Primitives (atom, bind, bundle)"]
+        primitives ~~~ reckoner
         reckoner["Reckoner"]
+        reckoner ~~~ subspace
         subspace["Subspace"]
+        subspace ~~~ vector
         vector["Vector"]
+        vector ~~~ vector_manager
         vector_manager["VectorManager"]
+        vector_manager ~~~ walkable
         walkable["Walkable (AST)"]
     end
-    subgraph focus["Concepts"]
+    subgraph col_Concepts["Concepts"]
         direction TB
         broker_rust["Broker (Rust)"]
+        broker_rust ~~~ broker_wat
         broker_wat["Broker (wat)"]
+        broker_wat ~~~ chain_rust
         chain_rust["Chain Types (Rust)"]
+        chain_rust ~~~ circuit
         circuit["CIRCUIT.md"]
+        circuit ~~~ encoder_service_wat
         encoder_service_wat["Encoder Service (wat)"]
+        encoder_service_wat ~~~ engram_gate_wat
         engram_gate_wat["EngramGate (wat)"]
+        engram_gate_wat ~~~ enterprise_wat
         enterprise_wat["Enterprise (wat)"]
+        enterprise_wat ~~~ exit_observer_rust
         exit_observer_rust["ExitObserver (Rust)"]
+        exit_observer_rust ~~~ exit_observer_wat
         exit_observer_wat["ExitObserver (wat)"]
+        exit_observer_wat ~~~ guide
         guide["GUIDE.md"]
+        guide ~~~ indicator_bank_rust
         indicator_bank_rust["IndicatorBank (Rust)"]
+        indicator_bank_rust ~~~ lens_rust
         lens_rust["Lens (Rust)"]
+        lens_rust ~~~ lens_wat
         lens_wat["Lens (wat)"]
+        lens_wat ~~~ market_observer_rust
         market_observer_rust["MarketObserver (Rust)"]
+        market_observer_rust ~~~ market_observer_wat
         market_observer_wat["MarketObserver (wat)"]
+        market_observer_wat ~~~ order
         order["ORDER.md"]
+        order ~~~ paper_entry_rust
         paper_entry_rust["PaperEntry (Rust)"]
+        paper_entry_rust ~~~ paper_entry_wat
         paper_entry_wat["PaperEntry (wat)"]
+        paper_entry_wat ~~~ post_wat
         post_wat["Post (wat)"]
+        post_wat ~~~ services_rust
         services_rust["Services (Rust)"]
+        services_rust ~~~ thought_encoder_rust
         thought_encoder_rust["ThoughtEncoder (Rust)"]
+        thought_encoder_rust ~~~ thought_encoder_wat
         thought_encoder_wat["ThoughtEncoder (wat)"]
+        thought_encoder_wat ~~~ treasury_wat
         treasury_wat["Treasury (wat)"]
+        treasury_wat ~~~ vocabulary_wat
         vocabulary_wat["Vocabulary (wat)"]
+        vocabulary_wat ~~~ wat_vm_rust
         wat_vm_rust["wat-vm (Rust)"]
     end
     primitives --> thought_encoder_rust
@@ -299,82 +344,120 @@ flowchart TD
     vector --> services_rust
     reckoner --> engram_gate_wat
     engram --> engram_gate_wat
-    click engram_gate_wat "T2-003-engram-gate.html"
-    click vector_manager "T0-005-vector-manager.html"
-    click engram "T0-009-engram.html"
-    click treasury_wat "T3-treasury-wat.html"
-    click lens_rust "T0-012-lens-rust.html"
-    click primitives "T0-002-primitives.html"
     click thought_encoder_wat "T2-001-thought-encoder.html"
-    click thought_encoder_rust "T0-011-thought-encoder-rust.html"
+    click vocabulary_wat "T2-004-vocabulary.html"
+    click encoder_service_wat "T2-002-encoder-service.html"
     click services_rust "T0-016-services-rust.html"
     click broker_wat "T3-broker-wat.html"
-    click paper_entry_wat "T3-paper-entry-wat.html"
-    click wat_vm_rust "T0-017-wat-vm-rust.html"
-    click market_observer_rust "T0-013-market-observer-rust.html"
-    click chain_rust "T0-023-chain_rust.html"
-    click paper_entry_rust "T0-015-paper-entry-rust.html"
-    click vector "T0-001-vector.html"
-    click reckoner "T0-008-reckoner.html"
-    click exit_observer_rust "T0-014-exit-observer-rust.html"
-    click vocabulary_wat "T2-004-vocabulary.html"
-    click walkable "T0-006-walkable.html"
-    click encoder_service_wat "T2-002-encoder-service.html"
-    click broker_rust "T0-018-broker-rust.html"
-    click lens_wat "T2-005-lens.html"
     click subspace "T0-010-subspace.html"
+    click vector "T0-001-vector.html"
+    click lens_wat "T2-005-lens.html"
+    click reckoner "T0-008-reckoner.html"
+    click chain_rust "T0-023-chain_rust.html"
+    click primitives "T0-002-primitives.html"
+    click paper_entry_wat "T3-paper-entry-wat.html"
+    click exit_observer_rust "T0-014-exit-observer-rust.html"
+    click vector_manager "T0-005-vector-manager.html"
+    click walkable "T0-006-walkable.html"
+    click broker_rust "T0-018-broker-rust.html"
+    click treasury_wat "T3-treasury-wat.html"
+    click paper_entry_rust "T0-015-paper-entry-rust.html"
+    click thought_encoder_rust "T0-011-thought-encoder-rust.html"
+    click wat_vm_rust "T0-017-wat-vm-rust.html"
+    click engram "T0-009-engram.html"
+    click engram_gate_wat "T2-003-engram-gate.html"
+    click lens_rust "T0-012-lens-rust.html"
     click encoder "T0-004-encoder.html"
+    click market_observer_rust "T0-013-market-observer-rust.html"
 </div>
 </div>
 <div id="tier-4a" class="mb-12 pt-4">
 <h2 class="text-xl font-semibold text-[#e5e7eb] mb-1 flex items-center gap-2"><span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#fbbf24"></span>T4a · Composites ← T3 Leaves</h2>
-<p class="text-[#8a8f98] text-sm mb-4">Composites built from verified enterprise leaf transcriptions. (23 pages)</p>
+<p class="text-[#8a8f98] text-sm mb-4">Composites from verified enterprise leaf transcriptions. (23 pages)</p>
 <div class="mermaid">
 flowchart TD
-    subgraph src["Sources"]
+    subgraph col_Sources["Sources"]
         direction TB
         broker_rust["Broker (Rust)"]
+        broker_rust ~~~ chain_rust
         chain_rust["Chain Types (Rust)"]
+        chain_rust ~~~ encoder_service_wat
         encoder_service_wat["Encoder Service (wat)"]
+        encoder_service_wat ~~~ engram_gate_wat
         engram_gate_wat["EngramGate (wat)"]
+        engram_gate_wat ~~~ exit_observer_rust
         exit_observer_rust["ExitObserver (Rust)"]
+        exit_observer_rust ~~~ guide
         guide["GUIDE.md"]
+        guide ~~~ lens_rust
         lens_rust["Lens (Rust)"]
+        lens_rust ~~~ lens_wat
         lens_wat["Lens (wat)"]
+        lens_wat ~~~ market_observer_rust
         market_observer_rust["MarketObserver (Rust)"]
+        market_observer_rust ~~~ paper_entry_rust
         paper_entry_rust["PaperEntry (Rust)"]
+        paper_entry_rust ~~~ paper_entry_wat
         paper_entry_wat["PaperEntry (wat)"]
+        paper_entry_wat ~~~ services_rust
         services_rust["Services (Rust)"]
+        services_rust ~~~ thought_encoder_rust
         thought_encoder_rust["ThoughtEncoder (Rust)"]
+        thought_encoder_rust ~~~ thought_encoder_wat
         thought_encoder_wat["ThoughtEncoder (wat)"]
+        thought_encoder_wat ~~~ treasury_wat
         treasury_wat["Treasury (wat)"]
+        treasury_wat ~~~ vocabulary_wat
         vocabulary_wat["Vocabulary (wat)"]
+        vocabulary_wat ~~~ wat_vm_rust
         wat_vm_rust["wat-vm (Rust)"]
     end
-    subgraph focus["Concepts"]
+    subgraph col_Concepts["Concepts"]
         direction TB
         pg_atom["atom"]
+        pg_atom ~~~ pg_bind
         pg_bind["bind"]
+        pg_bind ~~~ pg_broker
         pg_broker["broker"]
+        pg_broker ~~~ pg_bundle
         pg_bundle["bundle"]
+        pg_bundle ~~~ pg_chain_types
         pg_chain_types["chain-types"]
+        pg_chain_types ~~~ pg_curve
         pg_curve["curve"]
+        pg_curve ~~~ pg_disposable_machine
         pg_disposable_machine["disposable-machine"]
+        pg_disposable_machine ~~~ pg_encoding_cache
         pg_encoding_cache["encoding-cache"]
+        pg_encoding_cache ~~~ pg_exit_observer
         pg_exit_observer["exit-observer"]
+        pg_exit_observer ~~~ pg_fact
         pg_fact["fact"]
+        pg_fact ~~~ pg_four_step_loop
         pg_four_step_loop["four-step-loop"]
+        pg_four_step_loop ~~~ pg_grace_and_violence
         pg_grace_and_violence["grace-and-violence"]
+        pg_grace_and_violence ~~~ pg_lens
         pg_lens["lens"]
+        pg_lens ~~~ pg_market_observer
         pg_market_observer["market-observer"]
+        pg_market_observer ~~~ pg_paper_trade
         pg_paper_trade["paper-trade"]
+        pg_paper_trade ~~~ pg_programs
         pg_programs["programs"]
+        pg_programs ~~~ pg_services
         pg_services["services"]
+        pg_services ~~~ pg_signal_propagation
         pg_signal_propagation["signal-propagation"]
+        pg_signal_propagation ~~~ pg_thought_encoding
         pg_thought_encoding["thought-encoding"]
+        pg_thought_encoding ~~~ pg_thought_system
         pg_thought_system["thought-system"]
+        pg_thought_system ~~~ pg_treasury
         pg_treasury["treasury"]
+        pg_treasury ~~~ pg_vocabulary
         pg_vocabulary["vocabulary"]
+        pg_vocabulary ~~~ pg_wat_vm
         pg_wat_vm["wat-vm"]
     end
     thought_encoder_rust --> pg_thought_system
@@ -418,71 +501,85 @@ flowchart TD
     paper_entry_wat --> pg_paper_trade
     broker_rust --> pg_paper_trade
     guide --> pg_disposable_machine
-    click engram_gate_wat "T2-003-engram-gate.html"
-    click pg_bundle "pg-bundle.html"
-    click pg_treasury "pg-treasury.html"
-    click treasury_wat "T3-treasury-wat.html"
-    click lens_rust "T0-012-lens-rust.html"
+    click vocabulary_wat "T2-004-vocabulary.html"
+    click thought_encoder_wat "T2-001-thought-encoder.html"
+    click encoder_service_wat "T2-002-encoder-service.html"
+    click pg_encoding_cache "pg-encoding-cache.html"
+    click pg_atom "pg-atom.html"
+    click pg_exit_observer "pg-exit-observer.html"
+    click services_rust "T0-016-services-rust.html"
+    click pg_paper_trade "pg-paper-trade.html"
     click pg_thought_encoding "pg-thought-encoding.html"
+    click pg_broker "pg-broker.html"
+    click pg_bind "pg-bind.html"
+    click pg_treasury "pg-treasury.html"
+    click lens_wat "T2-005-lens.html"
+    click pg_thought_system "pg-thought-system.html"
+    click chain_rust "T0-023-chain_rust.html"
+    click paper_entry_wat "T3-paper-entry-wat.html"
+    click pg_wat_vm "pg-wat-vm.html"
+    click exit_observer_rust "T0-014-exit-observer-rust.html"
+    click pg_bundle "pg-bundle.html"
     click pg_four_step_loop "pg-four-step-loop.html"
     click pg_programs "pg-programs.html"
-    click thought_encoder_wat "T2-001-thought-encoder.html"
-    click pg_market_observer "pg-market-observer.html"
+    click pg_signal_propagation "pg-signal-propagation.html"
+    click pg_fact "pg-fact.html"
+    click treasury_wat "T3-treasury-wat.html"
+    click broker_rust "T0-018-broker-rust.html"
+    click paper_entry_rust "T0-015-paper-entry-rust.html"
     click pg_lens "pg-lens.html"
     click pg_curve "pg-curve.html"
-    click pg_signal_propagation "pg-signal-propagation.html"
-    click pg_wat_vm "pg-wat-vm.html"
-    click pg_fact "pg-fact.html"
-    click pg_broker "pg-broker.html"
-    click thought_encoder_rust "T0-011-thought-encoder-rust.html"
-    click services_rust "T0-016-services-rust.html"
-    click pg_grace_and_violence "pg-grace-and-violence.html"
-    click pg_chain_types "pg-chain-types.html"
-    click pg_exit_observer "pg-exit-observer.html"
-    click paper_entry_wat "T3-paper-entry-wat.html"
-    click wat_vm_rust "T0-017-wat-vm-rust.html"
-    click pg_paper_trade "pg-paper-trade.html"
-    click market_observer_rust "T0-013-market-observer-rust.html"
     click pg_vocabulary "pg-vocabulary.html"
-    click pg_encoding_cache "pg-encoding-cache.html"
-    click chain_rust "T0-023-chain_rust.html"
-    click pg_thought_system "pg-thought-system.html"
-    click paper_entry_rust "T0-015-paper-entry-rust.html"
-    click vocabulary_wat "T2-004-vocabulary.html"
-    click exit_observer_rust "T0-014-exit-observer-rust.html"
-    click pg_bind "pg-bind.html"
-    click encoder_service_wat "T2-002-encoder-service.html"
-    click broker_rust "T0-018-broker-rust.html"
+    click pg_market_observer "pg-market-observer.html"
+    click pg_chain_types "pg-chain-types.html"
+    click thought_encoder_rust "T0-011-thought-encoder-rust.html"
+    click wat_vm_rust "T0-017-wat-vm-rust.html"
+    click pg_grace_and_violence "pg-grace-and-violence.html"
+    click engram_gate_wat "T2-003-engram-gate.html"
+    click lens_rust "T0-012-lens-rust.html"
     click pg_services "pg-services.html"
-    click lens_wat "T2-005-lens.html"
-    click pg_atom "pg-atom.html"
+    click market_observer_rust "T0-013-market-observer-rust.html"
 </div>
 </div>
 <div id="tier-4b" class="mb-12 pt-4">
 <h2 class="text-xl font-semibold text-[#e5e7eb] mb-1 flex items-center gap-2"><span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#fbbf24"></span>T4b · Composites ← T0-T2</h2>
-<p class="text-[#8a8f98] text-sm mb-4">Composites built from narrative, substrate, and language specs. (7 pages)</p>
+<p class="text-[#8a8f98] text-sm mb-4">Composites from narrative, substrate, and language specs. (7 pages)</p>
 <div class="mermaid">
 flowchart TD
-    subgraph src["Sources"]
+    subgraph col_Sources["Sources"]
         direction TB
         accumulator["Accumulator"]
+        accumulator ~~~ book
         book["The Book"]
+        book ~~~ cosine
         cosine["Cosine Similarity"]
+        cosine ~~~ primers
         primers["The Primers"]
+        primers ~~~ reckoner
         reckoner["Reckoner"]
+        reckoner ~~~ story
         story["The Story"]
+        story ~~~ subspace
         subspace["Subspace"]
+        subspace ~~~ vector
         vector["Vector"]
+        vector ~~~ wat_proposals
         wat_proposals["wat Proposals"]
     end
-    subgraph focus["Concepts"]
+    subgraph col_Concepts["Concepts"]
         direction TB
         pg_conviction["conviction"]
+        pg_conviction ~~~ pg_panel_of_experts
         pg_panel_of_experts["panel-of-experts"]
+        pg_panel_of_experts ~~~ pg_proposal_system
         pg_proposal_system["proposal-system"]
+        pg_proposal_system ~~~ pg_reckoner
         pg_reckoner["reckoner"]
+        pg_reckoner ~~~ pg_thought_space
         pg_thought_space["thought-space"]
+        pg_thought_space ~~~ pg_vocabulary_evolution
         pg_vocabulary_evolution["vocabulary-evolution"]
+        pg_vocabulary_evolution ~~~ pg_wards
         pg_wards["wards"]
     end
     vector --> pg_thought_space
@@ -502,19 +599,19 @@ flowchart TD
     wat_proposals --> pg_proposal_system
     story --> pg_proposal_system
     wat_proposals --> pg_panel_of_experts
-    click pg_conviction "pg-conviction.html"
     click vector "T0-001-vector.html"
-    click book "T-1-002-book.html"
-    click pg_thought_space "pg-thought-space.html"
-    click reckoner "T0-008-reckoner.html"
-    click primers "T-1-000-primers.html"
     click story "T-1-001-story.html"
-    click pg_vocabulary_evolution "pg-vocabulary-evolution.html"
-    click pg_wards "pg-wards.html"
-    click pg_reckoner "pg-reckoner.html"
     click accumulator "T0-007-accumulator.html"
-    click cosine "T0-003-cosine.html"
+    click reckoner "T0-008-reckoner.html"
+    click book "T-1-002-book.html"
+    click pg_reckoner "pg-reckoner.html"
+    click primers "T-1-000-primers.html"
+    click pg_conviction "pg-conviction.html"
+    click pg_wards "pg-wards.html"
     click subspace "T0-010-subspace.html"
+    click pg_thought_space "pg-thought-space.html"
+    click cosine "T0-003-cosine.html"
+    click pg_vocabulary_evolution "pg-vocabulary-evolution.html"
 </div>
 </div>
 <div id="tier-5" class="mb-12 pt-4">
@@ -522,26 +619,34 @@ flowchart TD
 <p class="text-[#8a8f98] text-sm mb-4">cross-cutting enterprise views (9 pages)</p>
 <div class="mermaid">
 flowchart TD
-    subgraph focus["Concepts"]
+    subgraph col_Concepts["Concepts"]
         direction TB
         003_proposals["003-proposals"]
+        003_proposals ~~~ 003_web_guide
         003_web_guide["003-web-guide"]
+        003_web_guide ~~~ 004_lab_guide
         004_lab_guide["004-lab-guide"]
+        004_lab_guide ~~~ 005_lab_circuit
         005_lab_circuit["005-lab-circuit"]
+        005_lab_circuit ~~~ 006_lab_order
         006_lab_order["006-lab-order"]
+        006_lab_order ~~~ 019_indicator_bank
         019_indicator_bank["019-indicator-bank"]
+        019_indicator_bank ~~~ pg_disposable_machine
         pg_disposable_machine["pg-disposable-machine"]
+        pg_disposable_machine ~~~ pg_panel_of_experts
         pg_panel_of_experts["pg-panel-of-experts"]
+        pg_panel_of_experts ~~~ pg_proposal_system
         pg_proposal_system["pg-proposal-system"]
     end
-    click 005_lab_circuit "T-1-005-lab-circuit.html"
+    click 003_web_guide "T-1-003-web-guide.html"
     click 003_proposals "T1-003-wat-proposals.html"
-    click 004_lab_guide "T-1-004-lab-guide.html"
     click pg_panel_of_experts "pg-panel-of-experts.html"
     click pg_proposal_system "pg-proposal-system.html"
     click 006_lab_order "T-1-006-lab-order.html"
+    click 004_lab_guide "T-1-004-lab-guide.html"
     click 019_indicator_bank "T0-019-indicator-bank-rust.html"
-    click 003_web_guide "T-1-003-web-guide.html"
+    click 005_lab_circuit "T-1-005-lab-circuit.html"
     click pg_disposable_machine "pg-disposable-machine.html"
 </div>
 </div>
