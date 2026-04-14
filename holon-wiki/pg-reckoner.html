@@ -143,8 +143,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <tr><td><strong>Self-evaluation</strong></td><td>Curve: <code>accuracy = 1/N + a·exp(b·conviction)</code></td><td>None (default value fallback)</td></tr>
 </table>
 <p><strong>Complexity</strong>: Both modes are O(L·D) or O(K·D) — <strong>constant in observation count</strong> because the <a class="wikilink" href="T0-007-accumulator.html">Accumulator</a> compresses every observation into a single D-dimensional sum vector.</p>
-<hr></div><h1>Reckoner — the geometric learning primitive</h1>
-<blockquote><strong>One primitive. Two readout modes. Same accumulation. Same decay. Same recalibration.</strong></blockquote>
+<hr></div><blockquote><strong>One primitive. Two readout modes. Same accumulation. Same decay. Same recalibration.</strong></blockquote>
 <hr>
 <h2>Construction</h2>
 <pre><code>

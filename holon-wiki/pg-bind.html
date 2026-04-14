@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>Bind — the self-inverse combinator <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p><strong><code>bind</code></strong> is the core relational primitive of the holon-rs vector algebra. It composes two concept vectors into one via element-wise multiplication over bipolar values <code>{-1, 0, +1}</code>. Its defining property is <strong>self-inverseness</strong>: <code>bind(bind(A, B), A) = B</code> exactly (not approximately). The WAT spec names it one of four generators of the Vector Algebra. In Rust, it is implemented as <code>Primitives::bind</code>, with <code>unbind</code> exposed as a semantic alias. Every structured encoding in the system — from <a class="wikilink" href="T0-006-walkable.html">Walkable</a> role-filler pairs to <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> <code>Bind</code> nodes — ultimately reduces to calls to <code>bind</code>.</p>
-<hr></div><h1>Bind — the self-inverse combinator</h1>
-<h2>Algebraic definition</h2>
+<hr></div><h2>Algebraic definition</h2>
 <p>From the WAT spec (<code>wat/core/primitives.wat</code>):</p>
 <blockquote>"(bind role filler) → Vector"</blockquote>
 <blockquote>"Compose two concepts into a relationship."</blockquote>

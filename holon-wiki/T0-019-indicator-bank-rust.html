@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>T0-019: indicator_bank.rs — Verified Documentation <span class="badge badge-what">WHAT</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p><code>IndicatorBank</code> is a stateful, streaming technical indicator engine. One instance per asset pair ("post"). Each call to <code>tick(&Ohlcv) → Candle</code> advances all internal state machines by one raw candle and returns an enriched <code>Candle</code> struct carrying ~65 computed indicator fields. These enriched candles are the sole input to the encoding pipeline (<code>ThoughtEncoder</code>). The file is self-contained at 2363 lines: streaming primitives, helper functions, the composed bank, and ~400 lines of tests.</p>
-<hr></div><h1>T0-019: indicator_bank.rs — Verified Documentation</h1>
-<h2>File Location</h2>
+<hr></div><h2>File Location</h2>
 <pre><code>
 src/domain/indicator_bank.rs  (2363 lines, 72KB)
 </code></pre>

@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>Paper Trade — hypothetical accountability without execution <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by <a class="wikilink" href="pg-broker.html">Broker</a> instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is "hypothetical accountability."</p>
-<hr></div><h1>Paper Trade — hypothetical accountability without execution</h1>
-<h2>Lifecycle</h2>
+<hr></div><h2>Lifecycle</h2>
 <pre class="mermaid">
 flowchart TD
     created["Created\n(register_paper)"] -->|"price moves against prediction\nhits fixed stop"| violence["Violence\n(resolved, never signaled)"]

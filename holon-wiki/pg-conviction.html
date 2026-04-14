@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>Conviction — the strength of a prediction <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>Conviction is the absolute value of the winning cosine similarity in a <a class="wikilink" href="pg-reckoner.html">Reckoner</a>'s discrete prediction. It measures how strongly the reckoner leans toward one classification direction, on a scale of 0.0 (no preference) to 1.0 (maximum alignment). It is the primary input to the reckoner's self-evaluation mechanism — the <a class="wikilink" href="pg-curve.html">conviction–accuracy curve</a> — which validates whether the reckoner's confidence is well-calibrated.</p>
-<hr></div><h1>Conviction — the strength of a prediction</h1>
-<blockquote><strong>Composite wiki page.</strong> Every claim below is traced to verified source documents.</blockquote>
+<hr></div><blockquote><strong>Composite wiki page.</strong> Every claim below is traced to verified source documents.</blockquote>
 <hr>
 <h2>Definition</h2>
 <p>In discrete mode, a <a class="wikilink" href="pg-reckoner.html">Reckoner</a> computes the cosine similarity between the input thought and each label's learned <a class="wikilink" href="pg-reckoner.html">discriminant</a> direction. The label with the highest raw cosine becomes the predicted <code>direction</code>. The <strong>conviction</strong> is the absolute value of that cosine:</p>

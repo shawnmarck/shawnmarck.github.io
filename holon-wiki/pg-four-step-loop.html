@@ -139,8 +139,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <li><strong>Learn</strong> — Resolutions propagate back: observers update their reckoners and noise subspaces; the broker updates scalar accumulators, dollar-P&L EMAs, and its expected-value gate.</li>
 </ol>
 <p>Values flow <strong>up</strong> — brokers return propagation facts, and the Post routes them to observers via mailbox channels. No shared mutation during parallel phases.</p>
-<hr></div><h1>Four-Step Loop — observe, predict, execute, learn</h1>
-<blockquote>The Holon trading system runs a continuous four-step loop each candle: <strong>observe</strong> (encode market state), <strong>predict</strong> (direction + distances), <strong>execute</strong> (paper trades), and <strong>learn</strong> (propagate outcomes back). This page traces the loop end-to-end across <a class="wikilink" href="pg-market-observer.html">MarketObserver</a>, <a class="wikilink" href="pg-exit-observer.html">PositionObserver</a>, <a class="wikilink" href="pg-broker.html">Broker</a>, and <a class="wikilink" href="pg-paper-trade.html">PaperEntry</a>.</blockquote>
+<hr></div><blockquote>The Holon trading system runs a continuous four-step loop each candle: <strong>observe</strong> (encode market state), <strong>predict</strong> (direction + distances), <strong>execute</strong> (paper trades), and <strong>learn</strong> (propagate outcomes back). This page traces the loop end-to-end across <a class="wikilink" href="pg-market-observer.html">MarketObserver</a>, <a class="wikilink" href="pg-exit-observer.html">PositionObserver</a>, <a class="wikilink" href="pg-broker.html">Broker</a>, and <a class="wikilink" href="pg-paper-trade.html">PaperEntry</a>.</blockquote>
 <hr>
 <h2>Step 1 — Observe</h2>
 <p>Each observer encodes the current candle into a high-dimensional thought vector using its vocabulary lens.</p>

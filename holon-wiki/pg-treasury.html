@@ -131,8 +131,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Treasury — Bounded Capital Allocation <span class="badge badge-explain">EXPLAIN</span></h1><h1>Treasury — Bounded Capital Allocation</h1>
-<p><strong>TL;DR:</strong> The treasury is a capital reservation engine. It receives trade proposals from brokers, funds those that pass an edge gate, and settles them through stop-level triggers. Loss is bounded structurally: reserved capital cannot be double-spent, and the maximum loss per trade equals one swap's venue cost. The <a class="wikilink" href="pg-broker.html">broker</a> is the accountability gate — it only proposes when its expected dollar-P&L is positive.</p>
+<div id="content"><h1>Treasury — Bounded Capital Allocation <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> The treasury is a capital reservation engine. It receives trade proposals from brokers, funds those that pass an edge gate, and settles them through stop-level triggers. Loss is bounded structurally: reserved capital cannot be double-spent, and the maximum loss per trade equals one swap's venue cost. The <a class="wikilink" href="pg-broker.html">broker</a> is the accountability gate — it only proposes when its expected dollar-P&L is positive.</p>
 <hr>
 <h2>Architecture Overview</h2>
 <pre class="mermaid">

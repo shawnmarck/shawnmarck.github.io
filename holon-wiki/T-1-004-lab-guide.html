@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>T-1-004 — Lab GUIDE.md Verification <span class="badge badge-why">WHY</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>The GUIDE.md (2,568 lines, 126KB) is the master architectural blueprint for a self-organizing trading system built on holon-rs primitives. It declares every struct, interface, and dependency — no implementation, only specification. The system is an "organism" that observes markets via candle data, encodes observations as high-dimensional vectors (thoughts), predicts direction and exit distances via <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s, and learns from outcomes (Grace/Violence). The architecture is pair-agnostic: deploy capital, ride the trade, recover principal, accumulate residue (permanent gain). Five holon-rs primitives (atom, bind, bundle, cosine, reckoner), one learning mechanism (the Reckoner), one accountability surface (the curve). Everything is specified in s-expression (Scheme-like) syntax implemented by wat files; Rust implements what the wat specifies.</p>
-<hr></div><h1>T-1-004 — Lab GUIDE.md Verification</h1>
-<h2>1. Overall Architecture and Philosophy</h2>
+<hr></div><h2>1. Overall Architecture and Philosophy</h2>
 <h3>Core Metaphor: The Organism</h3>
 <p>The system is described as a "machine that measures thoughts against reality." A <strong>thought</strong> is a high-dimensional vector (10,000 dimensions by default). The machine encodes market candles into thoughts and measures whether those thoughts predicted value (Grace) or destruction (Violence).</p>
 <h3>The Enterprise</h3>

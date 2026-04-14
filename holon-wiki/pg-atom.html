@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>Atom — the irreducible unit of meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>An <strong>atom</strong> is the smallest named unit of semantic content in the Holon system. It is a string identifier (e.g., <code>rsi</code>, <code>kama-er</code>, <code>phase</code>) that maps deterministically to a high-dimensional bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>. Atoms are emitted by <a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> modules, carry encoded scalar values through encoding schemes (Linear, Log, Circular), and serve as the fundamental inputs to the thought pipeline. There are approximately 99–100 unique atom names across all live vocabulary domains.</p>
-<hr></div><h1>Atom — the irreducible unit of meaning</h1>
-<h2>What an atom IS</h2>
+<hr></div><h2>What an atom IS</h2>
 <p>An atom is a <strong>name</strong> — nothing more, nothing less. It carries no intrinsic structure beyond its string identity and the encoding scheme that produces its scalar value. The GUIDE is explicit:</p>
 <blockquote>"No zones. No categories. Only scalars. 'Overbought' is a human label on a continuous value — a magic number wearing a name. WHO decided 70 was the boundary? The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are." <em>(T2-004, GUIDE lines 1396–1405)</em></blockquote>
 <p>Every atom resolves to a vector through the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>'s deterministic hash pipeline: SHA-256(global_seed ∥ atom)[0..8] → ChaCha8Rng → bipolar vector in {-1, 0, 1} with uniform distribution. This is the foundational guarantee — the same atomic value always produces the same vector.</p>

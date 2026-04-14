@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>Services — Queue, Topic, and Mailbox <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>Holon's messaging layer provides three primitives built on <a class="wikilink" href="pg-services.html">crossbeam::channel</a>: <strong>Queue</strong> (1→1 point-to-point), <strong>Topic</strong> (1→N fan-out), and <strong>Mailbox</strong> (N→1 fan-in). All concurrency is achieved through message passing — zero <code>Mutex</code>. In the <a class="wikilink" href="T1-001-wat-language.html">wat language</a>, these appear as values created by <code>make-pipe</code>, <code>make-topic</code>, and <code>select</code>, with no special declarations needed. Shutdown propagates automatically by dropping senders/receivers.</p>
-<hr></div><h1>Services — Queue, Topic, and Mailbox</h1>
-<p><strong>Wiki composite · Sources: T0-016 (services-rust), T1-001 (wat-language)</strong></p>
+<hr></div><p><strong>Wiki composite · Sources: T0-016 (services-rust), T1-001 (wat-language)</strong></p>
 <hr>
 <h2>Architecture</h2>
 <table>

@@ -133,8 +133,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>Thought System — how candles become thoughts and thoughts become meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> (atoms) or <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where "similar market conditions live near each other." The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> then observes and learns from these thoughts over time.</p>
-<hr></div><h1>Thought System — how candles become thoughts and thoughts become meaning</h1>
-<h2>1. The Pipeline: Candle → Facts → AST → Vector → Thought</h2>
+<hr></div><h2>1. The Pipeline: Candle → Facts → AST → Vector → Thought</h2>
 <pre class="mermaid">
 flowchart TD
     candle["candle"] -->|"facts"| vocab["vocab module\n(pure fn)"]

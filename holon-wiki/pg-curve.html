@@ -131,8 +131,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Curve — the conviction-to-accuracy mapping <span class="badge badge-explain">EXPLAIN</span></h1><h1>Curve — the conviction-to-accuracy mapping</h1>
-<p><strong>TL;DR:</strong> The curve is a self-calibration mechanism inside every discrete <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. It records <code>(conviction, correct)</code> pairs, fits the exponential model <code>accuracy = 1/N + a·exp(b·conviction)</code>, and answers the question: <em>"When this reckoner says it's confident, is it actually right?"</em> A positive <code>b</code> means the reckoner knows what it knows.</p>
+<div id="content"><h1>Curve — the conviction-to-accuracy mapping <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> The curve is a self-calibration mechanism inside every discrete <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. It records <code>(conviction, correct)</code> pairs, fits the exponential model <code>accuracy = 1/N + a·exp(b·conviction)</code>, and answers the question: <em>"When this reckoner says it's confident, is it actually right?"</em> A positive <code>b</code> means the reckoner knows what it knows.</p>
 <hr>
 <h2>What it IS</h2>
 <p>The curve maps <a class="wikilink" href="pg-conviction.html">conviction</a> (the absolute <a class="wikilink" href="T0-003-cosine.html">cosine similarity</a> of the winning discriminant) to empirical accuracy (fraction of correct predictions). It is an introspection tool — the reckoner's proof that its confidence is calibrated.</p>

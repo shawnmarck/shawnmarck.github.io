@@ -131,8 +131,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T0-006 · Walkable — the AST traversal trait and thought expression tree <span class="badge badge-how">HOW</span></h1><h1>T0-006 · Walkable — the AST traversal trait and thought expression tree</h1>
-<h2>What it IS</h2>
+<div id="content"><h1>T0-006 · Walkable — the AST traversal trait and thought expression tree <span class="badge badge-how">HOW</span></h1><h2>What it IS</h2>
 <p>Walkable is the trait that enables <strong>zero-serialization encoding</strong>: any Rust type implementing <code>Walkable</code> can be directly converted into high-dimensional vectors without passing through JSON or EDN. It defines a structural type system (<code>WalkType</code>) that the encoder recursively walks to produce role-filler bindings, which are then bundled into a single vector.</p>
 <p>Source: <code>holon-rs/src/kernel/walkable.rs</code> (1002 lines)</p>
 <p>Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <code>encode_walkable</code> recursive traversal.</p>

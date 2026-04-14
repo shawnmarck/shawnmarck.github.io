@@ -139,8 +139,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <li><strong>EncoderService</strong> — a single-threaded pipe loop that owns the persistent LRU composition cache, serving N concurrent callers via per-caller pipe sets. Callers compute on miss and fire-and-forget install back. "Values up, not queues down."</li>
 </ol>
 <p>An optimization layer — <a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — avoids re-encoding unchanged facts between candles via running element-wise sums with sign-threshold, proven bit-identical to full re-bundle. Downstream, <a class="wikilink" href="T2-003-engram-gate.html">EngramGate</a> gates reckoner quality by snapshotting discriminant vectors into a good-state subspace after periods of accurate prediction.</p>
-<hr></div><h1>Thought Encoding — the pipeline from thought to vector</h1>
-<blockquote>Vocabulary modules produce ASTs — <strong>WHAT</strong> to think. The ThoughtEncoder evaluates them — <strong>HOW</strong> to think efficiently. Walks the AST bottom-up, checking memory at every node. Minimum computation.</blockquote>
+<hr></div><blockquote>Vocabulary modules produce ASTs — <strong>WHAT</strong> to think. The ThoughtEncoder evaluates them — <strong>HOW</strong> to think efficiently. Walks the AST bottom-up, checking memory at every node. Minimum computation.</blockquote>
 <blockquote>— thought-encoder.wat, lines 1–5</blockquote>
 <hr>
 <h2>The AST — <code>ThoughtAST</code> enum</h2>

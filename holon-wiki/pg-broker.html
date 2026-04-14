@@ -131,8 +131,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Broker — the accountability and execution primitive <span class="badge badge-explain">EXPLAIN</span></h1><h1>Broker — the accountability and execution primitive</h1>
-<hr>
+<div id="content"><h1>Broker — the accountability and execution primitive <span class="badge badge-explain">EXPLAIN</span></h1><hr>
 <h2>What it is</h2>
 <blockquote><em>"The broker IS the accountability unit. It owns paper trades, scalar accumulators, and a Grace/Violence reckoner. Values up, not effects down."</em> — broker.rs</blockquote>
 <p>The broker sits at the intersection of a market observer (which predicts direction) and a position observer (which sizes risk). It translates their composed <a class="wikilink" href="pg-thought-system.html">thought</a> into a paper trade, watches that trade against live prices, and propagates outcomes back to both observers via <a class="wikilink" href="pg-signal-propagation.html">PropagationFacts</a>. Crucially:</p>
