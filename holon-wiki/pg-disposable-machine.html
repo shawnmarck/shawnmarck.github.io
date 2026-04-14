@@ -372,6 +372,24 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   display: none;
 }
 
+#mobile-results {
+  display: none;
+  position: fixed;
+  top: 120px;
+  left: 8px;
+  right: 8px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: 55;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+#mobile-results::-webkit-scrollbar { width: 4px; }
+#mobile-results::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -589,7 +607,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 </div>
 <div id="holon-results" class="search-results"></div>
 
-<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Disposable Machine <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" />
+<div id="mobile-results" class="search-results"></div><div id="content"><h1>Disposable Machine <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <hr></div><h2>The DNA/Phenotype Split</h2>
 <p>The architecture enforces a strict separation between <strong>what the system is</strong> and <strong>what it currently looks like</strong>:</p>
 <table>
@@ -658,4 +677,4 @@ f(state, candle) → state
 <li><a class="wikilink" href="pg-curve.html">Curve</a> — self-evaluation surface, built from lived experience</li>
 <li>Values Up, Not Queues Down — the data-flow principle that keeps the phenotype clean</li>
 <li>No Zones, Only Scalars — emit raw measurements, never accumulate premature abstractions</li>
-</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search'),mr=document.getElementById('mobile-results');if(ms&&mr){ms.addEventListener('input',function(){var q=ms.value.trim();if(q.length<2){mr.style.display='none';mr.innerHTML='';return}if(window.holonSearch&&holonSearch.load&&holonSearch.search){holonSearch.load().then(function(idx){if(!idx)return;var res=holonSearch.search(q);mr.style.display='block';if(!res.length){mr.innerHTML='<div class="search-empty">No results</div>';return}mr.innerHTML=res.map(function(r){var related=r.related.length?'<div class="search-related">'+r.related.map(function(rel){return'<a href="'+rel.file+'" class="search-rel-link" onclick="event.stopPropagation()">'+rel.title+'</a>'}).join(' → ')+'</div>':'';return'<a href="'+r.file+'" class="search-result"><div class="search-title">'+r.title+' <span class="search-score">'+r.score+'</span></div><div class="search-meta">tier '+r.tier+'</div>'+related+'</a>'}).join('')})}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')});document.addEventListener('click',function(e){if(!ms.contains(e.target)&&!mr.contains(e.target)){mr.style.display='none'}})}}();</script></body></html>

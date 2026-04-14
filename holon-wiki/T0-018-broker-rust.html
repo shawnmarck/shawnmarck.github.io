@@ -372,6 +372,24 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   display: none;
 }
 
+#mobile-results {
+  display: none;
+  position: fixed;
+  top: 120px;
+  left: 8px;
+  right: 8px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: 55;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+#mobile-results::-webkit-scrollbar { width: 4px; }
+#mobile-results::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -589,7 +607,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 </div>
 <div id="holon-results" class="search-results"></div>
 
-<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T0-018: Broker (Rust) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><p><strong>Source:</strong> <code>/root/projects/holon-workspace/holon-lab-trading/src/domain/broker.rs</code></p>
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" />
+<div id="mobile-results" class="search-results"></div><div id="content"><h1>T0-018: Broker (Rust) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><p><strong>Source:</strong> <code>/root/projects/holon-workspace/holon-lab-trading/src/domain/broker.rs</code></p>
 <p><strong>Lines:</strong> 887 (489 production + 398 test)</p>
 <p><strong>Compiled from:</strong> <code>wat/broker.wat</code></p>
 <p><strong>Verdict:</strong> Accountable. Complete. Quoted below.</p>
@@ -1024,4 +1043,4 @@ flowchart TD
 <li><strong>P&L computation includes swap fees</strong> on both entry and exit, against a fixed $10,000 reference.</li>
 <li><strong><code>close_all_runners</code> accepts <code>_current_price</code> unused</strong> — all resolution data comes from the paper's own tracked price history.</li>
 <li><strong>15 tests</strong> cover construction, grid math, gate logic, paper lifecycle (no-resolution, violence, grace→runner), propagation accounting, dollar P&L (both directions), EMA convergence, accumulator naming, and optimal distance approximation (both directions + clamping). No test for <code>compute_position_batch</code> or <code>close_all_runners</code>.</li>
-</ol></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>
+</ol></div><script>!function(){var s=document.getElementById('sidebar');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search'),mr=document.getElementById('mobile-results');if(ms&&mr){ms.addEventListener('input',function(){var q=ms.value.trim();if(q.length<2){mr.style.display='none';mr.innerHTML='';return}if(window.holonSearch&&holonSearch.load&&holonSearch.search){holonSearch.load().then(function(idx){if(!idx)return;var res=holonSearch.search(q);mr.style.display='block';if(!res.length){mr.innerHTML='<div class="search-empty">No results</div>';return}mr.innerHTML=res.map(function(r){var related=r.related.length?'<div class="search-related">'+r.related.map(function(rel){return'<a href="'+rel.file+'" class="search-rel-link" onclick="event.stopPropagation()">'+rel.title+'</a>'}).join(' → ')+'</div>':'';return'<a href="'+r.file+'" class="search-result"><div class="search-title">'+r.title+' <span class="search-score">'+r.score+'</span></div><div class="search-meta">tier '+r.tier+'</div>'+related+'</a>'}).join('')})}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')});document.addEventListener('click',function(e){if(!ms.contains(e.target)&&!mr.contains(e.target)){mr.style.display='none'}})}}();</script></body></html>
