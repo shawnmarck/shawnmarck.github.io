@@ -1,166 +1,155 @@
-# Holon Lab Trading
+# Holon Lab Trading — Semantic Idea Wiki
 
-*A machine that measures thoughts against reality. Grace or Violence. Nothing more. Nothing less.*
-
-The system encodes named market relationships — "RSI diverging from price," "volume contradicting the rally" — as compositional vectors in 10,000-dimensional hyperspace. It learns discriminants separating good predictions from bad ones. It judges itself by the geometry of its own encoding space. No neural networks. No gradient descent. No attention heads. Just algebra, cosine similarity, and closed-loop accountability.
-
----
-
-## The Big Idea
-
-You cannot build prediction from perception. You build it from cognition.
-
-Visual encoding of price charts — a faithful 48-candle raster grid with every pixel, every wick, every indicator line — produced **50.5% accuracy**. Barely random.
-
-[[Thought Primitives|Thought encoding]] of the same data — named relationships composed into vector algebra — produced **57–62% accuracy** across six years and every market regime. The information isn't in the chart. It's in the **interpretation** of the chart.
-
-The [[Conviction-Accuracy Curve]] — `accuracy = 0.50 + a × exp(b × conviction)` — is continuous, monotonic, and real. It emerges from the geometry of high-dimensional space. Higher conviction means more facts voting coherently. At the top 1% conviction: ~59% accuracy over 652,362 BTC candles (2019–2025).
-
-This is not AI trading. This is **cognitive algebra applied to markets**.
+> **A self-organizing trading system built on algebraic thought primitives.**
+> Everything is a Thought. Thoughts compose. Thoughts compete. Thoughts learn.
 
 ---
 
-## Core Thesis
+## What This Is
 
-> The vocabulary IS the model. Different vocabularies produce different thoughts. Different thoughts produce different discriminants. Different discriminants produce different conviction-accuracy curves. The curves compete.
+Holon Lab Trading is an attempt to answer a single question: **what if observation, decision, and learning were all the same mathematical object?**
 
-84 atoms → 59.7% accuracy. 107 atoms → 62.1%. The trajectory matters more than the headline: at 90,000 candles, 84 atoms was declining while 107 atoms was climbing. The new thoughts provided signal in the exact regime where the old vocabulary ran dry. The system needs good thoughts and time.
+Instead of separate systems for market analysis, trade execution, and performance feedback, Holon collapses all three into a unified algebra called the [[thought-system|Thought System]]. Market data is encoded as vectors called Thoughts. Predictions are Thoughts. Trade decisions are Thoughts. Even the accuracy of past predictions is itself a Thought — a self-referential [[curve|Curve]].
+
+The system runs on a custom concurrent runtime called the [[wat-vm]], where independent programs communicate exclusively through typed message queues. No shared mutable state. No dependency injection frameworks. Values flow up, not queues down.
+
+## Core Philosophy
+
+### Thoughts All the Way Down
+
+The founding insight is that **named relational facts carry predictive signal where raw data does not.** A candle's OHLC values are noise. But a Thought that says *"the volume ratio is rising and the close is above the 20-period SMA and the Wyckoff spring pattern is active"* — that composition, encoded as a high-dimensional vector, carries information about future direction.
+
+The [[vocabulary|Vocabulary]] is not a dictionary — it is the model. Different [[lens|lenses]] (momentum, structure, volume, regime, narrative, generalist) select different subsets of the vocabulary, creating different "minds" that think different thoughts about the same market data. The [[conviction|Conviction-Accuracy Curve]] then measures which minds are right, allocating capital accordingly.
+
+### Values Up, Not Queues Down
+
+Every side effect in the system — cache misses, log entries, [[signal-propagation|Propagation]] facts — is returned as a value through function return types. No queue parameters. No shared mutation during parallel phases. The type checker enforces correctness; the [[chain-types|Chain Types]] prove data flow through the pipeline.
+
+### The Disposable Machine
+
+The system is designed to be regenerated from scratch. The `wat/GUIDE.md` is the DNA — the master specification. The wat s-expression files are the mRNA. The eight [[wards|Wards]] are the ribosomes — defensive spells that verify the transcription. The Rust code is the protein — the functional organism. Delete the Rust. Run the spells. The wat regenerates it. This has been proven three times, each inscription leaner than the last.
 
 ---
 
-## Architecture
-
-The [[The Enterprise|enterprise]] is a coordination plane. It owns [[The Post|posts]] (one per asset pair) and [[The Treasury|the treasury]] (capital management). The architecture is pair-agnostic — any asset pair becomes a post.
+## Architecture Overview
 
 ```
-Enterprise
-├── Posts (one per asset pair)
-│   ├── Market Observers (N) — predict direction (Up/Down)
-│   ├── Exit Observers (M) — predict distances (trail/stop)
-│   ├── Brokers (N×M) — accountability units (Grace/Violence)
-│   └── Paper Trades — hypothetical "what-if" positions, every candle
-└── Treasury — capital management, proportional funding by edge
+┌─────────────┐
+│   Market    │  Raw candle stream
+│   (BTC/USD) │
+└──────┬──────┘
+       │ candle
+       ▼
+┌─────────────┐
+│   Post      │  Per-asset-pair unit, owns all observers + brokers
+│             │
+│  ┌───────────────────────────────┐
+│  │     Four-Step Loop            │
+│  │  1. RESOLVE (settle trades)   │
+│  │  2. COMPUTE (encode + predict)│
+│  │  3. TICK (paper trade)        │
+│  │  4. COLLECT (fund winners)    │
+│  └───────────────────────────────┘
+│             │
+│  ┌─────────┐  ┌──────────┐  ┌───────────┐
+│  │ Market  │  │  Exit    │  │  Broker   │
+│  │Observer │→│ Observer │→│ (N×M grid)│
+│  │ (×N)    │  │  (×M)    │  │           │
+│  └─────────┘  └──────────┘  └─────┬─────┘
+│       ↑                              │
+│       └──── learn signals ───────────┘
+└──────┬──────┘
+       │ proposals
+       ▼
+┌─────────────┐
+│  Treasury   │  Capital management, proportional funding
+└─────────────┘
 ```
 
-Every candle flows through [[The Four-Step Loop|the four-step loop]]:
-
-| Step | Action |
-|------|--------|
-| **RESOLVE** | Settle triggered trades, propagate outcomes back through brokers → observers |
-| **COMPUTE + DISPATCH** | Encode candle → observers predict → brokers propose |
-| **TICK** | Parallel tick brokers (papers), sequential propagate (shared observers), breathing stops |
-| **COLLECT + FUND** | Treasury evaluates proposals, funds proven ones by edge |
+All of this runs on the [[wat-vm]] — a message-passing runtime where each box above is an independent program thread, communicating through [[services|Services]] (Queue, Topic, Mailbox).
 
 ---
 
-## The Five Primitives
+## Idea Map
 
-Everything is built from five operations on high-dimensional vectors:
+### The Thought System (the algebra)
 
-| Primitive | Meaning | Lisp Equivalent |
-|-----------|---------|----------------|
-| `atom` | Name a concept — the identifier IS the thing | Symbol |
-| `bind` | Compose two thoughts — vector multiplication | `apply` |
-| `bundle` | Superpose N thoughts — vector addition | `cons` |
-| `cosine` | Measure similarity — collapse to scalar | `eval` |
-| `reckoner` | Learn — accumulate, build discriminant, predict | `reduce` |
+| Concept | One-Liner |
+|---------|-----------|
+| [[thought-system|Thought System]] | The six primitives that make everything the same type |
+| [[atom|Atom]] | Names a concept — the atomic unit of meaning |
+| [[bind|Bind]] | Composes thoughts — vertical, sequential composition |
+| [[bundle|Bundle]] | Superposes thoughts — horizontal, parallel composition |
+| [[fact|Fact]] | A named observation — a thought bound to real data |
+| [[lens|Lens]] | A vocabulary filter — each lens is a different "mind" |
+| [[curve|Curve]] | Self-evaluating accuracy — thought that judges thoughts |
+| [[thought-encoding|Thought Encoding]] | How market data becomes high-dimensional vectors |
+| [[thought-space|Thought Space]] | The vector space where thoughts live and compete |
 
-McCarthy built the language of thought in 1958. He just didn't have 10,000 dimensions to think in.
+### Learning and Accountability
 
----
+| Concept | One-Liner |
+|---------|-----------|
+| [[reckoner|Reckoner]] | The learning primitive — learns discriminants from outcomes |
+| [[grace-and-violence|Grace and Violence]] | The two accountability labels — correct vs incorrect |
+| [[conviction|Conviction]] | Cosine similarity against the learned discriminant |
+| [[conviction|Conviction-Accuracy Curve]] | Maps prediction confidence to historical accuracy |
+| [[signal-propagation|Signal Propagation]] | How learn signals flow back through the system |
+| [[vocabulary|Vocabulary]] | The complete set of named concepts — the IS the model |
+| [[vocabulary-evolution|Vocabulary Evolution]] | How atoms are added, removed, and reorganized |
 
-## Learning: Grace and Violence
+### The Runtime (the machine)
 
-The loop closes through [[Grace vs Violence]]. Two outcomes. Two labels. Everything learns from them.
+| Concept | One-Liner |
+|---------|-----------|
+| [[wat-vm]] | The concurrent message-passing runtime |
+| [[services|Services]] | Queue, Topic, Mailbox — the three service primitives |
+| [[programs|Programs]] | Independent functions running on dedicated threads |
+| [[chain-types|Chain Types]] | The pipeline type system — the type IS the proof |
+| [[encoding-cache|Encoding Cache]] | Distributed LRU where callers encode, cache manages |
 
-- **Grace** — the thought produced value (permanent gain). Capital deployed, position ridden, principal recovered, residue accumulated.
-- **Violence** — the thought destroyed value (bounded loss). Capital deployed, stop fired, loss bounded by reservation.
+### The Enterprise (the organism)
 
-Violence isn't failure — it's **teaching**. A reckoner that only sees Grace has no discriminant. Violence provides the contrast that gives the discriminant its shape.
+| Concept | One-Liner |
+|---------|-----------|
+| [[four-step-loop|Four-Step Loop]] | RESOLVE → COMPUTE → TICK → COLLECT per candle |
+| [[market-observer|Market Observer]] | Predicts direction (Up/Down) from encoded thoughts |
+| [[exit-observer|Exit Observer]] | Predicts distances (stop, take-profit, trailing) |
+| [[broker|Broker]] | The accountability unit — binds observer to capital |
+| [[four-step-loop|Post]] | Per-asset-pair coordination unit |
+| [[treasury|Treasury]] | Capital management with bounded loss |
+| [[paper-trade|Paper Trade]] | Hypothetical trades tracked before real commitment |
 
----
+### The Process (the ribosomes)
 
-## Design Principles
-
-**[[Values Up]]** — Functions return side-effects as values. No queue parameters. No shared mutation during parallel phases. The loop is a pure function from (state, candle) to (new-state, log-entries).
-
-**[[Homoiconicity]]** — Atoms are names are vectors. The identifier of a thing IS the thing itself. Code is data. Data is code. The thought IS its own representation.
-
-**[[The Disposable Machine]]** — The guide IS the DNA. The spells are the ribosomes. The wat is the protein. Delete the wat. Run the wards. The wat reappears. Each inscription leaner. The fixed point approaches.
-
-**Never average a distribution.** Let values breathe with the market.
-
----
-
-## Origins
-
-The system was built by a DDoS expert who pivoted to markets — not as a trader, but as a thinker trying to understand why some interpretations predict and others don't. The original idea was [[Shield Cognition]]: VSA-based anomaly detection for network security, rejected at AWS. Markets became the new proving ground.
-
-> Opus trained the human. Sonnet built the system. Neither could have done this alone.
-
----
-
-## Wiki Index
-
-### Foundation
-| Page | TL;DR |
-|------|-------|
-| [[Thought Primitives]] | Five operations — atom, bind, bundle, cosine, reckoner — form the complete algebra of cognition |
-| [[Atom]] | Naming a concept assigns it a random point in high-dimensional space — the name IS the vector |
-| [[Bind and Bundle]] | Bind composes meaning (structure). Bundle aggregates evidence (consensus). |
-| [[Fact]] | A named observation frozen in time — atom + scalar + timestamp |
-| [[Thought Encoder]] | Turns the tree of atoms, binds, and bundles into a single high-dimensional vector |
-| [[Thought Space]] | 10,000-dimensional hyperspace where every concept is a direction and every prediction is a cosine |
-| [[Vocabulary]] | 107 named atoms across schools — the vocabulary IS the model |
-| [[Homoiconicity]] | Atoms are names are vectors — the identifier of a thing IS the thing itself |
-| [[Values Up]] | Functions return side-effects as values. No queues. No shared mutation. |
-
-### Learning
-| Page | TL;DR |
-|------|-------|
-| [[The Reckoner]] | The sole learning primitive — accumulates, discriminates, predicts, carries its own proof curve |
-| [[Discriminant]] | The learned direction in thought-space that separates Grace from Violence |
-| [[Conviction]] | Cosine against the discriminant — how strongly the reckoner predicts |
-| [[Conviction-Accuracy Curve]] | `accuracy = 0.50 + a × exp(b × conviction)` — the universal judge |
-| [[Grace vs Violence]] | Two outcomes. Grace = permanent gain. Violence = bounded loss. Violence is teaching. |
-| [[Noise Subspace]] | Learns what normal looks like — strips background texture so reckoners see signal |
-| [[Engram Gating]] | Snapshot good discriminant states, reject bad recalibrations |
-| [[Scalar Accumulator]] | Per-value vector learning — what distances does Grace prefer? |
-
-### Architecture
-| Page | TL;DR |
-|------|-------|
-| [[The Enterprise]] | The coordination plane — owns posts and treasury, routes candles, returns values |
-| [[The Post]] | Per-asset-pair unit — owns observers, brokers, indicator bank |
-| [[Market Observers]] | N entities per post, each with a lens — predict direction (Up/Down) |
-| [[Exit Observers]] | M entities per post — predict optimal exit distances via continuous reckoners |
-| [[Brokers]] | The accountability unit — binds market + exit observer, owns papers and Grace/Violence reckoner |
-| [[The Treasury]] | Pure accounting — funds proportionally to edge, bounded loss, residue IS the growth |
-| [[The Four-Step Loop]] | The heartbeat — resolve, compute+dispatch, tick, collect+fund — every candle |
-| [[Propagation]] | Values flow up from brokers through posts to observers — no callbacks, no shared mutation |
-| [[Programs]] | Pure functions on threads — input queues, output queues, return trained state |
-| [[Services]] | Queue (1→1), Topic (1→N), Mailbox (N→1) — the three-instruction ISA |
-| [[The Proposal System]] | What brokers produce, what the treasury evaluates |
-| [[Paper Trades]] | Hypothetical what-if positions — the fast learning stream, every candle |
-| [[Window Sampler]] | Random candle subsets per training cycle — prevents overfitting |
-| [[Trade Lifecycle]] | Active → Runner → Settled. Stops breathe. One entry. One exit. |
-
-### Specification
-| Page | TL;DR |
-|------|-------|
-| [[Wat VM]] | The s-expression specification language — GUIDE → wat → Rust |
-| [[Lenses]] | Vocabulary subset selector — six market lenses, four exit lenses |
-| [[The Wards]] | Eight spells that defend against bad thoughts |
-| [[The Disposable Machine]] | Delete the wat. Run the spells. It reappears. |
-
-### Vision
-| Page | TL;DR |
-|------|-------|
-| [[Seeds and Emergence]] | Named experts are seeds. The geometry reveals the real unnamed experts. |
-| [[The GPU Thought Engine]] | Massive parallel thought discovery — GPU evaluates, discriminant judges, LLM interprets |
-| [[Shield Cognition]] | The rejected AWS origin — VSA anomaly detection for network security |
-| [[The Debugger]] | An LLM is a breakpoint in yourself — the system was debugged into existence |
+| Concept | One-Liner |
+|---------|-----------|
+| [[wards|Wards]] | Eight defensive spells that verify correctness |
+| [[disposable-machine|Disposable Machine]] | Delete the code, run the spells, it regenerates |
+| [[proposal-system|Proposal System]] | Evolutionary design through structured debate |
+| [[panel-of-experts|Panel of Experts]] | Hickey, Beckman, Wyckoff, Seykota, Van Tharp review proposals |
 
 ---
 
-*From [holon-lab-trading](https://github.com/watmin/holon-lab-trading) by watministrator. Built by a datamancer and a machine. Neither could have built it alone.*
+## Influences
+
+The system draws from:
+
+- **Vector Symbolic Architecture** (Kanerva, Plate) — the idea that concepts can be represented as high-dimensional vectors and composed algebraically
+- **The Actor Model** (Hewitt, 1973) — independent programs communicating through messages, no shared state
+- **FPGA Dataflow** — the topology IS the computation, static wiring at startup
+- **Plan 9** — "everything is a queue" echoing "everything is a file"
+- **Molecular Biology** — DNA (guide) → mRNA (wat) → protein (Rust), with ribosomes (wards) that verify transcription
+- **Trading Philosophy** — Wyckoff (structure), Dow (trend), Seykota (risk), Van Tharp (psychology), Pring (momentum)
+
+---
+
+## Data
+
+- 652,608 five-minute BTC candles (Jan 2019–Mar 2025) in `data/analysis.db`
+- Standard benchmark: 100,000 candles
+- Append-only run ledgers in `runs/`
+
+---
+
+*Compiled from the Holon Lab Trading knowledge graph — 1,689 nodes, 3,613 edges, 20+ semantic communities.*

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Trade — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html" class="active">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Paper Trade</h1>
+<p><strong>TL;DR:</strong> A paper trade is a hypothetical trade — "what if we opened here?" Every candle, every broker creates a paper entry tracking both buy and sell sides simultaneously. When a side's trailing stop fires, the paper resolves and teaches the system what <em>would have been</em> the optimal distance. Papers are the fast learning stream: cheap, numerous, every candle, and treated equally by the learning system.</p>
+<hr>
+<h2>What Papers Are</h2>
+<p>Papers answer the question the system can't answer from real trades alone: "if we had opened a position at this moment, what would have happened?"</p>
+<p>Real trades are expensive and infrequent. The treasury only funds proposals with proven edge. Even with 24 brokers per post, only a few trades might be open at any time. The learning signal from real trades is sparse.</p>
+<p>Papers solve this. Every candle, every one of the 24 brokers creates a paper entry. Both buy-side and sell-side are tracked simultaneously. No capital is at risk. The system can afford to "open" a hypothetical position on every candle, in both directions, and learn from all of them.</p>
+<p>Over 100,000 candles, that's potentially 2.4 million paper resolutions per post (24 brokers × 100,000 candles × 2 sides). Compare that to maybe a few hundred real trades in the same period. The learning signal from papers dwarfs the signal from real trades.</p>
+<h2>Anatomy of a Paper</h2>
+<pre><code>PaperEntry:
+  composed-thought  — the thought vector at entry (market + exit facts)
+  entry-price       — price when the paper was created
+  distances         — from the exit observer at entry (trail, stop)
+  buy-extreme       — best price in buy direction so far (Maximum Favorable Excursion)
+  buy-trail-stop    — trailing stop level for buy side
+  sell-extreme      — best price in sell direction so far
+  sell-trail-stop   — trailing stop level for sell side
+  buy-resolved      — has the buy side's stop fired?
+  sell-resolved     — has the sell side's stop fired?
+</code></pre>
+<h3>How Papers Tick</h3>
+<p>Every candle, each broker's <code>tick-papers</code> method:</p>
+<ol>
+<li>Creates a new paper entry with the current composed thought, entry price, and distances from the exit observer.</li>
+<li>For each existing paper, updates the extremes (if price moved favorably, the extreme ratchets up/down).</li>
+<li>Ratchets the trailing stops to follow the extremes.</li>
+<li>Checks if either side's stop fired (price retraced past the trail level).</li>
+<li>If a side resolves, computes the outcome (Grace or Violence) and the approximate optimal distances.</li>
+</ol>
+<p>Both sides are independent. A buy-side paper resolves when price rises then retraces below the buy trail stop. A sell-side paper resolves when price falls then retraces above the sell trail stop. A single paper can resolve its buy side on one candle and its sell side on a later candle.</p>
+<h3>Approximate Optimal Distances</h3>
+<p>Papers don't carry full price history (that would be expensive). Instead, they approximate optimal distances from their tracked extremes:</p>
+<pre><code>approximate-optimal-distances(entry, buy-extreme, sell-extreme) → Distances
+</code></pre>
+<p>This is a simpler computation than <code>compute-optimal-distances</code> (which replays full price history for real trades in step 1). The approximation uses Maximum Favorable Excursion (MFE) and Maximum Adverse Excursion (MAE) — the extremes the paper tracked — to estimate what trailing stop distance would have maximized residue.</p>
+<p>Same objective (maximize residue). Different data availability. The approximation is good enough for the fast learning stream.</p>
+<h2>The Teaching: Predicted vs Optimal</h2>
+<p>When a paper resolves, it teaches the exit observer a precise lesson:</p>
+<blockquote><p>"You predicted trail = 1.5% and stop = 3.0%. But optimal was trail = 2.3% and stop = 1.8%. Your trail was too tight (you got stopped out before the full move) and your stop was too wide (you absorbed more loss than necessary)."</p></blockquote>
+<p>This is the <code>(predicted, optimal)</code> pair that the exit observer's continuous reckoners learn from. The composed thought at entry provides the context. The optimal distances provide the target. Over thousands of paper resolutions, the reckoners build a map from thought-space to optimal-distance-space.</p>
+<h2>Papers and Real Trades: Equal Citizens</h2>
+<p>This is a critical design choice. Papers and active trades are treated <strong>equally</strong> by the learning system:</p>
+<ul>
+<li>Both use whatever the reckoner knows at the time (no special logic for papers)</li>
+<li>Both start ignorant (crutch values for distances)</li>
+<li>Both feed <a class="wikilink" href="grace-and-violence.html">Grace</a>/<a class="wikilink" href="grace-and-violence.html">Violence</a> back to the broker</li>
+<li>Both contribute to the same reckoners, the same curves, the same accumulators</li>
+</ul>
+<p>The system does not weight real trade outcomes more heavily than paper outcomes (though the weight field CAN encode this — a real trade with more capital at stake naturally gets a higher weight). The learning mechanism is identical.</p>
+<p>Why? Because the paper's prediction was made with the same reckoner state as a real trade's prediction. The thought was encoded with the same vocabulary. The distance was predicted with the same exit observer. The only difference is whether capital was deployed. If the reckoner's prediction was wrong on a paper, it was wrong. The lesson is the same.</p>
+<h2>Papers as the Bootstrap Mechanism</h2>
+<p>Papers are the bootstrap. When the system starts, every reckoner has zero experience. No edge. No participation. The treasury won't fund anything because the curves aren't proven.</p>
+<p>But papers don't need the treasury. They run every candle regardless. The reckoners accumulate experience from papers. The curves steepen. The edge grows. Eventually, <code>proven?(reckoner, min-samples)</code> returns true, the broker's edge crosses the venue cost threshold, and the treasury starts funding real trades.</p>
+<p>This is the architecture-as-bootstrap. No pre-trained weights. No historical warmup. No transfer learning. Just papers filling the reckoners with experience until they're ready for real capital.</p>
+<h2>The Paper Lifecycle</h2>
+<pre><code>Candle N:   broker registers paper(entry-price=N, distances={trail: 0.015, stop: 0.030})
+Candle N+1: price rises → buy-extreme ratchets up, buy-trail-stop follows
+Candle N+2: price keeps rising → buy-extreme keeps ratcheting
+Candle N+3: price retraces → crosses buy-trail-stop → BUY SIDE RESOLVES
+            outcome: Grace (price rose then fell, trail captured the move)
+            optimal: {trail: 0.022, stop: 0.028} (wider trail would have captured more)
+            → Resolution produced → PropagationFacts → observers learn
+Candle N+7: price drops → crosses sell-trail-stop → SELL SIDE RESOLVES
+            outcome: Violence (sell side was wrong — price initially dropped but not enough)
+            → Resolution produced → observers learn
+Paper discarded after both sides resolve
+</code></pre>
+<p>Each resolution produces a <code>Resolution</code> struct containing <code>broker-slot-idx</code>, <code>composed-thought</code>, <code>direction</code>, <code>outcome</code>, <code>amount</code>, and <code>optimal-distances</code>. These are facts, not mutations. Collected during parallel tick, applied sequentially during propagation.</p>
+<h2>Capacity Management</h2>
+<p>Papers live in a <code>VecDeque<PaperEntry></code> on each broker, capped to prevent unbounded memory growth. Old papers that haven't resolved get evicted. The cap is large enough that most papers resolve naturally before eviction — the trailing stop mechanism ensures papers don't live forever (markets move, stops fire).</p>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="broker.html">broker</a> — owns and ticks papers, produces Resolutions from them</li>
+<li><a class="wikilink" href="four-step-loop.html">four-step-loop</a> — papers are created in step 2, ticked in step 3a, propagated in step 3b</li>
+<li><a class="wikilink" href="signal-propagation.html">signal-propagation</a> — how paper resolutions teach observers (path 2)</li>
+<li><a class="wikilink" href="exit-observer.html">exit-observer</a> — provides the distances that papers track, learns from optimal distances</li>
+<li><a class="wikilink" href="grace-and-violence.html">grace-and-violence</a> — the labels assigned to paper outcomes</li>
+<li><a class="wikilink" href="reckoner.html">reckoner</a> — the learning primitive that accumulates paper experience</li>
+<li><a class="wikilink" href="treasury.html">treasury</a> — the capital allocator that does NOT track papers (papers are broker-owned)</li>
+<li><a class="wikilink" href="exit-observer.html">Distances</a> — the named tuple of trail/stop values that drive paper mechanics</li>
+</ul>
+</main>
+</body>
+</html>

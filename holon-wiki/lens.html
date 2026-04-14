@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lens — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html" class="active">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Lens</h1>
+<blockquote><p><strong>TL;DR:</strong> A Lens selects which subset of the <a class="wikilink" href="vocabulary.html">vocabulary</a> an observer uses. Each lens creates a different "mind" — a different perspective on the same market data. The six market lenses (momentum, structure, volume, narrative, regime, generalist) are competing experts that think different thoughts and are judged by their own conviction-accuracy curves.</p></blockquote>
+<h2>The Lens Is the Observer's Identity</h2>
+<p>An observer doesn't choose which facts to think about. Its lens chooses for it. The lens is fixed at construction — a momentum observer always thinks about momentum. A regime observer always thinks about regime. The lens IS the observer's identity.</p>
+<p>This isn't a limitation. It's the point. By restricting each observer to a vocabulary subset, you create specialized experts. Each expert develops its own discriminant, its own conviction-accuracy curve. The curves compete. The best expert for the current market gets more capital.</p>
+<h2>The Six Market Lenses</h2>
+<pre><code>(enum MarketLens
+  :momentum     ; oscillators, trend strength, stochastic
+  :structure    ; channels, Fibonacci, Ichimoku, price action
+  :volume       ; flow, pressure, on-balance volume
+  :narrative    ; multi-timeframe structure, divergence
+  :regime       ; persistence, chop, entropy, Hurst
+  :generalist)  ; ALL of the above
+</code></pre>
+<h3>Momentum</h3>
+<p>Thinks about speed and acceleration. Which way is price moving, and how fast?</p>
+<p>Modules: <code>oscillators.wat</code> (RSI, CCI, MFI, Williams %R, ROC), <code>momentum.wat</code> (SMA distances, MACD, DI spread, ATR ratio), <code>stochastic.wat</code> (%K, %D, spreads, crosses).</p>
+<p>Plus <code>shared/time.wat</code> and <code>standard.wat</code> (always included).</p>
+<p>A momentum observer sees: "RSI is at 0.73, MACD histogram is shrinking, stochastic just crossed, ADX is declining." It thinks about <em>exhaustion</em> — when speed decelerates, reversals become more likely.</p>
+<h3>Structure</h3>
+<p>Thinks about levels and boundaries. Where is price relative to support, resistance, and channel walls?</p>
+<p>Modules: <code>keltner.wat</code> (channel position, squeeze), <code>fibonacci.wat</code> (retracement levels), <code>ichimoku.wat</code> (cloud position, TK cross), <code>price-action.wat</code> (range ratio, gaps, consecutive closes).</p>
+<p>A structure observer sees: "Price is 2.3% above the Keltner lower channel, near the 0.618 Fibonacci retracement, below the Ichimoku cloud." It thinks about <em>boundaries</em> — when price approaches walls, bounces become more likely.</p>
+<h3>Volume</h3>
+<p>Thinks about participation and pressure. Who is trading, and how hard?</p>
+<p>Modules: <code>flow.wat</code> (OBV slope, VWAP distance, buying/selling pressure, volume ratio, body ratio).</p>
+<p>A volume observer sees: "OBV slope is rising, buying pressure exceeds selling pressure, volume is 1.8x its average." It thinks about <em>conviction</em> — volume confirms or denies the price move.</p>
+<h3>Narrative</h3>
+<p>Thinks about the story across timeframes. What's the bigger picture?</p>
+<p>Modules: <code>timeframe.wat</code> (1h/4h trend, return, inter-timeframe agreement), <code>divergence.wat</code> (RSI divergence — bull and bear).</p>
+<p>A narrative observer sees: "The 1h trend is up but the 4h structure is weakening, timeframe agreement is only 0.3, and there's bearish RSI divergence." It thinks about <em>inconsistency</em> — when the story across timeframes contradicts itself, reversals become more likely.</p>
+<h3>Regime</h3>
+<p>Thinks about what KIND of market this is. Trending? Mean-reverting? Choppy? Random?</p>
+<p>Modules: <code>regime.wat</code> (KAMA efficiency ratio, choppiness, DFA alpha, variance ratio, entropy rate, Aroon, fractal dimension), <code>persistence.wat</code> (Hurst exponent, autocorrelation, ADX).</p>
+<p>A regime observer sees: "Hurst is 0.35 (mean-reverting), choppiness is 72 (choppy), entropy is high, fractal dimension is 1.8 (noisy)." It thinks about <em>context</em> — the same RSI reading means different things in trending vs. choppy markets.</p>
+<h3>Generalist</h3>
+<p>Thinks everything. All modules fire. The full vocabulary.</p>
+<p>The generalist is not privileged. It's just another lens. If a specialized expert's curve is steeper, the specialist wins. The generalist is the null hypothesis: "maybe thinking about everything is better than thinking about something specific." Sometimes it is. Often it isn't.</p>
+<h2>Exit Lenses</h2>
+<p>Exit observers have their own lenses for judging <em>conditions</em> (not direction):</p>
+<pre><code>(enum ExitLens
+  :volatility   ; ATR regime, squeeze state
+  :structure    ; trend consistency, ADX strength
+  :timing       ; momentum, reversal signals
+  :generalist)  ; all three
+</code></pre>
+<p>Exit observers don't predict direction. They predict <em>distances</em> — how far to set the trailing stop, how far to set the safety stop. Their lenses select which conditions matter for stop placement.</p>
+<h2>How Lens Selection Works</h2>
+<p>Every lens variant automatically includes <code>shared/time.wat</code> and <code>standard.wat</code>. Beyond that, the observer calls the vocabulary modules mapped to its lens, collects all resulting <a class="wikilink" href="thought-encoding.html">ThoughtAST</a> nodes, and bundles them into one <a class="wikilink" href="thought-encoding.html">ThoughtAST</a> for encoding.</p>
+<pre><code>Momentum observer on candle N:
+  1. oscillators.wat(candle) → [Linear "rsi" 0.73, Linear "cci" -0.2, ...]
+  2. momentum.wat(candle)    → [Linear "close-sma20" 0.023, ...]
+  3. stochastic.wat(candle)  → [Linear "stoch-k" 0.82, ...]
+  4. time.wat(candle)        → [Circular "hour" 14.0, ...]
+  5. standard.wat(window)    → [Linear "session-depth" 0.5, ...]
+  6. Bundle(all above)       → one ThoughtAST
+  7. ThoughtEncoder.encode() → one Vector (the thought)
+</code></pre>
+<p>The vocabulary modules are pure functions — candle in, ASTs out. The lens determines <em>which</em> modules get called. The observer does the calling. The encoder does the evaluating.</p>
+<h2>Emergent Unnamed Experts</h2>
+<p>The real experts don't have names. They emerge from observation. When the momentum expert and the regime expert produce similar conviction spikes on the same candles, that's not two experts agreeing. That's one unnamed expert discovered through overlap.</p>
+<p>The system runs all lenses simultaneously. The named lenses are hypotheses. The geometry reveals the real structure. You don't name the expert groups — they name themselves through their conviction-accuracy curves.</p>
+<h2>Adding a New Lens</h2>
+<p>Adding a lens is adding a vocabulary module and an enum variant. The system scales: N market lenses × M exit lenses = N×M brokers. Each combination is a team. Each team has its own accountability (<a class="wikilink" href="broker.html">broker</a>). The architecture is agnostic to the number of lenses.</p>
+<p>The current six lenses are a starting point. The vocabulary can grow. New modules, new lenses, new experts. The curve judges all of them equally. A new lens with a steeper curve than the incumbents earns more capital automatically.</p>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="vocabulary.html">vocabulary</a> — the complete set of facts lenses select from</li>
+<li><a class="wikilink" href="market-observer.html">market-observer</a> — the entity that uses a market lens</li>
+<li><a class="wikilink" href="exit-observer.html">exit-observer</a> — the entity that uses an exit lens</li>
+<li><a class="wikilink" href="broker.html">broker</a> — binds one market observer to one exit observer (N×M grid)</li>
+<li><a class="wikilink" href="thought-system.html">thought-system</a> — the algebra lenses operate within</li>
+<li><a class="wikilink" href="bundle.html">bundle</a> — collects the lens's facts into one thought</li>
+<li><a class="wikilink" href="fact.html">fact</a> — the individual observations lenses include</li>
+<li><a class="wikilink" href="conviction.html">Conviction-Accuracy Curve</a> — how each lens's accuracy is measured</li>
+<li><a class="wikilink" href="reckoner.html">reckoner</a> — builds the discriminant per lens</li>
+</ul>
+</main>
+</body>
+</html>

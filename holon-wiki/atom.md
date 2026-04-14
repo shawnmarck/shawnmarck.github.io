@@ -1,48 +1,80 @@
 # Atom
 
-> *Naming a concept assigns it a random point in high-dimensional space — the name IS the vector.*
+> **TL;DR:** An Atom names a concept. It's the irreducible unit of meaning in the Thought System — a deterministic mapping from a string name to a unique 10,000-dimensional vector. The name IS the vector. Same name, same vector, always.
 
-An Atom is the most fundamental primitive in holon-rs. You name something. That name maps to a random unit vector in ~1,000-dimensional space. That's it. That's the whole primitive.
+## The Atomic Unit
 
-But from this simple act — naming — an entire cognitive algebra emerges.
+`(atom "rsi-divergence")` → a specific point in 10,000-dimensional space.
 
-## How It Works
+That's it. That's the whole primitive. You give it a name, it gives you back the geometric object that *is* that concept. Not a pointer to it. Not an embedding learned from context. Not a random initialization. A deterministic, reproducible, quasi-orthogonal vector that represents that concept.
 
-When you create an atom `volume-ratio`, the system generates a random unit vector `v`. Every time any thought references `volume-ratio`, it uses the same `v`. This is deterministic: the same atom name always produces the same vector (via a hash seed).
+The Atom is provided by the [[thought-encoding|VectorManager]], which lives inside the [[thought-encoding|ThoughtEncoder]]. At startup, the VectorManager allocates vectors for every atom in the [[vocabulary]]. Finite. Known. Pre-computed. Never evicted. The atom dictionary is closed — every atom that exists is known before the first candle arrives.
 
-This means atoms are **stable** — you can encode a thought today and re-encode it next week and get the same vector. Stability is what makes learning possible. If vectors changed every time, the [[Discriminant]] would be chasing a moving target.
+## Why Quasi-Orthogonal?
 
-## Orthogonality by Default
+In 10,000 dimensions, randomly generated unit vectors have an expected cosine similarity near zero. This isn't an approximation — it's a geometric fact. Two random directions in high-dimensional space are nearly perpendicular.
 
-In high-dimensional space, random unit vectors are approximately orthogonal. `cosine(v₁, v₂) ≈ 0` for any two different atoms. This isn't perfect, but at ~1,000 dimensions, the interference between unrelated atoms is negligible.
+This means every atom occupies its own direction, largely independent from every other atom. `"rsi"` and `"macd"` point in different directions. `"close-sma20"` and `"close-sma50"` point in different directions. When you [[bind]] atoms together, the resulting composition points in a direction related to both parents but distinct from either. The algebraic structure emerges from the geometry.
 
-This matters because it means **unrelated concepts don't collide**. `rsi-divergence-bull` and `atr-ratio` live in different parts of the space. When you [[Bind and Bundle|bundle]] them together, you get a vector that's meaningfully distinct from either alone.
+## The Identity Function
 
-## The Five Schools
+The identifier of the thing IS the thing itself. `VectorManager::get_vector("rsi-divergence")` returns the unique vector that *is* RSI divergence in this thought space. There's no indirection, no lookup table, no embedding layer. The name maps to the vector. The vector maps back to the name (through the dictionary). The identity function is the encoding itself.
 
-Atoms aren't random — they encode trading knowledge from five expert traditions:
+This is homoiconicity — the same principle McCarthy built into Lisp. In Lisp, the symbol `+` is both a name and a function. In the Thought System, the atom `"rsi-divergence"` is both a name and a 10,000-dimensional direction. The representation and the thing represented are the same object.
 
-| School | Example Atoms | Philosophy |
-|--------|---------------|------------|
-| **Wyckoff** | `choppiness`, `since-vol-spike`, `dist-from-low` | Structural price analysis, accumulation/distribution |
-| **Dow** | `trend-aligned`, `higher-highs`, `volume-confirms` | Trend following, market breadth |
-| **Pring** | `rsi-divergence-bull`, `di-spread`, `adx` | Momentum and divergence, oscillator analysis |
-| **Seykota** | `volatility-regime`, `trend-quality` | Risk-based, volatility-aware trading |
-| **Van Tharp** | `position-sizing`, `risk-reward`, `expectancy` | Position management, expectancy-based |
+## Atoms from Different Thinkers
 
-The total [[Vocabulary]] is 107 atoms across market, exit, and trade domains. Each school contributes a different way of *thinking about* the same market. The system doesn't pick a winner — it lets them compete through the [[Conviction-Accuracy Curve]].
+The vocabulary draws from multiple schools of technical analysis, each contributing atoms that express their particular way of thinking about markets:
 
-## Naming IS Modeling
+**Wyckoff** — structural atoms: accumulation, distribution, spring, upthrust, markdown, markup. These name *phases* of market activity. A Wyckoff practitioner sees the market as a story with chapters.
 
-The deep insight: choosing atom names is choosing what concepts the system can *think about*. An atom for `choppiness` means the system can detect and reason about choppy markets. No atom for it? The concept doesn't exist in the system's cognition.
+**Dow Theory** — trend atoms: higher-highs, lower-lows, trend-confirmation, divergence-of-averages. These name *relationships* between consecutive data points. A Dow practitioner sees the market as a series of assertions.
 
-This is why the proposal system matters so much — adding a new atom is literally expanding the system's cognitive vocabulary. Each new thought is a new dimension of reasoning.
+**Seykota** — risk atoms: drawdown, position-sizing, cutting-losses, letting-profits-run. These name the *trader's relationship* to the market. Seykota's insight: the most important thoughts are about yourself.
+
+**Van Tharp** — psychology atoms: expectancy, win-rate, reward-risk, position-sizing-models. These name the *system designer's* concerns. Van Tharp taught that the system matters more than the entry.
+
+**Pring** — momentum atoms: momentum, rate-of-change, overbought, oversold, divergence. These name the *physics* of price movement — speed, acceleration, deceleration.
+
+Each thinker contributes atoms that express their expertise. The atoms don't argue. They compose. A single Thought can simultaneously express a Wyckoff spring pattern, a Pring momentum divergence, and a Seykota drawdown awareness — all superposed in one vector. The discriminant learns which compositions predict.
+
+## Naming Convention
+
+Atoms are short, hyphenated strings. No spaces. No special characters. Examples from the current vocabulary:
+
+```
+rsi, macd, adx, atr-ratio, obv-slope, vwap-distance
+close-sma20, close-sma50, close-sma200
+bb-pos, bb-width, kelt-pos, squeeze
+cloud-position, tk-cross-delta, tenkan-dist
+stoch-k, stoch-kd-spread, stoch-cross-delta
+hurst, choppiness, dfa-alpha, entropy-rate
+rsi-divergence-bull, rsi-divergence-bear
+range-pos-12, fib-dist-618, fib-dist-382
+tf-1h-trend, tf-4h-ret, tf-agreement
+session-depth, dist-from-high, dist-from-sma200
+```
+
+Each atom maps to exactly one vector. The name is unique. The vector is unique. The mapping is deterministic.
+
+## The Vocabulary Is the Model
+
+The set of atoms — the vocabulary — is not a feature list. It IS the model. Different [[lens|lenses]] select subsets. The momentum lens uses oscillator and momentum atoms. The regime lens uses persistence and regime atoms. Each subset creates a different "mind."
+
+84 atoms achieved 57% accuracy over six years of BTC data. 107 atoms crossed 62%. The system's intelligence lives in the vocabulary, not in the architecture. Add better thoughts — atoms that name more predictive concepts — and the accuracy improves. The discriminant and the curve do the rest.
+
+## Atoms Are Not Parameters
+
+Atoms are not learned parameters. They are not embeddings. They are not weights in a neural network. They are *names* — fixed points in the geometry that human experts chose to represent their domain knowledge. The learning happens in the [[reckoner]], which discovers which atoms (and which compositions of atoms) predict outcomes. The atoms are the questions. The reckoner finds the answers.
+
+This is why adding atoms is cheap and powerful. You don't need to retrain anything. You just name a new concept, allocate its vector, and let the reckoner discover whether it carries signal. If it does, the discriminant absorbs it. If it doesn't, the discriminant filters it out (proven: the discriminant is robust to noisy atoms).
 
 ## Related Concepts
 
-- [[Thought Primitives]] — the full set of six compositional operations
-- [[Bind and Bundle]] — how atoms compose into complex thoughts
-- [[Fact]] — atoms combined with scalar values and timestamps
-- [[Vocabulary]] — the full set of 107 atoms and their organization
-- [[Thought Space]] — the geometry where atom vectors live
-- [[Lenses]] — how observers select which atoms to think with
+- [[thought-system]] — the six-primitive algebra
+- [[bind]] — how atoms compose into complex thoughts
+- [[fact]] — an atom bound to real data
+- [[vocabulary]] — the complete set of atoms
+- [[thought-space]] — the geometry atoms live in
+- [[thought-encoding|VectorManager]] — deterministic atom allocation
+- [[thought-encoding]] — the cache and renderer

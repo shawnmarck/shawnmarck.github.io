@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thought Space — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html" class="active">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Thought Space</h1>
+<blockquote><p><strong>TL;DR:</strong> Thought Space is the 10,000-dimensional bipolar vector space where all thoughts live. Cosine similarity is the distance metric — it measures alignment between directions. The <a class="wikilink" href="reckoner.html">reckoner</a> learns a discriminant direction that separates <a class="wikilink" href="grace-and-violence.html">grace-and-violence</a>, and conviction is simply the cosine of a thought against that direction.</p></blockquote>
+<h2>The Geometry</h2>
+<p>Every <a class="wikilink" href="thought-system.html">Thought</a> in holon-lab-trading is a point in ℝ^10000 — a 10,000-dimensional vector. These vectors live on the unit hypersphere (normalized after each operation). The space is the substrate. The algebra (<a class="wikilink" href="atom.html">atom</a>, <a class="wikilink" href="bind.html">bind</a>, <a class="wikilink" href="bundle.html">bundle</a>) operates within it. The geometry determines what works.</p>
+<p>10,000 dimensions is not arbitrary. It's the sweet spot: large enough for quasi-orthogonality (random vectors are nearly perpendicular), small enough to be cheap. 16k and 20k dimensions showed no improvement in experiments — signal is the bottleneck, not capacity.</p>
+<h2>Quasi-Orthogonality: The Foundation</h2>
+<p>In high-dimensional spaces, a fundamental geometric property emerges: <strong>random unit vectors have expected cosine similarity near zero, with very low variance.</strong></p>
+<p>This means: - Each <a class="wikilink" href="atom.html">atom</a> occupies its own direction, largely independent of every other atom. - <a class="wikilink" href="bind.html">Bindings</a> of different atoms produce distinct directions. - <a class="wikilink" href="bundle.html">Bundles</a> of different fact sets produce distinct directions. - The space has <em>room</em> — you can add thousands of atoms without them interfering.</p>
+<p>Quasi-orthogonality is what makes the algebra work. If atoms weren't near-orthogonal, binding <code>"rsi"</code> and <code>"macd"</code> would produce similar vectors, and the discriminant couldn't distinguish them. The high dimensionality guarantees distinguishability.</p>
+<h2>Cosine Similarity: The Only Distance Metric</h2>
+<p>The system uses exactly one distance metric: cosine similarity.</p>
+<pre><code>cosine(A, B) = (A · B) / (|A| × |B|)
+</code></pre>
+<p>Range: [-1, 1]. +1 = identical direction. 0 = orthogonal. -1 = opposite direction.</p>
+<p>Cosine is the natural metric for this space because: - Vectors are normalized (unit length), so cosine = dot product. O(D) computation. - It measures <em>alignment of direction</em>, not magnitude. A strong signal and a weak signal pointing the same way have the same cosine. - It composes: cosine against a discriminant is all you need to evaluate a thought.</p>
+<p>No Euclidean distance. No Manhattan distance. No angular distance. One metric. One cosine.</p>
+<h2>The Discriminant Direction</h2>
+<p>The <a class="wikilink" href="reckoner.html">reckoner</a> learns a <strong>discriminant</strong> — the direction in thought-space that best separates two outcomes. For a market observer, the discriminant separates Up from Down. For a broker, it separates <a class="wikilink" href="grace-and-violence.html">grace-and-violence</a> from each other.</p>
+<p>"Which direction in 10,000 dimensions best separates correct predictions from incorrect ones?" The discriminant IS that direction. It's a single unit vector — one point on the hypersphere — learned from accumulated experience.</p>
+<p>The discriminant is computed by accumulating evidence vectors from observations. Up outcomes accumulate one way. Down outcomes accumulate another. The discriminant is the normalized difference between the two accumulators (after exponential decay). It's recalibrated periodically.</p>
+<h2>Conviction: Cosine Against the Discriminant</h2>
+<pre><code>conviction = cosine(thought, discriminant)
+</code></pre>
+<p>Conviction is how aligned the thought is with the direction that predicts the positive outcome. High conviction = many facts in the thought voting in the same direction. Low conviction = ambiguous.</p>
+<p>Conviction is not a probability. It's a geometric measurement. But it behaves like one in a useful way: high conviction means the thought strongly resembles past thoughts that predicted well. Low conviction means the thought doesn't clearly resemble either outcome class.</p>
+<p>The discriminant decode reveals which thoughts drive predictions. If <code>bind(diverging, bind(close_up, rsi_down))</code> has cosine 0.15 against the discriminant but <code>rsi_down</code> alone has cosine 0.12, the composition adds only 0.03 of signal beyond its subcomponent. The system discovers this by encoding all compositions and letting the discriminant evaluate them.</p>
+<h2>Signal vs Noise in the Geometry</h2>
+<p>The foundational experiment compared two encodings of the same data:</p>
+<p><strong>Visual encoding:</strong> 25×48 raster grid of colored cells, faithfully representing the price chart. Every pixel, every wick, every indicator line. Win-Win cosine: 0.4031. Win-Loss cosine: 0.4026. Gap: 0.0004. <strong>No signal.</strong></p>
+<p><strong>Thought encoding:</strong> 120+ named relational facts about the same chart. RSI divergence, volume ratio, Bollinger position — all as compositional vectors. Separation (d'): 0.734. <strong>Real signal.</strong></p>
+<p>Same data. Same dimensionality. One encoding carries information about future direction. The other doesn't. The difference is the encoding:</p>
+<ul>
+<li>Pixels encode <em>appearance</em> — what the chart looks like.</li>
+<li>Thoughts encode <em>interpretation</em> — what the chart means.</li>
+</ul>
+<p>The geometry doesn't care about appearance. It cares about structure. Named relationships create structure. Raw pixels don't.</p>
+<h2>The Thought Manifold</h2>
+<p>The set of all possible thoughts forms a manifold in ℝ^10000 — a lower-dimensional surface embedded in the high-dimensional space. The manifold's structure reflects the market's structure:</p>
+<ul>
+<li>Nearby thoughts on the manifold represent similar market states.</li>
+<li>Distant thoughts represent fundamentally different conditions.</li>
+<li>The manifold's topology encodes which market transitions are common (smooth paths) and which are rare (large jumps).</li>
+</ul>
+<p>The regime-invariance finding supports this: the thought manifold's eigenvalue structure is stable across market regimes (53% explained ratio, stable eigenvalues). The manifold shape doesn't change between bull and bear markets. Only the discriminant direction shifts — what predicts <em>grace</em> changes, but the space of possible thoughts doesn't.</p>
+<h2>Noise Subspace</h2>
+<p>The <a class="wikilink" href="market-observer.html">OnlineSubspace</a> (CCIPCA) learns what "normal" looks like in thought-space. It accumulates a background model — the principal components of all thoughts seen so far.</p>
+<p>The anomalous component — the part of a new thought that the subspace <em>cannot</em> explain — is what's unusual. The residual measures how strange this thought is. High residual = anomalous market state. Low residual = boring, normal market.</p>
+<p>Market observers strip noise before predicting. They project the thought through the noise subspace, keep the residual, and feed the residual to the reckoner. The reckoner learns from what's unusual, not what's normal.</p>
+<h2>OnlineSubspace and Anomaly Detection</h2>
+<p>The subspace learns continuously. Each new thought updates the principal components (the first k eigenvectors). Old experience decays. The subspace adapts to regime changes — what's "normal" in a trending market differs from what's normal in a choppy one.</p>
+<p>The residual is used in two contexts: 1. <strong>Market observers</strong> strip noise before predicting (above). 2. <strong>Risk management</strong> uses a separate subspace to detect anomalous portfolio states — the "shield cognition" mechanism from the system's AWS origins.</p>
+<h2>The Space Is Domain-Independent</h2>
+<p>The 10,000-dimensional space doesn't know it's being used for trading. It's just geometry. The same space, the same cosine, the same discriminant mechanism can be pointed at any domain:</p>
+<ul>
+<li>Trading: atoms named after technical indicators</li>
+<li>Network security: atoms named after packet fields</li>
+<li>Medical imaging: atoms named after diagnostic features</li>
+</ul>
+<p>The algebra doesn't care what thoughts you think. It cares how they compose. The vocabulary is domain-specific. The geometry is universal.</p>
+<h2>Dimensionality: Why 10,000?</h2>
+<p>10,000 was chosen empirically. The experiments tested multiple dimensionalities:</p>
+<ul>
+<li>Lower dimensions (1000, 5000): quasi-orthogonality degrades. Atoms interfere.</li>
+<li>10,000: sweet spot. Full quasi-orthogonality. Cheap computation.</li>
+<li>Higher dimensions (16k, 20k): no improvement. Signal is the bottleneck.</li>
+</ul>
+<p>The vector capacity is not the constraint. The vocabulary is. 84 atoms fit easily in 10,000 dimensions with room for thousands more. The hyperspace is not full. The bottleneck is <em>which thoughts to think</em>, not <em>where to put them</em>.</p>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="thought-system.html">thought-system</a> — the algebra that operates in this space</li>
+<li><a class="wikilink" href="atom.html">atom</a> — points in this space</li>
+<li><a class="wikilink" href="bind.html">bind</a> — creates new directions in this space</li>
+<li><a class="wikilink" href="bundle.html">bundle</a> — superposes directions in this space</li>
+<li><a class="wikilink" href="thought-encoding.html">thought-encoding</a> — maps data into this space</li>
+<li><a class="wikilink" href="reckoner.html">reckoner</a> — learns discriminant directions</li>
+<li><a class="wikilink" href="conviction.html">conviction</a> — cosine against the discriminant</li>
+<li><a class="wikilink" href="grace-and-violence.html">grace-and-violence</a> — the outcomes the discriminant separates</li>
+<li><a class="wikilink" href="market-observer.html">OnlineSubspace</a> — learns the background manifold</li>
+</ul>
+</main>
+</body>
+</html>

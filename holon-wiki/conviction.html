@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conviction — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html" class="active">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Conviction</h1>
+<p><strong>TL;DR:</strong> Conviction is cosine similarity between a thought and the learned discriminant direction. High conviction means the current thought strongly resembles patterns that preceded one outcome over another. It maps to prediction confidence. The system's self-awareness comes from the Conviction-Accuracy Curve — a meta-thought that answers "when I'm this convinced, how often am I right?"</p>
+<hr>
+<h2>The Definition</h2>
+<p>In the system, every prediction starts with a thought — a high-dimensional vector encoding what an observer perceived about the market. The <a class="wikilink" href="reckoner.html">reckoner</a> has accumulated experience from many past thoughts and their outcomes. From that experience, it has built a <strong>discriminant</strong> — a direction in the 10,000-dimensional space that best separates one outcome from another.</p>
+<p>Conviction is simply the cosine similarity between the current thought and that discriminant:</p>
+<pre><code>conviction = cosine(thought, discriminant)
+</code></pre>
+<p>Range: [-1.0, +1.0]. High positive conviction = the thought strongly resembles past winners. High negative conviction = it strongly resembles past losers (the flip). Near zero = ambiguous — the thought doesn't clearly belong to either category.</p>
+<p>Conviction is not a probability, but it <strong>maps</strong> to one through the Conviction-Accuracy Curve. A conviction of 0.8 doesn't mean "80% chance of being right." It means "this thought is very similar to patterns that have historically preceded success." The curve translates that similarity into a calibrated accuracy estimate.</p>
+<h2>Why Cosine?</h2>
+<p>Cosine similarity measures the angle between two vectors, ignoring their magnitude. This is the right measure because:</p>
+<ol>
+<li><strong>Magnitude is noisy.</strong> The length of a thought vector depends on how many facts were bundled, not on how informative those facts are. A bundle of 20 facts will have a different magnitude than a bundle of 8 facts, even if both carry the same directional signal.</li>
+</ol>
+<ol>
+<li><strong>Direction is signal.</strong> What matters is <em>which way</em> the thought points in the space, not <em>how far</em>. Two thoughts pointing in the same direction are making the same judgment, regardless of their magnitude.</li>
+</ol>
+<ol>
+<li><strong>Bounded and well-behaved.</strong> Cosine is always [-1, 1]. No normalization needed. No explosion. No vanishing gradients. Just an angle.</li>
+</ol>
+<p>The holon-rs primitives <code>bind</code>, <code>bundle</code>, and <code>amplify</code> all preserve or control directionality. The cosine operation is the fundamental measurement. One cosine. One flip. One curve.</p>
+<h2>Conviction in the Pipeline</h2>
+<p>Conviction appears at multiple points in the <a class="wikilink" href="four-step-loop.html">four-step-loop</a>:</p>
+<h3>Market Observer Conviction</h3>
+<p>The market observer's reckoner computes conviction against its Up/Down discriminant. High conviction → strong lean toward one direction. The observer returns <code>(thought, Prediction { scores, conviction }, edge, misses)</code>. The conviction is the raw measure. The edge (from the curve) is the calibrated measure.</p>
+<h3>Broker Conviction</h3>
+<p>The broker's reckoner computes conviction against its Grace/Violence discriminant. This is the conviction that matters for capital allocation. The broker calls <code>edge-at(reckoner, conviction)</code> to get the accuracy at this conviction level, and that edge value goes on the <a class="wikilink" href="proposal-system.html">Proposal</a>. The treasury sorts by edge and funds proportionally.</p>
+<h3>Exit Observer Conviction (Continuous)</h3>
+<p>The exit observer's continuous reckoners use cosine internally to weight stored observations. When predicting a distance for a new thought, the reckoners compute cosine between the query thought and each stored observation. Observations with high cosine similarity (similar context) get more weight. The weighted average IS the predicted distance.</p>
+<h2>The Conviction-Accuracy Curve</h2>
+<p>This is where conviction becomes self-awareness.</p>
+<p>The reckoner carries an internal curve — a continuous surface mapping conviction levels to historical accuracy rates. It's built from resolved predictions:</p>
+<pre><code>resolve(reckoner, conviction, correct?)  — feed the curve
+edge-at(reckoner, conviction) → f64      — read the curve
+proven?(reckoner, min-samples) → bool     — is the curve reliable?
+</code></pre>
+<p>Each time a prediction resolves (the trade settles and the outcome is known), the curve receives a data point: "at conviction X, was the prediction correct?" Over many resolved predictions, the curve learns the relationship between conviction and accuracy.</p>
+<p><strong>The curve IS a thought.</strong> This is the self-referential insight. The Conviction-Accuracy Curve measures the quality of predictions, and predictions are thoughts, and the curve itself can be represented as a scalar fact — <code>(bind (atom "producer-edge") (encode-linear edge 1.0))</code>. A downstream reckoner can learn whether that edge predicts Grace. The system thinks about its own thinking.</p>
+<p>The communication is one number. The producer calls <code>edge-at(reckoner, conviction)</code> and attaches the result to its message. The consumer encodes it as a scalar fact. The consumer's reckoner learns whether the edge predicts Grace. No meta-journal. No curve snapshot. No new primitives. One f64.</p>
+<h2>The Curve Judges the System</h2>
+<p>The curve is what separates a confident fool from a calibrated expert:</p>
+<ul>
+<li><strong>52% accuracy at high conviction</strong> — the system is barely above noise. It should not deploy capital.</li>
+<li><strong>60% accuracy at high conviction</strong> — genuine edge. The system has learned something real.</li>
+<li><strong>70% accuracy at high conviction</strong> — screaming edge. Deploy maximum capital.</li>
+<li><strong>Below 50% at any conviction</strong> — the system is anti-correlated. <strong>Flip the prediction.</strong> The discriminant has learned the wrong direction, and the curve catches it.</li>
+</ul>
+<p>The treasury funds proportionally to the edge value. Edge of 0.0 = no credibility = no capital. Edge of 0.6 = 60% expected accuracy = fund proportionally. The system earns a degree of trust, not a binary gate.</p>
+<h2>Amplitude and Exponent</h2>
+<p>The curve reports two parameters from accumulated data:</p>
+<ul>
+<li><strong>Amplitude</strong> — how much edge exists at peak conviction. The maximum accuracy the system achieves when it's most confident.</li>
+<li><strong>Exponent</strong> — how quickly accuracy rises with conviction. A steep exponent means the system is well-calibrated — low conviction is uncertain, high conviction is accurate. A flat exponent means conviction doesn't discriminate well.</li>
+</ul>
+<p>These are measurements, not learning. The curve doesn't optimize itself. It reports. The system (via the broker's reckoners and the treasury's funding decisions) responds to what the curve reports.</p>
+<h2>The Meta-Thought Loop</h2>
+<p>The deepest insight about conviction is its self-referential structure:</p>
+<pre><code>Thought → Conviction → Curve reads accuracy → Edge value
+→ Edge encoded as a fact → Bundled into composed thought
+→ Downstream reckoner predicts Grace from composed thought (including edge)
+→ Trade resolves → Grace or Violence teaches downstream reckoner
+</code></pre>
+<p>The system thinks about whether its own confidence is well-calibrated. The edge value — the curve's judgment about the reckoner's judgment — becomes a fact that downstream reckoners can learn from. This is not meta-learning in the gradient-descent sense. It's composition — the same algebra that binds "RSI is at 0.73" also binds "this observer's edge is 0.65." The tools compose.</p>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="reckoner.html">reckoner</a> — the primitive that computes conviction and carries the curve</li>
+<li><a class="wikilink" href="conviction.html">Conviction-Accuracy Curve</a> — the self-evaluation surface on the reckoner</li>
+<li><a class="wikilink" href="market-observer.html">market-observer</a> — produces direction predictions with conviction</li>
+<li><a class="wikilink" href="broker.html">broker</a> — produces Grace/Violence predictions with conviction</li>
+<li><a class="wikilink" href="thought-space.html">Discriminant</a> — the direction in thought-space that conviction measures against</li>
+<li><a class="wikilink" href="grace-and-violence.html">grace-and-violence</a> — the outcomes the curve tracks accuracy against</li>
+<li><a class="wikilink" href="thought-system.html">thought-system</a> — the algebra that makes self-referential composition possible</li>
+<li><a class="wikilink" href="treasury.html">treasury</a> — the capital allocator that reads the edge from the curve</li>
+</ul>
+</main>
+</body>
+</html>

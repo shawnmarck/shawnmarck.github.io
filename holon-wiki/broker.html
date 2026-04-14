@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broker — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html" class="active">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Broker</h1>
+<p><strong>TL;DR:</strong> The broker is the accountability unit. It binds one market observer to one exit observer (today), forming a team of N×M per post. It owns paper trades, scalar accumulators, and a Grace/Violence reckoner. When trades resolve, the broker returns PropagationFacts — values that flow back to teach the observers. The broker IS where predictions meet reality.</p>
+<hr>
+<h2>What It Does</h2>
+<p>Observers predict. The broker is <strong>judged</strong>. The market observer predicts Up/Down. The exit observer predicts distances. The broker takes the composed thought (market + exit) and predicts Grace or Violence — will this trade produce value or destroy it? When the trade settles, reality answers. The broker's reckoner learns. The observers learn. Accountability flows through the broker.</p>
+<p>The broker is the only entity in the system that owns a Grace/Violence reckoner. It is the accountability primitive. Observers are expert witnesses. The broker is the entity on trial.</p>
+<h2>The N×M Grid</h2>
+<p>Today, each broker binds exactly one market observer to one exit observer. With 6 market lens variants and 4 exit lens variants, that's 24 brokers per post. The grid is flat — brokers live in a <code>Vec<Broker></code> indexed by <code>slot-idx = market-idx × M + exit-idx</code>.</p>
+<p>This is not permanent. The broker generalizes to any number of observer kinds. Tomorrow a broker might bind a market observer, an exit observer, and a risk observer. Three minds. One accountability unit. The slot-idx mapping adapts. The architecture doesn't change.</p>
+<p>The broker's identity is the set of observer names it closes over: <code>{"momentum", "volatility"}</code> is one broker. <code>{"regime", "timing"}</code> is another. The names are carried for diagnostics — the ledger reads them for human-readable log entries.</p>
+<p><strong>Lock-free parallel access.</strong> The enterprise enumerates all broker sets at construction, allocates a flat vec, and builds a frozen map from <code>Set<String></code> → <code>slot-idx</code>. Never written to again. At runtime, all access is by index. Disjoint slots. No mutex. The borrow checker proves the writes are disjoint.</p>
+<h2>What the Broker Owns</h2>
+<h3>Grace/Violence Reckoner</h3>
+<p>A discrete reckoner configured with <code>("Grace", "Violence")</code>. Given a composed thought (after noise stripping), it predicts which outcome is more likely. The conviction (cosine against the discriminant) feeds the internal curve, which reports accuracy via <code>edge-at</code>.</p>
+<p>This reckoner is the broker's self-assessment. "When I predict strongly, how often am I right?" The treasury reads this edge value to decide how much capital to allocate. More edge, more capital. No edge, no capital. The system earns a degree of trust, not a binary gate.</p>
+<h3>ScalarAccumulators</h3>
+<p>Per-distance global learners. One for trail-distance, one for stop-distance (and more as new distances are added). These accumulate encoded distance values from resolved trades and papers, separated into Grace and Violence prototypes.</p>
+<p>The <code>extract</code> operation sweeps candidate values against the Grace prototype and returns the one with highest cosine: "what distance value does Grace prefer for this pair overall?" This is the global cascade level — used when the exit observer's reckoners are still ignorant.</p>
+<p>The accumulator answers a different question than the exit observer's reckoners. The reckoners say "for THIS thought, what distance?" The accumulator says "for this pair, period, what distance?" Contextual vs global. Both useful. Both learn from the same resolution events.</p>
+<h3>Paper Trades</h3>
+<p>The broker owns a <code>VecDeque<PaperEntry></code> — hypothetical trades tracked every candle. Both buy-side and sell-side are tracked simultaneously. Papers resolve when their trailing stops fire. Each resolution produces facts that teach the system.</p>
+<p>Papers are the <strong>fast learning stream</strong>. Real trades are expensive (they consume capital, they're infrequent). Papers are cheap (no capital at risk, every candle). The system runs thousands of papers per broker across its lifetime, each one teaching the reckoners what worked and what didn't.</p>
+<p>Papers and active trades are treated equally by the learning system. Both use whatever the reckoner knows at the time. Both start ignorant (crutch values). Both feed Grace/Violence back to the broker. The only difference is whether real capital was at stake.</p>
+<h3>Track Record</h3>
+<p>The broker accumulates <code>cumulative-grace</code>, <code>cumulative-violence</code>, and <code>trade-count</code>. These are diagnostics — the binary reads them for progress display. The Grace/Violence ratio IS the answer to "do we trust this team?"</p>
+<h3>Noise Subspace and Engram Gate</h3>
+<p>Same mechanism as the market observer. An <code>OnlineSubspace</code> (8 principal components) for noise stripping, and an <code>OnlineSubspace</code> (4 components) for engram gating — learning what good discriminants look like and preventing drift.</p>
+<h2>Propagation: Values Up</h2>
+<p>When a trade or paper resolves, the broker's <code>propagate</code> method does two things:</p>
+<ol>
+<li><strong>Learns its own lesson</strong> — feeds its Grace/Violence reckoner's internal curve via <code>resolve(reckoner, conviction, correct?)</code>. Updates its track record. Feeds its scalar accumulators with the optimal distances and outcome. Updates the engram gate.</li>
+</ol>
+<ol>
+<li><strong>Returns what others need</strong> — produces <code>PropagationFacts</code> containing <code>market-idx</code>, <code>exit-idx</code>, <code>direction</code>, <code>composed-thought</code>, <code>optimal</code> distances, and <code>weight</code>. The post receives these values and applies them: direction + thought + weight → market observer via <code>resolve</code>, optimal + composed + weight → exit observer via <code>observe-distances</code>.</li>
+</ol>
+<p><strong>Values up, not effects down.</strong> The broker does NOT reach into the observers and mutate them. It returns data. The post applies the data. The observers learn from the data. This is the core architectural principle — no shared mutation during any phase.</p>
+<h2>The Proposal</h2>
+<p>When the broker receives a composed thought, it strips noise, predicts Grace/Violence, and computes its edge (accuracy at this conviction level). The post assembles a <code>Proposal</code> from the broker's output: composed thought, distances, edge, side (derived from the market observer's Up/Down prediction), assets, prediction, and identifiers.</p>
+<p>The proposal goes to the treasury. The treasury sorts all proposals by edge and funds the top N that fit. The broker's edge IS its credibility. No edge = no credibility = no capital.</p>
+<h2>The Binary and the Broker</h2>
+<p>The binary reads three things from each broker for progress display: - <code>(:observer-names broker)</code> — human-readable identity - <code>(:cumulative-grace broker)</code> and <code>(:cumulative-violence broker)</code> — the track record - <code>(edge broker)</code> — current credibility level</p>
+<p>These are diagnostics. The broker doesn't know it's being watched. It just learns and predicts.</p>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="grace-and-violence.html">grace-and-violence</a> — the accountability labels the broker is judged by</li>
+<li><a class="wikilink" href="reckoner.html">reckoner</a> — the learning primitive (Grace/Violence mode) inside the broker</li>
+<li><a class="wikilink" href="market-observer.html">market-observer</a> — one of the observer kinds a broker binds</li>
+<li><a class="wikilink" href="exit-observer.html">exit-observer</a> — the other observer kind a broker binds</li>
+<li><a class="wikilink" href="paper-trade.html">paper-trade</a> — the hypotheticals the broker owns and learns from</li>
+<li><a class="wikilink" href="signal-propagation.html">signal-propagation</a> — how the broker's PropagationFacts flow to observers</li>
+<li><a class="wikilink" href="conviction.html">Conviction-Accuracy Curve</a> — how the broker's edge is computed</li>
+<li><a class="wikilink" href="broker.html">ScalarAccumulator</a> — the global distance learners on the broker</li>
+<li><a class="wikilink" href="treasury.html">treasury</a> — the capital allocator that reads the broker's proposals</li>
+</ul>
+</main>
+</body>
+</html>

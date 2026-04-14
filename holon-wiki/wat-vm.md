@@ -1,112 +1,98 @@
-# Wat VM
+# wat-vm — The Disposable Machine
 
-> **TL;DR:** The s-expression specification language. Wat files ARE executable blueprints — the guide declares the architecture, the wat specifies it in Scheme-like syntax, and the Rust implements what the wat specifies. Delete the wat. Run the spells. It reappears.
+> **TL;DR:** The wat-vm is a message-passing concurrent runtime — not a bytecode interpreter. It wires programs together through typed queues, feeds them data, then tears everything down in explicit order. It's called "disposable" because the binary orchestrates lifecycle: wiring → execution → shutdown, then exits.
 
-## What It Is
+---
 
-The wat language is a Scheme-like s-expression format used to specify the enterprise's architecture. Each `.wat` file defines one component as data — structs, enums, constructors, and interfaces expressed as nested parenthesized forms.
+## Not a VM
 
-The wat is not pseudocode. It is a **formal specification** with:
-- Grammar rules (defined in `LANGUAGE.md`)
-- Host forms (Rust interop)
-- Core forms (struct, enum, newtype)
-- Type annotations
+The name is misleading on purpose. A traditional VM executes bytecode — instructions, opcodes, a program counter. The wat-vm does none of that. There is no instruction set. There is no bytecode format. There is no interpreter loop.
 
-## The Trinity
+What the wat-vm actually is: **a binary that wires programs together and feeds them messages.** Think of it as an FPGA, not a CPU. The topology is fixed at startup — every queue, topic, and mailbox is created in the wiring phase before any candle data flows. Once wired, data flows through the fixed graph. The binary's job is simple: connect the pipes, open the valve, close the valve, disconnect the pipes.
 
-```
-GUIDE.md  →  The DNA (declarations, semantics, dependencies)
-wat/      →  The protein (s-expression specifications)
-spells/   →  The ribosomes (ward scripts that regenerate wat from guide)
-src/      →  The organism (Rust implementation, compiled from wat)
-```
+## Three Phases
 
-The guide IS the program. The wat IS the protein. The spells ARE the ribosomes.
+### 1. Wiring
 
-**The Disposable Machine:** Delete the wat. Run the spells. The wat reappears. Proven three times:
-- Inscription 1: 38 files (pre-session, stale after guide changes)
-- Inscription 2: 39 files, 4847 lines
-- Inscription 3: 40 files, 3248 lines (five designer decisions applied)
+Before any computation happens, the binary creates every communication channel. This is the most complex part of `wat-vm.rs` because it's building an N×M grid.
 
-Each inscription is leaner. Each ward pass finds fewer findings. The fixed point approaches.
+The wiring creates, in order:
+- **Console and database** — shared infrastructure threads that every program needs
+- **Encoding cache** — the distributed LRU that all observers share
+- **Handle pools** — pre-allocated handles for cache, console, and DB, distributed to programs during wiring
+- **Learn queues** — N×M queues for each (market observer, position observer) pair, plus mailboxes to fan-in broker signals
+- **Trade queues** — broker → position observer trade state updates, via mailboxes
+- **Market observers** — each gets a candle input queue, a topic output (fan-out to M position observers), a learn mailbox (fan-in from M brokers)
+- **Position observers** — each gets N input queues (one per market observer), N output queues (one per broker slot), learn mailbox, trade mailbox
+- **Brokers** — each gets one input queue (the output from its position observer slot), learn senders back to both its market and position observer, a trade sender
 
-## Wat File Structure
+Every `wire_*` function follows the same pattern: take domain objects and handle pools, create queues, spawn threads, return `Wired*` structs containing join handles and any remaining senders. The `HandlePool::finish()` call at the end of each wire function is a panic — if any handle is left unclaimed, it means a program was silently dropped, which causes deadlocks at shutdown.
 
-40 files at third inscription, organized by construction order:
+### 2. Execution
 
-```
-wat/
-├── GUIDE.md       — the master blueprint
-├── CIRCUIT.md     — visualization of data flow
-├── ORDER.md       — construction order (leaves → root)
-├── raw-candle.wat
-├── indicator-bank.wat
-├── candle.wat
-├── ctx.wat
-├── enums.wat      — Side, Direction, Outcome, TradePhase
-├── thought-encoder.wat
-├── market-observer.wat
-├── exit-observer.wat
-├── broker.wat
-├── post.wat
-├── treasury.wat
-├── enterprise.wat
-├── bin/enterprise.wat  — the binary entry point
-├── vocab/              — vocabulary module specifications
-└── ...                 — window-sampler, scalar-accumulator, etc.
+The execution loop is trivial. For each candle stream:
+
+```rust
+while pipeline.count < max && !STOP.load(Ordering::SeqCst) {
+    match pipeline.stream.next() {
+        Some(ohlcv) => {
+            let candle = pipeline.bank.tick(&ohlcv);
+            for tx in &wired.candle_txs {
+                tx.send(ObsInput { candle, window, encode_count });
+            }
+        }
+        None => break,
+    }
+}
 ```
 
-The construction order IS the dependency graph. Leaves first, root last. Each file's dependencies are already defined before it appears.
+One loop. No orchestration. No coordination. The binary sends the candle to N market observers and forgets about it. The [[chain-types]] carry the data downstream through the pipeline. Each program is an independent thread doing its own work.
 
-## Example: A Wat Specification
+Signal handling is a single `AtomicBool`. SIGINT or SIGTERM sets it. The loop checks it every candle. No async. No cancellation tokens. One flag.
 
-```scheme
-(struct raw-candle
-  [source-asset : Asset]
-  [target-asset : Asset]
-  [ts : String]
-  [open : f64]
-  [high : f64]
-  [low : f64]
-  [close : f64]
-  [volume : f64])
-```
+### 3. Shutdown
 
-This is simultaneously:
-- **Data** — a description of the RawCandle struct
-- **Code** — a specification that the Rust compiler target will implement
-- **Documentation** — a readable declaration of what RawCandle contains
+Shutdown is where most concurrent systems get weird. The wat-vm handles it through **cascading disconnection** — no Drop impls, no Arc, no explicit teardown messages. The sequence is:
 
-## The Binary Entry Point
+1. **Drop candle senders** → market observers see `Disconnected` on their input queue → their `while let Ok(...)` loop exits → they drain remaining learn signals and return the trained `MarketObserver`
 
-`bin/enterprise.wat` wires the entire system:
+2. **Join market observer threads** → get trained observers back
 
-```scheme
-;; Wire market observers (one per MarketLens variant)
-(wire-market-observers ctx ...)  → WiredMarketObservers
+3. **Drop topic handles** → the fan-out threads exit → position observer input queues disconnect
 
-;; Wire exit observers (one per ExitLens variant)
-(wire-position-observers ctx ...)  → WiredPositionObservers
+4. **Join position observer threads** → get trained position observers back
 
-;; Wire brokers (N×M grid)
-(wire-brokers market-observers exit-observers ...)  → WiredBrokers
+5. **Broker output queues disconnect** (because position observers dropped their senders) → brokers see `Disconnected` → return the trained `Broker`
 
-;; Wire the post
-;; Wire the treasury
-;; Wire the enterprise
-```
+6. **Join broker threads** → get trained brokers back
 
-The `Pipeline` struct carries all the wired components. `main()` creates it and runs the candle loop.
+7. **Join cache driver** → must happen before DB driver because the cache's emit closure holds a DB sender
 
-## Homoiconicity in Practice
+8. **Join DB driver** → must happen after cache driver
 
-The wat files demonstrate the project's deepest principle: the identifier of the thing is the thing itself. A wat specification IS both the documentation and the implementation. There is no drift between what the guide declares and what the code does, because the wat sits between them — a formal, machine-verifiable bridge.
+9. **Join console driver** → last thing, after all handles are dropped
+
+The ordering matters. Cache before DB. DB before console. If you get it wrong, you deadlock — a driver waiting for a sender that will never be dropped because its owner is blocked joining something else.
+
+## Why No Drop Impls
+
+You'll notice `CacheDriverHandle` and `TopicHandle` have no `Drop` implementations. This is deliberate. Rust's drop order within a struct is unspecified (fields drop in declaration order, but struct drops themselves are not ordered relative to other drops in the same scope). If a Drop impl called `join()`, it could deadlock if the thread being joined was waiting on a channel whose sender was in the same scope.
+
+Instead, shutdown is **explicit**. You call `join()` in the right order. The cascade guarantees that by the time you call `join()` on a thread, all its inputs have been disconnected, so it exits immediately.
+
+## The "Disposable" Concept
+
+The whole system is designed to be thrown away and rebuilt. The `wat/GUIDE.md` is the source of truth — the DNA. The wat s-expression files specify every struct and interface. The Rust code implements what the spec declares. Delete the Rust, run the [[wards]], the wat regenerates it.
+
+This has been proven three times (inscriptions), each leaner than the last. The wat-vm binary itself is a product of this process — compiled from wat specifications, verified by defensive spells.
+
+---
 
 ## Related Concepts
 
-- [[The Disposable Machine]] — the delete-and-regenerate cycle
-- [[The Wards]] — the spells that verify wat quality
-- [[Thought Primitives]] — the operations specified in wat
-- [[Homoiconicity]] — the philosophical principle behind the wat approach
-- [[Values Up]] — the architectural principle encoded in wat
-- [[The Enterprise]] — what the wat specifies at the root
+- [[services]] — the Queue, Topic, and Mailbox primitives that the wat-vm wires together
+- [[programs]] — the independent functions that run on the wat-vm's threads
+- [[chain-types]] — the typed pipeline that data flows through
+- [[encoding-cache]] — the distributed LRU shared by all programs
+- [[disposable-machine]] — the broader philosophy of regenerable architecture
+- [[four-step-loop]] — the per-candle computation cycle within the enterprise

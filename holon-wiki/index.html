@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Index — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Holon Lab Trading — Semantic Idea Wiki</h1>
+<blockquote><p><strong>A self-organizing trading system built on algebraic thought primitives.</strong></p></blockquote>
+<blockquote><p>Everything is a Thought. Thoughts compose. Thoughts compete. Thoughts learn.</p></blockquote>
+<hr>
+<h2>What This Is</h2>
+<p>Holon Lab Trading is an attempt to answer a single question: <strong>what if observation, decision, and learning were all the same mathematical object?</strong></p>
+<p>Instead of separate systems for market analysis, trade execution, and performance feedback, Holon collapses all three into a unified algebra called the <a class="wikilink" href="thought-system.html">Thought System</a>. Market data is encoded as vectors called Thoughts. Predictions are Thoughts. Trade decisions are Thoughts. Even the accuracy of past predictions is itself a Thought — a self-referential <a class="wikilink" href="curve.html">Curve</a>.</p>
+<p>The system runs on a custom concurrent runtime called the <a class="wikilink" href="wat-vm.html">wat-vm</a>, where independent programs communicate exclusively through typed message queues. No shared mutable state. No dependency injection frameworks. Values flow up, not queues down.</p>
+<h2>Core Philosophy</h2>
+<h3>Thoughts All the Way Down</h3>
+<p>The founding insight is that <strong>named relational facts carry predictive signal where raw data does not.</strong> A candle's OHLC values are noise. But a Thought that says <em>"the volume ratio is rising and the close is above the 20-period SMA and the Wyckoff spring pattern is active"</em> — that composition, encoded as a high-dimensional vector, carries information about future direction.</p>
+<p>The <a class="wikilink" href="vocabulary.html">Vocabulary</a> is not a dictionary — it is the model. Different <a class="wikilink" href="lens.html">lenses</a> (momentum, structure, volume, regime, narrative, generalist) select different subsets of the vocabulary, creating different "minds" that think different thoughts about the same market data. The <a class="wikilink" href="conviction.html">Conviction-Accuracy Curve</a> then measures which minds are right, allocating capital accordingly.</p>
+<h3>Values Up, Not Queues Down</h3>
+<p>Every side effect in the system — cache misses, log entries, <a class="wikilink" href="signal-propagation.html">Propagation</a> facts — is returned as a value through function return types. No queue parameters. No shared mutation during parallel phases. The type checker enforces correctness; the <a class="wikilink" href="chain-types.html">Chain Types</a> prove data flow through the pipeline.</p>
+<h3>The Disposable Machine</h3>
+<p>The system is designed to be regenerated from scratch. The <code>wat/GUIDE.md</code> is the DNA — the master specification. The wat s-expression files are the mRNA. The eight <a class="wikilink" href="wards.html">Wards</a> are the ribosomes — defensive spells that verify the transcription. The Rust code is the protein — the functional organism. Delete the Rust. Run the spells. The wat regenerates it. This has been proven three times, each inscription leaner than the last.</p>
+<hr>
+<h2>Architecture Overview</h2>
+<pre><code>┌─────────────┐
+│   Market    │  Raw candle stream
+│   (BTC/USD) │
+└──────┬──────┘
+       │ candle
+       ▼
+┌─────────────┐
+│   Post      │  Per-asset-pair unit, owns all observers + brokers
+│             │
+│  ┌───────────────────────────────┐
+│  │     Four-Step Loop            │
+│  │  1. RESOLVE (settle trades)   │
+│  │  2. COMPUTE (encode + predict)│
+│  │  3. TICK (paper trade)        │
+│  │  4. COLLECT (fund winners)    │
+│  └───────────────────────────────┘
+│             │
+│  ┌─────────┐  ┌──────────┐  ┌───────────┐
+│  │ Market  │  │  Exit    │  │  Broker   │
+│  │Observer │→│ Observer │→│ (N×M grid)│
+│  │ (×N)    │  │  (×M)    │  │           │
+│  └─────────┘  └──────────┘  └─────┬─────┘
+│       ↑                              │
+│       └──── learn signals ───────────┘
+└──────┬──────┘
+       │ proposals
+       ▼
+┌─────────────┐
+│  Treasury   │  Capital management, proportional funding
+└─────────────┘
+</code></pre>
+<p>All of this runs on the <a class="wikilink" href="wat-vm.html">wat-vm</a> — a message-passing runtime where each box above is an independent program thread, communicating through <a class="wikilink" href="services.html">Services</a> (Queue, Topic, Mailbox).</p>
+<hr>
+<h2>Idea Map</h2>
+<h3>The Thought System (the algebra)</h3>
+<table>
+<tr><th>Concept</th><th>One-Liner</th></tr>
+<tr><td>[[thought-system</td><td>Thought System]]</td><td>The six primitives that make everything the same type</td></tr>
+<tr><td>[[atom</td><td>Atom]]</td><td>Names a concept — the atomic unit of meaning</td></tr>
+<tr><td>[[bind</td><td>Bind]]</td><td>Composes thoughts — vertical, sequential composition</td></tr>
+<tr><td>[[bundle</td><td>Bundle]]</td><td>Superposes thoughts — horizontal, parallel composition</td></tr>
+<tr><td>[[fact</td><td>Fact]]</td><td>A named observation — a thought bound to real data</td></tr>
+<tr><td>[[lens</td><td>Lens]]</td><td>A vocabulary filter — each lens is a different "mind"</td></tr>
+<tr><td>[[curve</td><td>Curve]]</td><td>Self-evaluating accuracy — thought that judges thoughts</td></tr>
+<tr><td>[[thought-encoding</td><td>Thought Encoding]]</td><td>How market data becomes high-dimensional vectors</td></tr>
+<tr><td>[[thought-space</td><td>Thought Space]]</td><td>The vector space where thoughts live and compete</td></tr>
+</table>
+<h3>Learning and Accountability</h3>
+<table>
+<tr><th>Concept</th><th>One-Liner</th></tr>
+<tr><td>[[reckoner</td><td>Reckoner]]</td><td>The learning primitive — learns discriminants from outcomes</td></tr>
+<tr><td>[[grace-and-violence</td><td>Grace and Violence]]</td><td>The two accountability labels — correct vs incorrect</td></tr>
+<tr><td>[[conviction</td><td>Conviction]]</td><td>Cosine similarity against the learned discriminant</td></tr>
+<tr><td>[[conviction</td><td>Conviction-Accuracy Curve]]</td><td>Maps prediction confidence to historical accuracy</td></tr>
+<tr><td>[[signal-propagation</td><td>Signal Propagation]]</td><td>How learn signals flow back through the system</td></tr>
+<tr><td>[[vocabulary</td><td>Vocabulary]]</td><td>The complete set of named concepts — the IS the model</td></tr>
+<tr><td>[[vocabulary-evolution</td><td>Vocabulary Evolution]]</td><td>How atoms are added, removed, and reorganized</td></tr>
+</table>
+<h3>The Runtime (the machine)</h3>
+<table>
+<tr><th>Concept</th><th>One-Liner</th></tr>
+<tr><td>[[wat-vm]]</td><td>The concurrent message-passing runtime</td></tr>
+<tr><td>[[services</td><td>Services]]</td><td>Queue, Topic, Mailbox — the three service primitives</td></tr>
+<tr><td>[[programs</td><td>Programs]]</td><td>Independent functions running on dedicated threads</td></tr>
+<tr><td>[[chain-types</td><td>Chain Types]]</td><td>The pipeline type system — the type IS the proof</td></tr>
+<tr><td>[[encoding-cache</td><td>Encoding Cache]]</td><td>Distributed LRU where callers encode, cache manages</td></tr>
+</table>
+<h3>The Enterprise (the organism)</h3>
+<table>
+<tr><th>Concept</th><th>One-Liner</th></tr>
+<tr><td>[[four-step-loop</td><td>Four-Step Loop]]</td><td>RESOLVE → COMPUTE → TICK → COLLECT per candle</td></tr>
+<tr><td>[[market-observer</td><td>Market Observer]]</td><td>Predicts direction (Up/Down) from encoded thoughts</td></tr>
+<tr><td>[[exit-observer</td><td>Exit Observer]]</td><td>Predicts distances (stop, take-profit, trailing)</td></tr>
+<tr><td>[[broker</td><td>Broker]]</td><td>The accountability unit — binds observer to capital</td></tr>
+<tr><td>[[four-step-loop</td><td>Post]]</td><td>Per-asset-pair coordination unit</td></tr>
+<tr><td>[[treasury</td><td>Treasury]]</td><td>Capital management with bounded loss</td></tr>
+<tr><td>[[paper-trade</td><td>Paper Trade]]</td><td>Hypothetical trades tracked before real commitment</td></tr>
+</table>
+<h3>The Process (the ribosomes)</h3>
+<table>
+<tr><th>Concept</th><th>One-Liner</th></tr>
+<tr><td>[[wards</td><td>Wards]]</td><td>Eight defensive spells that verify correctness</td></tr>
+<tr><td>[[disposable-machine</td><td>Disposable Machine]]</td><td>Delete the code, run the spells, it regenerates</td></tr>
+<tr><td>[[proposal-system</td><td>Proposal System]]</td><td>Evolutionary design through structured debate</td></tr>
+<tr><td>[[panel-of-experts</td><td>Panel of Experts]]</td><td>Hickey, Beckman, Wyckoff, Seykota, Van Tharp review proposals</td></tr>
+</table>
+<hr>
+<h2>Influences</h2>
+<p>The system draws from:</p>
+<ul>
+<li><strong>Vector Symbolic Architecture</strong> (Kanerva, Plate) — the idea that concepts can be represented as high-dimensional vectors and composed algebraically</li>
+<li><strong>The Actor Model</strong> (Hewitt, 1973) — independent programs communicating through messages, no shared state</li>
+<li><strong>FPGA Dataflow</strong> — the topology IS the computation, static wiring at startup</li>
+<li><strong>Plan 9</strong> — "everything is a queue" echoing "everything is a file"</li>
+<li><strong>Molecular Biology</strong> — DNA (guide) → mRNA (wat) → protein (Rust), with ribosomes (wards) that verify transcription</li>
+<li><strong>Trading Philosophy</strong> — Wyckoff (structure), Dow (trend), Seykota (risk), Van Tharp (psychology), Pring (momentum)</li>
+</ul>
+<hr>
+<h2>Data</h2>
+<ul>
+<li>652,608 five-minute BTC candles (Jan 2019–Mar 2025) in <code>data/analysis.db</code></li>
+<li>Standard benchmark: 100,000 candles</li>
+<li>Append-only run ledgers in <code>runs/</code></li>
+</ul>
+<hr>
+<p><em>Compiled from the Holon Lab Trading knowledge graph — 1,689 nodes, 3,613 edges, 20+ semantic communities.</em></p>
+</main>
+</body>
+</html>

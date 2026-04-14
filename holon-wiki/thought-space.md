@@ -1,53 +1,131 @@
-# Thought-Space
+# Thought Space
 
-*Thought-Space is the ~1000-dimensional vector space where all thoughts live — geometry IS semantics, and similarity IS meaning.*
+> **TL;DR:** Thought Space is the 10,000-dimensional bipolar vector space where all thoughts live. Cosine similarity is the distance metric — it measures alignment between directions. The [[reckoner]] learns a discriminant direction that separates [[grace-and-violence]], and conviction is simply the cosine of a thought against that direction.
 
-Every [[Atom]], [[Fact]], and composite thought is a vector in Thought-Space. This isn't a metaphor. There is a real vector space, with real dimensions, and the angles between vectors have real semantic meaning. Two thoughts with high cosine similarity are "about the same thing." Two thoughts with low similarity are unrelated. This is the foundation that everything else is built on.
+## The Geometry
 
-=== The Holographic Principle ===
+Every [[thought-system|Thought]] in holon-lab-trading is a point in ℝ^10000 — a 10,000-dimensional vector. These vectors live on the unit hypersphere (normalized after each operation). The space is the substrate. The algebra ([[atom]], [[bind]], [[bundle]]) operates within it. The geometry determines what works.
 
-In Thought-Space, information is distributed holographically across all dimensions. No single dimension encodes a single concept. Instead, every dimension contributes a little bit to the representation of every thought. This has three important consequences:
+10,000 dimensions is not arbitrary. It's the sweet spot: large enough for quasi-orthogonality (random vectors are nearly perpendicular), small enough to be cheap. 16k and 20k dimensions showed no improvement in experiments — signal is the bottleneck, not capacity.
 
-1. **Robustness to noise.** Randomly perturbing a few dimensions doesn't destroy the thought — the information is spread across all ~1000 of them. The system degrades gracefully.
-2. **Capacity.** You can pack an enormous number of distinct vectors into 1000 dimensions because each vector only needs a "direction" (the unit hypersphere in 1000D has astronomically many distinguishable directions). [[Atom]]s are approximately orthogonal by simple statistical guarantees.
-3. **Composition preserves structure.** When you [[Bind]] or [[Bundle]] thoughts, the resulting vector lives in the same space with the same properties. You can compose indefinitely — the algebra doesn't break.
+## Quasi-Orthogonality: The Foundation
 
-This is the Vector Symbolic Architecture (VSA) approach, specifically based on Holographic Reduced Representations (HRR). It's fundamentally different from the embedding spaces used by transformers. In a transformer, embeddings are learned from data. In Thought-Space, the geometry is defined by the algebra: random atoms, multiplicative binding, additive bundling.
+In high-dimensional spaces, a fundamental geometric property emerges: **random unit vectors have expected cosine similarity near zero, with very low variance.**
 
-=== Similarity as Semantics ===
+This means:
+- Each [[atom]] occupies its own direction, largely independent of every other atom.
+- [[bind|Bindings]] of different atoms produce distinct directions.
+- [[bundle|Bundles]] of different fact sets produce distinct directions.
+- The space has *room* — you can add thousands of atoms without them interfering.
 
-The core operating principle: `cosine(thought_a, thought_b)` measures how semantically related two thoughts are. This isn't learned — it's a consequence of the algebraic structure.
+Quasi-orthogonality is what makes the algebra work. If atoms weren't near-orthogonal, binding `"rsi"` and `"macd"` would produce similar vectors, and the discriminant couldn't distinguish them. The high dimensionality guarantees distinguishability.
 
-- `cosine(atom("momentum"), atom("momentum")) = 1.0` — identical
-- `cosine(atom("momentum"), atom("volume")) ≈ 0.0` — orthogonal (unrelated)
-- `cosine(fact("momentum-rising", 72, t), fact("momentum-rising", 71, t)) ≈ 0.95` — very similar (same concept, slightly different magnitude)
-- `cosine(discriminant, grace_thought) > 0` — the discriminant points toward successful predictions
+## Cosine Similarity: The Only Distance Metric
 
-The [[Reckoner]] exploits this directly. It computes a direction (the [[Discriminant]]) that points toward Grace and away from Violence. New thoughts are projected onto this direction via cosine similarity, producing [[Conviction]]. The entire learning mechanism is just geometry: find the direction of success, measure how close you are to it.
+The system uses exactly one distance metric: cosine similarity.
 
-=== Why This Beats Visual Encoding ===
+```
+cosine(A, B) = (A · B) / (|A| × |B|)
+```
 
-The core finding of holon-lab-trading: **named relational facts carry predictive signal; raw pixel grids (visual encoding) do not.**
+Range: [-1, 1]. +1 = identical direction. 0 = orthogonal. -1 = opposite direction.
 
-You could represent market data as a grid of numbers (OHLCV across time windows) and flatten it into a vector. This is the "visual encoding" approach — treat candles like pixels, like a CNN treats images. It doesn't work for this system.
+Cosine is the natural metric for this space because:
+- Vectors are normalized (unit length), so cosine = dot product. O(D) computation.
+- It measures *alignment of direction*, not magnitude. A strong signal and a weak signal pointing the same way have the same cosine.
+- It composes: cosine against a discriminant is all you need to evaluate a thought.
 
-Why? Because the grid representation has no *compositional structure*. You can't ask "what regime was this candle in?" by unbinding a component. You can't isolate "momentum contribution" from a composite. The grid is a flat array of numbers — the relationships between cells are implicit, not algebraic.
+No Euclidean distance. No Manhattan distance. No angular distance. One metric. One cosine.
 
-Thought-Space is different. The relationships are *explicit and manipulable*. You bind atoms to create relations. You bundle facts to create collections. You unbind to decompose. The algebra gives you operations that the grid doesn't. And the Reckoner needs those operations to separate Grace from Violence in a structured, interpretable way.
+## The Discriminant Direction
 
-=== The Space is the Stage ===
+The [[reckoner]] learns a **discriminant** — the direction in thought-space that best separates two outcomes. For a market observer, the discriminant separates Up from Down. For a broker, it separates [[grace-and-violence]] from each other.
 
-Everything happens in Thought-Space:
+"Which direction in 10,000 dimensions best separates correct predictions from incorrect ones?" The discriminant IS that direction. It's a single unit vector — one point on the hypersphere — learned from accumulated experience.
 
-- [[Atom]]s are points (random directions)
-- [[Fact]]s are bound compositions of points
-- [[Discriminant]]s are learned directions
-- [[Conviction]] is the projection of a thought onto a discriminant
-- [[Grace and Violence]] accumulate as cloud centroids
-- The [[Reckoner]] draws a line between them
+The discriminant is computed by accumulating evidence vectors from observations. Up outcomes accumulate one way. Down outcomes accumulate another. The discriminant is the normalized difference between the two accumulators (after exponential decay). It's recalibrated periodically.
 
-The space doesn't change. The vectors in it change. The vocabulary defines the starting points. The learning moves the discriminant. The curve measures how well the geometry maps to reality.
+## Conviction: Cosine Against the Discriminant
+
+```
+conviction = cosine(thought, discriminant)
+```
+
+Conviction is how aligned the thought is with the direction that predicts the positive outcome. High conviction = many facts in the thought voting in the same direction. Low conviction = ambiguous.
+
+Conviction is not a probability. It's a geometric measurement. But it behaves like one in a useful way: high conviction means the thought strongly resembles past thoughts that predicted well. Low conviction means the thought doesn't clearly resemble either outcome class.
+
+The discriminant decode reveals which thoughts drive predictions. If `bind(diverging, bind(close_up, rsi_down))` has cosine 0.15 against the discriminant but `rsi_down` alone has cosine 0.12, the composition adds only 0.03 of signal beyond its subcomponent. The system discovers this by encoding all compositions and letting the discriminant evaluate them.
+
+## Signal vs Noise in the Geometry
+
+The foundational experiment compared two encodings of the same data:
+
+**Visual encoding:** 25×48 raster grid of colored cells, faithfully representing the price chart. Every pixel, every wick, every indicator line. Win-Win cosine: 0.4031. Win-Loss cosine: 0.4026. Gap: 0.0004. **No signal.**
+
+**Thought encoding:** 120+ named relational facts about the same chart. RSI divergence, volume ratio, Bollinger position — all as compositional vectors. Separation (d'): 0.734. **Real signal.**
+
+Same data. Same dimensionality. One encoding carries information about future direction. The other doesn't. The difference is the encoding:
+
+- Pixels encode *appearance* — what the chart looks like.
+- Thoughts encode *interpretation* — what the chart means.
+
+The geometry doesn't care about appearance. It cares about structure. Named relationships create structure. Raw pixels don't.
+
+## The Thought Manifold
+
+The set of all possible thoughts forms a manifold in ℝ^10000 — a lower-dimensional surface embedded in the high-dimensional space. The manifold's structure reflects the market's structure:
+
+- Nearby thoughts on the manifold represent similar market states.
+- Distant thoughts represent fundamentally different conditions.
+- The manifold's topology encodes which market transitions are common (smooth paths) and which are rare (large jumps).
+
+The regime-invariance finding supports this: the thought manifold's eigenvalue structure is stable across market regimes (53% explained ratio, stable eigenvalues). The manifold shape doesn't change between bull and bear markets. Only the discriminant direction shifts — what predicts *grace* changes, but the space of possible thoughts doesn't.
+
+## Noise Subspace
+
+The [[market-observer|OnlineSubspace]] (CCIPCA) learns what "normal" looks like in thought-space. It accumulates a background model — the principal components of all thoughts seen so far.
+
+The anomalous component — the part of a new thought that the subspace *cannot* explain — is what's unusual. The residual measures how strange this thought is. High residual = anomalous market state. Low residual = boring, normal market.
+
+Market observers strip noise before predicting. They project the thought through the noise subspace, keep the residual, and feed the residual to the reckoner. The reckoner learns from what's unusual, not what's normal.
+
+## OnlineSubspace and Anomaly Detection
+
+The subspace learns continuously. Each new thought updates the principal components (the first k eigenvectors). Old experience decays. The subspace adapts to regime changes — what's "normal" in a trending market differs from what's normal in a choppy one.
+
+The residual is used in two contexts:
+1. **Market observers** strip noise before predicting (above).
+2. **Risk management** uses a separate subspace to detect anomalous portfolio states — the "shield cognition" mechanism from the system's AWS origins.
+
+## The Space Is Domain-Independent
+
+The 10,000-dimensional space doesn't know it's being used for trading. It's just geometry. The same space, the same cosine, the same discriminant mechanism can be pointed at any domain:
+
+- Trading: atoms named after technical indicators
+- Network security: atoms named after packet fields
+- Medical imaging: atoms named after diagnostic features
+
+The algebra doesn't care what thoughts you think. It cares how they compose. The vocabulary is domain-specific. The geometry is universal.
+
+## Dimensionality: Why 10,000?
+
+10,000 was chosen empirically. The experiments tested multiple dimensionalities:
+
+- Lower dimensions (1000, 5000): quasi-orthogonality degrades. Atoms interfere.
+- 10,000: sweet spot. Full quasi-orthogonality. Cheap computation.
+- Higher dimensions (16k, 20k): no improvement. Signal is the bottleneck.
+
+The vector capacity is not the constraint. The vocabulary is. 84 atoms fit easily in 10,000 dimensions with room for thousands more. The hyperspace is not full. The bottleneck is *which thoughts to think*, not *where to put them*.
 
 ## Related Concepts
 
-[[Thought Primitives]] · [[Atom]] · [[Bind and Bundle]] · [[Fact]] · [[Thought Encoder]] · [[Reckoner]] · [[Discriminant]] · [[Conviction]] · [[Grace and Violence]]
+- [[thought-system]] — the algebra that operates in this space
+- [[atom]] — points in this space
+- [[bind]] — creates new directions in this space
+- [[bundle]] — superposes directions in this space
+- [[thought-encoding]] — maps data into this space
+- [[reckoner]] — learns discriminant directions
+- [[conviction]] — cosine against the discriminant
+- [[grace-and-violence]] — the outcomes the discriminant separates
+- [[market-observer|OnlineSubspace]] — learns the background manifold

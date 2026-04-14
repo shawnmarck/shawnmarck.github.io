@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html" class="active">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Services — Queue, Topic, Mailbox</h1>
+<blockquote><p><strong>TL;DR:</strong> Three primitives, built on crossbeam channels. Queue is point-to-point (1→1), Topic is fan-out (1→N), Mailbox is fan-in (N→1). Programs only ever see Queues — Topics and Mailboxes are plumbing created by the binary. Shutdown cascades through disconnection propagation.</p></blockquote>
+<hr>
+<h2>The Queue — The Only Atom</h2>
+<p>The Queue is the fundamental unit. Everything else is built from it.</p>
+<pre><code>pub struct QueueSender<T>(Sender<T>);
+pub struct QueueReceiver<T>(Receiver<T>);
+</code></pre>
+<p>A thin wrapper around <code>crossbeam::channel</code>. The wrapper exists for one reason: <strong>to own the type names.</strong> Crossbeam gives you <code>Sender</code> and <code>Receiver</code>. The wat-vm gives you <code>QueueSender</code> and <code>QueueReceiver</code>. This isn't pedantry — when you read a type signature like <code>fn market_observer_program(candle_rx: QueueReceiver<ObsInput>, ...)</code>, you know exactly what you're looking at. No ambiguity. No generics leaking.</p>
+<p>Two flavors:</p>
+<ul>
+<li><strong><code>queue_bounded(capacity)</code></strong> — backpressure. Sender blocks when the queue is full. Used for the hot path: candle input, topic output, chain forwarding. Capacity is almost always 1 — the tightest possible coupling between producer and consumer.</li>
+</ul>
+<ul>
+<li><strong><code>queue_unbounded()</code></strong> — no backpressure. Used for learn signals, DB writes, cache sets — fire-and-forget paths where you never want the producer to stall.</li>
+</ul>
+<p>Error types are minimal: <code>SendError<T)</code> when the receiver is dropped, <code>RecvError::Disconnected</code> when the sender is dropped and the queue is empty. No timeout variants. No try variants on the public API (try_recv exists but is <code>pub(crate)</code> for internal use by the cache driver and mailbox).</p>
+<p>The <code>inner()</code> method exposes the raw crossbeam receiver — used by <code>crossbeam::Select</code> in the mailbox and cache driver. It's <code>pub(crate)</code>, so programs can't touch it. They see only <code>recv()</code> and <code>try_recv()</code>.</p>
+<h2>The Topic — Fan-Out (1→N)</h2>
+<p>One producer, N consumers. The topic is a proxy — it writes to N queues that already exist.</p>
+<pre><code>Producer → [input queue] → Fan-out thread → [queue 0, queue 1, ..., queue N-1]
+</code></pre>
+<p>The key insight: <strong>programs never see a Topic.</strong> The binary creates the output queues, gives the receivers to the downstream programs, and gives the senders to the topic. From the producer's perspective, it's sending to a <code>TopicSender</code> — same interface as a <code>QueueSender</code>. From the consumer's perspective, it's receiving from a <code>QueueReceiver</code>. The topic is invisible plumbing.</p>
+<pre><code>pub fn topic<T: Send + Clone + 'static>(
+    capacity: usize,
+    outputs: Vec<QueueSender<T>>,
+) -> (TopicSender<T>, TopicHandle)
+</code></pre>
+<p>The fan-out thread is simple:</p>
+<pre><code>while let Ok(msg) = in_rx.recv() {
+    for tx in &outputs {
+        let _ = tx.send(msg.clone());
+    }
+}
+</code></pre>
+<p>One important detail: the bounded send means <strong>one slow subscriber stalls all others.</strong> This is intentional. If a position observer is slow, the market observer blocks on its topic send, which means it doesn't consume the next candle, which means the indicator bank doesn't advance. The backpressure propagates upstream naturally. No explicit flow control needed.</p>
+<p>The <code>TopicHandle</code> holds a <code>JoinHandle</code>. The thread exits when the producer drops its <code>TopicSender</code> (the input queue disconnects). When the fan-out thread exits, its output senders drop, which causes all downstream queues to eventually see <code>Disconnected</code>. Cascade.</p>
+<h2>The Mailbox — Fan-In (N→1)</h2>
+<p>N producers, one consumer. The mailbox is the inverse of the topic — it reads from N queues that already exist.</p>
+<pre><code>[queue 0, queue 1, ..., queue N-1] → Fan-in thread → [output queue] → Consumer
+</code></pre>
+<p>Again, programs never see a Mailbox directly. The binary creates the input queues, gives the senders to the upstream programs, and gives the receivers to the mailbox. The consumer sees a <code>MailboxReceiver</code> — same interface as a <code>QueueReceiver</code>.</p>
+<p>The fan-in thread uses <code>crossbeam::Select</code>:</p>
+<pre><code>loop {
+    if alive.is_empty() { break; }
+    let mut sel = crossbeam::channel::Select::new();
+    for rx in &alive {
+        sel.recv(rx.inner());
+    }
+    let oper = sel.select();
+    let idx = oper.index();
+    match oper.recv(alive[idx].inner()) {
+        Ok(msg) => { out_tx.send(msg); }
+        Err(_) => { alive.remove(idx); }
+    }
+}
+</code></pre>
+<p>This is fair — <code>crossbeam::Select</code> wakes in arrival order, not priority order. No starvation.</p>
+<p>The <code>alive</code> vector shrinks as producers disconnect. Partial disconnection works fine — if 3 of 5 brokers drop, the mailbox keeps reading from the remaining 2. Only when the last sender drops does the mailbox thread exit, dropping the output sender, and the consumer sees <code>Disconnected</code>.</p>
+<h2>How They Compose</h2>
+<p>The N×M grid is built by composing these three primitives:</p>
+<pre><code>Market Observer (×N)
+    ├── input: Queue<ObsInput>         [from binary]
+    ├── output: Topic<MarketChain>     [fan-out to M position observers]
+    └── learn: Mailbox<ObsLearn>       [fan-in from M brokers]
+
+Position Observer (×M)
+    ├── input: Queue<MarketChain>      [from topic, per-market-observer]
+    ├── output: Queue<MarketPositionChain> [to broker]
+    ├── learn: Mailbox<PositionLearn>  [fan-in from N brokers]
+    └── trade: Mailbox<TradeUpdate>    [fan-in from N brokers]
+
+Broker (×N×M)
+    ├── input: Queue<MarketPositionChain>  [from position observer]
+    ├── market_learn: Queue<ObsLearn>      [to specific market observer]
+    ├── position_learn: Queue<PositionLearn> [to specific position observer]
+    └── trade: Queue<TradeUpdate>         [to specific position observer]
+</code></pre>
+<p>Each broker has a direct <code>QueueSender</code> to its specific market observer and position observer. The observer side uses a mailbox to fan-in from all M (or N) brokers. The binary creates the individual queues, wires them into mailboxes, and distributes the senders.</p>
+<h2>Backpressure Strategy</h2>
+<p>The system uses bounded queues (capacity 1) on the hot path and unbounded queues on the fire-and-forget paths:</p>
+<ul>
+<li><strong>Hot path</strong> (candle → observer → position observer → broker): bounded(1). Tight coupling. The producer blocks until the consumer is ready. This prevents unbounded memory growth and creates natural flow control.</li>
+</ul>
+<ul>
+<li><strong>Learn path</strong> (broker → observer): unbounded. Fire and forget. The broker should never stall because an observer is slow to learn. The learn signal is advisory, not critical-path.</li>
+</ul>
+<ul>
+<li><strong>Infrastructure path</strong> (program → DB, program → cache, program → console): unbounded. A program should never block on logging or telemetry.</li>
+</ul>
+<p>This mixed strategy means the pipeline throughput is determined by the slowest program on the hot path, while learn signals and telemetry accumulate without slowing computation.</p>
+<h2>Disconnection as Signal</h2>
+<p>There are no explicit shutdown messages. No <code>PoisonPill</code> enum variants. No "please stop" channels. Shutdown is structural: when you drop a sender, the receiver eventually sees <code>Disconnected</code>. Every <code>while let Ok(msg) = rx.recv()</code> loop exits naturally. The type system guarantees it — <code>RecvError</code> has no "timeout" variant, only <code>Disconnected</code>.</p>
+<p>This makes shutdown compositional. Drop the candle senders → observers exit → topics drain → position observers exit → brokers exit. Each stage triggers the next. No coordination needed.</p>
+<hr>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="wat-vm.html">wat-vm</a> — the binary that wires all services together</li>
+<li><a class="wikilink" href="programs.html">programs</a> — the functions that consume QueueReceivers and produce values</li>
+<li><a class="wikilink" href="encoding-cache.html">encoding-cache</a> — uses Queue + Mailbox internally for its get/set protocol</li>
+<li><a class="wikilink" href="chain-types.html">chain-types</a> — the data types that flow through the queues</li>
+</ul>
+</main>
+</body>
+</html>

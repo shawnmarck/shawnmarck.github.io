@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exit Observer — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html" class="active">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Exit Observer</h1>
+<p><strong>TL;DR:</strong> An exit observer estimates how far to set your stops — trailing stop distance, safety stop distance, take-profit level, and runner trailing stop. It doesn't predict direction; it predicts <em>magnitude</em>. Each exit observer has four continuous reckoners that learn context-dependent distance values from resolved trades. M observers per post, one per <a class="wikilink" href="lens.html">ExitLens</a> variant.</p>
+<hr>
+<h2>What It Does</h2>
+<p>The market observer answers "which way?" The exit observer answers "how far?" These are fundamentally different questions. Direction is binary (Up/Down). Distance is continuous — a scalar percentage of price. The exit observer's job is to predict, for a given market context, what trailing stop distance and safety stop distance would have produced <a class="wikilink" href="grace-and-violence.html">Grace</a>.</p>
+<p>This matters enormously. A 1.5% trailing stop in a trending market captures enormous residue. The same 1.5% in a choppy market gets stopped out constantly. The exit observer learns that different market contexts demand different distances, and it provides those distances as inputs to the trading decision.</p>
+<h2>The Exit Lens</h2>
+<p>Four variants, each with a different judgment vocabulary:</p>
+<ul>
+<li><strong><code>:volatility</code></strong> — ATR regime, ATR ratio, ATR rate of change, squeeze state, Bollinger width. Thinks about how much the market is moving.</li>
+<li><strong><code>:structure</code></strong> — Trend consistency at multiple windows, ADX strength, KAMA efficiency ratio. Thinks about whether a trend exists.</li>
+<li><strong><code>:timing</code></strong> — RSI, stochastic K, stochastic K-D spread, MACD histogram, CCI. Thinks about momentum state and reversal signals.</li>
+<li><strong><code>:generalist</code></strong> — All three above. No special treatment, just another lens.</li>
+</ul>
+<p>Every lens also has access to the <code>shared/time.wat</code> temporal facts (minute, hour, day-of-week, etc.).</p>
+<p>Each lens maps to a <code>exit/*.wat</code> module that produces judgment fact ASTs. The observer doesn't encode them itself — it produces data (ThoughtASTs), and the composition site evaluates them using <code>ctx</code>'s ThoughtEncoder.</p>
+<h2>Composition: Market Thought + Exit Facts</h2>
+<p>The exit observer's unique design feature is <strong>thought composition</strong>. It doesn't think in isolation. It takes the market observer's thought vector and superposes its own exit-specific facts on top.</p>
+<p>Why? Because optimal exit distances depend on BOTH the market context AND the exit conditions. A strong uptrend with low volatility says "wide trail, tight stop." A weak trend with high volatility says "tight trail, wide stop." The market observer captures the trend signal. The exit observer captures the volatility/structure/timing signal. The composed vector carries both.</p>
+<p>The composition flow:</p>
+<pre><code>market observer → market thought vector
+exit observer   → encodes exit fact ASTs via ThoughtEncoder
+               → bundles exit fact vectors with market thought
+               → composed vector carries both signals
+</code></pre>
+<p>The composed vector is what the reckoners learn from and predict against. This is what makes the distance predictions <strong>contextual</strong> — they respond to the full picture, not just the exit conditions.</p>
+<h2>Four Continuous Reckoners</h2>
+<p>Each exit observer has four reckoners, one per distance type:</p>
+<ol>
+<li><strong>Trail reckoner</strong> — predicts optimal trailing stop distance (percentage of price)</li>
+<li><strong>Stop reckoner</strong> — predicts optimal safety stop distance</li>
+<li><strong>Take-profit reckoner</strong> — predicts optimal take-profit distance</li>
+<li><strong>Runner trail reckoner</strong> — predicts optimal trailing stop distance during the runner phase</li>
+</ol>
+<p>Each is a <code>Reckoner</code> with <code>Continuous</code> readout mode. Instead of classifying into labels, it accumulates <code>(thought, distance, weight)</code> observations and returns a cosine-weighted distance for a given query thought.</p>
+<p>Observation: "When the thought looked like THIS, the optimal trailing stop was 2.3% of price, weighted by the magnitude of the outcome."</p>
+<p>Query: "For a thought like THIS one, what trailing stop distance does experience suggest?"</p>
+<p>The answer is different for every thought. The discriminant direction separates "thoughts that needed wide stops" from "thoughts that needed tight stops." Cosine against that direction maps the query thought to a position on that spectrum.</p>
+<h2>The Distance Cascade</h2>
+<p>When asked for recommended distances, the exit observer doesn't blindly trust its reckoners. It cascades through three levels of confidence:</p>
+<pre><code>1. Reckoner experienced?
+   → YES: use predict(reckoner, composed) → contextual distance
+   → NO:  fall through
+
+2. Broker's ScalarAccumulator has data?
+   → YES: use extract-scalar(accum) → global per-pair distance
+   → NO:  fall through
+
+3. Default (crutch)
+   → return configured default value (e.g., 1.5% trail, 3.0% stop)
+</code></pre>
+<p>Each distance cascades independently. The trail reckoner might be experienced while the stop reckoner is still falling through to the accumulator. This is honest — the system uses the best available information for each parameter without pretending it knows what it doesn't.</p>
+<h3>Contextual vs Global</h3>
+<p>The reckoners answer: "for THIS thought, what distance?" Different thoughts get different answers. A trending, low-volatility thought gets wide trails. A choppy, high-volatility thought gets tight trails.</p>
+<p>The ScalarAccumulators answer: "what distance does Grace prefer for this pair overall?" One answer regardless of thought. It's a global statistical tendency — useful when the reckoners are still ignorant, but crude once contextual learning kicks in.</p>
+<p>Both learn from the same resolution events. Different questions, different answers. The cascade naturally transitions from global statistics to contextual intelligence as experience accumulates.</p>
+<h2>Simpler Than Market Observer</h2>
+<p>The exit observer intentionally omits several features that the market observer has:</p>
+<ul>
+<li><strong>No noise subspace.</strong> The composed thought already carries market signal. Adding another noise filter would strip context the reckoners need.</li>
+<li><strong>No internal curve.</strong> The exit observer's quality is measured through the <strong>broker's</strong> Grace/Violence curve, not its own. The broker's ratio reflects the combined quality of its market + exit observers. The exit observer is proven through the team it belongs to.</li>
+<li><strong>No engram gating.</strong> Same reasoning — the broker gates the team.</li>
+</ul>
+<p>This simplicity is a design choice, not a limitation. The exit observer is a specialist. Its reckoners do one thing well: map thoughts to distances. The accountability for whether those distances produce profitable trades belongs to the broker.</p>
+<h2>Learning From Resolution</h2>
+<p>When a trade or paper resolves, the broker calls <code>observe-distances(exit-obs, composed, optimal, weight)</code>. The <code>optimal</code> distances come from hindsight — computed by replaying the price history against candidate values and finding the distance that maximized residue.</p>
+<p>Both reckoners learn from the same resolution. The composed thought (market + exit facts) is the key — the reckoners learn that <em>this specific pattern of market conditions and exit conditions</em> was associated with <em>this specific optimal distance</em>. Over time, they build a map from thought-space to distance-space.</p>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="market-observer.html">market-observer</a> — produces the market thoughts that exit observers compose with</li>
+<li><a class="wikilink" href="broker.html">broker</a> — owns the ScalarAccumulators that provide the global cascade level</li>
+<li><a class="wikilink" href="reckoner.html">reckoner</a> — the continuous learning primitive inside each exit observer</li>
+<li><a class="wikilink" href="exit-observer.html">Distances</a> — the named tuple (trail, stop) that exit observers produce</li>
+<li><a class="wikilink" href="broker.html">ScalarAccumulator</a> — the global per-pair distance learner on the broker</li>
+<li><a class="wikilink" href="paper-trade.html">paper-trade</a> — the hypotheticals that feed fast distance learning</li>
+<li><a class="wikilink" href="grace-and-violence.html">grace-and-violence</a> — the labels that weight distance observations</li>
+<li><a class="wikilink" href="vocabulary.html">vocabulary</a> — the exit-specific atoms each lens draws from</li>
+</ul>
+</main>
+</body>
+</html>

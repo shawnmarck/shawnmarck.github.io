@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulary Evolution — Holon Lab Wiki</title>
+<style>
+:root {
+  --bg: #0A0A0A;
+  --bg-card: #141414;
+  --bg-sidebar: #111111;
+  --text: #E0E0E0;
+  --text-dim: #888888;
+  --accent: #00F5FF;
+  --accent2: #FF00FF;
+  --accent3: #39FF14;
+  --border: #222222;
+  --link: #00F5FF;
+  --link-hover: #FF00FF;
+  --code-bg: #1A1A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  overflow-y: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  font-size: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 24px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar h2:first-child { margin-top: 0; }
+
+.sidebar a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 13px;
+  border-radius: 4px;
+  transition: all 0.15s;
+  margin: 2px 0;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  color: var(--text);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.sidebar a.active {
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  margin-left: 280px;
+  padding: 48px 64px;
+  max-width: 900px;
+}
+
+.main h1 {
+  font-size: 36px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.main h1 + p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+
+.main h2 {
+  font-size: 22px;
+  color: var(--text);
+  margin: 36px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.main h3 {
+  font-size: 17px;
+  color: var(--accent2);
+  margin: 24px 0 8px 0;
+}
+
+.main p {
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.main ul, .main ol {
+  margin: 12px 0 12px 24px;
+  font-size: 15px;
+}
+
+.main li {
+  margin: 4px 0;
+}
+
+.main a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+
+.main a:hover {
+  color: var(--link-hover);
+  border-bottom-color: var(--link-hover);
+}
+
+/* Wikilink styling */
+.main a.wikilink {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.main a.wikilink:hover {
+  opacity: 1;
+}
+
+/* Code */
+.main code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--accent3);
+}
+
+.main pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+}
+
+.main pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Blockquote (TL;DR) */
+.main blockquote {
+  border-left: 3px solid var(--accent);
+  background: rgba(0, 245, 255, 0.04);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.main blockquote p:first-child::before {
+  content: "TL;DR ";
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Tables */
+.main table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.main th {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--accent);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.main td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.main tr:hover td {
+  background: rgba(0, 245, 255, 0.02);
+}
+
+/* HR */
+.main hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* Related concepts */
+.related {
+  margin-top: 48px;
+  padding: 20px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.related h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.related .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.related .tag {
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.related .tag:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: 24px; }
+}
+
+/* ASCII diagram */
+.main pre.ascii-diagram {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.3;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+<a href="index.html" style="display:block;margin-bottom:24px;">
+<div style="font-size:16px;color:var(--accent);font-weight:700;">Holon Lab</div>
+<div style="font-size:11px;color:var(--text-dim);">Semantic Wiki</div>
+</a>
+<h2>The Thought System</h2>
+<a href="thought-system.html">Thought System</a>
+<a href="atom.html">Atom</a>
+<a href="bind.html">Bind</a>
+<a href="bundle.html">Bundle</a>
+<a href="fact.html">Fact</a>
+<a href="lens.html">Lens</a>
+<a href="curve.html">Curve</a>
+<h2>Learning & Accountability</h2>
+<a href="grace-and-violence.html">Grace And Violence</a>
+<a href="reckoner.html">Reckoner</a>
+<a href="conviction.html">Conviction</a>
+<a href="signal-propagation.html">Signal Propagation</a>
+<a href="vocabulary.html">Vocabulary</a>
+<a href="vocabulary-evolution.html" class="active">Vocabulary Evolution</a>
+<h2>The Runtime</h2>
+<a href="wat-vm.html">Wat Vm</a>
+<a href="services.html">Services</a>
+<a href="programs.html">Programs</a>
+<a href="chain-types.html">Chain Types</a>
+<a href="encoding-cache.html">Encoding Cache</a>
+<h2>The Enterprise</h2>
+<a href="four-step-loop.html">Four Step Loop</a>
+<a href="market-observer.html">Market Observer</a>
+<a href="exit-observer.html">Exit Observer</a>
+<a href="broker.html">Broker</a>
+<a href="treasury.html">Treasury</a>
+<a href="paper-trade.html">Paper Trade</a>
+<h2>The Process</h2>
+<a href="wards.html">Wards</a>
+<a href="disposable-machine.html">Disposable Machine</a>
+<a href="proposal-system.html">Proposal System</a>
+<a href="panel-of-experts.html">Panel Of Experts</a>
+<h2>Foundations</h2>
+<a href="thought-encoding.html">Thought Encoding</a>
+<a href="thought-space.html">Thought Space</a>
+</nav>
+<main class="main">
+<h1>Vocabulary Evolution</h1>
+<blockquote><p><strong>TL;DR:</strong> The system's accuracy is bounded by its vocabulary. Starting from 84 atoms, structured proposals have expanded the set to 107 atoms — lifting directional accuracy from 59.7% to 62.1%. Every new atom is proposed, reviewed by the <a class="wikilink" href="panel-of-experts.html">panel-of-experts</a>, and validated by the <a class="wikilink" href="conviction.html">Conviction-Accuracy Curve</a>. The vocabulary IS the model. Growing it means growing what the system can perceive.</p></blockquote>
+<hr>
+<h2>Why Vocabulary Matters</h2>
+<p>In most ML systems, the model is a neural network with weights. The vocabulary is a list of tokens. They're separate things — the model <em>uses</em> the vocabulary.</p>
+<p>In holon-lab-trading, the vocabulary <strong>IS</strong> the model. There are no weights separate from the vocabulary. Each atom is a 10,000-dimensional vector allocated deterministically by the VectorManager. The discriminant — the learned direction that separates outcomes — is built entirely from compositions of these atom vectors.</p>
+<p>The vocabulary is the system's sensory apparatus. It defines what the system can perceive. If there's no atom for "Ichimoku cloud thickness," the system cannot think about Ichimoku cloud thickness. It's blind to it. Adding the atom opens a new dimension of perception.</p>
+<p>This is the deepest insight: the system's capacity is bounded by its vocabulary. 107 atoms in 10,000 dimensions. The hyperspace has room for thousands. The question isn't whether to fill it. It's what thoughts to fill it with.</p>
+<h2>From 84 to 107</h2>
+<p>The vocabulary started at 84 atoms covering RSI, MACD, ADX, and basic price structure. The initial system achieved 59.7% directional accuracy across 652,000 BTC candles — real signal, but vocabulary-limited. At 90,000 candles, the system was declining: 58.4% and falling. The original atoms were losing relevance as market structure shifted.</p>
+<p>Proposal-driven expansion added 23 atoms across six new modules:</p>
+<table>
+<tr><th>School</th><th>Atoms Added</th><th>What They Perceive</th></tr>
+<tr><td>Ichimoku</td><td>7</td><td>Cloud position, thickness, tenkan/kijun distances, cross deltas</td></tr>
+<tr><td>Stochastic</td><td>4</td><td>%K, %D, spread, crossover</td></tr>
+<tr><td>Fibonacci</td><td>8</td><td>Price position relative to 23.6%, 38.2%, 50%, 61.8%, 78.6% levels</td></tr>
+<tr><td>Keltner/Bollinger</td><td>6</td><td>Channel position, width, squeeze detection, distance from bands</td></tr>
+<tr><td>CCI + flow</td><td>4</td><td>Commodity channel index, buying/selling pressure, body ratio</td></tr>
+<tr><td>Price action</td><td>6</td><td>Range ratio, gap, consecutive bars, wicks</td></tr>
+</table>
+<p>The result: <strong>62.1% directional accuracy</strong>. A 2.4 percentage point improvement. More importantly, the new vocabulary changed the trajectory. At 90,000 candles, 107 atoms was rising (62.3% and climbing) while 84 atoms was falling. The new thoughts provided signal exactly where the old vocabulary ran dry.</p>
+<h2>The Three Domains</h2>
+<p>The vocabulary is organized into three domains, each serving different observers:</p>
+<h3>Shared — Universal Context (5 atoms)</h3>
+<p>Time atoms: <code>minute</code>, <code>hour</code>, <code>day-of-week</code>, <code>day-of-month</code>, <code>month-of-year</code>. Encoded as circular scalars. Every observer has access. Time affects every market.</p>
+<h3>Market — Direction Signal (~80 atoms)</h3>
+<p>What the market IS DOING. Used by market observers through their <a class="wikilink" href="lens.html">lenses</a>. Organized into 16 modules: oscillators, flow, persistence, regime, divergence, Ichimoku, stochastic, Fibonacci, Keltner, momentum, price action, timeframe, standard. Each module groups atoms that answer one question about the market.</p>
+<h3>Exit — Distance Signal (~25 atoms)</h3>
+<p>Whether CONDITIONS favor trading. Used by exit observers (position observers). Volatility atoms (ATR ratio, BB width, squeeze), structure atoms (trend consistency, ADX), timing atoms (RSI, stochastic, MACD). Plus the 10 trade-state atoms from Proposal 040: excursion, retracement, trail distance, stop distance, age, signaled, velocity.</p>
+<h2>How Atoms Are Added</h2>
+<p>The process is structured and proposal-driven:</p>
+<h3>1. Identify the Gap</h3>
+<p>A thinker identifies something the system cannot perceive. "The system can't detect Ichimoku cloud thickness — it's blind to a major school of technical analysis." Or: "The exit observer thinks about candles but not about the trade state. It doesn't know excursion or retracement."</p>
+<h3>2. Write the Proposal</h3>
+<p>A formal proposal specifies the new atoms, what modules they belong to, what encoding scheme they use (linear, log, or circular), and what question they answer. Proposal 040 (Exit Trade Vocabulary) is a model: it specified eight new trade-state atoms, showed the existing paper struct they'd be computed from, and asked the <a class="wikilink" href="panel-of-experts.html">panel-of-experts</a> for review.</p>
+<h3>3. Expert Review</h3>
+<p>Each expert reviews from their domain:</p>
+<ul>
+<li><strong>Hickey:</strong> Are the atoms composable? Do they add unnecessary complexity?</li>
+<li><strong>Beckman:</strong> Are the encodings mathematically sound? Do they maintain the algebraic structure?</li>
+<li><strong>Wyckoff:</strong> Do these atoms capture real market structure? Or are they noise?</li>
+<li><strong>Seykota:</strong> Do they help with risk management? Do they work under drawdown stress?</li>
+<li><strong>Van Tharp:</strong> Do they improve the statistical properties of the system?</li>
+</ul>
+<h3>4. Implement and Validate</h3>
+<p>Approved atoms are added to the vocabulary modules. The system runs. The <a class="wikilink" href="conviction.html">curve</a> judges. If accuracy improves, the atoms carry signal. If not, they're noise — but the discriminant filters noise gracefully, so there's little downside to trying.</p>
+<h2>How Atoms Are Removed</h2>
+<p>Atoms are rarely removed. The discriminant is robust to noise — unused atoms don't hurt prediction, they just add dimensions the discriminant ignores. But vocabulary audits (Proposal 032) do identify atoms that:</p>
+<ul>
+<li>Duplicate existing atoms (RSI appearing in both <code>oscillators.wat</code> and <code>momentum.wat</code>)</li>
+<li>Carry no signal (the discriminant's cosine against them is near zero)</li>
+<li>Could be decomposed into simpler, more informative sub-atoms</li>
+</ul>
+<p>Removal is conservative. An atom that carries zero signal today may carry signal in a different market regime. The system's 60.3% accuracy in the 2022 bear market (the best year) demonstrates that atoms useful in one regime may be useless in another. Only clear duplicates are removed.</p>
+<h2>The Exit Vocabulary (Proposal 040)</h2>
+<p>A major evolution: the exit observer gained trade-state atoms. Previously, all 28 exit atoms thought about the candle — the same data the market observer processed. Proposal 040 added atoms about the trade itself: excursion, retracement, trail distance, stop distance, age, signaled status, price velocity, and peak age.</p>
+<p>Three designers proposed atoms independently. They converged on a core set. The builder said "all of them" — include every proposed atom and let the discriminant sort it out. The curve is the judge.</p>
+<p>This mirrors the system's founding insight: don't decide which thoughts matter in advance. Encode everything. Let the discriminant discover what predicts. Human intuition about which atoms are "important" is unreliable. The curve is not.</p>
+<h2>The Market Vocabulary Challenge (Proposal 041)</h2>
+<p>After the hold architecture (Proposal 038) changed the market observer's question from "will the next 36 candles go up?" to "is something forming?", Proposal 041 challenged the designers: given 80+ atoms from 16 modules, which ones actually matter for <em>readiness</em> — not short-term direction prediction, but state detection (accumulation, trend establishment, volume confirmation)?</p>
+<p>This is the ongoing frontier. The system has 107 atoms. It needs hundreds or thousands more. The <a class="wikilink" href="panel-of-experts.html">panel-of-experts</a> guides which atoms to add. The curve validates whether they carry signal. The vocabulary IS the model. Growing it means growing what the system can think about.</p>
+<h2>The Downside Is Bounded</h2>
+<p>Adding atoms has minimal downside. The discriminant filters noise — proven by the initial system's robustness to noisy facts. Each new atom adds one dimension to a 10,000-dimensional space. The cosine computation is O(D) — one pass through the vector. The cost scales linearly.</p>
+<p>The upside is unbounded. 84 atoms got 57%. 107 atoms got 62%. The trajectory suggests that more thoughts, more schools of analysis, more ways to perceive the same market data will produce a steeper curve. The bottleneck is not the architecture. It's not the data. It's the vocabulary.</p>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="vocabulary.html">vocabulary</a> — the current 107 atoms and how they're organized</li>
+<li><a class="wikilink" href="atom.html">atom</a> — the named vector, the atomic unit of meaning</li>
+<li><a class="wikilink" href="lens.html">lens</a> — the vocabulary filter that selects atoms for each observer</li>
+<li><a class="wikilink" href="proposal-system.html">proposal-system</a> — how new atoms are proposed and reviewed</li>
+<li><a class="wikilink" href="panel-of-experts.html">panel-of-experts</a> — the five reviewers who evaluate vocabulary proposals</li>
+<li><a class="wikilink" href="conviction.html">Conviction-Accuracy Curve</a> — the ultimate judge of whether atoms carry signal</li>
+<li><a class="wikilink" href="thought-encoding.html">thought-encoding</a> — how atoms become high-dimensional vectors</li>
+<li><a class="wikilink" href="thought-space.html">Discriminant</a> — the learned direction in vocabulary-space that separates outcomes</li>
+</ul>
+</main>
+</body>
+</html>
