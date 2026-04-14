@@ -126,146 +126,257 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Encoding Cache — the distributed LRU encoding service <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p>The <strong>Encoding Cache</strong> (<a class="wikilink" href="pg-encoding-cache.html">EncoderService</a>) is a single-threaded pipe loop that owns the persistent LRU composition cache for <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a>→<a class="wikilink" href="T0-001-vector.html">Vector</a> mappings. It serves N concurrent callers without any mutex — each caller gets its own three-pipe <code>EncoderHandle</code>, and the service thread iterates all handles once per loop iteration. Callers compute vectors locally on cache misses and fire-and-forget install them back. The cache is purely a store — it never computes, only stores and retrieves. Three <code>Arc<AtomicUsize></code> counters (hits, misses, cache-size) provide lock-free observability. Shutdown is automatic when all handles drop.</p>
-<hr></div><div class="prose prose-invert max-w-none"><h2>What the encoding cache IS</h2>
-<p>The <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> produces vectors from ASTs, but recomputing every subtree on every candle is expensive. The encoding cache is the solution: a shared, cross-candle LRU cache that sits between callers and the encoder. It stores the results of expensive tree walks so that structurally identical ASTs can skip re-evaluation entirely.</p>
-<blockquote>"ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache."</blockquote>
-<blockquote>— encoder-service.wat, lines 1–7 <em>(T2-002)</em></blockquote>
-<p>The cache is the persistent layer; the <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a>'s own composition map serves as a per-candle working set.</p>
-<blockquote>"The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads."</blockquote>
-<blockquote>— T2-002, Relationship to ThoughtEncoder</blockquote>
-<hr>
+<p>The <strong>Encoding Cache</strong> (&lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;EncoderService&lt;/a&gt;) is a single-threaded pipe loop that owns the persistent LRU composition cache for &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt;→&lt;a class=&quot;wikilink&quot; href=&quot;T0-001-vector.html&quot;&gt;Vector&lt;/a&gt; mappings. It serves N concurrent callers without any mutex — each caller gets its own three-pipe <code>EncoderHandle</code>, and the service thread iterates all handles once per loop iteration. Callers compute vectors locally on cache misses and fire-and-forget install them back. The cache is purely a store — it never computes, only stores and retrieves. Three <code>Arc&lt;AtomicUsize&gt;</code> counters (hits, misses, cache-size) provide lock-free observability. Shutdown is automatic when all handles drop.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>What the encoding cache IS</h2>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; produces vectors from ASTs, but recomputing every subtree on every candle is expensive. The encoding cache is the solution: a shared, cross-candle LRU cache that sits between callers and the encoder. It stores the results of expensive tree walks so that structurally identical ASTs can skip re-evaluation entirely.</p>
+<blockquote>
+<p>&quot;ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache.&quot;
+— encoder-service.wat, lines 1–7 <em>(T2-002)</em></p>
+</blockquote>
+<p>The cache is the persistent layer; the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt;'s own composition map serves as a per-candle working set.</p>
+<blockquote>
+<p>&quot;The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads.&quot;
+— T2-002, Relationship to ThoughtEncoder</p>
+</blockquote>
+<hr />
 <h2>Architecture — one thread, N callers, zero mutexes</h2>
 <h3>EncoderHandle — per-caller pipe set</h3>
 <p>Each caller receives an <code>EncoderHandle</code> containing three pipes:</p>
-<pre><code>
-(struct encoder-handle
-  [lookup  : Sender<ThoughtAST>]          ; bounded 1
-  [answer  : Receiver<Option<Vector>>]    ; bounded 1
-  [install : Sender<(ThoughtAST, Vector)>]) ; unbounded, fire and forget
-</code></pre>
+<pre><code class="language-scheme">(struct encoder-handle
+  [lookup  : Sender&lt;ThoughtAST&gt;]          ; bounded 1
+  [answer  : Receiver&lt;Option&lt;Vector&gt;&gt;]    ; bounded 1
+  [install : Sender&lt;(ThoughtAST, Vector)&gt;]) ; unbounded, fire and forget
+
 <p><em>(T2-002, lines 22–25)</em></p>
 <table>
-<thead><tr><th>Pipe</th><th>Capacity</th><th>Direction</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Pipe"><code>lookup</code></td><td data-label="Capacity">bounded 1</td><td data-label="Direction">caller → service</td><td data-label="Purpose">Send a <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> for cache lookup</td></tr>
-<tr><td data-label="Pipe"><code>answer</code></td><td data-label="Capacity">bounded 1</td><td data-label="Direction">service → caller</td><td data-label="Purpose">Receive <code>Some(Vector)</code> (hit) or <code>None</code> (miss)</td></tr>
-<tr><td data-label="Pipe"><code>install</code></td><td data-label="Capacity">unbounded</td><td data-label="Direction">caller → service</td><td data-label="Purpose">Fire-and-forget insertion of computed (AST, Vector) pair</td></tr>
+<thead>
+<tr>
+  <th>Pipe</th>
+  <th>Capacity</th>
+  <th>Direction</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Pipe"><code>lookup</code></td>
+  <td data-label="Capacity">bounded 1</td>
+  <td data-label="Direction">caller → service</td>
+  <td data-label="Purpose">Send a &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; for cache lookup</td>
+</tr>
+<tr>
+  <td data-label=""><code>answer</code></td>
+  <td data-label="">bounded 1</td>
+  <td data-label="">service → caller</td>
+  <td data-label="">Receive <code>Some(Vector)</code> (hit) or <code>None</code> (miss)</td>
+</tr>
+<tr>
+  <td data-label=""><code>install</code></td>
+  <td data-label="">unbounded</td>
+  <td data-label="">caller → service</td>
+  <td data-label="">Fire-and-forget insertion of computed (AST, Vector) pair</td>
+</tr>
+</tbody>
 </table>
 <h3><code>encoder-get</code> — blocking lookup</h3>
-<p>Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option<Vector></code>. Bounded-1 on both sides provides natural backpressure.</p>
+<p>Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option&lt;Vector&gt;</code>. Bounded-1 on both sides provides natural backpressure.</p>
 <p><em>(T2-002, lines 28–31)</em></p>
 <h3><code>encoder-set</code> — fire-and-forget install</h3>
 <p>Sends <code>(AST, Vector)</code> pair on <code>install</code>. Non-blocking, unbounded capacity. The caller does not wait for confirmation.</p>
 <p><em>(T2-002, lines 34–36)</em></p>
-<hr>
+<hr />
 <h2>Service thread loop — three phases per iteration</h2>
 <p>The service runs an infinite loop. Each iteration has three phases:</p>
 <h3>Pass 1 — Drain installs</h3>
 <p>Iterates all install receivers. Drains each one completely via <code>try-recv</code>. Every <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates the <code>cache-size</code> atomic.</p>
-<blockquote>"Pass 1: drain ALL install pipes. Put into cache."</blockquote>
-<blockquote>— encoder-service.wat, line 84 <em>(T2-002)</em></blockquote>
-<p><strong>Critical ordering guarantee</strong>: installs are drained <em>before</em> lookups are serviced. This means a value installed on the previous loop iteration is available for lookup on the current one, implementing eventual consistency with a single-iteration latency: <em>"miss on candle N, hit on N+1"</em>.</p>
-<blockquote>"The GUIDE (line 1440) declares the compositions field as <code>LruCache<ThoughtAST, Vector></code> and explains the eventual-consistency model (lines 1441–1446): <em>'miss on candle N, hit on N+1'</em>. The EncoderService implements this."</blockquote>
-<blockquote>— T2-002, Relationship to ThoughtEncoder</blockquote>
+<blockquote>
+<p>&quot;Pass 1: drain ALL install pipes. Put into cache.&quot;
+— encoder-service.wat, line 84 <em>(T2-002)</em></p>
+</blockquote>
+<p><strong>Critical ordering guarantee</strong>: installs are drained <em>before</em> lookups are serviced. This means a value installed on the previous loop iteration is available for lookup on the current one, implementing eventual consistency with a single-iteration latency: <em>&quot;miss on candle N, hit on N+1&quot;</em>.</p>
+<blockquote>
+<p>&quot;The GUIDE (line 1440) declares the compositions field as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> and explains the eventual-consistency model (lines 1441–1446): <em>'miss on candle N, hit on N+1'</em>. The EncoderService implements this.&quot;
+— T2-002, Relationship to ThoughtEncoder</p>
+</blockquote>
 <h3>Pass 2 — Service lookups</h3>
 <p>Iterates all lookup receivers. For each pending AST: checks the LRU cache, increments <code>hits</code> or <code>misses</code> atomic accordingly, sends result (<code>Some(Vector)</code> or <code>None</code>) back on the corresponding answer pipe. On channel disconnect: marks that handle as closed.</p>
-<blockquote>"Pass 2: service ALL pending lookup pipes."</blockquote>
-<blockquote>— encoder-service.wat, line 93 <em>(T2-002)</em></blockquote>
-<h3>Pass 3 — Shutdown check & idle blocking</h3>
+<blockquote>
+<p>&quot;Pass 2: service ALL pending lookup pipes.&quot;
+— encoder-service.wat, line 93 <em>(T2-002)</em></p>
+</blockquote>
+<h3>Pass 3 — Shutdown check &amp; idle blocking</h3>
 <p>If all handles are disconnected, the loop breaks and the thread exits. Otherwise, uses <code>select</code> over all open pipes to block until any channel has data. <strong>Zero CPU when idle.</strong></p>
-<blockquote>"Block until ANY channel has data. Zero CPU when idle."</blockquote>
-<blockquote>— encoder-service.wat, lines 112–113 <em>(T2-002)</em></blockquote>
-<hr>
+<blockquote>
+<p>&quot;Block until ANY channel has data. Zero CPU when idle.&quot;
+— encoder-service.wat, lines 112–113 <em>(T2-002)</em></p>
+</blockquote>
+<hr />
 <h2>Protocol summary</h2>
-<pre class="mermaid">
-flowchart TD
-    caller_lookup["Caller"] -->|"write AST to lookup pipe"| block["block on answer"]
-    block -->|"receive Some/None"| result{"Some\n(hit) or None\n(miss)"}
-    result -->|"None"| compute["compute locally"]
-    compute -->|"write (AST, Vector)\nto install pipe\n(fire and forget)"| drain
+<pre class="mermaid">flowchart TD
+    caller_lookup[&quot;Caller&quot;] --&gt;|&quot;write AST to lookup pipe&quot;| block[&quot;block on answer&quot;]
+    block --&gt;|&quot;receive Some/None&quot;| result{&quot;Some\n(hit) or None\n(miss)&quot;}
+    result --&gt;|&quot;None&quot;| compute[&quot;compute locally&quot;]
+    compute --&gt;|&quot;write (AST, Vector)\nto install pipe\n(fire and forget)&quot;| drain
 
-    subgraph encoder["Encoder service loop"]
-        drain["Pass 1: drain installs"] --> service["Pass 2: service lookups"]
-        service --> select["Pass 3: select,\nblock until data"]
-        select --> drain
+    subgraph encoder[&quot;Encoder service loop&quot;]
+        drain[&quot;Pass 1: drain installs&quot;] --&gt; service[&quot;Pass 2: service lookups&quot;]
+        service --&gt; select[&quot;Pass 3: select,\nblock until data&quot;]
+        select --&gt; drain
     end
 </code></pre>
 <p><em>(T2-002, lines 9–12)</em></p>
-<p>This implements the <strong>"values up" principle</strong>: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
-<blockquote>"The encode function NEVER writes to the cache. Misses are returned as values — the enterprise collects them and inserts between candles. Values up, not queues down."</blockquote>
-<blockquote>— thought-encoder.wat, lines 11–13 <em>(T2-001)</em></blockquote>
-<hr>
+<p>This implements the <strong>&quot;values up&quot; principle</strong>: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
+<blockquote>
+<p>&quot;The encode function NEVER writes to the cache. Misses are returned as values — the enterprise collects them and inserts between candles. Values up, not queues down.&quot;
+— thought-encoder.wat, lines 11–13 <em>(T2-001)</em></p>
+</blockquote>
+<hr />
 <h2>EncoderService struct</h2>
-<pre><code>
-(struct encoder-service
-  [handle     : JoinHandle<()>]
-  [hits       : Arc<AtomicUsize>]         ; cache hit counter
-  [misses     : Arc<AtomicUsize>]         ; cache miss counter
-  [cache-size : Arc<AtomicUsize>])        ; current cache occupancy
+<pre><code class="language-scheme">(struct encoder-service
+  [handle     : JoinHandle&lt;()&gt;]
+  [hits       : Arc&lt;AtomicUsize&gt;]         ; cache hit counter
+  [misses     : Arc&lt;AtomicUsize&gt;]         ; cache miss counter
+  [cache-size : Arc&lt;AtomicUsize&gt;])        ; current cache occupancy
 </code></pre>
 <p><em>(T2-002, lines 43–47)</em></p>
 <p>The service does <strong>not</strong> hold sender copies — the handles ARE the senders. When all handles drop, the channels close and the encoder thread exits automatically.</p>
-<blockquote>"Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits."</blockquote>
-<blockquote>— encoder-service.wat, lines 39–41 <em>(T2-002)</em></blockquote>
+<blockquote>
+<p>&quot;Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits.&quot;
+— encoder-service.wat, lines 39–41 <em>(T2-002)</em></p>
+</blockquote>
 <h3>Lock-free observability</h3>
 <p>Three accessors provide atomic reads from any thread:</p>
 <table>
-<thead><tr><th>Accessor</th><th>Reads</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Accessor"><code>hit-count</code></td><td data-label="Reads"><code>Arc<AtomicUsize></code> hits</td><td data-label="Purpose">Cache hit count</td></tr>
-<tr><td data-label="Accessor"><code>miss-count</code></td><td data-label="Reads"><code>Arc<AtomicUsize></code> misses</td><td data-label="Purpose">Cache miss count</td></tr>
-<tr><td data-label="Accessor"><code>cache-len</code></td><td data-label="Reads"><code>Arc<AtomicUsize></code> cache-size</td><td data-label="Purpose">Current occupancy</td></tr>
+<thead>
+<tr>
+  <th>Accessor</th>
+  <th>Reads</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Accessor"><code>hit-count</code></td>
+  <td data-label="Reads"><code>Arc&lt;AtomicUsize&gt;</code> hits</td>
+  <td data-label="Purpose">Cache hit count</td>
+</tr>
+<tr>
+  <td data-label=""><code>miss-count</code></td>
+  <td data-label=""><code>Arc&lt;AtomicUsize&gt;</code> misses</td>
+  <td data-label="">Cache miss count</td>
+</tr>
+<tr>
+  <td data-label=""><code>cache-len</code></td>
+  <td data-label=""><code>Arc&lt;AtomicUsize&gt;</code> cache-size</td>
+  <td data-label="">Current occupancy</td>
+</tr>
+</tbody>
 </table>
 <p><em>(T2-002, lines 135–142)</em></p>
-<hr>
+<hr />
 <h2>Spawn and shutdown</h2>
-<h3><code>encoder-service-spawn(n-callers, cache-capacity) → (EncoderService, Vec<EncoderHandle>)</code></h3>
+<h3><code>encoder-service-spawn(n-callers, cache-capacity) → (EncoderService, Vec&lt;EncoderHandle&gt;)</code></h3>
 <p>Creates the service and N handles. For each caller, creates three pipe pairs (lookup/answer bounded-1, install unbounded). Spawns the service thread with the receiver halves.</p>
 <p><em>(T2-002, lines 51–122)</em></p>
 <h3><code>encoder-service-shutdown(svc)</code></h3>
 <p>Joins the thread handle. Requires that all handles have already been dropped.</p>
-<blockquote>"The cascade must have already closed all handles."</blockquote>
-<blockquote>— encoder-service.wat, line 125 <em>(T2-002)</em></blockquote>
-<hr>
+<blockquote>
+<p>&quot;The cascade must have already closed all handles.&quot;
+— encoder-service.wat, line 125 <em>(T2-002)</em></p>
+</blockquote>
+<hr />
 <h2>Relationship to ThoughtEncoder memory model</h2>
-<p>The <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> maintains two kinds of memory with fundamentally different semantics:</p>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; maintains two kinds of memory with fundamentally different semantics:</p>
 <table>
-<thead><tr><th>Memory</th><th>Semantics</th><th>Owner</th><th>Eviction</th></tr></thead>
-<tr><td data-label="Memory"><strong>Atoms</strong> — dictionary</td><td data-label="Semantics">Finite, pre-computed, permanent</td><td data-label="Owner"><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a></td><td data-label="Eviction">Never</td></tr>
-<tr><td data-label="Memory"><strong>Compositions</strong> — cache</td><td data-label="Semantics">Infinite, optimistic, use-if-we-have-it</td><td data-label="Owner">EncoderService (LRU)</td><td data-label="Eviction">Capacity-based</td></tr>
+<thead>
+<tr>
+  <th>Memory</th>
+  <th>Semantics</th>
+  <th>Owner</th>
+  <th>Eviction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Memory"><strong>Atoms</strong> — dictionary</td>
+  <td data-label="Semantics">Finite, pre-computed, permanent</td>
+  <td data-label="Owner">&lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;</td>
+  <td data-label="Eviction">Never</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Compositions</strong> — cache</td>
+  <td data-label="">Infinite, optimistic, use-if-we-have-it</td>
+  <td data-label="">EncoderService (LRU)</td>
+  <td data-label="">Capacity-based</td>
+</tr>
+</tbody>
 </table>
-<blockquote>"Finite. Known at startup. Pre-computed. Never evicted."</blockquote>
-<blockquote>— thought-encoder.wat, line 8 <em>(T2-001)</em></blockquote>
-<blockquote>"Infinite. Optimistic. Use it if we have it. Compute if we don't."</blockquote>
-<blockquote>— thought-encoder.wat, line 9 <em>(T2-001)</em></blockquote>
-<p>The GUIDE declares <code>compositions</code> as <code>LruCache<ThoughtAST, Vector></code> (GUIDE line 1440). The wat file declares it as <code>Map<ThoughtAST, Vector></code> with capacity 4096, annotated <em>"LRU moved to EncoderService"</em>. Per CLAUDE.md: <em>"When layers diverge, the guide is right."</em> The EncoderService holds the true LRU; the <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a>'s composition map is the per-candle working set.</p>
-<blockquote>"Same structure, same vector."</blockquote>
-<blockquote>— GUIDE.md, line 1475 <em>(T2-001)</em></blockquote>
+<blockquote>
+<p>&quot;Finite. Known at startup. Pre-computed. Never evicted.&quot;
+— thought-encoder.wat, line 8 <em>(T2-001)</em></p>
+</blockquote>
+<blockquote>
+<p>&quot;Infinite. Optimistic. Use it if we have it. Compute if we don't.&quot;
+— thought-encoder.wat, line 9 <em>(T2-001)</em></p>
+</blockquote>
+<p>The GUIDE declares <code>compositions</code> as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> (GUIDE line 1440). The wat file declares it as <code>Map&lt;ThoughtAST, Vector&gt;</code> with capacity 4096, annotated <em>&quot;LRU moved to EncoderService&quot;</em>. Per CLAUDE.md: <em>&quot;When layers diverge, the guide is right.&quot;</em> The EncoderService holds the true LRU; the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt;'s composition map is the per-candle working set.</p>
+<blockquote>
+<p>&quot;Same structure, same vector.&quot;
+— GUIDE.md, line 1475 <em>(T2-001)</em></p>
+</blockquote>
 <p>The AST structure IS the cache key — structural equality (with <code>round_to</code> quantization at vocabulary emission time for reliable float hashing) determines identity.</p>
-<hr>
+<hr />
 <h2>Design principles</h2>
 <table>
-<thead><tr><th>Principle</th><th>How the cache implements it</th></tr></thead>
-<tr><td data-label="Principle"><strong>No mutex</strong></td><td data-label="How the cache implements it">Single-threaded ownership of the cache; callers communicate via pipes</td></tr>
-<tr><td data-label="Principle"><strong>Values up, not queues down</strong></td><td data-label="How the cache implements it">Callers compute on miss; the cache never computes</td></tr>
-<tr><td data-label="Principle"><strong>Eventual consistency</strong></td><td data-label="How the cache implements it">Install-drain-before-lookup ordering gives one-iteration latency</td></tr>
-<tr><td data-label="Principle"><strong>Graceful shutdown</strong></td><td data-label="How the cache implements it">Handle-drop cascades channel closes; thread auto-exits</td></tr>
-<tr><td data-label="Principle"><strong>Zero-idle CPU</strong></td><td data-label="How the cache implements it"><code>select</code> blocks until any pipe has data</td></tr>
-<tr><td data-label="Principle"><strong>Lock-free stats</strong></td><td data-label="How the cache implements it"><code>Arc<AtomicUsize></code> for hit/miss/size — readable from any thread</td></tr>
+<thead>
+<tr>
+  <th>Principle</th>
+  <th>How the cache implements it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Principle"><strong>No mutex</strong></td>
+  <td data-label="How the cache implements it">Single-threaded ownership of the cache; callers communicate via pipes</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Values up, not queues down</strong></td>
+  <td data-label="">Callers compute on miss; the cache never computes</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Eventual consistency</strong></td>
+  <td data-label="">Install-drain-before-lookup ordering gives one-iteration latency</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Graceful shutdown</strong></td>
+  <td data-label="">Handle-drop cascades channel closes; thread auto-exits</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Zero-idle CPU</strong></td>
+  <td data-label=""><code>select</code> blocks until any pipe has data</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Lock-free stats</strong></td>
+  <td data-label=""><code>Arc&lt;AtomicUsize&gt;</code> for hit/miss/size — readable from any thread</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Related Concepts</h2>
 <ul>
-<li><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> — The AST evaluator that produces vectors. Stateless in production; depends on the EncoderService for caching.</li>
-<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — The AST enum (<code>Atom</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code>, <code>Bundle</code>, <code>Sequential</code>). Its structure is the cache key.</li>
-<li><a class="wikilink" href="pg-thought-encoding.html">Thought Encoding</a> — The full pipeline from vocabulary emission through encoding to cached vectors.</li>
-<li><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> — Provides the permanent atom dictionary (never-evicted memory).</li>
-<li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — Downstream optimization that diffs fact sets between candles to avoid re-encoding unchanged facts.</li>
-<li><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a> — This page's subject; the service struct and its pipe-based protocol.</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; — The AST evaluator that produces vectors. Stateless in production; depends on the EncoderService for caching.</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; — The AST enum (<code>Atom</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code>, <code>Bundle</code>, <code>Sequential</code>). Its structure is the cache key.</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;Thought Encoding&lt;/a&gt; — The full pipeline from vocabulary emission through encoding to cached vectors.</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; — Provides the permanent atom dictionary (never-evicted memory).</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt; — Downstream optimization that diffs fact sets between candles to avoid re-encoding unchanged facts.</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;EncoderService&lt;/a&gt; — This page's subject; the service struct and its pipe-based protocol.</li>
 </ul>
-<hr>
+<hr />
 <h2>Sources</h2>
 <ul>
 <li>T2-001 — ThoughtEncoder, <code>wat/thought-encoder.wat</code> (198 lines), GUIDE.md lines 1416–1597</li>
 <li>T2-002 — EncoderService, <code>wat/encoder-service.wat</code> (142 lines)</li>
 <li>T0-011 — ThoughtEncoder (Rust) verification, <code>holon-lab-trading/src/encoding/thought_encoder.rs</code></li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

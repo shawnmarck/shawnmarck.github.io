@@ -125,38 +125,55 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Curve — the conviction-to-accuracy mapping <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The curve is a self-calibration mechanism inside every discrete <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. It records <code>(conviction, correct)</code> pairs, fits the exponential model <code>accuracy = 1/N + a·exp(b·conviction)</code>, and answers the question: <em>"When this reckoner says it's confident, is it actually right?"</em> A positive <code>b</code> means the reckoner knows what it knows.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Curve — the conviction-to-accuracy mapping <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The curve is a self-calibration mechanism inside every discrete &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;. It records <code>(conviction, correct)</code> pairs, fits the exponential model <code>accuracy = 1/N + a·exp(b·conviction)</code>, and answers the question: <em>&quot;When this reckoner says it's confident, is it actually right?&quot;</em> A positive <code>b</code> means the reckoner knows what it knows.</p>
+<hr />
 <h2>What it IS</h2>
-<p>The curve maps <a class="wikilink" href="pg-conviction.html">conviction</a> (the absolute <a class="wikilink" href="T0-003-cosine.html">cosine similarity</a> of the winning discriminant) to empirical accuracy (fraction of correct predictions). It is an introspection tool — the reckoner's proof that its confidence is calibrated.</p>
+<p>The curve maps &lt;a class=&quot;wikilink&quot; href=&quot;pg-conviction.html&quot;&gt;conviction&lt;/a&gt; (the absolute &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt; of the winning discriminant) to empirical accuracy (fraction of correct predictions). It is an introspection tool — the reckoner's proof that its confidence is calibrated.</p>
 <p>The WAT spec declares:</p>
-<blockquote><em>"accuracy = (1/N) + a × exp(b × conviction), N = number of labels. At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal."</em></blockquote>
-<blockquote>— <code>primitives.wat</code></blockquote>
+<blockquote>
+<p><em>&quot;accuracy = (1/N) + a × exp(b × conviction), N = number of labels. At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal.&quot;</em>
+— <code>primitives.wat</code></p>
+</blockquote>
 <h3>Why it exists</h3>
-<hr>
+<p>Conviction alone is just a number — <code>|cosine(discriminant, thought)|</code> in <code>[-1, 1]</code> (see &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt;). Without the curve, there's no way to know whether high conviction correlates with being correct. The curve provides that calibration: it transforms raw conviction into a predicted accuracy.</p>
+<hr />
 <h2>How data is collected</h2>
 <h3><code>resolve(conviction, correct)</code> — recording outcomes</h3>
-<pre><code>
-pub fn resolve(&mut self, conviction: f64, correct: bool)
-</code></pre>
+<pre><code class="language-rust">pub fn resolve(&amp;mut self, conviction: f64, correct: bool)
+
 <p>Discrete mode only. Pushes <code>(conviction, correct)</code> onto a bounded sliding window (<code>resolved_cap = 5000</code> by default). When the window overflows, the oldest entry is evicted. This is a FIFO queue of bounded size.</p>
-<p><strong>Source:</strong> <code>reckoner.rs</code> — <em>"Pushes <code>(conviction, correct)</code> onto the <code>resolved</code> vec. If <code>resolved.len() > resolved_cap</code>, the oldest entry is removed."</em> (T0-008, §3.5)</p>
+<p><strong>Source:</strong> <code>reckoner.rs</code> — <em>&quot;Pushes <code>(conviction, correct)</code> onto the <code>resolved</code> vec. If <code>resolved.len() &gt; resolved_cap</code>, the oldest entry is removed.&quot;</em> (T0-008, §3.5)</p>
 <h3>Where resolve is called</h3>
-<p>In the <a class="wikilink" href="pg-broker.html">Broker</a> domain, resolutions flow through <code>propagate()</code> → <code>PropagationFacts</code> → the post routes outcomes back to the <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. The broker itself does not call resolve — it returns structured <a class="wikilink" href="pg-paper-trade.html">Resolution</a> objects that carry the outcome upstream.</p>
-<p><strong>Source:</strong> <code>broker.rs</code> — <em>"<code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state."</em> (T0-018, §12.2)</p>
-<hr>
+<p>In the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; domain, resolutions flow through <code>propagate()</code> → <code>PropagationFacts</code> → the post routes outcomes back to the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;. The broker itself does not call resolve — it returns structured &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;Resolution&lt;/a&gt; objects that carry the outcome upstream.</p>
+<p><strong>Source:</strong> <code>broker.rs</code> — <em>&quot;<code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state.&quot;</em> (T0-018, §12.2)</p>
+<hr />
 <h2>Fitting procedure</h2>
 <h3><code>curve()</code> — fit the model</h3>
-<pre><code>
-pub fn curve(&mut self) -> Option<(f64, f64)>
+<pre><code class="language-rust">pub fn curve(&amp;mut self) -&gt; Option&lt;(f64, f64)&gt;
 </code></pre>
 <p>Returns <code>Some((a, b))</code> on success, <code>None</code> if prerequisites aren't met.</p>
 <p><strong>Prerequisites:</strong></p>
 <table>
-<thead><tr><th>Condition</th><th>Default threshold</th></tr></thead>
-<tr><td data-label="Condition"><code>n_labels >= 2</code></td><td data-label="Default threshold">N/A</td></tr>
-<tr><td data-label="Condition"><code>resolved.len() >= min_resolved</code></td><td data-label="Default threshold">500 entries</td></tr>
-<tr><td data-label="Condition"><code>bin_size >= 10</code></td><td data-label="Default threshold">(derived: <code>resolved.len() / n_bins</code>)</td></tr>
+<thead>
+<tr>
+  <th>Condition</th>
+  <th>Default threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Condition"><code>n_labels &gt;= 2</code></td>
+  <td data-label="Default threshold">N/A</td>
+</tr>
+<tr>
+  <td data-label=""><code>resolved.len() &gt;= min_resolved</code></td>
+  <td data-label="">500 entries</td>
+</tr>
+<tr>
+  <td data-label=""><code>bin_size &gt;= 10</code></td>
+  <td data-label="">(derived: <code>resolved.len() / n_bins</code>)</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Steps:</strong></p>
 <ol>
@@ -164,74 +181,107 @@ pub fn curve(&mut self) -> Option<(f64, f64)>
 <li>Sort all resolved entries by conviction ascending.</li>
 <li>Divide into <code>n_bins</code> (default: 20) equal bins. Last bin absorbs the remainder.</li>
 <li>For each bin, compute <code>mean_c</code> (mean conviction) and <code>acc</code> (fraction correct).</li>
-<li><strong>Filter:</strong> keep only bins where <code>acc > base + 0.005</code> (accuracy meaningfully exceeds chance).</li>
+<li><strong>Filter:</strong> keep only bins where <code>acc &gt; base + 0.005</code> (accuracy meaningfully exceeds chance).</li>
 <li><strong>Linearize:</strong> for each kept bin, compute <code>y = ln(acc - base)</code>. This transforms the model into <code>y = ln(a) + b·conviction</code> — a straight line.</li>
 <li>Require at least 3 valid points.</li>
-<li><strong>Ordinary least-squares linear regression</strong> on <code>(conviction, ln(acc - base))</code>:</li>
-</ol>
-<ul>
+<li><strong>Ordinary least-squares linear regression</strong> on <code>(conviction, ln(acc - base))</code>:<ul>
 <li><code>b = (n·Σxy − Σx·Σy) / (n·Σx² − (Σx)²)</code></li>
 <li><code>ln_a = (Σy − b·Σx) / n</code></li>
 <li><code>a = exp(ln_a)</code></li>
 </ul>
-<ol>
+</li>
 <li>Cache <code>curve_a</code>, <code>curve_b</code>, set <code>curve_valid = true</code>.</li>
 <li>Return <code>Some((a, b))</code>.</li>
 </ol>
 <p><strong>Source:</strong> T0-008, §3.6 — complete algorithm traced against <code>reckoner.rs</code>.</p>
-<hr>
+<hr />
 <h2>Reading the curve</h2>
 <h3><code>accuracy_at(conviction)</code> — predict accuracy</h3>
-<pre><code>
-pub fn accuracy_at(&self, conviction: f64) -> Option<f64>
+<pre><code class="language-rust">pub fn accuracy_at(&amp;self, conviction: f64) -&gt; Option&lt;f64&gt;
 </code></pre>
 <p>Formula: <code>min(base + a·exp(b·conviction), 0.99)</code> — capped at 99%.</p>
 <h3><code>curve_params()</code> and <code>curve_valid()</code></h3>
 <ul>
-<li><code>curve_params()</code> → <code>Option<(f64, f64)></code> — returns cached <code>(a, b)</code> if fitted.</li>
+<li><code>curve_params()</code> → <code>Option&lt;(f64, f64)&gt;</code> — returns cached <code>(a, b)</code> if fitted.</li>
 <li><code>curve_valid()</code> → <code>bool</code> — whether a curve has been successfully fitted.</li>
 </ul>
-<hr>
+<hr />
 <h2>Interpretation</h2>
 <h3>What <code>b</code> means</h3>
 <table>
-<thead><tr><th><code>b</code> value</th><th>Interpretation</th></tr></thead>
-<tr><td data-label="<code>b</code> value"><code>b > 0</code></td><td data-label="Interpretation">Higher conviction → higher accuracy. The reckoner is <strong>calibrated</strong>. Signal is real.</td></tr>
-<tr><td data-label="<code>b</code> value"><code>b ≈ 0</code></td><td data-label="Interpretation">Conviction carries no information about accuracy. The reckoner is <strong>guessing</strong> at all confidence levels.</td></tr>
-<tr><td data-label="<code>b</code> value"><code>b < 0</code></td><td data-label="Interpretation">Higher conviction → lower accuracy. The discriminants are <strong>inverted</strong> or misleading.</td></tr>
+<thead>
+<tr>
+  <th><code>b</code> value</th>
+  <th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="b value"><code>b &gt; 0</code></td>
+  <td data-label="Interpretation">Higher conviction → higher accuracy. The reckoner is <strong>calibrated</strong>. Signal is real.</td>
+</tr>
+<tr>
+  <td data-label=""><code>b ≈ 0</code></td>
+  <td data-label="">Conviction carries no information about accuracy. The reckoner is <strong>guessing</strong> at all confidence levels.</td>
+</tr>
+<tr>
+  <td data-label=""><code>b &lt; 0</code></td>
+  <td data-label="">Higher conviction → lower accuracy. The discriminants are <strong>inverted</strong> or misleading.</td>
+</tr>
+</tbody>
 </table>
 <h3>What <code>a</code> means</h3>
 <p><code>a</code> controls the <em>spread</em> between the chance floor (<code>1/N</code>) and the asymptotic ceiling (<code>1/N + a</code>). A larger <code>a</code> means the reckoner has a wider accuracy range — more room for confidence to discriminate good predictions from bad ones.</p>
 <h3>The WAT spec's claim</h3>
-<blockquote><em>"Monotonically increasing = real signal."</em></blockquote>
-<blockquote>— <code>primitives.wat</code></blockquote>
-<p>A monotonic increase means <code>b > 0</code>: the higher the conviction, the more often the reckoner is right. This is the gold standard — the reckoner's internal confidence aligns with external reality.</p>
-<hr>
+<blockquote>
+<p><em>&quot;Monotonically increasing = real signal.&quot;</em>
+— <code>primitives.wat</code></p>
+</blockquote>
+<p>A monotonic increase means <code>b &gt; 0</code>: the higher the conviction, the more often the reckoner is right. This is the gold standard — the reckoner's internal confidence aligns with external reality.</p>
+<hr />
 <h2>Configuration</h2>
 <p>Configurable via the chainable builder:</p>
-<pre><code>
-Reckoner::new(...)
+<pre><code class="language-rust">Reckoner::new(...)
     .with_curve_params(resolved_cap, min_resolved, n_bins)
 </code></pre>
 <table>
-<thead><tr><th>Parameter</th><th>Default</th><th>Role</th></tr></thead>
-<tr><td data-label="Parameter"><code>resolved_cap</code></td><td data-label="Default">5000</td><td data-label="Role">Sliding window size for <code>(conviction, correct)</code> history</td></tr>
-<tr><td data-label="Parameter"><code>min_resolved</code></td><td data-label="Default">500</td><td data-label="Role">Minimum history before curve fitting is attempted</td></tr>
-<tr><td data-label="Parameter"><code>n_bins</code></td><td data-label="Default">20</td><td data-label="Role">Number of bins for the binned regression</td></tr>
+<thead>
+<tr>
+  <th>Parameter</th>
+  <th>Default</th>
+  <th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Parameter"><code>resolved_cap</code></td>
+  <td data-label="Default">5000</td>
+  <td data-label="Role">Sliding window size for <code>(conviction, correct)</code> history</td>
+</tr>
+<tr>
+  <td data-label=""><code>min_resolved</code></td>
+  <td data-label="">500</td>
+  <td data-label="">Minimum history before curve fitting is attempted</td>
+</tr>
+<tr>
+  <td data-label=""><code>n_bins</code></td>
+  <td data-label="">20</td>
+  <td data-label="">Number of bins for the binned regression</td>
+</tr>
+</tbody>
 </table>
-<p>This is discrete-only. The continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a> mode has no curve — it doesn't produce conviction values.</p>
-<p><strong>Source:</strong> T0-008, §2 — <em>"<code>.with_curve_params(resolved_cap, min_resolved, n_bins) -> Self // discrete only, no-op for continuous</code>"</em></p>
-<hr>
+<p>This is discrete-only. The continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; mode has no curve — it doesn't produce conviction values.</p>
+<p><strong>Source:</strong> T0-008, §2 — <em>&quot;<code>.with_curve_params(resolved_cap, min_resolved, n_bins) -&gt; Self // discrete only, no-op for continuous</code>&quot;</em></p>
+<hr />
 <h2>Position in the system</h2>
-<pre class="mermaid">
-flowchart TD
-    mkt_obs["Market Observer\n(discrete Reckoner)"] -->|"predict(thought)"| prediction["Prediction\n{ conviction, direction }"]
-    mkt_obs -->|"resolve(conviction, correct)"| feeds["feeds the curve"]
-    mkt_obs -->|"curve()"| curve["(a, b)"]
-    curve -->|"accuracy_at(conviction)"| broker["Broker uses this\nto weight proposals\n(higher predicted accuracy\n→ stronger signal)"]
+<pre class="mermaid">flowchart TD
+    mkt_obs[&quot;Market Observer\n(discrete Reckoner)&quot;] --&gt;|&quot;predict(thought)&quot;| prediction[&quot;Prediction\n{ conviction, direction }&quot;]
+    mkt_obs --&gt;|&quot;resolve(conviction, correct)&quot;| feeds[&quot;feeds the curve&quot;]
+    mkt_obs --&gt;|&quot;curve()&quot;| curve[&quot;(a, b)&quot;]
+    curve --&gt;|&quot;accuracy_at(conviction)&quot;| broker[&quot;Broker uses this\nto weight proposals\n(higher predicted accuracy\n→ stronger signal)&quot;]
 </code></pre>
 <p>The curve closes the feedback loop: prediction → conviction → outcome → calibration → better trust weighting.</p>
-<hr>
+<hr />
 <h2>Key properties</h2>
 <ol>
 <li><strong>Requires discrete mode.</strong> Continuous reckoners have no curve — no conviction, no classification. (T0-008, §3.5)</li>
@@ -240,13 +290,30 @@ flowchart TD
 <li><strong>Bins, not raw points.</strong> Binning smooths noise and ensures the regression isn't dominated by conviction values with many observations. (T0-008, §3.6)</li>
 <li><strong>Chance floor is structural.</strong> <code>base = 1/N</code> means the model is grounded in the combinatorics of N-ary choice. A binary reckoner (<code>N=2</code>) has a 50% floor; a 10-label reckoner has a 10% floor. (T0-008, §3.6)</li>
 <li><strong>Capped at 99%.</strong> <code>accuracy_at()</code> never returns above 0.99 — no model should promise certainty. (T0-008, §3.7)</li>
-<li><strong>Validates the reckoner's own confidence.</strong> <em>"By recording <code>(conviction, correct)</code> pairs and fitting <code>accuracy = 1/N + a·exp(b·conviction)</code>, the system gets a self-calibration measure."</em> (T0-008, §6.7)</li>
+<li><strong>Validates the reckoner's own confidence.</strong> <em>&quot;By recording <code>(conviction, correct)</code> pairs and fitting <code>accuracy = 1/N + a·exp(b·conviction)</code>, the system gets a self-calibration measure.&quot;</em> (T0-008, §6.7)</li>
 </ol>
-<hr>
+<hr />
 <h2>Source documents</h2>
 <table>
-<thead><tr><th>Document</th><th>Relevance</th></tr></thead>
-<tr><td data-label="Document">T0-008 — Reckoner</td><td data-label="Relevance">Full curve specification: <code>resolve()</code>, <code>curve()</code>, <code>accuracy_at()</code>, fitting algorithm, construction params</td></tr>
-<tr><td data-label="Document"><a class="wikilink" href="T0-003-cosine.html">T0-003 — Cosine Similarity</a></td><td data-label="Relevance">The measurement primitive underlying conviction (<code>\|cosine\|</code>)</td></tr>
-<tr><td data-label="Document"><a class="wikilink" href="pg-broker.html">T0-018 — Broker (Rust)</a></td><td data-label="Relevance">Downstream consumer: broker evaluates <code>gate_open()</code> based on accumulated outcomes; <code>propagate()</code> returns facts that feed back to reckoners</td></tr>
-</table></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<thead>
+<tr>
+  <th>Document</th>
+  <th>Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Document">T0-008 — Reckoner</td>
+  <td data-label="Relevance">Full curve specification: <code>resolve()</code>, <code>curve()</code>, <code>accuracy_at()</code>, fitting algorithm, construction params</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;T0-003 — Cosine Similarity&lt;/a&gt;</td>
+  <td data-label="">The measurement primitive underlying conviction (<code>\|cosine\|</code>)</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;T0-018 — Broker (Rust)&lt;/a&gt;</td>
+  <td data-label="">Downstream consumer: broker evaluates <code>gate_open()</code> based on accumulated outcomes; <code>propagate()</code> returns facts that feed back to reckoners</td>
+</tr>
+</tbody>
+</table>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

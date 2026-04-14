@@ -125,35 +125,68 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Bundle — the lossy consensus operator <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Bundle superimposes multiple vectors into one by element-wise majority vote. It is the commutative monoid identity of the <a class="wikilink" href="pg-thought-space.html">Vector Algebra</a>: associative, commutative, and lossy. Every structured encoding in holon terminates with a bundle. It is how thoughts become single vectors.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Bundle — the lossy consensus operator <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Bundle superimposes multiple vectors into one by element-wise majority vote. It is the commutative monoid identity of the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-space.html&quot;&gt;Vector Algebra&lt;/a&gt;: associative, commutative, and lossy. Every structured encoding in holon terminates with a bundle. It is how thoughts become single vectors.</p>
+<hr />
 <h2>Algebraic role</h2>
 <p>The WAT spec defines the Vector Algebra as:</p>
-<blockquote>"A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism."</blockquote>
-<blockquote>— <code>wat/core/primitives.wat</code> via T0-002</blockquote>
+<blockquote>
+<p>&quot;A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism.&quot;
+— <code>wat/core/primitives.wat</code> via T0-002</p>
+</blockquote>
 <p>Bundle is the monoid operation. The WAT declares its properties:</p>
 <table>
-<thead><tr><th>Property</th><th>WAT claim</th></tr></thead>
-<tr><td data-label="Property">Associativity</td><td data-label="WAT claim">Yes (order-independent)</td></tr>
-<tr><td data-label="Property">Commutativity</td><td data-label="WAT claim">Yes (input order irrelevant)</td></tr>
-<tr><td data-label="Property">Identity</td><td data-label="WAT claim">Zero vector</td></tr>
+<thead>
+<tr>
+  <th>Property</th>
+  <th>WAT claim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Property">Associativity</td>
+  <td data-label="WAT claim">Yes (order-independent)</td>
+</tr>
+<tr>
+  <td data-label="">Commutativity</td>
+  <td data-label="">Yes (input order irrelevant)</td>
+</tr>
+<tr>
+  <td data-label="">Identity</td>
+  <td data-label="">Zero vector</td>
+</tr>
+</tbody>
 </table>
 <p>These follow mechanically from majority vote over signed integers — the sum <code>a + b + c</code> is the same regardless of grouping or permutation, and the sign function applied afterward preserves those properties.</p>
 <h2>Implementation: element-wise majority vote</h2>
 <p>Rust implements bundle in <code>Primitives::bundle</code>:</p>
-<pre><code>
-/// Bundle multiple vectors (element-wise majority vote).
+<pre><code class="language-rust">/// Bundle multiple vectors (element-wise majority vote).
 /// Creates a superposition that is similar to ALL input vectors.
-pub fn bundle(vectors: &[&Vector]) -> Vector {
-    // sums each dimension into i32, then: >0 → +1, <0 → -1, ==0 → 0
+pub fn bundle(vectors: &amp;[&amp;Vector]) -&gt; Vector {
+    // sums each dimension into i32, then: &gt;0 → +1, &lt;0 → -1, ==0 → 0
 }
 </code></pre>
 <p>The algorithm: sum each dimension across all input vectors, then apply a sign threshold:</p>
 <table>
-<thead><tr><th>Sum per dimension</th><th>Output</th></tr></thead>
-<tr><td data-label="Sum per dimension"><code>> 0</code></td><td data-label="Output"><code>+1</code></td></tr>
-<tr><td data-label="Sum per dimension"><code>< 0</code></td><td data-label="Output"><code>-1</code></td></tr>
-<tr><td data-label="Sum per dimension"><code>== 0</code></td><td data-label="Output"><code>0</code></td></tr>
+<thead>
+<tr>
+  <th>Sum per dimension</th>
+  <th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Sum per dimension"><code>&gt; 0</code></td>
+  <td data-label="Output"><code>+1</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>&lt; 0</code></td>
+  <td data-label=""><code>-1</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>== 0</code></td>
+  <td data-label=""><code>0</code></td>
+</tr>
+</tbody>
 </table>
 <p>This is <strong>not</strong> a plain sum — it is <code>sign(Σ)</code>. The result stays in the bipolar set <code>{-1, 0, +1}</code>.</p>
 <p><strong>Source:</strong> T0-002, <code>holon-rs/src/kernel/primitives.rs</code>.</p>
@@ -161,47 +194,63 @@ pub fn bundle(vectors: &[&Vector]) -> Vector {
 <p><code>Primitives::weighted_bundle(vectors, weights)</code> applies per-vector weight scaling before the same sign threshold. Same majority-vote semantics, but with unequal influence.</p>
 <h3>f64 variant</h3>
 <p><code>bundle_f64</code> skips the sign threshold entirely — it returns the raw sum in f64 space. Used for the extraction and analysis pipeline:</p>
-<blockquote>"The i8 pipeline is for encoding and prediction. The f64 pipeline is for extraction and analysis."</blockquote>
-<blockquote>— T0-002</blockquote>
-<h2>Lossiness — why it's called "lossy consensus"</h2>
+<blockquote>
+<p>&quot;The i8 pipeline is for encoding and prediction. The f64 pipeline is for extraction and analysis.&quot;
+— T0-002</p>
+</blockquote>
+<h2>Lossiness — why it's called &quot;lossy consensus&quot;</h2>
 <p>Bundle is <strong>not</strong> invertible. Given <code>bundle(A, B) = C</code>, there is no operation that recovers A and B from C alone. Information is destroyed by the sign threshold. This is by design: a bundled thought is a <strong>consensus</strong> — the dimensions where most inputs agree survive; where they conflict, the majority wins and the minority is erased.</p>
-<p>This makes bundle fundamentally different from <a class="wikilink" href="pg-bind.html">bind</a> (which is exact and self-inverse). Bind creates structure; bundle destroys structure to produce summary.</p>
+<p>This makes bundle fundamentally different from &lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt; (which is exact and self-inverse). Bind creates structure; bundle destroys structure to produce summary.</p>
 <h2>Where bundle appears in the encoding pipeline</h2>
-<h3><a class="wikilink" href="T0-006-walkable.html">Walkable</a> map encoding</h3>
+<h3>&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; map encoding</h3>
 <p>Every <code>Map</code>-typed Walkable encodes as role-filler bindings, then bundles:</p>
-<pre><code>
-for each (key, value):
+<pre><code>for each (key, value):
     bound = bind(role_vector(key), encode(value))
     push bound
 bundle(all bounds)
 </code></pre>
 <p>The final bundle is the single vector that represents the entire map. Removing any binding degrades but does not destroy the vector — it still partially matches all remaining keys.</p>
 <p><strong>Source:</strong> T0-006, <code>holon-rs/src/kernel/encoder.rs</code>.</p>
-<h3><a class="wikilink" href="T0-006-walkable.html">Walkable</a> list and set encoding</h3>
+<h3>&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; list and set encoding</h3>
 <ul>
 <li><strong>List</strong>: position-encode each element (<code>bind(pos_vec, item_vec)</code>), then bundle.</li>
-<li><strong>Set</strong>: bundle items directly, then bind with a <code>"set_indicator"</code> role vector to distinguish sets from random bundles.</li>
+<li><strong>Set</strong>: bundle items directly, then bind with a <code>&quot;set_indicator&quot;</code> role vector to distinguish sets from random bundles.</li>
 <li><strong>Spread</strong>: position-encode each element, but each becomes an <strong>independent</strong> leaf binding (fan-out), not a single bundle.</li>
 </ul>
 <p><strong>Source:</strong> T0-006.</p>
-<h3><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> bundle node</h3>
+<h3>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; bundle node</h3>
 <p>The <code>ThoughtAST::Bundle(children)</code> variant maps <code>encode()</code> over all children, then calls <code>Primitives::bundle</code>. If empty, returns <code>Vector::zeros(dims)</code>.</p>
 <p><strong>Source:</strong> T0-011, <code>holon-lab-trading/src/encoding/thought_encoder.rs</code>.</p>
-<h3><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> sequential node</h3>
+<h3>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; sequential node</h3>
 <p><code>Sequential(items)</code> encodes each item, permutes it by its positional index (<code>Primitives::permute(v, i)</code>), then bundles all permuted vectors. The permutation breaks symmetry so <code>[A, B] ≠ [B, A]</code>.</p>
 <p><strong>Source:</strong> T0-011.</p>
-<h2><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — streaming optimization</h2>
-<p><code>IncrementalBundle</code> maintains a running <code>sums: Vec<i32></code> buffer across candles (time steps). Instead of re-encoding and re-bundling every fact each tick, it diffs the new fact set against <code>last_facts</code>, subtracts removed contributions, adds new ones, and re-thresholds.</p>
-<blockquote>"Incremental bundling — maintains sums across candles. Optimization, not cognition. Can be reconstructed from one full encode."</blockquote>
-<blockquote>— T0-011</blockquote>
+<h2>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt; — streaming optimization</h2>
+<p><code>IncrementalBundle</code> maintains a running <code>sums: Vec&lt;i32&gt;</code> buffer across candles (time steps). Instead of re-encoding and re-bundling every fact each tick, it diffs the new fact set against <code>last_facts</code>, subtracts removed contributions, adds new ones, and re-thresholds.</p>
+<blockquote>
+<p>&quot;Incremental bundling — maintains sums across candles. Optimization, not cognition. Can be reconstructed from one full encode.&quot;
+— T0-011</p>
+</blockquote>
 <p>The <code>threshold()</code> method applies the same sign function as <code>bundle()</code>, producing a result <strong>bit-identical</strong> to a full bundle from scratch.</p>
-<p><strong>Load-bearing invariant:</strong> <code>round_to</code> at vocab emission quantizes floats so AST key equality (via <code>f64::to_bits()</code>) is reliable. Without it, floating-point drift causes false "changed" detections, degrading incremental savings to full recompute.</p>
+<p><strong>Load-bearing invariant:</strong> <code>round_to</code> at vocab emission quantizes floats so AST key equality (via <code>f64::to_bits()</code>) is reliable. Without it, floating-point drift causes false &quot;changed&quot; detections, degrading incremental savings to full recompute.</p>
 <p><strong>Source:</strong> T0-011, lines 212–313.</p>
 <h2>Identity divergence (WAT vs Rust)</h2>
 <table>
-<thead><tr><th>Specification</th><th>Empty bundle behavior</th></tr></thead>
-<tr><td data-label="Specification">WAT spec</td><td data-label="Empty bundle behavior">Returns zero vector (identity element)</td></tr>
-<tr><td data-label="Specification">Rust <code>Primitives::bundle</code></td><td data-label="Empty bundle behavior"><strong>Panics</strong> on empty input</td></tr>
+<thead>
+<tr>
+  <th>Specification</th>
+  <th>Empty bundle behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Specification">WAT spec</td>
+  <td data-label="Empty bundle behavior">Returns zero vector (identity element)</td>
+</tr>
+<tr>
+  <td data-label="">Rust <code>Primitives::bundle</code></td>
+  <td data-label=""><strong>Panics</strong> on empty input</td>
+</tr>
+</tbody>
 </table>
 <p>Rust does not implement the identity. <code>ThoughtEncoder</code> works around this by handling empty <code>Bundle</code> and <code>Sequential</code> nodes explicitly, returning <code>Vector::zeros(dims)</code> before ever calling <code>Primitives::bundle</code>.</p>
 <p><strong>Source:</strong> T0-002.</p>
@@ -210,19 +259,48 @@ bundle(all bounds)
 <p><strong>Source:</strong> T0-002, extended operations table.</p>
 <h2>Relationship to other operations</h2>
 <table>
-<thead><tr><th>Operation</th><th>Relationship to bundle</th></tr></thead>
-<tr><td data-label="Operation"><a class="wikilink" href="pg-bind.html">bind</a></td><td data-label="Relationship to bundle">Bundle destroys information; bind preserves it (self-inverse).</td></tr>
-<tr><td data-label="Operation"><a class="wikilink" href="T0-003-cosine.html">cosine</a></td><td data-label="Relationship to bundle">Cosine measures how much a bundled thought still resembles its constituents.</td></tr>
-<tr><td data-label="Operation"><a class="wikilink" href="pg-atom.html">atom</a></td><td data-label="Relationship to bundle">Atoms are the inputs that get bundled into composite thoughts.</td></tr>
-<tr><td data-label="Operation"><a class="wikilink" href="T0-002-primitives.html">negate</a></td><td data-label="Relationship to bundle">Removes a component's influence from a superposition (approximate inverse of bundling).</td></tr>
-<tr><td data-label="Operation"><code>weighted_bundle</code></td><td data-label="Relationship to bundle">Bundle with unequal per-vector influence.</td></tr>
-<tr><td data-label="Operation"><code>bundle_f64</code></td><td data-label="Relationship to bundle">Bundle without thresholding — raw accumulation for analysis.</td></tr>
-<tr><td data-label="Operation"><code>bundle_with_confidence</code></td><td data-label="Relationship to bundle">Bundle with per-dimension strength margins.</td></tr>
+<thead>
+<tr>
+  <th>Operation</th>
+  <th>Relationship to bundle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Operation">&lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;</td>
+  <td data-label="Relationship to bundle">Bundle destroys information; bind preserves it (self-inverse).</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine&lt;/a&gt;</td>
+  <td data-label="">Cosine measures how much a bundled thought still resembles its constituents.</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-atom.html&quot;&gt;atom&lt;/a&gt;</td>
+  <td data-label="">Atoms are the inputs that get bundled into composite thoughts.</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;negate&lt;/a&gt;</td>
+  <td data-label="">Removes a component's influence from a superposition (approximate inverse of bundling).</td>
+</tr>
+<tr>
+  <td data-label=""><code>weighted_bundle</code></td>
+  <td data-label="">Bundle with unequal per-vector influence.</td>
+</tr>
+<tr>
+  <td data-label=""><code>bundle_f64</code></td>
+  <td data-label="">Bundle without thresholding — raw accumulation for analysis.</td>
+</tr>
+<tr>
+  <td data-label=""><code>bundle_with_confidence</code></td>
+  <td data-label="">Bundle with per-dimension strength margins.</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Sources</h2>
 <ul>
 <li>T0-002 — <code>wat/core/primitives.wat</code> (83 lines), <code>holon-rs/src/kernel/primitives.rs</code> (1911 lines)</li>
 <li>T0-006 — <code>holon-rs/src/kernel/walkable.rs</code> (1002 lines), <code>holon-rs/src/kernel/encoder.rs</code></li>
 <li>T0-011 — <code>holon-lab-trading/src/encoding/thought_encoder.rs</code> (638 lines)</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

@@ -126,19 +126,21 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Panel of Experts <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<hr></div><div class="prose prose-invert max-w-none"><h2>The Two Reviewers</h2>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; uses a <strong>two-reviewer panel</strong> to evaluate every proposal. <strong>Brian Beckman</strong> reviews through the lens of algebraic/category-theory rigor — asking whether a proposal composes with the existing &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;monoid&lt;/a&gt; and what categorical construction it represents. <strong>Rich Hickey</strong> reviews through the lens of simplicity — asking whether a proposal complects concerns and whether existing forms already suffice. Each produces an independent verdict (ACCEPTED / CONDITIONAL / REJECTED). When they disagree, a <strong>datamancer arbitrator</strong> synthesizes a final resolution, sometimes overriding both.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>The Two Reviewers</h2>
 <h3>Brian Beckman — Algebraic Rigor</h3>
 <p><strong>Philosophy:</strong> Every language form should have a clear algebraic identity. If you can't name the categorical construction, you don't understand what you're adding.</p>
 <p>Beckman frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. He sees mathematical structure where Hickey sees convention.</p>
 <p><strong>Core questions:</strong></p>
 <ul>
-<li><em>Does this compose?</em> — with <a class="wikilink" href="pg-bind.html">bind</a>/<a class="wikilink" href="pg-bundle.html">bundle</a>, with fold, with existing <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></li>
+<li><em>Does this compose?</em> — with &lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;/&lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt;, with fold, with existing &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</li>
 <li><em>What categorical construction is this?</em> — product? coproduct? coalgebra? type class?</li>
 <li><em>Does it introduce new algebraic structure?</em> — if yes, is that structure justified?</li>
 </ul>
 <p><strong>Pattern of judgment:</strong></p>
 <ul>
-<li>Tends to <strong>accept</strong> proposals that reveal hidden algebraic structure (e.g., protocols as type classes — the "third construction" alongside struct/product and enum/coproduct, proposal 014).</li>
+<li>Tends to <strong>accept</strong> proposals that reveal hidden algebraic structure (e.g., protocols as type classes — the &quot;third construction&quot; alongside struct/product and enum/coproduct, proposal 014).</li>
 <li>Tends to <strong>push</strong> proposals toward core when they involve opaque types (journal operations as co-generators of a coalgebra, proposal 004).</li>
 <li>Tends to <strong>prefer explicit types</strong> as a way of making structure visible and composable.</li>
 </ul>
@@ -152,7 +154,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p><strong>When overridden:</strong> On struct field types (007) and <code>defservice</code> (04/003). In both cases, the simplicity argument prevailed: types as documentation rather than enforcement, and functions + <code>select</code> subsuming a dedicated service form.</p>
 <h3>Rich Hickey — Simplicity / Anti-Complecting</h3>
 <p><strong>Philosophy:</strong> Distinguish <strong>simple</strong> (one concept, one job, interleaving nothing) from <strong>easy</strong> (familiar, convenient, available to hand). Build simple; don't add what discipline or data restructuring already solve.</p>
-<p>Hickey applies the "simple made easy" framework from his Clojure design work. He protects the six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> from proliferation and guards against forms that bundle multiple concerns into one interface.</p>
+<p>Hickey applies the &quot;simple made easy&quot; framework from his Clojure design work. He protects the six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; from proliferation and guards against forms that bundle multiple concerns into one interface.</p>
 <p><strong>Core questions:</strong></p>
 <ul>
 <li><em>Does this complect?</em> — does it weave together things that should be separate?</li>
@@ -170,9 +172,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Rejected <code>defprocessor</code> flatly: <em>“The function shape <code>(state, event) → state</code> IS the declaration”</em> (001 — won, proposal rejected).</li>
 <li>Won untyped struct fields: <em>“Types are documentation, not enforcement”</em> (007).</li>
 <li>Won keyword-as-function access: <em>“Keywords read like English”</em> (007).</li>
+<li>Argued <code>fold</code> is a caller concern, not a callee declaration (002 — partially reversed when <code>fold</code> was accepted as a &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;control form&lt;/a&gt;).</li>
 </ul>
 <p><strong>When overridden:</strong> On journal operations (004 — the opacity argument convinced the arbitrator they're core), <code>nil</code>/boolean handling (013 — datamancer chose structural absence), and channels (003 — deleted as contradicting fold-based design).</p>
-<hr>
+<hr />
 <h2>How Reviews Work</h2>
 <h3>Independent verdicts</h3>
 <p>Each reviewer writes a separate <code>review-beckman.md</code> and <code>review-hickey.md</code>. Reviews are <strong>not rubber stamps</strong>. The two reviewers have:</p>
@@ -190,51 +193,123 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <h3>The characteristic tension</h3>
 <p>The Beckman-Hickey tension is productive and by design:</p>
 <table>
-<thead><tr><th>Dimension</th><th>Beckman</th><th>Hickey</th></tr></thead>
-<tr><td data-label="Dimension"><strong>Instinct</strong></td><td data-label="Beckman"><em>What's the structure?</em></td><td data-label="Hickey"><em>What's the simplest thing that works?</em></td></tr>
-<tr><td data-label="Dimension"><strong>Growth bias</strong></td><td data-label="Beckman">Add form if algebraic identity is clear</td><td data-label="Hickey">Don't add if functions + data suffice</td></tr>
-<tr><td data-label="Dimension"><strong>Type stance</strong></td><td data-label="Beckman">Types make structure visible and composable</td><td data-label="Hickey">Types are documentation, not enforcement</td></tr>
-<tr><td data-label="Dimension"><strong>Core expansion</strong></td><td data-label="Beckman">Justified by opaque types and coalgebra</td><td data-label="Hickey">Resist unless necessity is proved</td></tr>
-<tr><td data-label="Dimension"><strong>New forms</strong></td><td data-label="Beckman">Welcome if they complete a categorical pattern</td><td data-label="Hickey">Reject if they package multiple concerns</td></tr>
+<thead>
+<tr>
+  <th>Dimension</th>
+  <th>Beckman</th>
+  <th>Hickey</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Dimension"><strong>Instinct</strong></td>
+  <td data-label="Beckman"><em>What's the structure?</em></td>
+  <td data-label="Hickey"><em>What's the simplest thing that works?</em></td>
+</tr>
+<tr>
+  <td data-label=""><strong>Growth bias</strong></td>
+  <td data-label="">Add form if algebraic identity is clear</td>
+  <td data-label="">Don't add if functions + data suffice</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Type stance</strong></td>
+  <td data-label="">Types make structure visible and composable</td>
+  <td data-label="">Types are documentation, not enforcement</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Core expansion</strong></td>
+  <td data-label="">Justified by opaque types and coalgebra</td>
+  <td data-label="">Resist unless necessity is proved</td>
+</tr>
+<tr>
+  <td data-label=""><strong>New forms</strong></td>
+  <td data-label="">Welcome if they complete a categorical pattern</td>
+  <td data-label="">Reject if they package multiple concerns</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<p>This is not a left-right spectrum. Both reviewers agree on foundational principles (transparency to Rust, protect the algebra, the four-layer model). They disagree on <em>how to apply those principles</em> — particularly on whether a proposed form reveals necessary structure or introduces unnecessary ceremony.</p>
+<hr />
 <h2>Resolution: How Disagreements Are Settled</h2>
 <h3>The Datamancer</h3>
 <p>When the two reviewers disagree, a <strong>datamancer</strong> arbitrator synthesizes the final <code>RESOLUTION.md</code>. This role is not a third voter or tiebreaker — it's a <em>designer</em> who looks at the problem space itself and sometimes finds that neither reviewer's position is right.</p>
 <p>The datamancer has produced three kinds of resolution:</p>
 <ol>
-<li><strong>Side with one reviewer</strong> — the simpler or more structural argument wins. Example: proposal 001, Hickey's rejection of <code>defprocessor</code> was upheld.</li>
-</ol>
-<ol>
-<li><strong>Synthesize a third option</strong> — the debate reveals a path neither reviewer proposed. Example: proposal 013, the datamancer chose "structural absence" (the <code>?</code> field convention, <code>when</code> not executing produces no value) over both Beckman's Rust-style nil and Hickey's Clojure-style truthiness.</li>
+<li><p><strong>Side with one reviewer</strong> — the simpler or more structural argument wins. Example: proposal 001, Hickey's rejection of <code>defprocessor</code> was upheld.</p>
+</li>
+<li><p><strong>Synthesize a third option</strong> — the debate reveals a path neither reviewer proposed. Example: proposal 013, the datamancer chose &quot;structural absence&quot; (the <code>?</code> field convention, <code>when</code> not executing produces no value) over both Beckman's Rust-style nil and Hickey's Clojure-style truthiness.</p>
+</li>
+<li><p><strong>Show both are unnecessary</strong> — the simplest answer is that no new form is needed. Example: proposal 04/003, the datamancer demonstrated that &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;select&lt;/a&gt; + functions + <code>spawn</code> subsume both <code>defprocess</code> and <code>defservice</code>, retiring both proposed forms entirely.</p>
+</li>
 </ol>
 <h3>Resolution outcomes</h3>
 <table>
-<thead><tr><th>Verdict</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Verdict"><strong>ACCEPTED</strong></td><td data-label="Meaning">With specific form syntax, placement, and constraints</td></tr>
-<tr><td data-label="Verdict"><strong>REJECTED</strong></td><td data-label="Meaning">With open questions forwarded to future proposals</td></tr>
-<tr><td data-label="Verdict"><strong>ACCEPTED with tension</strong></td><td data-label="Meaning">Accepted, but a specific disagreement is recorded and deferred</td></tr>
-<tr><td data-label="Verdict"><strong>SUPERSEDED</strong></td><td data-label="Meaning">The debate itself revealed a simpler answer</td></tr>
+<thead>
+<tr>
+  <th>Verdict</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Verdict"><strong>ACCEPTED</strong></td>
+  <td data-label="Meaning">With specific form syntax, placement, and constraints</td>
+</tr>
+<tr>
+  <td data-label=""><strong>REJECTED</strong></td>
+  <td data-label="">With open questions forwarded to future proposals</td>
+</tr>
+<tr>
+  <td data-label=""><strong>ACCEPTED with tension</strong></td>
+  <td data-label="">Accepted, but a specific disagreement is recorded and deferred</td>
+</tr>
+<tr>
+  <td data-label=""><strong>SUPERSEDED</strong></td>
+  <td data-label="">The debate itself revealed a simpler answer</td>
+</tr>
+</tbody>
 </table>
 <p>Every resolution documents <strong>who was overridden and why</strong>. This creates an audit trail of design reasoning — not just what was decided, but <em>whose argument was stronger and why</em>.</p>
-<hr>
+<hr />
 <h2>Historical Record</h2>
 <p>Across 18 resolved proposals (March–April 2026):</p>
 <table>
-<thead><tr><th>Reviewer</th><th>Verdicts accepted</th><th>Times overridden</th></tr></thead>
-<tr><td data-label="Reviewer"><strong>Beckman</strong></td><td data-label="Verdicts accepted">fold (002), journal→core (004), protocols (014), compilation plan (005)</td><td data-label="Times overridden">struct types (007), defservice (04/003)</td></tr>
-<tr><td data-label="Reviewer"><strong>Hickey</strong></td><td data-label="Verdicts accepted">defprocessor rejected (001), untyped structs (007), keyword access (007), fold-as-caller (002 partial)</td><td data-label="Times overridden">journal→core (004), nil (013), channels (003)</td></tr>
-<tr><td data-label="Reviewer"><strong>Datamancer</strong></td><td data-label="Verdicts accepted">Structural absence (013), select+functions over defprocess/defservice (04/003)</td><td data-label="Times overridden">—</td></tr>
+<thead>
+<tr>
+  <th>Reviewer</th>
+  <th>Verdicts accepted</th>
+  <th>Times overridden</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Reviewer"><strong>Beckman</strong></td>
+  <td data-label="Verdicts accepted">fold (002), journal→core (004), protocols (014), compilation plan (005)</td>
+  <td data-label="Times overridden">struct types (007), defservice (04/003)</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Hickey</strong></td>
+  <td data-label="">defprocessor rejected (001), untyped structs (007), keyword access (007), fold-as-caller (002 partial)</td>
+  <td data-label="">journal→core (004), nil (013), channels (003)</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Datamancer</strong></td>
+  <td data-label="">Structural absence (013), select+functions over defprocess/defservice (04/003)</td>
+  <td data-label="">—</td>
+</tr>
+</tbody>
 </table>
 <p>Both reviewers have been overturned roughly equally. The datamancer has intervened only twice, but both interventions shaped fundamental design decisions.</p>
-<hr>
+<hr />
 <h2>Related Concepts</h2>
 <ul>
-<li><a class="wikilink" href="pg-proposal-system.html">Proposal System</a> — the formal process that invokes this panel</li>
-<li><a class="wikilink" href="T1-001-wat-language.html">wat language</a> — the language being designed</li>
-<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — forms shaped by panel review</li>
-<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — concurrency forms (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from the April proposals</li>
-<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the six foundational forms both reviewers protect from proliferation</li>
-<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
-<li><a class="wikilink" href="pg-wards.html">Wards</a> — automated tools (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) that surface problems proposals must address</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-proposal-system.html&quot;&gt;Proposal System&lt;/a&gt; — the formal process that invokes this panel</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; — the language being designed</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — forms shaped by panel review</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; — concurrency forms (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from the April proposals</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; — the six foundational forms both reviewers protect from proliferation</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
+<li>Four-layer model — Syntax / Core / Stdlib / Userland; the layer system the panel enforces</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-wards.html&quot;&gt;Wards&lt;/a&gt; — automated tools (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) that surface problems proposals must address</li>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

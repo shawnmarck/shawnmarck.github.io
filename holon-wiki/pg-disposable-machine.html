@@ -126,72 +126,122 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Disposable Machine <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<hr></div><div class="prose prose-invert max-w-none"><h2>The DNA/Phenotype Split</h2>
+<p>The trading organism is <strong>built to be disposable</strong>. The T-1-004-lab-guide is its DNA — a pure specification of every struct, interface, and dependency, expressed in s-expression syntax. The Rust implementation is a <strong>phenotype</strong>: a grown expression of that specification, discardable at will. When the implementation rots or the thesis shifts, you don't refactor legacy — you tear it down and regrow it from the guide. The guide <em>is</em> the build order.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>The DNA/Phenotype Split</h2>
 <p>The architecture enforces a strict separation between <strong>what the system is</strong> and <strong>what it currently looks like</strong>:</p>
 <table>
-<thead><tr><th>Layer</th><th>Role</th><th>Mutability</th></tr></thead>
-<tr><td data-label="Layer">T-1-004-lab-guide (GUIDE.md)</td><td data-label="Role">Specification — declares every struct, enum, dependency, and data flow</td><td data-label="Mutability">Changes only when the <em>thesis</em> changes</td></tr>
-<tr><td data-label="Layer">wat files</td><td data-label="Role">Intermediate representation — Scheme-like s-expressions that implement what the guide declares</td><td data-label="Mutability">Regenerated from guide changes</td></tr>
-<tr><td data-label="Layer">Rust implementation</td><td data-label="Role">Phenotype — compiles and runs, but carries no permanent authority</td><td data-label="Mutability">Disposable. Grown, run, discarded.</td></tr>
+<thead>
+<tr>
+  <th>Layer</th>
+  <th>Role</th>
+  <th>Mutability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Layer">T-1-004-lab-guide (GUIDE.md)</td>
+  <td data-label="Role">Specification — declares every struct, enum, dependency, and data flow</td>
+  <td data-label="Mutability">Changes only when the <em>thesis</em> changes</td>
+</tr>
+<tr>
+  <td data-label="">wat files</td>
+  <td data-label="">Intermediate representation — Scheme-like s-expressions that implement what the guide declares</td>
+  <td data-label="">Regenerated from guide changes</td>
+</tr>
+<tr>
+  <td data-label="">Rust implementation</td>
+  <td data-label="">Phenotype — compiles and runs, but carries no permanent authority</td>
+  <td data-label="">Disposable. Grown, run, discarded.</td>
+</tr>
+</tbody>
 </table>
 <p>The chain of derivation is one-directional: <strong>Guide → wat → Rust</strong>. The Rust never feeds back into the guide. When layers diverge, the guide is right — by declaration.</p>
-<p>This is stated explicitly: <em>"Each section declares its dependencies. The order of sections IS the build order."</em> The guide is not documentation <em>about</em> the code. The guide is the code's reason to exist.</p>
-<hr>
+<p>This is stated explicitly: <em>&quot;Each section declares its dependencies. The order of sections IS the build order.&quot;</em> The guide is not documentation <em>about</em> the code. The guide is the code's reason to exist.</p>
+<hr />
 <h2>Why Disposable?</h2>
 <h3>Legacy is Rot</h3>
 <p>Most software systems accumulate cruft: dead code paths, workaround patches, architectural compromises that made sense once but don't anymore. Each one is a hidden coupling — change one thing, break another you forgot existed. The trading organism avoids this by refusing to accumulate.</p>
 <h3>The Machine is a Function</h3>
-<pre><code>
-f(state, candle) → state
+<p>The T-1-005-lab-circuit reduces the entire system to one equation:</p>
+<pre><code>f(state, candle) → state
 </code></pre>
 <p>One tick of the clock. All 11 sub-circuits compose into this single pure function. A pure function has no hidden state, no legacy paths, no accumulated decisions that can't be traced from the specification. If you can write down <code>f</code>, you can rebuild <code>f</code>.</p>
 <h3>The Organism Metaphor</h3>
-<p>The guide describes the system as a <em>"machine that measures thoughts against reality."</em> An organism doesn't patch itself incrementally — it grows from genetic instructions. When a cell dies, a new one differentiates from the same DNA. The trading organism works the same way:</p>
+<p>The guide describes the system as a <em>&quot;machine that measures thoughts against reality.&quot;</em> An organism doesn't patch itself incrementally — it grows from genetic instructions. When a cell dies, a new one differentiates from the same DNA. The trading organism works the same way:</p>
 <ul>
 <li><strong>DNA</strong> = the GUIDE.md (specification)</li>
 <li><strong>Differentiation</strong> = compilation from wat to Rust</li>
 <li><strong>Phenotype</strong> = the running binary</li>
 <li><strong>Death and regrowth</strong> = discard the Rust, regrow from the guide</li>
 </ul>
-<hr>
+<hr />
 <h2>How It Works in Practice</h2>
 <h3>Construction Order Is Specification Order</h3>
-<p>The guide's struct hierarchy (lines 282–299 of the GUIDE) isn't a reference — it's the <strong>build sequence</strong>. Each struct declares what it depends on. You construct them in that order. There is no other source of truth for "what depends on what."</p>
+<p>The guide's struct hierarchy (lines 282–299 of the GUIDE) isn't a reference — it's the <strong>build sequence</strong>. Each struct declares what it depends on. You construct them in that order. There is no other source of truth for &quot;what depends on what.&quot;</p>
 <h3>The Five Primitives</h3>
-<p>Everything is built from five holon-rs primitives: <strong>atom</strong>, <strong>bind</strong>, <strong>bundle</strong>, <strong>cosine</strong>, <strong>reckoner</strong>. One learning mechanism (<a class="wikilink" href="pg-reckoner.html">Reckoner</a>). One accountability surface (<a class="wikilink" href="pg-curve.html">Curve</a>). The entire organism — market perception, prediction, distance estimation, trade management, learning — differentiates from these five primitives as described in the guide.</p>
+<p>Everything is built from five holon-rs primitives: <strong>atom</strong>, <strong>bind</strong>, <strong>bundle</strong>, <strong>cosine</strong>, <strong>reckoner</strong>. One learning mechanism (&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;). One accountability surface (&lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;Curve&lt;/a&gt;). The entire organism — market perception, prediction, distance estimation, trade management, learning — differentiates from these five primitives as described in the guide.</p>
 <h3>No Bootstrap, No Migration</h3>
-<p>The system <strong>starts ignorant</strong>. Every <a class="wikilink" href="pg-reckoner.html">Reckoner</a> begins with zero experience. Papers fill the reckoners, experience grows, the <a class="wikilink" href="pg-treasury.html">Treasury</a> starts listening. There is no migration path from an old version. There is no serialized state to load. You build from the guide, you run, you learn from scratch. The learning <em>is</em> the state — and learning is always acquired fresh.</p>
+<p>The system <strong>starts ignorant</strong>. Every &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; begins with zero experience. Papers fill the reckoners, experience grows, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt; starts listening. There is no migration path from an old version. There is no serialized state to load. You build from the guide, you run, you learn from scratch. The learning <em>is</em> the state — and learning is always acquired fresh.</p>
 <h3>Discard and Regrow</h3>
 <p>When you need to change the system:</p>
 <ol>
+<li><strong>Edit the guide</strong> — change the specification (add a vocabulary module, restructure the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;, change the Cascade Circuit)</li>
 <li><strong>Update the wat files</strong> — regenerate the s-expression implementations from the changed guide</li>
 <li><strong>Rebuild Rust</strong> — compile the new phenotype</li>
 <li><strong>Run</strong> — the organism starts ignorant and learns again</li>
 </ol>
-<p>No diff against old code. No migration scripts. No "what did we change last time." The guide is the single source of truth, and the implementation is always a fresh expression of it.</p>
-<hr>
+<p>No diff against old code. No migration scripts. No &quot;what did we change last time.&quot; The guide is the single source of truth, and the implementation is always a fresh expression of it.</p>
+<hr />
 <h2>The Circuit as Phenotype Map</h2>
+<p>The T-1-005-lab-circuit renders the organism's wiring as 11 signal-flow diagrams. It is the <strong>phenotype map</strong> — the shape the organism takes when grown from the guide. Like a geneticist's anatomical diagram, it shows what the organism <em>looks like</em> but not why. The guide provides the <em>why</em>. The circuit provides the <em>what</em>.</p>
 <p>Together they form a complete specification:</p>
 <ul>
 <li><strong>GUIDE</strong> = semantic specification (what each component <em>means</em>, what it <em>depends on</em>)</li>
 <li><strong>CIRCUIT</strong> = structural specification (how signals flow, what the topology <em>looks like</em>)</li>
 <li><strong>Rust</strong> = executable phenotype (the running machine — disposable)</li>
 </ul>
-<hr>
+<hr />
 <h2>Implications</h2>
 <table>
-<thead><tr><th>Principle</th><th>Consequence</th></tr></thead>
-<tr><td data-label="Principle">The guide is authoritative</td><td data-label="Consequence">Implementation bugs are resolved by checking against the guide, not by checking git history</td></tr>
-<tr><td data-label="Principle">No accumulated legacy</td><td data-label="Consequence">Refactoring means regrowing, not patching</td></tr>
-<tr><td data-label="Principle">Learning is acquired, not loaded</td><td data-label="Consequence">The organism's intelligence is <em>earned</em> each run — no pretrained weights, no snapshots to migrate</td></tr>
-<tr><td data-label="Principle">Spec-first development</td><td data-label="Consequence">You cannot implement what the guide doesn't declare. If it's not in the guide, it doesn't exist.</td></tr>
-<tr><td data-label="Principle">Directional derivation</td><td data-label="Consequence">Guide → wat → Rust. Never Rust → guide. The phenotype does not rewrite its DNA.</td></tr>
+<thead>
+<tr>
+  <th>Principle</th>
+  <th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Principle">The guide is authoritative</td>
+  <td data-label="Consequence">Implementation bugs are resolved by checking against the guide, not by checking git history</td>
+</tr>
+<tr>
+  <td data-label="">No accumulated legacy</td>
+  <td data-label="">Refactoring means regrowing, not patching</td>
+</tr>
+<tr>
+  <td data-label="">Learning is acquired, not loaded</td>
+  <td data-label="">The organism's intelligence is <em>earned</em> each run — no pretrained weights, no snapshots to migrate</td>
+</tr>
+<tr>
+  <td data-label="">Spec-first development</td>
+  <td data-label="">You cannot implement what the guide doesn't declare. If it's not in the guide, it doesn't exist.</td>
+</tr>
+<tr>
+  <td data-label="">Directional derivation</td>
+  <td data-label="">Guide → wat → Rust. Never Rust → guide. The phenotype does not rewrite its DNA.</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Related Concepts</h2>
 <ul>
-<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the sole learning primitive, accumulates experience from scratch each run</li>
-<li><a class="wikilink" href="pg-curve.html">Curve</a> — self-evaluation surface, built from lived experience</li>
+<li>T-1-004-lab-guide — the DNA, the master specification</li>
+<li>T-1-005-lab-circuit — the phenotype map, the wiring diagram</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; — the sole learning primitive, accumulates experience from scratch each run</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;Curve&lt;/a&gt; — self-evaluation surface, built from lived experience</li>
+<li>Cascade Circuit — the distance knowledge hierarchy, regrown each run</li>
 <li>Values Up, Not Queues Down — the data-flow principle that keeps the phenotype clean</li>
 <li>No Zones, Only Scalars — emit raw measurements, never accumulate premature abstractions</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

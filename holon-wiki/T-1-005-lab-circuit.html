@@ -125,14 +125,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T-1-005 — Lab Circuit (CIRCUIT.md) <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><blockquote><strong>TL;DR:</strong> CIRCUIT.md is the architectural wiring diagram for the holon-lab-trading system. It defines 11 sub-circuits (each rendered as a Mermaid graph) that together form a complete trading machine: raw candles enter, thoughts are encoded, predictions are made, proposals are funded as trades, outcomes propagate back as learning, and stops breathe every candle. The core equation is <code>f(state, candle) → state</code> — one tick of the clock.</blockquote>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T-1-005 — Lab Circuit (CIRCUIT.md) <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><blockquote>
+<p><strong>TL;DR:</strong> CIRCUIT.md is the architectural wiring diagram for the holon-lab-trading system. It defines 11 sub-circuits (each rendered as a Mermaid graph) that together form a complete trading machine: raw candles enter, thoughts are encoded, predictions are made, proposals are funded as trades, outcomes propagate back as learning, and stops breathe every candle. The core equation is <code>f(state, candle) → state</code> — one tick of the clock.</p>
+</blockquote>
+<hr />
 <h2>Source</h2>
 <p><code>wat/CIRCUIT.md</code> — 456 lines, ~19KB. Renders natively on GitHub via Mermaid.</p>
-<hr>
+<hr />
 <h2>Overview</h2>
 <p>The document describes the machine as <strong>signal flow diagrams for humans</strong>. Each circuit is a Mermaid <code>graph TD</code> (top-down) definition. Signals flow down (candle → thought → proposal); outcomes flow back up (settlement → propagation → observers). The entire system is a loop.</p>
-<hr>
+<hr />
 <h2>The 11 Sub-Circuits</h2>
 <h3>1. The Full Enterprise (top-level)</h3>
 <p>The master diagram. One <strong>Post</strong> per asset pair. Data flows:</p>
@@ -153,7 +155,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ul>
 <p>The result is a <strong>thought vector</strong>, bit-identical to a full (non-incremental) bundle.</p>
 <h3>3. The Learning Circuit</h3>
-<p>The feedback loop. A <a class="wikilink" href="pg-reckoner.html">Reckoner</a> accumulates observations. Grace (correct prediction) strengthens the discriminant; Violence (incorrect) weakens it. The loop is the learning — every tick sharpens the next prediction.</p>
+<p>The feedback loop. A &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; accumulates observations. Grace (correct prediction) strengthens the discriminant; Violence (incorrect) weakens it. The loop is the learning — every tick sharpens the next prediction.</p>
 <h3>4. The Paper Circuit</h3>
 <p>The fast learning stream. Every candle, every broker, no real capital. Papers play <strong>both sides</strong> (buy and sell) simultaneously. When a side's trailing stop fires, the paper resolves. Direction determined by which side fired first. Papers are how the machine learns before it trades.</p>
 <h3>5. The Funding Circuit</h3>
@@ -162,7 +164,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>available → reserved</code> (proposal funded)</li>
 <li><code>:active</code> (trade live)</li>
 <li><code>:runner</code> (trail passes break-even — no swap, same trail, zero effective risk)</li>
-<li><code>:settled-grace</code> (trail fires, exit > principal — residue is permanent gain)</li>
+<li><code>:settled-grace</code> (trail fires, exit &gt; principal — residue is permanent gain)</li>
 <li><code>:settled-violence</code> (safety-stop fires OR trail fires with exit ≤ principal — loss bounded by reservation)</li>
 </ul>
 <p>Exactly <strong>two swaps</strong> per trade lifecycle (entry + exit). Runner transition is <strong>not</strong> a swap.</p>
@@ -171,8 +173,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <h3>7. The Cascade Circuit</h3>
 <p>Three levels of distance knowledge, from specific to general:</p>
 <ol>
-<li><strong>Reckoner (K=10 bucketed)</strong> — contextual: "for THIS thought, what distance?" Cosine against K prototypes, soft-weight top-3, interpolate. O(K×D).</li>
-<li><strong>ScalarAccumulator (global)</strong> — if reckoner inexperienced: "what does Grace prefer for this pair overall?"</li>
+<li><strong>Reckoner (K=10 bucketed)</strong> — contextual: &quot;for THIS thought, what distance?&quot; Cosine against K prototypes, soft-weight top-3, interpolate. O(K×D).</li>
+<li><strong>ScalarAccumulator (global)</strong> — if reckoner inexperienced: &quot;what does Grace prefer for this pair overall?&quot;</li>
 <li><strong>Default crutch</strong> — if accumulator empty: the hardcoded default from construction.</li>
 </ol>
 <h3>8. The Propagation Circuit</h3>
@@ -209,36 +211,99 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Each consumer drains at most <code>MAX_DRAIN=5</code> learn signals per candle</li>
 <li>Log service batches 100 rows per commit</li>
 </ul>
-<hr>
+<hr />
 <h2>Key Architectural Principles</h2>
 <table>
-<thead><tr><th>Principle</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Principle">Values up, not queues down</td><td data-label="Meaning">Side-effects returned as values, never queued via parameters</td></tr>
-<tr><td data-label="Principle">Bounded(1) IS the synchronization</td><td data-label="Meaning">No mutexes, no shared state — channel capacity enforces lockstep</td></tr>
-<tr><td data-label="Principle">The binary does not think</td><td data-label="Meaning">It drives the fold and writes what happened</td></tr>
-<tr><td data-label="Principle">One encoding path</td><td data-label="Meaning">Encoding at prediction and resolution are identical</td></tr>
-<tr><td data-label="Principle">The moment acts, the past teaches</td><td data-label="Meaning">Prediction and learning are decoupled, both converge</td></tr>
+<thead>
+<tr>
+  <th>Principle</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Principle">Values up, not queues down</td>
+  <td data-label="Meaning">Side-effects returned as values, never queued via parameters</td>
+</tr>
+<tr>
+  <td data-label="">Bounded(1) IS the synchronization</td>
+  <td data-label="">No mutexes, no shared state — channel capacity enforces lockstep</td>
+</tr>
+<tr>
+  <td data-label="">The binary does not think</td>
+  <td data-label="">It drives the fold and writes what happened</td>
+</tr>
+<tr>
+  <td data-label="">One encoding path</td>
+  <td data-label="">Encoding at prediction and resolution are identical</td>
+</tr>
+<tr>
+  <td data-label="">The moment acts, the past teaches</td>
+  <td data-label="">Prediction and learning are decoupled, both converge</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Component Summary (from Circuit 1 legend)</h2>
 <table>
-<thead><tr><th>Component</th><th>Role</th></tr></thead>
-<tr><td data-label="Component">IndicatorBank</td><td data-label="Role">Streaming state → enriched Candle (100+ indicators)</td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a></td><td data-label="Role">Pure functions → Vec\<ThoughtAST\></td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a></td><td data-label="Role">ASTs → Vectors (with LRU cache)</td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a></td><td data-label="Role">Optimization cache for diff-based encoding</td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a></td><td data-label="Role">Single thread, LRU cache, N client pipes</td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="pg-market-observer.html">MarketObserver</a> ×N</td><td data-label="Role">Predicts direction (Up/Down) from thought</td></tr>
-<tr><td data-label="Component">ExitObserver ×M</td><td data-label="Role">Predicts distances (trail, stop) from composed thought</td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="pg-broker.html">Broker</a> ×N×M</td><td data-label="Role">Composes market + exit predictions, owns papers, proposes trades</td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="pg-four-step-loop.html">Post</a></td><td data-label="Role">Per-asset-pair unit, routes the four-step loop</td></tr>
-<tr><td data-label="Component"><a class="wikilink" href="pg-treasury.html">Treasury</a></td><td data-label="Role">Capital management (available ↔ reserved)</td></tr>
-<tr><td data-label="Component">Enterprise</td><td data-label="Role">Coordination plane, routes candles and propagation</td></tr>
+<thead>
+<tr>
+  <th>Component</th>
+  <th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Component">IndicatorBank</td>
+  <td data-label="Role">Streaming state → enriched Candle (100+ indicators)</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt;</td>
+  <td data-label="">Pure functions → Vec&lt;ThoughtAST&gt;</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt;</td>
+  <td data-label="">ASTs → Vectors (with LRU cache)</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt;</td>
+  <td data-label="">Optimization cache for diff-based encoding</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;EncoderService&lt;/a&gt;</td>
+  <td data-label="">Single thread, LRU cache, N client pipes</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt; ×N</td>
+  <td data-label="">Predicts direction (Up/Down) from thought</td>
+</tr>
+<tr>
+  <td data-label="">ExitObserver ×M</td>
+  <td data-label="">Predicts distances (trail, stop) from composed thought</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; ×N×M</td>
+  <td data-label="">Composes market + exit predictions, owns papers, proposes trades</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt;</td>
+  <td data-label="">Per-asset-pair unit, routes the four-step loop</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt;</td>
+  <td data-label="">Capital management (available ↔ reserved)</td>
+</tr>
+<tr>
+  <td data-label="">Enterprise</td>
+  <td data-label="">Coordination plane, routes candles and propagation</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Notes</h2>
 <ul>
-<li>The document uses "ExitObserver" throughout; per the project's CLAUDE.md, this was renamed to "Position Observer" in Proposal 050, but CIRCUIT.md has not been updated to reflect this rename.</li>
-<li>The "misses" pattern (cache misses returned as values, inserted between candles) is consistent throughout all circuits.</li>
+<li>The document uses &quot;ExitObserver&quot; throughout; per the project's CLAUDE.md, this was renamed to &quot;Position Observer&quot; in Proposal 050, but CIRCUIT.md has not been updated to reflect this rename.</li>
+<li>The &quot;misses&quot; pattern (cache misses returned as values, inserted between candles) is consistent throughout all circuits.</li>
 <li>All circuits compose into one equation: <code>f(state, candle) → state</code>.</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

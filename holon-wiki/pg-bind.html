@@ -126,130 +126,211 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Bind — the self-inverse combinator <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p><strong><code>bind</code></strong> is the core relational primitive of the holon-rs vector algebra. It composes two concept vectors into one via element-wise multiplication over bipolar values <code>{-1, 0, +1}</code>. Its defining property is <strong>self-inverseness</strong>: <code>bind(bind(A, B), A) = B</code> exactly (not approximately). The WAT spec names it one of four generators of the Vector Algebra. In Rust, it is implemented as <code>Primitives::bind</code>, with <code>unbind</code> exposed as a semantic alias. Every structured encoding in the system — from <a class="wikilink" href="T0-006-walkable.html">Walkable</a> role-filler pairs to <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> <code>Bind</code> nodes — ultimately reduces to calls to <code>bind</code>.</p>
-<hr></div><div class="prose prose-invert max-w-none"><h2>Algebraic definition</h2>
+<p><strong><code>bind</code></strong> is the core relational primitive of the holon-rs vector algebra. It composes two concept vectors into one via element-wise multiplication over bipolar values <code>{-1, 0, +1}</code>. Its defining property is <strong>self-inverseness</strong>: <code>bind(bind(A, B), A) = B</code> exactly (not approximately). The WAT spec names it one of four generators of the Vector Algebra. In Rust, it is implemented as <code>Primitives::bind</code>, with <code>unbind</code> exposed as a semantic alias. Every structured encoding in the system — from &lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; role-filler pairs to &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; <code>Bind</code> nodes — ultimately reduces to calls to <code>bind</code>.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>Algebraic definition</h2>
 <p>From the WAT spec (<code>wat/core/primitives.wat</code>):</p>
-<blockquote>"(bind role filler) → Vector"</blockquote>
-<blockquote>"Compose two concepts into a relationship."</blockquote>
-<blockquote>"Self-inverse: (bind (bind A B) A) = B"</blockquote>
+<blockquote>
+<p>&quot;(bind role filler) → Vector&quot;
+&quot;Compose two concepts into a relationship.&quot;
+&quot;Self-inverse: (bind (bind A B) A) = B&quot;</p>
+</blockquote>
 <p>The WAT defines the Vector Algebra as:</p>
-<blockquote>"A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism."</blockquote>
+<blockquote>
+<p>&quot;A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism.&quot;</p>
+</blockquote>
 <p>Bind is the <strong>group action</strong> — the operation that creates structure (relationships) out of flat atoms.</p>
-<hr>
+<hr />
 <h2>Implementation</h2>
 <p>The Rust implementation lives in <code>holon-rs/src/kernel/primitives.rs</code>:</p>
-<pre><code>
-/// Bind two vectors (element-wise multiplication for bipolar).
+<pre><code class="language-rust">/// Bind two vectors (element-wise multiplication for bipolar).
 ///
 /// Creates an association between two concepts. The result is
 /// dissimilar to both inputs, but `unbind(bind(A, B), A) ≈ B`.
 ///
 /// For bipolar vectors, this is element-wise multiplication.
-pub fn bind(a: &Vector, b: &Vector) -> Vector {
+pub fn bind(a: &amp;Vector, b: &amp;Vector) -&gt; Vector {
     let mut out = Vector::zeros(a.dimensions());
-    Self::bind_into(a, b, &mut out);
+    Self::bind_into(a, b, &amp;mut out);
     out
 }
 </code></pre>
-<p>The operation is literally <code><em>o = x </em> y</code> per dimension — element-wise multiplication of bipolar values. A parallel f64 pipeline also exists (<code>bind_f64</code>), identical in semantics.</p>
+<p>The operation is literally <code>*o = x * y</code> per dimension — element-wise multiplication of bipolar values. A parallel f64 pipeline also exists (<code>bind_f64</code>), identical in semantics.</p>
 <p><code>unbind</code> is exposed as an explicit alias:</p>
-<pre><code>
-/// Unbind a key from a bound vector.
+<pre><code class="language-rust">/// Unbind a key from a bound vector.
 /// For bipolar vectors, unbind is identical to bind (self-inverse property):
 /// `unbind(bind(A, B), A) = B`
-pub fn unbind(bound: &Vector, key: &Vector) -> Vector {
+pub fn unbind(bound: &amp;Vector, key: &amp;Vector) -&gt; Vector {
     Self::bind(bound, key)
 }
 </code></pre>
 <h3>Why self-inverse works</h3>
 <p>For bipolar vectors where each element is <code>{-1, +1}</code>: <code>(a × b) × a = a² × b = 1 × b = b</code>. This is <strong>exact</strong>, not approximate — confirmed by the Rust test:</p>
-<pre><code>
-#[test]
+<pre><code class="language-rust">#[test]
 fn test_bind_self_inverse() {
-    let ab = Primitives::bind(&a, &b);
-    let b_recovered = Primitives::bind(&ab, &a);
+    let ab = Primitives::bind(&amp;a, &amp;b);
+    let b_recovered = Primitives::bind(&amp;ab, &amp;a);
     assert_eq!(b, b_recovered);  // exact equality
 }
 </code></pre>
-<blockquote>Source: <a class="wikilink" href="T0-002-primitives.html">T0-002-primitives</a>, WAT spec line "Self-inverse: (bind (bind A B) A) = B", Rust <code>test_bind_self_inverse</code>.</blockquote>
-<hr>
+<blockquote>
+<p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt;, WAT spec line &quot;Self-inverse: (bind (bind A B) A) = B&quot;, Rust <code>test_bind_self_inverse</code>.</p>
+</blockquote>
+<hr />
 <h2>Where bind appears in the encoding pipeline</h2>
-<h3>In the <a class="wikilink" href="T0-006-walkable.html">Walkable</a> encoder</h3>
+<h3>In the &lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; encoder</h3>
 <p>The <code>Walkable</code> trait's <code>encode_walkable</code> recursive traversal uses bind for <strong>role-filler encoding</strong> on every <code>Map</code> node:</p>
-<pre><code>
-for each (key, value):
+<pre><code>for each (key, value):
     role_vec   = encode_atom(key_path)        // key → vector
     filler_vec = encode_walkable_value(value)  // value → vector
     bound = bind(role_vec, filler_vec)         // role-filler binding
 bundle(all bounds)                             // superimpose all bindings
 </code></pre>
 <p>The same pattern applies to <code>List</code>/<code>Spread</code> encoding, where positional indices serve as roles:</p>
-<pre><code>
-for each (i, item):
-    pos_vec  = encode_atom("field.[i]")
+<pre><code>for each (i, item):
+    pos_vec  = encode_atom(&quot;field.[i]&quot;)
     item_vec = encode_walkable_value(item)
     bound = bind(pos_vec, item_vec)
 bundle(all bounds)
 </code></pre>
 <p>Set encoding also uses bind: <code>bind(set_indicator, bundled_items)</code> to tag a bundle as a set.</p>
-<blockquote>Source: <a class="wikilink" href="T0-006-walkable.html">T0-006-walkable</a>, "The key insight is role-filler binding: we bind each value (filler) with its key (role) before bundling."</blockquote>
-<h3>In the <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> encoder</h3>
+<blockquote>
+<p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;T0-006-walkable&lt;/a&gt;, &quot;The key insight is role-filler binding: we bind each value (filler) with its key (role) before bundling.&quot;</p>
+</blockquote>
+<h3>In the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; encoder</h3>
 <p><code>ThoughtAST::Bind(left, right)</code> maps directly to <code>Primitives::bind</code>:</p>
-<pre><code>
-Bind(left, right) → l_vec = encode(left)
+<pre><code>Bind(left, right) → l_vec = encode(left)
                      r_vec = encode(right)
-                     Primitives::bind(&l_vec, &r_vec)
+                     Primitives::bind(&amp;l_vec, &amp;r_vec)
 </code></pre>
-<p>This is the AST node for named scalar facts like "rsi is 0.73" — <code>Bind(Atom("rsi"), Log(0.73))</code>.</p>
-<blockquote>Source: <a class="wikilink" href="T0-011-thought-encoder-rust.html">T0-011-thought-encoder-rust</a>, <code>ThoughtEncoder::encode</code> dispatch table: "Recursively encodes left → l_vec, encodes right → r_vec, then Primitives::bind(&l_vec, &r_vec)."</blockquote>
+<p>This is the AST node for named scalar facts like &quot;rsi is 0.73&quot; — <code>Bind(Atom(&quot;rsi&quot;), Log(0.73))</code>.</p>
+<blockquote>
+<p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-011-thought-encoder-rust.html&quot;&gt;T0-011-thought-encoder-rust&lt;/a&gt;, <code>ThoughtEncoder::encode</code> dispatch table: &quot;Recursively encodes left → l_vec, encodes right → r_vec, then Primitives::bind(&amp;l_vec, &amp;r_vec).&quot;</p>
+</blockquote>
 <h3>Extended Rust operations using bind</h3>
 <table>
-<thead><tr><th>Method</th><th>Description</th></tr></thead>
-<tr><td data-label="Method"><code>conditional_bind(a, b, gate, mode)</code></td><td data-label="Description">Element-wise bind gated by a third vector</td></tr>
-<tr><td data-label="Method"><code>analogy(a, b, c)</code></td><td data-label="Description"><code>C + difference(B, A)</code> — relational transfer (uses bind internally)</td></tr>
-<tr><td data-label="Method"><code>similarity_profile(a, b)</code></td><td data-label="Description">Element-wise product (agreement pattern as vector) — same math as bind</td></tr>
+<thead>
+<tr>
+  <th>Method</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Method"><code>conditional_bind(a, b, gate, mode)</code></td>
+  <td data-label="Description">Element-wise bind gated by a third vector</td>
+</tr>
+<tr>
+  <td data-label=""><code>analogy(a, b, c)</code></td>
+  <td data-label=""><code>C + difference(B, A)</code> — relational transfer (uses bind internally)</td>
+</tr>
+<tr>
+  <td data-label=""><code>similarity_profile(a, b)</code></td>
+  <td data-label="">Element-wise product (agreement pattern as vector) — same math as bind</td>
+</tr>
+</tbody>
 </table>
-<blockquote>Source: <a class="wikilink" href="T0-002-primitives.html">T0-002-primitives</a>, extended operations table.</blockquote>
-<hr>
+<blockquote>
+<p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt;, extended operations table.</p>
+</blockquote>
+<hr />
 <h2>Properties summary</h2>
 <table>
-<thead><tr><th>Property</th><th>Value</th></tr></thead>
-<tr><td data-label="Property">Operation</td><td data-label="Value">Element-wise multiplication over bipolar <code>{-1, 0, +1}</code></td></tr>
-<tr><td data-label="Property">Signature</td><td data-label="Value"><code>(bind role filler) → Vector</code></td></tr>
-<tr><td data-label="Property">Self-inverse</td><td data-label="Value">Exact: <code>bind(bind(A, B), A) = B</code></td></tr>
-<tr><td data-label="Property">Identity element</td><td data-label="Value">None (bind has no identity — it destroys similarity to inputs)</td></tr>
-<tr><td data-label="Property">Commutative</td><td data-label="Value">Yes: <code>bind(A, B) = bind(B, A)</code></td></tr>
-<tr><td data-label="Property">Dissimilar to inputs</td><td data-label="Value">The result is dissimilar to both <code>A</code> and <code>B</code> by cosine</td></tr>
-<tr><td data-label="Property">WAT generator</td><td data-label="Value">Yes — one of four Vector Algebra generators</td></tr>
-<tr><td data-label="Property">Rust location</td><td data-label="Value"><code>Primitives::bind</code> in <code>holon-rs/src/kernel/primitives.rs</code></td></tr>
+<thead>
+<tr>
+  <th>Property</th>
+  <th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Property">Operation</td>
+  <td data-label="Value">Element-wise multiplication over bipolar <code>{-1, 0, +1}</code></td>
+</tr>
+<tr>
+  <td data-label="">Signature</td>
+  <td data-label=""><code>(bind role filler) → Vector</code></td>
+</tr>
+<tr>
+  <td data-label="">Self-inverse</td>
+  <td data-label="">Exact: <code>bind(bind(A, B), A) = B</code></td>
+</tr>
+<tr>
+  <td data-label="">Identity element</td>
+  <td data-label="">None (bind has no identity — it destroys similarity to inputs)</td>
+</tr>
+<tr>
+  <td data-label="">Commutative</td>
+  <td data-label="">Yes: <code>bind(A, B) = bind(B, A)</code></td>
+</tr>
+<tr>
+  <td data-label="">Dissimilar to inputs</td>
+  <td data-label="">The result is dissimilar to both <code>A</code> and <code>B</code> by cosine</td>
+</tr>
+<tr>
+  <td data-label="">WAT generator</td>
+  <td data-label="">Yes — one of four Vector Algebra generators</td>
+</tr>
+<tr>
+  <td data-label="">Rust location</td>
+  <td data-label=""><code>Primitives::bind</code> in <code>holon-rs/src/kernel/primitives.rs</code></td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Relationship to the other generators</h2>
 <p>Bind is one of four generators of the WAT Vector Algebra:</p>
 <table>
-<thead><tr><th>Generator</th><th>Role</th><th>Relationship to bind</th></tr></thead>
-<tr><td data-label="Generator"><a class="wikilink" href="pg-atom.html">atom</a></td><td data-label="Role">Ground truth — names concepts → vectors</td><td data-label="Relationship to bind">Produces the vectors that bind composes</td></tr>
-<tr><td data-label="Generator"><strong>bind</strong></td><td data-label="Role">Group action — composes relationships</td><td data-label="Relationship to bind">This primitive</td></tr>
-<tr><td data-label="Generator"><a class="wikilink" href="pg-bundle.html">bundle</a></td><td data-label="Role">Commutative monoid — superimposes relationships</td><td data-label="Relationship to bind">Bundles the products of bind (role-filler pairs)</td></tr>
-<tr><td data-label="Generator"><a class="wikilink" href="T0-003-cosine.html">cosine</a></td><td data-label="Role">Measurement homomorphism — measures similarity</td><td data-label="Relationship to bind">The only way to inspect what bind produced</td></tr>
+<thead>
+<tr>
+  <th>Generator</th>
+  <th>Role</th>
+  <th>Relationship to bind</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Generator">&lt;a class=&quot;wikilink&quot; href=&quot;pg-atom.html&quot;&gt;atom&lt;/a&gt;</td>
+  <td data-label="Role">Ground truth — names concepts → vectors</td>
+  <td data-label="Relationship to bind">Produces the vectors that bind composes</td>
+</tr>
+<tr>
+  <td data-label=""><strong>bind</strong></td>
+  <td data-label="">Group action — composes relationships</td>
+  <td data-label="">This primitive</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt;</td>
+  <td data-label="">Commutative monoid — superimposes relationships</td>
+  <td data-label="">Bundles the products of bind (role-filler pairs)</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine&lt;/a&gt;</td>
+  <td data-label="">Measurement homomorphism — measures similarity</td>
+  <td data-label="">The only way to inspect what bind produced</td>
+</tr>
+</tbody>
 </table>
-<blockquote>Source: <a class="wikilink" href="T0-002-primitives.html">T0-002-primitives</a>, "Two algebraic structures. Nothing here is derivable from the others."</blockquote>
-<hr>
+<blockquote>
+<p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt;, &quot;Two algebraic structures. Nothing here is derivable from the others.&quot;</p>
+</blockquote>
+<hr />
 <h2>Divergences and caveats</h2>
 <ul>
 <li><strong>bind vs. unbind</strong>: The WAT spec describes the self-inverse property in terms of bind applied twice. Rust additionally exposes <code>unbind</code> as a named alias for clarity, but it is literally the same function.</li>
 <li><strong>f64 pipeline</strong>: <code>bind_f64</code> exists for extraction/analysis work. It is identical math (element-wise multiply) but operates on floating-point vectors without thresholding.</li>
 <li><strong>No identity element</strong>: Unlike <code>bundle</code> (whose WAT-specified identity is the zero vector), <code>bind</code> has no identity element. Binding with a zero vector produces all zeros.</li>
 </ul>
-<hr>
+<hr />
 <h2>Related Concepts</h2>
 <ul>
-<li><a class="wikilink" href="T0-002-primitives.html">T0-002-primitives</a> — Full primitive specification including bind, bundle, cosine, atom, and the extended Rust algebra</li>
-<li><a class="wikilink" href="T0-006-walkable.html">T0-006-walkable</a> — The <code>Walkable</code> trait that uses bind for role-filler encoding during structural traversal</li>
-<li><a class="wikilink" href="T0-011-thought-encoder-rust.html">T0-011-thought-encoder-rust</a> — The <code>ThoughtEncoder</code> and <code>ThoughtAST</code> that use bind as a first-class AST node</li>
-<li><a class="wikilink" href="pg-bundle.html">bundle</a> — The commutative monoid that superimposes bound pairs</li>
-<li><a class="wikilink" href="T0-003-cosine.html">cosine</a> — The measurement homomorphism used to inspect bound vectors</li>
-<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — The AST enum whose <code>Bind</code> variant maps directly to <code>Primitives::bind</code></li>
-<li><a class="wikilink" href="T0-006-walkable.html">Walkable</a> — The trait whose encoder produces role-filler bindings via bind</li>
-<li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — Optimization that maintains running sums of bound vectors across time steps</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt; — Full primitive specification including bind, bundle, cosine, atom, and the extended Rust algebra</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;T0-006-walkable&lt;/a&gt; — The <code>Walkable</code> trait that uses bind for role-filler encoding during structural traversal</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-011-thought-encoder-rust.html&quot;&gt;T0-011-thought-encoder-rust&lt;/a&gt; — The <code>ThoughtEncoder</code> and <code>ThoughtAST</code> that use bind as a first-class AST node</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt; — The commutative monoid that superimposes bound pairs</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine&lt;/a&gt; — The measurement homomorphism used to inspect bound vectors</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; — The AST enum whose <code>Bind</code> variant maps directly to <code>Primitives::bind</code></li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; — The trait whose encoder produces role-filler bindings via bind</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt; — Optimization that maintains running sums of bound vectors across time steps</li>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

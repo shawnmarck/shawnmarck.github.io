@@ -130,65 +130,118 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <ol>
 <li><strong><code>OnlineSubspace</code></strong> — a single incremental PCA learner that tracks k unnormalized eigenvectors, a running mean, and an adaptive anomaly threshold.</li>
 <li><strong><code>SubspaceSnapshot</code></strong> — a fully serializable record of <code>OnlineSubspace</code> state for persistence and distribution.</li>
-<li><strong><code>StripedSubspace</code></strong> — N independent <code>OnlineSubspace</code> instances (one per "stripe") for crosstalk-free attribution with root-sum-of-squares (RSS) aggregate residual.</li>
+<li><strong><code>StripedSubspace</code></strong> — N independent <code>OnlineSubspace</code> instances (one per &quot;stripe&quot;) for crosstalk-free attribution with root-sum-of-squares (RSS) aggregate residual.</li>
 </ol>
 <p>The module also provides a standalone <code>jacobi_eigenvalues()</code> function for computing eigenvalues of small symmetric matrices via Jacobi rotations.</p>
-<blockquote>"Inputs must be <code>&[f64]</code>. Callers convert bipolar <code>Vector</code> with <code>vec.to_f64()</code> before passing in — this keeps the memory layer decoupled from the VSA vector type."</blockquote>
-<blockquote>— <code>OnlineSubspace</code> struct doc, line 63–65</blockquote>
+<blockquote>
+<p>&quot;Inputs must be <code>&amp;[f64]</code>. Callers convert bipolar <code>Vector</code> with <code>vec.to_f64()</code> before passing in — this keeps the memory layer decoupled from the VSA vector type.&quot;
+— <code>OnlineSubspace</code> struct doc, line 63–65</p>
+</blockquote>
 <h2>How It Works</h2>
 <h3>OnlineSubspace</h3>
 <h4>Core State</h4>
 <table>
-<thead><tr><th>Field</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>dim: usize</code></td><td data-label="Purpose">Vector dimensionality</td></tr>
-<tr><td data-label="Field"><code>k: usize</code></td><td data-label="Purpose">Number of principal components (mutable via reflexive grow/shrink)</td></tr>
-<tr><td data-label="Field"><code>amnesia: f64</code></td><td data-label="Purpose">Forgetting exponent (>1 forgets old data faster; default 2.0)</td></tr>
-<tr><td data-label="Field"><code>ema_alpha: f64</code></td><td data-label="Purpose">EMA decay for threshold tracking (default 0.01)</td></tr>
-<tr><td data-label="Field"><code>sigma_mult: f64</code></td><td data-label="Purpose">Std devs above EMA for adaptive threshold (default 3.5)</td></tr>
-<tr><td data-label="Field"><code>reorth_interval: usize</code></td><td data-label="Purpose">Re-orthogonalize every N updates (default 500; 0 = never)</td></tr>
-<tr><td data-label="Field"><code>mean: Array1<f64></code></td><td data-label="Purpose">Running mean (dim-dimensional)</td></tr>
-<tr><td data-label="Field"><code>components: Array2<f64></code></td><td data-label="Purpose">Row-major k × dim component matrix (unnormalized eigenvectors)</td></tr>
-<tr><td data-label="Field"><code>n: usize</code></td><td data-label="Purpose">Observation count</td></tr>
-<tr><td data-label="Field"><code>res_ema: f64</code></td><td data-label="Purpose">EMA of residuals</td></tr>
-<tr><td data-label="Field"><code>res_var_ema: f64</code></td><td data-label="Purpose">EMA of residual variance</td></tr>
-<tr><td data-label="Field"><code>initialized: bool</code></td><td data-label="Purpose">Whether the first observation has been processed</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>dim: usize</code></td>
+  <td data-label="Purpose">Vector dimensionality</td>
+</tr>
+<tr>
+  <td data-label=""><code>k: usize</code></td>
+  <td data-label="">Number of principal components (mutable via reflexive grow/shrink)</td>
+</tr>
+<tr>
+  <td data-label=""><code>amnesia: f64</code></td>
+  <td data-label="">Forgetting exponent (&gt;1 forgets old data faster; default 2.0)</td>
+</tr>
+<tr>
+  <td data-label=""><code>ema_alpha: f64</code></td>
+  <td data-label="">EMA decay for threshold tracking (default 0.01)</td>
+</tr>
+<tr>
+  <td data-label=""><code>sigma_mult: f64</code></td>
+  <td data-label="">Std devs above EMA for adaptive threshold (default 3.5)</td>
+</tr>
+<tr>
+  <td data-label=""><code>reorth_interval: usize</code></td>
+  <td data-label="">Re-orthogonalize every N updates (default 500; 0 = never)</td>
+</tr>
+<tr>
+  <td data-label=""><code>mean: Array1&lt;f64&gt;</code></td>
+  <td data-label="">Running mean (dim-dimensional)</td>
+</tr>
+<tr>
+  <td data-label=""><code>components: Array2&lt;f64&gt;</code></td>
+  <td data-label="">Row-major k × dim component matrix (unnormalized eigenvectors)</td>
+</tr>
+<tr>
+  <td data-label=""><code>n: usize</code></td>
+  <td data-label="">Observation count</td>
+</tr>
+<tr>
+  <td data-label=""><code>res_ema: f64</code></td>
+  <td data-label="">EMA of residuals</td>
+</tr>
+<tr>
+  <td data-label=""><code>res_var_ema: f64</code></td>
+  <td data-label="">EMA of residual variance</td>
+</tr>
+<tr>
+  <td data-label=""><code>initialized: bool</code></td>
+  <td data-label="">Whether the first observation has been processed</td>
+</tr>
+</tbody>
 </table>
-<p>The component matrix is stored as <code>ndarray::Array2<f64></code> so that "dot products, projections, and deflations compile down to vectorized (SIMD) loops."</p>
+<p>The component matrix is stored as <code>ndarray::Array2&lt;f64&gt;</code> so that &quot;dot products, projections, and deflations compile down to vectorized (SIMD) loops.&quot;</p>
 <h4>CCIPCA Update (<code>update()</code>)</h4>
 <p>On each observation <code>x</code>:</p>
 <ol>
-<li><strong>Compute residual before updating</strong> — "ensuring the adaptive threshold is calibrated against the same distribution as test-time scoring."</li>
-<li><strong>Update running mean</strong>: <code>mean = ((n-1)/n) <em> mean + (1/n) </em> x</code></li>
+<li><strong>Compute residual before updating</strong> — &quot;ensuring the adaptive threshold is calibrated against the same distribution as test-time scoring.&quot;</li>
+<li><strong>Update running mean</strong>: <code>mean = ((n-1)/n) * mean + (1/n) * x</code></li>
 <li><strong>Center</strong>: <code>x_c = x - mean</code></li>
 <li><strong>First observation</strong>: set component 0 to <code>x_c</code>, mark initialized.</li>
-<li><strong>For each component i</strong> (CCIPCA step):</li>
-</ol>
-<ul>
-<li>Apply decay+grow: <code>component[i] = ((n-1-amnesia)/n) <em> component[i] + ((1+amnesia)/n) </em> x_c_proj * x_c</code></li>
+<li><strong>For each component i</strong> (CCIPCA step):<ul>
+<li>Compute projection <code>x_c_proj = x_c · component[i] / ||component[i]||</code></li>
+<li>Apply decay+grow: <code>component[i] = ((n-1-amnesia)/n) * component[i] + ((1+amnesia)/n) * x_c_proj * x_c</code></li>
 <li><strong>Deflate</strong> <code>x_c</code> by subtracting its projection onto the updated component, so each component captures successively smaller variance.</li>
 </ul>
-<ol>
-<li><strong>Update threshold EMA</strong> (with warmup: uses <code>1/n</code> instead of <code>ema_alpha</code> until <code>n > 1/alpha</code>).</li>
+</li>
+<li><strong>Update threshold EMA</strong> (with warmup: uses <code>1/n</code> instead of <code>ema_alpha</code> until <code>n &gt; 1/alpha</code>).</li>
 <li><strong>Reflexive dimensionality</strong>: <code>maybe_grow()</code> or <code>maybe_shrink()</code> (mutually exclusive per update).</li>
-<li><strong>Periodic re-orthogonalization</strong> if <code>reorth_interval > 0</code> and <code>n % reorth_interval == 0</code>.</li>
+<li><strong>Periodic re-orthogonalization</strong> if <code>reorth_interval &gt; 0</code> and <code>n % reorth_interval == 0</code>.</li>
 </ol>
 <h4>Scoring (<code>residual()</code>)</h4>
 <p>Centers the input, then iteratively projects onto each component and deflates. Returns the L2 norm of the remaining (out-of-subspace) residual — the <strong>anomaly score</strong>. Higher = more anomalous.</p>
-<blockquote>"Returns the residual norm (anomaly score). Higher = more anomalous."</blockquote>
-<blockquote>— <code>residual()</code> doc, line 323</blockquote>
+<blockquote>
+<p>&quot;Returns the residual norm (anomaly score). Higher = more anomalous.&quot;
+— <code>residual()</code> doc, line 323</p>
+</blockquote>
 <h4>Adaptive Threshold (<code>threshold()</code>)</h4>
-<blockquote>"Adaptive anomaly threshold: EMA(residual) + sigma_mult * sqrt(variance)."</blockquote>
+<blockquote>
+<p>&quot;Adaptive anomaly threshold: EMA(residual) + sigma_mult * sqrt(variance).&quot;</p>
+</blockquote>
 <p>Returns <code>f64::INFINITY</code> until at least 2 observations have been seen.</p>
-<h4>Projection & Reconstruction</h4>
+<h4>Projection &amp; Reconstruction</h4>
 <ul>
 <li><code>project(x)</code> → k coefficients: the projection onto each unit-normalized component.</li>
+<li><code>reconstruct(x)</code> → dim-dimensional vector: mean + Σ (coeff_i / ||component_i||) × component_i.</li>
 <li><code>anomalous_component(x)</code> → <code>x - reconstruct(x)</code>: the out-of-subspace part.</li>
 </ul>
 <h4>Approximate Eigenvalues</h4>
-<blockquote>"Approximate eigenvalues: L2 norms of the unnormalized component vectors."</blockquote>
+<blockquote>
+<p>&quot;Approximate eigenvalues: L2 norms of the unnormalized component vectors.&quot;</p>
+</blockquote>
 <p>The L2 norms of the unnormalized component vectors approximate the eigenvalues of the covariance matrix.</p>
 <h4>Explained Variance Ratio</h4>
-<blockquote>"Estimated from recent residuals. Only meaningful after ≥10 updates."</blockquote>
+<blockquote>
+<p>&quot;Estimated from recent residuals. Only meaningful after ≥10 updates.&quot;</p>
+</blockquote>
 <p>Formula: <code>(1.0 - res_ema² / dim).max(0.0)</code>.</p>
 <h4>Subspace Alignment (<code>subspace_alignment()</code>)</h4>
 <p>Measures directional similarity between two subspaces via principal angles:</p>
@@ -199,25 +252,31 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Take square roots → cosines of principal angles.</li>
 <li>Average the top angles (default: <code>max(3, n/4)</code>).</li>
 </ol>
-<blockquote>"Returns a value in [0, 1]: 1.0 = same directions, 0.0 = orthogonal."</blockquote>
-<blockquote>"Cost: O(k · dim) for the basis product, O(k²) for the SVD."</blockquote>
+<blockquote>
+<p>&quot;Returns a value in [0, 1]: 1.0 = same directions, 0.0 = orthogonal.&quot;
+&quot;Cost: O(k · dim) for the basis product, O(k²) for the SVD.&quot;</p>
+</blockquote>
 <h4>Reflexive Dimensionality (Grow / Shrink K)</h4>
 <p>The subspace automatically adjusts its rank based on eigenvalue energy ratios:</p>
 <ul>
-<li>Mutually exclusive per update: "a newly grown component starts at zero and would be immediately shrunk if both ran in the same step."</li>
+<li><strong><code>maybe_grow()</code></strong>: if <code>k &lt; max_components</code> and <code>||last_component|| / ||first_component|| &gt; grow_threshold</code> (default 0.05), append a zero-initialized row and increment k.</li>
+<li><strong><code>maybe_shrink()</code></strong>: if <code>k &gt; min_components</code> and <code>||last_component|| / ||first_component|| &lt; shrink_threshold</code> (default 0.01), drop the last row and decrement k.</li>
+<li>Mutually exclusive per update: &quot;a newly grown component starts at zero and would be immediately shrunk if both ran in the same step.&quot;</li>
 <li>Defaults: <code>min_components = initial_k</code>, <code>max_components = max(64, 8*k)</code>.</li>
 </ul>
 <h4>Re-orthogonalization</h4>
 <p>Modified Gram-Schmidt preserving component norms (eigenvalue estimates):</p>
-<blockquote>"Modified Gram-Schmidt re-orthogonalization preserving component norms."</blockquote>
+<blockquote>
+<p>&quot;Modified Gram-Schmidt re-orthogonalization preserving component norms.&quot;</p>
+</blockquote>
 <p>For each component i, subtract projections onto all prior components, then rescale to restore the original norm.</p>
 <h3>StripedSubspace</h3>
-<p>"N independent OnlineSubspaces, one per stripe." Each stripe learns and scores its own portion of encoded data.</p>
+<p>&quot;N independent OnlineSubspaces, one per stripe.&quot; Each stripe learns and scores its own portion of encoded data.</p>
 <ul>
-<li><strong>Aggregate residual</strong>: RSS of per-stripe residuals — "preserving the geometric interpretation of anomaly magnitude."</li>
-<li><strong>Residual profile</strong>: per-stripe residual vector — "the directional signal — the pattern of which stripes are anomalous — complementing the scalar magnitude (RSS)."</li>
+<li><strong>Aggregate residual</strong>: RSS of per-stripe residuals — &quot;preserving the geometric interpretation of anomaly magnitude.&quot;</li>
+<li><strong>Residual profile</strong>: per-stripe residual vector — &quot;the directional signal — the pattern of which stripes are anomalous — complementing the scalar magnitude (RSS).&quot;</li>
 <li><strong>Threshold</strong>: RSS of per-stripe thresholds.</li>
-<li>Used with <code>Encoder::encode_walkable_striped</code> which "distributes leaf bindings across stripes via FQDN path hashing."</li>
+<li>Used with <code>Encoder::encode_walkable_striped</code> which &quot;distributes leaf bindings across stripes via FQDN path hashing.&quot;</li>
 </ul>
 <h3>Jacobi Eigenvalues</h3>
 <p>Standalone function for small symmetric matrices (typically k×k where k = 3–128):</p>
@@ -228,27 +287,68 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ul>
 <h2>Key Properties</h2>
 <table>
-<thead><tr><th>Property</th><th>Detail</th></tr></thead>
-<tr><td data-label="Property">Algorithm</td><td data-label="Detail">CCIPCA (Weng et al., 2003)</td></tr>
-<tr><td data-label="Property">Linear algebra</td><td data-label="Detail"><code>ndarray</code> for SIMD-vectorized ops</td></tr>
-<tr><td data-label="Property">Default params</td><td data-label="Detail"><code>amnesia=2.0, ema_alpha=0.01, sigma_mult=3.5, reorth_interval=500</code></td></tr>
-<tr><td data-label="Property">Threshold calibration</td><td data-label="Detail">Residual computed before CCIPCA update (matches test-time scoring)</td></tr>
-<tr><td data-label="Property">Reflexive K</td><td data-label="Detail">Automatic grow/shrink based on eigenvalue energy ratios</td></tr>
-<tr><td data-label="Property">Striped variant</td><td data-label="Detail">N independent subspaces with RSS aggregation</td></tr>
-<tr><td data-label="Property">Persistence</td><td data-label="Detail">Full state capture via <code>SubspaceSnapshot</code> (serde)</td></tr>
-<tr><td data-label="Property">Eigenvalue approximation</td><td data-label="Detail">L2 norms of unnormalized component vectors</td></tr>
+<thead>
+<tr>
+  <th>Property</th>
+  <th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Property">Algorithm</td>
+  <td data-label="Detail">CCIPCA (Weng et al., 2003)</td>
+</tr>
+<tr>
+  <td data-label="">Linear algebra</td>
+  <td data-label=""><code>ndarray</code> for SIMD-vectorized ops</td>
+</tr>
+<tr>
+  <td data-label="">Default params</td>
+  <td data-label=""><code>amnesia=2.0, ema_alpha=0.01, sigma_mult=3.5, reorth_interval=500</code></td>
+</tr>
+<tr>
+  <td data-label="">Threshold calibration</td>
+  <td data-label="">Residual computed before CCIPCA update (matches test-time scoring)</td>
+</tr>
+<tr>
+  <td data-label="">Reflexive K</td>
+  <td data-label="">Automatic grow/shrink based on eigenvalue energy ratios</td>
+</tr>
+<tr>
+  <td data-label="">Striped variant</td>
+  <td data-label="">N independent subspaces with RSS aggregation</td>
+</tr>
+<tr>
+  <td data-label="">Persistence</td>
+  <td data-label="">Full state capture via <code>SubspaceSnapshot</code> (serde)</td>
+</tr>
+<tr>
+  <td data-label="">Eigenvalue approximation</td>
+  <td data-label="">L2 norms of unnormalized component vectors</td>
+</tr>
+</tbody>
 </table>
 <h2>Source Quotes</h2>
-<blockquote>"Tracks k unnormalized eigenvectors whose L2 norms approximate eigenvalues. Each update deflates the input through the learned components, so each component captures a successively smaller slice of variance."</blockquote>
-<blockquote>— module-level doc, line 8–10</blockquote>
-<blockquote>"The residual is computed <em>before</em> the CCIPCA update so it matches what <code>residual()</code> would return — ensuring the adaptive threshold is calibrated against the same distribution as test-time scoring."</blockquote>
-<blockquote>— <code>update()</code> doc, line 232–234</blockquote>
-<blockquote>"Grow K by one if the last eigenvalue is a significant fraction of the first, indicating the subspace hasn't captured all the variance."</blockquote>
-<blockquote>— <code>maybe_grow()</code> doc, line 526–527</blockquote>
-<blockquote>"Shrink K by one if the last eigenvalue is negligible relative to the first, indicating the last component captures only noise."</blockquote>
-<blockquote>— <code>maybe_shrink()</code> doc, line 550–551</blockquote>
-<blockquote>"Aggregate residual is the root-sum-of-squares (RSS) of per-stripe residuals, preserving the geometric interpretation of anomaly magnitude."</blockquote>
-<blockquote>— <code>StripedSubspace</code> struct doc, line 610–611</blockquote>
+<blockquote>
+<p>&quot;Tracks k unnormalized eigenvectors whose L2 norms approximate eigenvalues. Each update deflates the input through the learned components, so each component captures a successively smaller slice of variance.&quot;
+— module-level doc, line 8–10</p>
+</blockquote>
+<blockquote>
+<p>&quot;The residual is computed <em>before</em> the CCIPCA update so it matches what <code>residual()</code> would return — ensuring the adaptive threshold is calibrated against the same distribution as test-time scoring.&quot;
+— <code>update()</code> doc, line 232–234</p>
+</blockquote>
+<blockquote>
+<p>&quot;Grow K by one if the last eigenvalue is a significant fraction of the first, indicating the subspace hasn't captured all the variance.&quot;
+— <code>maybe_grow()</code> doc, line 526–527</p>
+</blockquote>
+<blockquote>
+<p>&quot;Shrink K by one if the last eigenvalue is negligible relative to the first, indicating the last component captures only noise.&quot;
+— <code>maybe_shrink()</code> doc, line 550–551</p>
+</blockquote>
+<blockquote>
+<p>&quot;Aggregate residual is the root-sum-of-squares (RSS) of per-stripe residuals, preserving the geometric interpretation of anomaly magnitude.&quot;
+— <code>StripedSubspace</code> struct doc, line 610–611</p>
+</blockquote>
 <h2>Test Coverage</h2>
 <ul>
 <li><code>test_threshold_infinite_before_training</code>: threshold is <code>∞</code> before any observations</li>
@@ -257,14 +357,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>test_residual_out_of_distribution_above_threshold</code>: at least 7/10 random OOD samples above threshold</li>
 <li><code>test_snapshot_round_trip</code>: residuals match to <code>1e-10</code> after snapshot→restore</li>
 <li><code>test_project_reconstruct_anomalous_component</code>: <code>reconstruct(x) + anomalous_component(x) = x</code> elementwise</li>
-<li><code>test_subspace_alignment_same_distribution</code>: alignment > 0.9 for same-distribution subspaces</li>
-<li><code>test_subspace_alignment_orthogonal_distributions</code>: alignment < 0.3 for half-space / complementary half-space</li>
+<li><code>test_subspace_alignment_same_distribution</code>: alignment &gt; 0.9 for same-distribution subspaces</li>
+<li><code>test_subspace_alignment_orthogonal_distributions</code>: alignment &lt; 0.3 for half-space / complementary half-space</li>
 <li><code>test_subspace_alignment_empty</code>: returns 0.0 for untrained subspaces</li>
-<li><code>test_explained_ratio_increases_with_training</code>: ratio > 0.5 after 300 low-rank updates</li>
+<li><code>test_explained_ratio_increases_with_training</code>: ratio &gt; 0.5 after 300 low-rank updates</li>
 <li><code>test_reflexive_grow_high_variance_data</code>: k grows from 4 with 16-direction uniform-variance data</li>
 <li><code>test_reflexive_shrink_low_rank_data</code>: k shrinks from 16 with 3-direction data</li>
 <li><code>test_reflexive_respects_min_components</code>: does not shrink below min_k=8</li>
 <li><code>test_reflexive_respects_max_components</code>: does not grow beyond max_k=8</li>
 <li><code>test_reflexive_snapshot_round_trip</code>: component count and thresholds preserved after round-trip</li>
 <li>Striped tests: threshold infinite before training, RSS residual non-negative, in-distribution below threshold, OOD above threshold, snapshot round-trip, per-stripe anomalous component</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

@@ -125,52 +125,77 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Encoder Service — the distributed caching layer for thought encoding <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/encoder-service.wat</code> (142 lines)</p>
-<p><strong>Guide reference:</strong> No dedicated GUIDE section found; implied by GUIDE.md lines 1439–1446 (LruCache on ThoughtEncoder)</p>
-<p><strong>Tier:</strong> 2 — Encoding infrastructure</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Encoder Service — the distributed caching layer for thought encoding <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/encoder-service.wat</code> (142 lines)
+<strong>Guide reference:</strong> No dedicated GUIDE section found; implied by GUIDE.md lines 1439–1446 (LruCache on ThoughtEncoder)
+<strong>Tier:</strong> 2 — Encoding infrastructure</p>
+<hr />
 <h2>What It IS</h2>
 <p>The EncoderService is a single-threaded pipe loop that owns the LRU composition cache, serving multiple concurrent callers without any mutex. Each caller gets its own <code>EncoderHandle</code> (a set of three pipes). The encoder thread iterates all handles once per loop, draining installs and servicing lookups.</p>
-<blockquote>"ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache."</blockquote>
-<blockquote>— encoder-service.wat, lines 1–7</blockquote>
+<blockquote>
+<p>&quot;ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache.&quot;
+— encoder-service.wat, lines 1–7</p>
+</blockquote>
 <p>It depends on <code>thought-encoder</code> (for the <code>ThoughtAST</code> type) and <code>primitives</code> (for <code>Vector</code>).</p>
-<hr>
+<hr />
 <h2>EncoderHandle — A Caller's Pipe Set</h2>
-<pre><code>
-(struct encoder-handle
-  [lookup  : Sender<ThoughtAST>]          ; bounded 1
-  [answer  : Receiver<Option<Vector>>]    ; bounded 1
-  [install : Sender<(ThoughtAST, Vector)>]) ; unbounded, fire and forget
+<pre><code class="language-scheme">(struct encoder-handle
+  [lookup  : Sender&lt;ThoughtAST&gt;]          ; bounded 1
+  [answer  : Receiver&lt;Option&lt;Vector&gt;&gt;]    ; bounded 1
+  [install : Sender&lt;(ThoughtAST, Vector)&gt;]) ; unbounded, fire and forget
 </code></pre>
 <p>Lines 22–25. Three pipes per caller:</p>
 <table>
-<thead><tr><th>Pipe</th><th>Capacity</th><th>Direction</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Pipe"><code>lookup</code> (Sender)</td><td data-label="Capacity">bounded 1</td><td data-label="Direction">caller → service</td><td data-label="Purpose">Send a ThoughtAST for cache lookup</td></tr>
-<tr><td data-label="Pipe"><code>answer</code> (Receiver)</td><td data-label="Capacity">bounded 1</td><td data-label="Direction">service → caller</td><td data-label="Purpose">Receive <code>Some(Vector)</code> (hit) or <code>None</code> (miss)</td></tr>
-<tr><td data-label="Pipe"><code>install</code> (Sender)</td><td data-label="Capacity">unbounded</td><td data-label="Direction">caller → service</td><td data-label="Purpose">Fire-and-forget insertion of computed (AST, Vector) pair</td></tr>
+<thead>
+<tr>
+  <th>Pipe</th>
+  <th>Capacity</th>
+  <th>Direction</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Pipe"><code>lookup</code> (Sender)</td>
+  <td data-label="Capacity">bounded 1</td>
+  <td data-label="Direction">caller → service</td>
+  <td data-label="Purpose">Send a ThoughtAST for cache lookup</td>
+</tr>
+<tr>
+  <td data-label=""><code>answer</code> (Receiver)</td>
+  <td data-label="">bounded 1</td>
+  <td data-label="">service → caller</td>
+  <td data-label="">Receive <code>Some(Vector)</code> (hit) or <code>None</code> (miss)</td>
+</tr>
+<tr>
+  <td data-label=""><code>install</code> (Sender)</td>
+  <td data-label="">unbounded</td>
+  <td data-label="">caller → service</td>
+  <td data-label="">Fire-and-forget insertion of computed (AST, Vector) pair</td>
+</tr>
+</tbody>
 </table>
 <h3><code>encoder-get</code> (lines 28–31)</h3>
-<p>Blocking lookup. Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option<Vector></code>.</p>
+<p>Blocking lookup. Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option&lt;Vector&gt;</code>.</p>
 <h3><code>encoder-set</code> (lines 34–36)</h3>
 <p>Fire and forget. Sends <code>(AST, Vector)</code> pair on <code>install</code>. Non-blocking, unbounded.</p>
-<hr>
+<hr />
 <h2>EncoderService Struct</h2>
-<pre><code>
-(struct encoder-service
-  [handle     : JoinHandle<()>]
-  [hits       : Arc<AtomicUsize>]         ; cache hit counter
-  [misses     : Arc<AtomicUsize>]         ; cache miss counter
-  [cache-size : Arc<AtomicUsize>])        ; current cache occupancy
+<pre><code class="language-scheme">(struct encoder-service
+  [handle     : JoinHandle&lt;()&gt;]
+  [hits       : Arc&lt;AtomicUsize&gt;]         ; cache hit counter
+  [misses     : Arc&lt;AtomicUsize&gt;]         ; cache miss counter
+  [cache-size : Arc&lt;AtomicUsize&gt;])        ; current cache occupancy
 </code></pre>
 <p>Lines 43–47. The service does <strong>not</strong> hold sender copies — the handles ARE the senders.</p>
-<blockquote>"Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits."</blockquote>
-<blockquote>— lines 39–41</blockquote>
-<p>Three <code>Arc<AtomicUsize></code> counters provide lock-free read access to hit/miss/cache-size stats from any thread.</p>
-<hr>
+<blockquote>
+<p>&quot;Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits.&quot;
+— lines 39–41</p>
+</blockquote>
+<p>Three <code>Arc&lt;AtomicUsize&gt;</code> counters provide lock-free read access to hit/miss/cache-size stats from any thread.</p>
+<hr />
 <h2>Spawn: <code>encoder-service-spawn</code></h2>
-<pre><code>
-(define (encoder-service-spawn [n-callers : usize] [cache-capacity : usize])
-  : (EncoderService, Vec<EncoderHandle>)
+<pre><code class="language-scheme">(define (encoder-service-spawn [n-callers : usize] [cache-capacity : usize])
+  : (EncoderService, Vec&lt;EncoderHandle&gt;)
   ...)
 </code></pre>
 <p>Lines 51–122. Creates the service and N handles.</p>
@@ -178,55 +203,64 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>For each of <code>n-callers</code>, creates three pipe pairs:</p>
 <ul>
 <li><code>lookup</code>: bounded 1, carries <code>ThoughtAST</code></li>
-<li><code>answer</code>: bounded 1, carries <code>Option<Vector></code></li>
+<li><code>answer</code>: bounded 1, carries <code>Option&lt;Vector&gt;</code></li>
 <li><code>install</code>: unbounded, carries <code>(ThoughtAST, Vector)</code></li>
 </ul>
 <p>Sends the <code>Sender</code> halves into the handle; the <code>Receiver</code> halves are collected for the service thread.</p>
 <h3>Service Thread Loop (lines 78–119)</h3>
 <p>The spawned thread runs an infinite loop with three phases per iteration:</p>
-<p><strong>Pass 1 — Drain installs</strong> (lines 85–90):</p>
-<p>Iterates all install receivers. Drains each one completely (inner <code>loop</code> with <code>try-recv</code>). Each <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates <code>cache-size</code> atomic.</p>
-<blockquote>"Pass 1: drain ALL install pipes. Put into cache."</blockquote>
-<blockquote>— line 84</blockquote>
-<p><strong>Pass 2 — Service lookups</strong> (lines 93–106):</p>
-<p>Iterates all lookup receivers. For each: tries to receive an AST. On success: looks up cache, increments <code>hits</code> or <code>misses</code> atomic accordingly, sends result back on the corresponding answer pipe. On disconnect: marks that handle as closed.</p>
-<blockquote>"Pass 2: service ALL pending lookup pipes."</blockquote>
-<blockquote>— line 93</blockquote>
-<p><strong>Shutdown check</strong> (lines 109–110):</p>
-<p>If all handles are disconnected, the loop breaks and the thread exits.</p>
-<blockquote>"Shutdown: all get pipes closed"</blockquote>
-<blockquote>— line 108</blockquote>
-<p><strong>Idle blocking</strong> (lines 116–118):</p>
-<p>Uses <code>select</code> over all open <code>get</code> and <code>set</code> pipes. Blocks until any channel has data. Zero CPU when idle.</p>
-<blockquote>"Block until ANY channel has data. Zero CPU when idle."</blockquote>
-<blockquote>— lines 112–113</blockquote>
-<hr>
+<p><strong>Pass 1 — Drain installs</strong> (lines 85–90):
+Iterates all install receivers. Drains each one completely (inner <code>loop</code> with <code>try-recv</code>). Each <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates <code>cache-size</code> atomic.</p>
+<blockquote>
+<p>&quot;Pass 1: drain ALL install pipes. Put into cache.&quot;
+— line 84</p>
+</blockquote>
+<p><strong>Pass 2 — Service lookups</strong> (lines 93–106):
+Iterates all lookup receivers. For each: tries to receive an AST. On success: looks up cache, increments <code>hits</code> or <code>misses</code> atomic accordingly, sends result back on the corresponding answer pipe. On disconnect: marks that handle as closed.</p>
+<blockquote>
+<p>&quot;Pass 2: service ALL pending lookup pipes.&quot;
+— line 93</p>
+</blockquote>
+<p><strong>Shutdown check</strong> (lines 109–110):
+If all handles are disconnected, the loop breaks and the thread exits.</p>
+<blockquote>
+<p>&quot;Shutdown: all get pipes closed&quot;
+— line 108</p>
+</blockquote>
+<p><strong>Idle blocking</strong> (lines 116–118):
+Uses <code>select</code> over all open <code>get</code> and <code>set</code> pipes. Blocks until any channel has data. Zero CPU when idle.</p>
+<blockquote>
+<p>&quot;Block until ANY channel has data. Zero CPU when idle.&quot;
+— lines 112–113</p>
+</blockquote>
+<hr />
 <h2>Protocol Summary</h2>
 <p>The comment block (lines 9–12) specifies the full protocol:</p>
-<pre><code>
-Caller: write AST to lookup pipe -> block on answer pipe -> receive Some/None
+<pre><code>Caller: write AST to lookup pipe -&gt; block on answer pipe -&gt; receive Some/None
 Caller: if None, compute locally, write (AST, Vector) to install pipe (fire and forget)
 Encoder: one pass per iteration — drain installs, service lookups, select, repeat.
 </code></pre>
-<p>This implements the "values up" principle: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
-<hr>
+<p>This implements the &quot;values up&quot; principle: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
+<hr />
 <h2>Shutdown: <code>encoder-service-shutdown</code></h2>
-<pre><code>
-(define (encoder-service-shutdown [svc : EncoderService]) : ()
+<pre><code class="language-scheme">(define (encoder-service-shutdown [svc : EncoderService]) : ()
   (join (:handle svc)))
 </code></pre>
 <p>Lines 129–131. Requires that all handles have already been dropped (callers gone). Joins the thread handle.</p>
-<blockquote>"The cascade must have already closed all handles."</blockquote>
-<blockquote>— line 125</blockquote>
-<hr>
+<blockquote>
+<p>&quot;The cascade must have already closed all handles.&quot;
+— line 125</p>
+</blockquote>
+<hr />
 <h2>Accessors</h2>
 <p>Three lock-free read functions (lines 135–142):</p>
 <ul>
-<li><code>hit-count</code> → loads <code>Arc<AtomicUsize></code> for hits</li>
-<li><code>miss-count</code> → loads <code>Arc<AtomicUsize></code> for misses</li>
-<li><code>cache-len</code> → loads <code>Arc<AtomicUsize></code> for current cache occupancy</li>
+<li><code>hit-count</code> → loads <code>Arc&lt;AtomicUsize&gt;</code> for hits</li>
+<li><code>miss-count</code> → loads <code>Arc&lt;AtomicUsize&gt;</code> for misses</li>
+<li><code>cache-len</code> → loads <code>Arc&lt;AtomicUsize&gt;</code> for current cache occupancy</li>
 </ul>
-<hr>
+<hr />
 <h2>Relationship to ThoughtEncoder</h2>
-<p>The ThoughtEncoder (thought-encoder.wat) declares its <code>compositions</code> field as <code>"optimistic cache (LRU moved to EncoderService)"</code>. This service IS that LRU cache. The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads.</p>
-<p>The GUIDE (line 1440) declares the compositions field as <code>LruCache<ThoughtAST, Vector></code> and explains the eventual-consistency model (lines 1441–1446): <em>"miss on candle N, hit on N+1"</em>. The EncoderService implements this: callers install computed values via fire-and-forget pipes, and the service drains installs on its next loop iteration before servicing any new lookups.</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>The ThoughtEncoder (thought-encoder.wat) declares its <code>compositions</code> field as <code>&quot;optimistic cache (LRU moved to EncoderService)&quot;</code>. This service IS that LRU cache. The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads.</p>
+<p>The GUIDE (line 1440) declares the compositions field as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> and explains the eventual-consistency model (lines 1441–1446): <em>&quot;miss on candle N, hit on N+1&quot;</em>. The EncoderService implements this: callers install computed values via fire-and-forget pipes, and the service drains installs on its next loop iteration before servicing any new lookups.</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

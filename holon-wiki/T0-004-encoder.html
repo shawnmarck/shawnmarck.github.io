@@ -132,46 +132,41 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong><code>kernel/encoder.rs</code></strong> — the main <code>Encoder</code> struct, which provides <strong>two distinct algorithms</strong> for scalar encoding: a <em>rotational</em> method (via <code>encode_scalar_log</code>/<code>encode_scalar_linear</code> → <code>encode_scalar_positional</code>) and a <em>transformer-style positional</em> method.</li>
 </ol>
 <p>The WAT spec in <code>std/scalars.wat</code> declares the three public interfaces:</p>
-<pre><code>
-(encode-log value) → Vector
+<pre><code class="language-wat">(encode-log value) → Vector
 (encode-linear value scale) → Vector
 (encode-circular value period) → Vector
 </code></pre>
 <p>The WAT is a spec stub only (15 lines, no implementation). All real logic is in Rust.</p>
-<hr>
+<hr />
 <h2>Two Independent Encoding Systems</h2>
 <h3>System A: <code>ScalarEncoder</code> (scalar.rs)</h3>
 <p>A standalone struct that generates two random bipolar vectors (base and orthogonal) using ChaCha8Rng seeded via SHA-256. It encodes a scalar as a <strong>rotation</strong> between these two vectors.</p>
 <p><strong>Vector generation</strong> (scalar.rs:79–98):</p>
-<pre><code>
-seed + name  →  SHA-256  →  first 8 bytes → u64  →  ChaCha8Rng
-each dimension: rng.next_u32() & 1 == 0 ? +1.0 : -1.0
+<pre><code>seed + name  →  SHA-256  →  first 8 bytes → u64  →  ChaCha8Rng
+each dimension: rng.next_u32() &amp; 1 == 0 ? +1.0 : -1.0
 </code></pre>
-<p>Two vectors are generated: <code>"scalar_base"</code> and <code>"scalar_ortho"</code>.</p>
+<p>Two vectors are generated: <code>&quot;scalar_base&quot;</code> and <code>&quot;scalar_ortho&quot;</code>.</p>
 <h3>System B: <code>Encoder</code> (encoder.rs)</h3>
 <p>The main encoder delegates scalar encoding to <code>encode_scalar_positional</code>, a <strong>transformer-style sinusoidal</strong> method. It does <strong>not</strong> use random base/ortho vectors — it uses deterministic sin/cos at geometrically spaced frequencies.</p>
 <p>These two systems produce <strong>different vectors for the same input</strong>. They are separate code paths.</p>
-<hr>
+<hr />
 <h2>How Each Encoding Works</h2>
 <h3>1. <code>encode-linear</code> — Linear Positional Encoding</h3>
 <h4>In ScalarEncoder (scalar.rs:109–132)</h4>
-<pre><code>
-let frac = value / scale;
+<pre><code class="language-rust">let frac = value / scale;
 let angle = frac * 2π;
 result[i] = sign(base[i] * cos(angle) + ortho[i] * sin(angle))
 </code></pre>
 <p>The value is divided by <code>scale</code> to get a fractional position [0, 1], which is multiplied by 2π to get an angle. The output is a cosine/sine interpolation between <code>base_vector</code> and <code>ortho_vector</code>, thresholded to bipolar.</p>
-<p><strong>Key property</strong>: <code>"scale determines the range: values from 0 to scale map to orthogonal vectors. Values beyond scale wrap."</code> (scalar.rs:35)</p>
+<p><strong>Key property</strong>: <code>&quot;scale determines the range: values from 0 to scale map to orthogonal vectors. Values beyond scale wrap.&quot;</code> (scalar.rs:35)</p>
 <h4>In Encoder (encoder.rs:480–481)</h4>
 <p><code>encode_scalar_linear</code> is a thin wrapper:</p>
-<pre><code>
-pub fn encode_scalar_linear(&self, value: f64, scale: f64) -> Vector {
+<pre><code class="language-rust">pub fn encode_scalar_linear(&amp;self, value: f64, scale: f64) -&gt; Vector {
     self.encode_scalar_positional(value, scale)
 }
 </code></pre>
 <p><code>encode_scalar_positional</code> (encoder.rs:591–612) uses transformer-style encoding:</p>
-<pre><code>
-for each dimension i:
+<pre><code class="language-rust">for each dimension i:
     freq = 1.0 / scale^(i / dim)
     if i is even: value = sin(position * freq)
     if i is odd:  value = cos(position * freq)
@@ -180,24 +175,22 @@ for each dimension i:
 <p>Each dimension oscillates at a different frequency, geometrically spaced from <code>1/scale</code> down to <code>1/scale</code>. The bipolar thresholding quantizes the continuous sin/cos wave.</p>
 <h3>2. <code>encode-log</code> — Logarithmic Encoding</h3>
 <h4>In ScalarEncoder (scalar.rs:174–208)</h4>
-<pre><code>
-pub fn encode_log(&self, value: f64) -> Vector {
+<pre><code class="language-rust">pub fn encode_log(&amp;self, value: f64) -&gt; Vector {
     self.encode_log_base(value, 10.0)
 }
 
-pub fn encode_log_base(&self, value: f64, base: f64) -> Vector {
-    if value <= 0.0 { return Vector::zeros(dim); }
+pub fn encode_log_base(&amp;self, value: f64, base: f64) -&gt; Vector {
+    if value &lt;= 0.0 { return Vector::zeros(dim); }
     let log_value = value.log(base);
-    // "10 orders of magnitude maps to one full rotation"
+    // &quot;10 orders of magnitude maps to one full rotation&quot;
     self.encode_linear(log_value, 10.0)
 }
 </code></pre>
-<p>Takes log-base-10 of the value, then delegates to the rotational linear encoder with a fixed scale of 10.0. The comment states: <code>"values differing by 10^10 are orthogonal"</code>. The log step means equal <strong>ratios</strong> produce equal similarity drops.</p>
+<p>Takes log-base-10 of the value, then delegates to the rotational linear encoder with a fixed scale of 10.0. The comment states: <code>&quot;values differing by 10^10 are orthogonal&quot;</code>. The log step means equal <strong>ratios</strong> produce equal similarity drops.</p>
 <p>Non-positive values return a zero vector.</p>
 <h4>In Encoder (encoder.rs:464–469)</h4>
-<pre><code>
-pub fn encode_scalar_log(&self, value: f64, scale: f64) -> Vector {
-    if value <= 0.0 { return Vector::zeros(self.dimensions()); }
+<pre><code class="language-rust">pub fn encode_scalar_log(&amp;self, value: f64, scale: f64) -&gt; Vector {
+    if value &lt;= 0.0 { return Vector::zeros(self.dimensions()); }
     let log_value = value.log10();
     self.encode_scalar_positional(log_value, scale)
 }
@@ -205,83 +198,114 @@ pub fn encode_scalar_log(&self, value: f64, scale: f64) -> Vector {
 <p>Takes log₁₀, then delegates to the <strong>transformer-style</strong> positional encoder with a caller-specified <code>scale</code> (default 1000.0 from the JSON marker path). Uses a different underlying algorithm than <code>ScalarEncoder::encode_log</code>.</p>
 <h3>3. <code>encode-circular</code> — Circular Encoding</h3>
 <h4>In ScalarEncoder (scalar.rs:135–156)</h4>
-<pre><code>
-let normalized = (value % period) / period;
+<pre><code class="language-rust">let normalized = (value % period) / period;
 let angle = normalized * 2π;
 result[i] = sign(base[i] * cos(angle) + ortho[i] * sin(angle))
 </code></pre>
-<p>Nearly identical to <code>encode_linear</code>, but with an explicit modulo wrap: <code>value % period</code> ensures the endpoint wraps to the start. The doc says: <code>"Values wrap at period, so 0 and period are identical."</code> (scalar.rs:43)</p>
+<p>Nearly identical to <code>encode_linear</code>, but with an explicit modulo wrap: <code>value % period</code> ensures the endpoint wraps to the start. The doc says: <code>&quot;Values wrap at period, so 0 and period are identical.&quot;</code> (scalar.rs:43)</p>
 <h4>In Encoder (encoder.rs:489–588) — Time Encoding</h4>
 <p>The <code>Encoder</code> does not expose a standalone <code>encode_circular</code> method. Instead, circular encoding appears <strong>inside <code>encode_time</code></strong>, which decomposes a Unix timestamp into hour-of-day (period 24), day-of-week (period 7), and approximate month (period 12):</p>
-<pre><code>
-// encoder.rs:522–540 (inline closure)
-let encode_circular = |value, period, base, ortho| -> Vector {
+<pre><code class="language-rust">// encoder.rs:522–540 (inline closure)
+let encode_circular = |value, period, base, ortho| -&gt; Vector {
     let normalized = (value % period) / period;
     let angle = normalized * 2π;
     result[i] = sign(base[i] * cos(angle) + ortho[i] * sin(angle))
 };
 </code></pre>
-<p>The time encoder uses <strong>deterministic role vectors</strong> from <code>VectorManager</code> for base/ortho (e.g., <code>"__time_base_hour__"</code>, <code>"__time_ortho_hour__"</code>), not the ChaCha8Rng-based vectors from <code>ScalarEncoder</code>.</p>
-<p>The four components (hour, dow, month, position) are role-bound with named vectors (<code>"__time_role_hour__"</code> etc.), summed as f64, then thresholded to bipolar.</p>
-<hr>
+<p>The time encoder uses <strong>deterministic role vectors</strong> from <code>VectorManager</code> for base/ortho (e.g., <code>&quot;__time_base_hour__&quot;</code>, <code>&quot;__time_ortho_hour__&quot;</code>), not the ChaCha8Rng-based vectors from <code>ScalarEncoder</code>.</p>
+<p>The four components (hour, dow, month, position) are role-bound with named vectors (<code>&quot;__time_role_hour__&quot;</code> etc.), summed as f64, then thresholded to bipolar.</p>
+<hr />
 <h2>WAT Spec vs Rust Implementation</h2>
 <table>
-<thead><tr><th>WAT Declaration</th><th>Rust (<code>ScalarEncoder</code>)</th><th>Rust (<code>Encoder</code>)</th></tr></thead>
-<tr><td data-label="WAT Declaration"><code>(encode-log value)</code></td><td data-label="Rust (<code>ScalarEncoder</code>)"><code>encode_log(value)</code> — rotational, base-10, fixed scale 10.0</td><td data-label="Rust (<code>Encoder</code>)"><code>encode_scalar_log(value, scale)</code> — positional, base-10, caller-specified scale</td></tr>
-<tr><td data-label="WAT Declaration"><code>(encode-linear value scale)</code></td><td data-label="Rust (<code>ScalarEncoder</code>)"><code>encode_linear(value, scale)</code> — rotational</td><td data-label="Rust (<code>Encoder</code>)"><code>encode_scalar_linear(value, scale)</code> — positional (sinusoidal)</td></tr>
-<tr><td data-label="WAT Declaration"><code>(encode-circular value period)</code></td><td data-label="Rust (<code>ScalarEncoder</code>)"><code>encode_circular(value, period)</code> — rotational</td><td data-label="Rust (<code>Encoder</code>)">No standalone method; used internally in <code>encode_time</code></td></tr>
+<thead>
+<tr>
+  <th>WAT Declaration</th>
+  <th>Rust (<code>ScalarEncoder</code>)</th>
+  <th>Rust (<code>Encoder</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="WAT Declaration"><code>(encode-log value)</code></td>
+  <td data-label="Rust (ScalarEncoder)"><code>encode_log(value)</code> — rotational, base-10, fixed scale 10.0</td>
+  <td data-label="Rust (Encoder)"><code>encode_scalar_log(value, scale)</code> — positional, base-10, caller-specified scale</td>
+</tr>
+<tr>
+  <td data-label=""><code>(encode-linear value scale)</code></td>
+  <td data-label=""><code>encode_linear(value, scale)</code> — rotational</td>
+  <td data-label=""><code>encode_scalar_linear(value, scale)</code> — positional (sinusoidal)</td>
+</tr>
+<tr>
+  <td data-label=""><code>(encode-circular value period)</code></td>
+  <td data-label=""><code>encode_circular(value, period)</code> — rotational</td>
+  <td data-label="">No standalone method; used internally in <code>encode_time</code></td>
+</tr>
+</tbody>
 </table>
 <p>The WAT signatures match <code>ScalarEncoder</code>'s API more closely than <code>Encoder</code>'s. <code>Encoder</code> adds an extra <code>scale</code> parameter to log encoding and uses a fundamentally different algorithm.</p>
-<hr>
+<hr />
 <h2>Additional Methods</h2>
 <h3><code>encode_f64</code> (scalar.rs:283–296)</h3>
-<p>Returns a <code>Vec<f64></code> without bipolar thresholding — preserves the continuous rotation. The doc says: <code>"Use for f64-space comparison when extracting scalars from accumulated prototypes."</code></p>
+<p>Returns a <code>Vec&lt;f64&gt;</code> without bipolar thresholding — preserves the continuous rotation. The doc says: <code>&quot;Use for f64-space comparison when extracting scalars from accumulated prototypes.&quot;</code></p>
 <h3><code>decode_log</code> (scalar.rs:226–278)</h3>
-<p>Inverse of <code>encode_log</code> via grid search: coarse pass over log10 space, then refinement around the best candidate. Uses <strong>agreement count</strong> (matching non-zero signs) rather than dot product: <code>"to avoid norm bias from zero dimensions that positional encoding produces"</code> (scalar.rs:218).</p>
+<p>Inverse of <code>encode_log</code> via grid search: coarse pass over log10 space, then refinement around the best candidate. Uses <strong>agreement count</strong> (matching non-zero signs) rather than dot product: <code>&quot;to avoid norm bias from zero dimensions that positional encoding produces&quot;</code> (scalar.rs:218).</p>
 <h3><code>encode_with_seed</code> (scalar.rs:302–311)</h3>
 <p>Creates a per-name seeded encoder for encoding multiple independent scalar types (e.g., temperature vs pressure) without interference.</p>
 <h3>JSON Scalar Markers (encoder.rs:423–453)</h3>
 <p>The JSON path supports inline scalar markers:</p>
 <ul>
-<li><code>{"$log": 100}</code> → log10 encoding</li>
-<li><code>{"$linear": 50}</code> → linear positional encoding</li>
-<li><code>{"$log": 100, "$scale": 5000}</code> → custom scale parameter (default scale is 1000.0)</li>
+<li><code>{&quot;$log&quot;: 100}</code> → log10 encoding</li>
+<li><code>{&quot;$linear&quot;: 50}</code> → linear positional encoding</li>
+<li><code>{&quot;$log&quot;: 100, &quot;$scale&quot;: 5000}</code> → custom scale parameter (default scale is 1000.0)</li>
 </ul>
-<hr>
+<hr />
 <h2>Key Properties</h2>
 <ol>
-<li><strong>Bipolar output</strong>: All encodings produce <code>{−1, 0, +1}</code> vectors. The zero entries occur at sin/cos zero-crossings (rotational) or exact zero values (positional).</li>
+<li><p><strong>Bipolar output</strong>: All encodings produce <code>{−1, 0, +1}</code> vectors. The zero entries occur at sin/cos zero-crossings (rotational) or exact zero values (positional).</p>
+</li>
+<li><p><strong>Similarity gradient</strong>: Closer values → higher cosine similarity. This is verified by tests: <code>&quot;sim(0,10) &gt; sim(0,50)&quot;</code> (scalar.rs:331).</p>
+</li>
+<li><p><strong>Circular wrap</strong>: Hour 23 is more similar to hour 0 than to hour 12 (scalar.rs:350).</p>
+</li>
+<li><p><strong>Determinism</strong>: Same seed → same vectors. <code>&quot;test_deterministic&quot;</code> confirms <code>ScalarEncoder::with_seed(4096, 42)</code> is reproducible (scalar.rs:403).</p>
+</li>
+<li><p><strong>Log ratio preservation</strong>: Equal ratios give approximately equal similarity drops. Tests verify this with tolerance 0.1 for quantization effects (encoder.rs:948).</p>
+</li>
+<li><p><strong>Quantization awareness</strong>: The source explicitly acknowledges that <code>&quot;bipolar thresholding causes quantization&quot;</code> (scalar.rs:207) and that log encoding <code>&quot;works best when used with accumulators that average multiple samples, recovering gradient behavior&quot;</code> (scalar.rs:364–365).</p>
+</li>
 </ol>
-<ol>
-<li><strong>Similarity gradient</strong>: Closer values → higher cosine similarity. This is verified by tests: <code>"sim(0,10) > sim(0,50)"</code> (scalar.rs:331).</li>
-</ol>
-<ol>
-<li><strong>Circular wrap</strong>: Hour 23 is more similar to hour 0 than to hour 12 (scalar.rs:350).</li>
-</ol>
-<ol>
-<li><strong>Determinism</strong>: Same seed → same vectors. <code>"test_deterministic"</code> confirms <code>ScalarEncoder::with_seed(4096, 42)</code> is reproducible (scalar.rs:403).</li>
-</ol>
-<ol>
-<li><strong>Log ratio preservation</strong>: Equal ratios give approximately equal similarity drops. Tests verify this with tolerance 0.1 for quantization effects (encoder.rs:948).</li>
-</ol>
-<ol>
-<li><strong>Quantization awareness</strong>: The source explicitly acknowledges that <code>"bipolar thresholding causes quantization"</code> (scalar.rs:207) and that log encoding <code>"works best when used with accumulators that average multiple samples, recovering gradient behavior"</code> (scalar.rs:364–365).</li>
-</ol>
-<hr>
+<hr />
 <h2>Source Quotes</h2>
-<blockquote>"Linear: Equal absolute differences have equal similarity drops — 100 → 200 has same similarity drop as 1000 → 1100. Use for: temperatures, positions, times."</blockquote>
-<blockquote>— scalar.rs:9–11</blockquote>
-<blockquote>"Logarithmic: Equal ratios have equal similarity drops — 100 → 1000 has same similarity drop as 1000 → 10000. Use for: packet rates, frequencies, byte sizes."</blockquote>
-<blockquote>— scalar.rs:13–15</blockquote>
-<blockquote>"For periodic quantities (hour of day, day of week, angle), use circular encoding where the endpoint wraps to the start."</blockquote>
-<blockquote>— scalar.rs:19–20</blockquote>
-<blockquote>"scale determines the range: values from 0 to scale map to orthogonal vectors. Values beyond scale wrap."</blockquote>
-<blockquote>— scalar.rs:35</blockquote>
-<blockquote>"10 orders of magnitude maps to one full rotation. This means values differing by 10^10 are orthogonal."</blockquote>
-<blockquote>— scalar.rs:204–205</blockquote>
-<blockquote>"bipolar thresholding causes quantization; use accumulator averaging to recover gradient behavior."</blockquote>
-<blockquote>— scalar.rs:206–207</blockquote>
-<blockquote>"Log of non-positive is undefined; return zero vector."</blockquote>
-<blockquote>— scalar.rs:199</blockquote>
-<blockquote>"Role vector names are deliberately identical across languages for cross-language determinism."</blockquote>
-<blockquote>— encoder.rs:487–488</blockquote></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<blockquote>
+<p>&quot;Linear: Equal absolute differences have equal similarity drops — 100 → 200 has same similarity drop as 1000 → 1100. Use for: temperatures, positions, times.&quot;
+— scalar.rs:9–11</p>
+</blockquote>
+<blockquote>
+<p>&quot;Logarithmic: Equal ratios have equal similarity drops — 100 → 1000 has same similarity drop as 1000 → 10000. Use for: packet rates, frequencies, byte sizes.&quot;
+— scalar.rs:13–15</p>
+</blockquote>
+<blockquote>
+<p>&quot;For periodic quantities (hour of day, day of week, angle), use circular encoding where the endpoint wraps to the start.&quot;
+— scalar.rs:19–20</p>
+</blockquote>
+<blockquote>
+<p>&quot;scale determines the range: values from 0 to scale map to orthogonal vectors. Values beyond scale wrap.&quot;
+— scalar.rs:35</p>
+</blockquote>
+<blockquote>
+<p>&quot;10 orders of magnitude maps to one full rotation. This means values differing by 10^10 are orthogonal.&quot;
+— scalar.rs:204–205</p>
+</blockquote>
+<blockquote>
+<p>&quot;bipolar thresholding causes quantization; use accumulator averaging to recover gradient behavior.&quot;
+— scalar.rs:206–207</p>
+</blockquote>
+<blockquote>
+<p>&quot;Log of non-positive is undefined; return zero vector.&quot;
+— scalar.rs:199</p>
+</blockquote>
+<blockquote>
+<p>&quot;Role vector names are deliberately identical across languages for cross-language determinism.&quot;
+— encoder.rs:487–488</p>
+</blockquote>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

@@ -125,89 +125,217 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T3 — Broker (wat spec) Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/wat/broker.wat</code> (224 lines)</p>
-<p><strong>Approach:</strong> Context-free ignorant — read only the file, quote what it declares.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T3 — Broker (wat spec) Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/wat/broker.wat</code> (224 lines)
+<strong>Approach:</strong> Context-free ignorant — read only the file, quote what it declares.</p>
+<hr />
 <h2>Preamble (lines 1–8)</h2>
-<blockquote>The accountability primitive. Binds one market observer + one exit observer. N×M brokers total. Holds papers. Propagates resolved outcomes to every observer in the set. Measures Grace or Violence. The broker's identity IS the set of observer names it closes over.</blockquote>
+<blockquote>
+<p>The accountability primitive. Binds one market observer + one exit observer. N×M brokers total. Holds papers. Propagates resolved outcomes to every observer in the set. Measures Grace or Violence. The broker's identity IS the set of observer names it closes over.</p>
+</blockquote>
 <p><strong>Dependencies declared:</strong></p>
 <ul>
 <li><code>primitives</code>, <code>enums</code>, <code>distances</code>, <code>scalar-accumulator</code>, <code>engram-gate</code>, <code>paper-entry</code>, <code>simulation</code></li>
 </ul>
-<hr>
+<hr />
 <h2>Struct: <code>resolution</code> (lines 23–29)</h2>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Note</th></tr></thead>
-<tr><td data-label="Field"><code>broker-slot-idx</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">which broker produced this</td></tr>
-<tr><td data-label="Field"><code>composed-thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Note">the thought that was tested</td></tr>
-<tr><td data-label="Field"><code>direction</code></td><td data-label="Type"><code>Direction</code></td><td data-label="Note"><code>:up</code> or <code>:down</code></td></tr>
-<tr><td data-label="Field"><code>outcome</code></td><td data-label="Type"><code>Outcome</code></td><td data-label="Note"><code>:grace</code> or <code>:violence</code></td></tr>
-<tr><td data-label="Field"><code>amount</code></td><td data-label="Type"><code>f64</code></td><td data-label="Note">how much value</td></tr>
-<tr><td data-label="Field"><code>optimal-distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Note">hindsight optimal</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>broker-slot-idx</code></td>
+  <td data-label="Type"><code>usize</code></td>
+  <td data-label="Note">which broker produced this</td>
+</tr>
+<tr>
+  <td data-label=""><code>composed-thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">the thought that was tested</td>
+</tr>
+<tr>
+  <td data-label=""><code>direction</code></td>
+  <td data-label=""><code>Direction</code></td>
+  <td data-label=""><code>:up</code> or <code>:down</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>outcome</code></td>
+  <td data-label=""><code>Outcome</code></td>
+  <td data-label=""><code>:grace</code> or <code>:violence</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>amount</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">how much value</td>
+</tr>
+<tr>
+  <td data-label=""><code>optimal-distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label="">hindsight optimal</td>
+</tr>
+</tbody>
 </table>
-<blockquote>A paper has two sides (buy and sell). Each side resolves independently. Each resolved side produces one Resolution with its own direction.</blockquote>
-<hr>
+<blockquote>
+<p>A paper has two sides (buy and sell). Each side resolves independently. Each resolved side produces one Resolution with its own direction.</p>
+</blockquote>
+<hr />
 <h2>Struct: <code>propagation-facts</code> (lines 33–39)</h2>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Note</th></tr></thead>
-<tr><td data-label="Field"><code>market-idx</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">which market observer should learn</td></tr>
-<tr><td data-label="Field"><code>exit-idx</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">which exit observer should learn</td></tr>
-<tr><td data-label="Field"><code>direction</code></td><td data-label="Type"><code>Direction</code></td><td data-label="Note">for the market observer</td></tr>
-<tr><td data-label="Field"><code>composed-thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Note">for both observers</td></tr>
-<tr><td data-label="Field"><code>optimal</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Note">for the exit observer</td></tr>
-<tr><td data-label="Field"><code>weight</code></td><td data-label="Type"><code>f64</code></td><td data-label="Note">for both observers</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>market-idx</code></td>
+  <td data-label="Type"><code>usize</code></td>
+  <td data-label="Note">which market observer should learn</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-idx</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">which exit observer should learn</td>
+</tr>
+<tr>
+  <td data-label=""><code>direction</code></td>
+  <td data-label=""><code>Direction</code></td>
+  <td data-label="">for the market observer</td>
+</tr>
+<tr>
+  <td data-label=""><code>composed-thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">for both observers</td>
+</tr>
+<tr>
+  <td data-label=""><code>optimal</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label="">for the exit observer</td>
+</tr>
+<tr>
+  <td data-label=""><code>weight</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">for both observers</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Struct: <code>broker</code> (lines 43–67)</h2>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Note</th></tr></thead>
-<tr><td data-label="Field"><code>observer-names</code></td><td data-label="Type"><code>Vec<String></code></td><td data-label="Note">identity. e.g. <code>("momentum" "volatility")</code></td></tr>
-<tr><td data-label="Field"><code>slot-idx</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">position in the N×M grid. "THE identity."</td></tr>
-<tr><td data-label="Field"><code>exit-count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">M — needed to derive <code>market-idx</code> and <code>exit-idx</code>: <code>market-idx = slot-idx / exit-count</code>, <code>exit-idx = slot-idx mod exit-count</code></td></tr>
-<tr><td data-label="Field"><code>reckoner</code></td><td data-label="Type"><code>Reckoner</code></td><td data-label="Note"><code>:discrete</code> — Grace/Violence</td></tr>
-<tr><td data-label="Field"><code>noise-subspace</code></td><td data-label="Type"><code>OnlineSubspace</code></td><td data-label="Note">8 principal components</td></tr>
-<tr><td data-label="Field"><code>cumulative-grace</code></td><td data-label="Type"><code>f64</code></td><td data-label="Note">track record</td></tr>
-<tr><td data-label="Field"><code>cumulative-violence</code></td><td data-label="Type"><code>f64</code></td><td data-label="Note">track record</td></tr>
-<tr><td data-label="Field"><code>trade-count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">track record</td></tr>
-<tr><td data-label="Field"><code>papers</code></td><td data-label="Type"><code>VecDeque<PaperEntry></code></td><td data-label="Note">capped</td></tr>
-<tr><td data-label="Field"><code>scalar-accums</code></td><td data-label="Type"><code>Vec<ScalarAccumulator></code></td><td data-label="Note">trail-distance, stop-distance</td></tr>
-<tr><td data-label="Field"><code>good-state-subspace</code></td><td data-label="Type"><code>OnlineSubspace</code></td><td data-label="Note">engram gating (4 components)</td></tr>
-<tr><td data-label="Field"><code>recalib-wins</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">engram gating</td></tr>
-<tr><td data-label="Field"><code>recalib-total</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">engram gating</td></tr>
-<tr><td data-label="Field"><code>last-recalib-count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Note">engram gating</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>observer-names</code></td>
+  <td data-label="Type"><code>Vec&lt;String&gt;</code></td>
+  <td data-label="Note">identity. e.g. <code>(&quot;momentum&quot; &quot;volatility&quot;)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>slot-idx</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">position in the N×M grid. &quot;THE identity.&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">M — needed to derive <code>market-idx</code> and <code>exit-idx</code>: <code>market-idx = slot-idx / exit-count</code>, <code>exit-idx = slot-idx mod exit-count</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>reckoner</code></td>
+  <td data-label=""><code>Reckoner</code></td>
+  <td data-label=""><code>:discrete</code> — Grace/Violence</td>
+</tr>
+<tr>
+  <td data-label=""><code>noise-subspace</code></td>
+  <td data-label=""><code>OnlineSubspace</code></td>
+  <td data-label="">8 principal components</td>
+</tr>
+<tr>
+  <td data-label=""><code>cumulative-grace</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">track record</td>
+</tr>
+<tr>
+  <td data-label=""><code>cumulative-violence</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">track record</td>
+</tr>
+<tr>
+  <td data-label=""><code>trade-count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">track record</td>
+</tr>
+<tr>
+  <td data-label=""><code>papers</code></td>
+  <td data-label=""><code>VecDeque&lt;PaperEntry&gt;</code></td>
+  <td data-label="">capped</td>
+</tr>
+<tr>
+  <td data-label=""><code>scalar-accums</code></td>
+  <td data-label=""><code>Vec&lt;ScalarAccumulator&gt;</code></td>
+  <td data-label="">trail-distance, stop-distance</td>
+</tr>
+<tr>
+  <td data-label=""><code>good-state-subspace</code></td>
+  <td data-label=""><code>OnlineSubspace</code></td>
+  <td data-label="">engram gating (4 components)</td>
+</tr>
+<tr>
+  <td data-label=""><code>recalib-wins</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">engram gating</td>
+</tr>
+<tr>
+  <td data-label=""><code>recalib-total</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">engram gating</td>
+</tr>
+<tr>
+  <td data-label=""><code>last-recalib-count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">engram gating</td>
+</tr>
+</tbody>
 </table>
-<p>Comment on lines 53–54: <em>"The reckoner carries its own curve. resolve() feeds it. edge-at() reads it. No separate curve field."</em></p>
+<p>Comment on lines 53–54: <em>&quot;The reckoner carries its own curve. resolve() feeds it. edge-at() reads it. No separate curve field.&quot;</em></p>
 <p><strong>13 fields total.</strong></p>
-<hr>
+<hr />
 <h2>Interface: Methods (6 functions)</h2>
 <h3>1. <code>make-broker</code> (lines 71–95)</h3>
 <p><strong>Signature:</strong></p>
-<pre><code>
-(make-broker [observers : Vec<String>]
+<pre><code>(make-broker [observers : Vec&lt;String&gt;]
              [slot-idx : usize]
              [exit-count : usize]
              [dims : usize]
              [recalib-interval : usize]
-             [scalar-accums : Vec<ScalarAccumulator>])
+             [scalar-accums : Vec&lt;ScalarAccumulator&gt;])
   : Broker
 </code></pre>
-<p>Constructor. Creates the reckoner as <code>:discrete</code> with labels <code>("Grace" "Violence")</code>. <code>noise-subspace</code> gets k=8, <code>good-state-subspace</code> gets k=4. All accumulators init to zero. Papers init as empty deque.</p>
+<p>Constructor. Creates the reckoner as <code>:discrete</code> with labels <code>(&quot;Grace&quot; &quot;Violence&quot;)</code>. <code>noise-subspace</code> gets k=8, <code>good-state-subspace</code> gets k=4. All accumulators init to zero. Papers init as empty deque.</p>
 <h3>2. <code>propose</code> (lines 97–104)</h3>
 <p><strong>Signature:</strong></p>
-<pre><code>
-(propose [broker : Broker] [composed : Vector]) : Prediction
+<pre><code>(propose [broker : Broker] [composed : Vector]) : Prediction
 </code></pre>
 <p>Noise update → strip noise → predict Grace/Violence via the reckoner.</p>
 <h3>3. <code>edge</code> (lines 106–113)</h3>
 <p><strong>Signature:</strong></p>
-<pre><code>
-(edge [broker : Broker]) : f64
+<pre><code>(edge [broker : Broker]) : f64
 </code></pre>
 <p>Reads from the reckoner's internal curve. Returns conviction→accuracy. <code>0.0 = no edge</code>. Used for proportional treasury funding.</p>
 <h3>4. <code>register-paper</code> (lines 115–121)</h3>
 <p><strong>Signature:</strong></p>
-<pre><code>
-(register-paper [broker : Broker]
+<pre><code>(register-paper [broker : Broker]
                 [composed : Vector]
                 [entry-price : f64]
                 [distances : Distances])
@@ -215,14 +343,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>Creates a <code>PaperEntry</code> and pushes onto the papers deque. Called every candle, every broker.</p>
 <h3>5. <code>tick-papers</code> (lines 123–166)</h3>
 <p><strong>Signature:</strong></p>
-<pre><code>
-(tick-papers [broker : Broker] [current-price : f64]) : Vec<Resolution>
+<pre><code>(tick-papers [broker : Broker] [current-price : f64]) : Vec&lt;Resolution&gt;
 </code></pre>
-<p>Ticks all papers. Each side (buy/sell) resolves independently. Produces a <code>Resolution</code> the tick a side fires. Paper removed only after both sides resolved. Outcome is <code>:grace</code> if excursion > trail-distance, else <code>:violence</code>.</p>
+<p>Ticks all papers. Each side (buy/sell) resolves independently. Produces a <code>Resolution</code> the tick a side fires. Paper removed only after both sides resolved. Outcome is <code>:grace</code> if excursion &gt; trail-distance, else <code>:violence</code>.</p>
 <h3>6. <code>propagate</code> (lines 168–220)</h3>
 <p><strong>Signature:</strong></p>
-<pre><code>
-(propagate [broker : Broker]
+<pre><code>(propagate [broker : Broker]
            [thought : Vector]
            [outcome : Outcome]
            [weight : f64]
@@ -243,11 +369,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>Returns <code>PropagationFacts</code> for the post to apply to its observers. Derives <code>market-idx</code> and <code>exit-idx</code> from <code>slot-idx / exit-count</code> and <code>slot-idx mod exit-count</code>.</p>
 <h3>7. <code>paper-count</code> (lines 222–224)</h3>
 <p><strong>Signature:</strong></p>
-<pre><code>
-(paper-count [broker : Broker]) : usize
+<pre><code>(paper-count [broker : Broker]) : usize
 </code></pre>
 <p>Returns <code>len</code> of the papers deque.</p>
-<hr>
+<hr />
 <h2>Summary</h2>
 <p>The wat spec declares:</p>
 <ul>
@@ -258,5 +383,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>7 interface functions:</strong> <code>make-broker</code>, <code>propose</code>, <code>edge</code>, <code>register-paper</code>, <code>tick-papers</code>, <code>propagate</code>, <code>paper-count</code></li>
 <li><strong>Identity model:</strong> slot-idx is the primary identity; observer-names is the diagnostic identity</li>
 <li><strong>Learning is values-up:</strong> <code>propagate</code> returns <code>PropagationFacts</code> for the post to distribute; the broker does not directly message observers</li>
-<li><strong>Reckoner mode:</strong> <code>:discrete</code> (Grace/Violence) — the spec explicitly declares this despite CLAUDE.md saying "continuous reckoners only" (Proposal 051). The wat says <code>Discrete</code>.</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<li><strong>Reckoner mode:</strong> <code>:discrete</code> (Grace/Violence) — the spec explicitly declares this despite CLAUDE.md saying &quot;continuous reckoners only&quot; (Proposal 051). The wat says <code>Discrete</code>.</li>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

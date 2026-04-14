@@ -125,66 +125,106 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Treasury — Bounded Capital Allocation <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The treasury is a capital reservation engine. It receives trade proposals from brokers, funds those that pass an edge gate, and settles them through stop-level triggers. Loss is bounded structurally: reserved capital cannot be double-spent, and the maximum loss per trade equals one swap's venue cost. The <a class="wikilink" href="pg-broker.html">broker</a> is the accountability gate — it only proposes when its expected dollar-P&L is positive.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Treasury — Bounded Capital Allocation <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The treasury is a capital reservation engine. It receives trade proposals from brokers, funds those that pass an edge gate, and settles them through stop-level triggers. Loss is bounded structurally: reserved capital cannot be double-spent, and the maximum loss per trade equals one swap's venue cost. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; is the accountability gate — it only proposes when its expected dollar-P&amp;L is positive.</p>
+<hr />
 <h2>Architecture Overview</h2>
-<pre class="mermaid">
-flowchart TD
-    subgraph broker["Broker (gate_open → propose)"]
-        ev_check["expected_value > 0?"]
-        cold_check["cold start < 50 each?"]
-        papers["paper trades track\noutcomes, accumulate\noptimal distances"]
-        pf_return["PropagationFacts"]
+<pre class="mermaid">flowchart TD
+    subgraph broker[&quot;Broker (gate_open → propose)&quot;]
+        ev_check[&quot;expected_value &gt; 0?&quot;]
+        cold_check[&quot;cold start &lt; 50 each?&quot;]
+        papers[&quot;paper trades track\noutcomes, accumulate\noptimal distances&quot;]
+        pf_return[&quot;PropagationFacts&quot;]
     end
 
-    subgraph treasury["Treasury (fund → settle)"]
-        available["available"]
-        reserved["reserved"]
-        active["active trades\nstop-level triggers"]
+    subgraph treasury[&quot;Treasury (fund → settle)&quot;]
+        available[&quot;available&quot;]
+        reserved[&quot;reserved&quot;]
+        active[&quot;active trades\nstop-level triggers&quot;]
     end
 
-    ev_check -->|"yes"| available
-    cold_check -->|"yes"| available
-    available -->|"fund"| reserved
-    reserved -->|"settle"| active
-    active -->|"settle"| available
-    pf_return -->|"return"| available
-</code></pre>
-<p>Two units, one loop. The <a class="wikilink" href="pg-broker.html">broker</a> produces proposals; the treasury consumes and funds them. Settlement results flow back through the broker's <a class="wikilink" href="pg-signal-propagation.html">PropagationFacts</a> for learning.</p>
-<hr>
+    ev_check --&gt;|&quot;yes&quot;| available
+    cold_check --&gt;|&quot;yes&quot;| available
+    available --&gt;|&quot;fund&quot;| reserved
+    reserved --&gt;|&quot;settle&quot;| active
+    active --&gt;|&quot;settle&quot;| available
+    pf_return --&gt;|&quot;return&quot;| available
+
+<p>Two units, one loop. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; produces proposals; the treasury consumes and funds them. Settlement results flow back through the broker's &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;PropagationFacts&lt;/a&gt; for learning.</p>
+<hr />
 <h2>The Treasury Struct</h2>
 <p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines). 8 fields:</p>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>denomination</code></td><td data-label="Type"><code>Asset</code></td><td data-label="Purpose">Unit of account (e.g. USD)</td></tr>
-<tr><td data-label="Field"><code>available</code></td><td data-label="Type"><code>Map<Asset, f64></code></td><td data-label="Purpose">Capital free to deploy</td></tr>
-<tr><td data-label="Field"><code>reserved</code></td><td data-label="Type"><code>Map<Asset, f64></code></td><td data-label="Purpose">Capital locked by active trades</td></tr>
-<tr><td data-label="Field"><code>proposals</code></td><td data-label="Type"><code>Vec<Proposal></code></td><td data-label="Purpose">Incoming proposal barrage; drained after funding</td></tr>
-<tr><td data-label="Field"><code>trades</code></td><td data-label="Type"><code>Map<TradeId, Trade></code></td><td data-label="Purpose">Funded proposals become active trades</td></tr>
-<tr><td data-label="Field"><code>trade-origins</code></td><td data-label="Type"><code>Map<TradeId, TradeOrigin></code></td><td data-label="Purpose">Stashes origin for propagation at settlement</td></tr>
-<tr><td data-label="Field"><code>swap-fee</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose">Per-swap venue cost (fraction)</td></tr>
-<tr><td data-label="Field"><code>slippage</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose">Per-swap slippage estimate</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>denomination</code></td>
+  <td data-label="Type"><code>Asset</code></td>
+  <td data-label="Purpose">Unit of account (e.g. USD)</td>
+</tr>
+<tr>
+  <td data-label=""><code>available</code></td>
+  <td data-label=""><code>Map&lt;Asset, f64&gt;</code></td>
+  <td data-label="">Capital free to deploy</td>
+</tr>
+<tr>
+  <td data-label=""><code>reserved</code></td>
+  <td data-label=""><code>Map&lt;Asset, f64&gt;</code></td>
+  <td data-label="">Capital locked by active trades</td>
+</tr>
+<tr>
+  <td data-label=""><code>proposals</code></td>
+  <td data-label=""><code>Vec&lt;Proposal&gt;</code></td>
+  <td data-label="">Incoming proposal barrage; drained after funding</td>
+</tr>
+<tr>
+  <td data-label=""><code>trades</code></td>
+  <td data-label=""><code>Map&lt;TradeId, Trade&gt;</code></td>
+  <td data-label="">Funded proposals become active trades</td>
+</tr>
+<tr>
+  <td data-label=""><code>trade-origins</code></td>
+  <td data-label=""><code>Map&lt;TradeId, TradeOrigin&gt;</code></td>
+  <td data-label="">Stashes origin for propagation at settlement</td>
+</tr>
+<tr>
+  <td data-label=""><code>swap-fee</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Per-swap venue cost (fraction)</td>
+</tr>
+<tr>
+  <td data-label=""><code>slippage</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Per-swap slippage estimate</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Constructor:</strong> <code>(make-treasury denomination initial-balances swap-fee slippage) → Treasury</code>. All maps start empty; proposals empty; trade IDs start at 0.</p>
-<hr>
+<hr />
 <h2>Funding: <code>fund-proposals</code></h2>
 <p>Proposals arrive via <code>submit-proposal</code>, which pushes onto the <code>proposals</code> vector. <code>fund-proposals</code> evaluates all proposals, sorted by <strong>edge descending</strong> (best first), and greedily funds from the top.</p>
 <h3>Funding Gates (checked per proposal)</h3>
 <ol>
-<li><strong>Edge gate:</strong> <code>edge < venue-cost-rate</code> → rejected. A proposal must clear the round-trip cost to be worth funding.</li>
+<li><strong>Edge gate:</strong> <code>edge &lt; venue-cost-rate</code> → rejected. A proposal must clear the round-trip cost to be worth funding.</li>
 <li><strong>Capital gate:</strong> <code>available-capital ≤ 0.0</code> → rejected. No capital, no trade.</li>
 </ol>
 <p><strong>Venue cost rate:</strong> <code>2.0 × (swap-fee + slippage)</code> — the open+close round-trip.</p>
 <h3>Funding Math</h3>
-<pre><code>
-reserve-amount = amount + (amount × venue-cost-rate)   // principal + buffer
+<pre><code>reserve-amount = amount + (amount × venue-cost-rate)   // principal + buffer
 actual-reserve = min(reserve-amount, available-capital) // clamped
 trade-amount   = actual-reserve / (1.0 + venue-cost-rate)  // back-computed principal
 </code></pre>
 <p>Capital moves <code>available → reserved</code> by <code>trade-amount</code>. Entry price initialized to <code>0.0</code> — set later by the enterprise from the current price. Stop levels computed via <code>distances-to-levels(distances, entry-price, side)</code>. Proposals vector is drained after processing.</p>
-<p><strong>Returns:</strong> <code>Vec<LogEntry></code> — one per proposal (funded or rejected).</p>
-<blockquote><strong>Greedily funds top-to-bottom.</strong> First proposal to deplete an asset's available capital blocks subsequent proposals for that asset.</blockquote>
-<hr>
+<p><strong>Returns:</strong> <code>Vec&lt;LogEntry&gt;</code> — one per proposal (funded or rejected).</p>
+<blockquote>
+<p><strong>Greedily funds top-to-bottom.</strong> First proposal to deplete an asset's available capital blocks subsequent proposals for that asset.</p>
+</blockquote>
+<hr />
 <h2>Settlement: <code>settle-triggered</code></h2>
 <p>Checks all active trades against their stop-levels using current prices. Two trigger paths:</p>
 <h3>Path A — Safety Stop</h3>
@@ -197,60 +237,57 @@ trade-amount   = actual-reserve / (1.0 + venue-cost-rate)  // back-computed prin
 <h3>Path B — Trailing Stop</h3>
 <ul>
 <li>Condition: trade is <code>:active</code> or <code>:runner</code>; price crosses trail-stop in the adverse direction.</li>
-<li>Exit value: <code>amount × (price / entry-price) × (1.0 - venue-cost-per-swap)</code> — proportional P&L minus exit cost.</li>
-<li>Outcome: <code>:grace</code> if exit-value > amount (profit), <code>:violence</code> otherwise (loss).</li>
+<li>Exit value: <code>amount × (price / entry-price) × (1.0 - venue-cost-per-swap)</code> — proportional P&amp;L minus exit cost.</li>
+<li>Outcome: <code>:grace</code> if exit-value &gt; amount (profit), <code>:violence</code> otherwise (loss).</li>
 <li>Capital: <code>min(exit-value, amount)</code> returns to <code>available</code>; full <code>amount</code> removed from <code>reserved</code>.</li>
 </ul>
-<p><strong>Both paths:</strong> trade and origin removed from their maps. Returns <code>(Vec<TreasurySettlement>, Vec<LogEntry>)</code>.</p>
-<hr>
+<p><strong>Both paths:</strong> trade and origin removed from their maps. Returns <code>(Vec&lt;TreasurySettlement&gt;, Vec&lt;LogEntry&gt;)</code>.</p>
+<hr />
 <h2>The Runner Transition: <code>update-trade-stops</code></h2>
 <p>Replaces stop-levels on a specific trade. Handles the <strong>runner transition</strong>:</p>
 <ul>
 <li>If trade is <code>:active</code> and the new trail-stop would recover principal (trail-stop past entry-price), the phase transitions to <code>:runner</code>.</li>
-<li>Buy: <code>trail-stop > entry-price</code>; Sell: <code>trail-stop < entry-price</code>.</li>
+<li>Buy: <code>trail-stop &gt; entry-price</code>; Sell: <code>trail-stop &lt; entry-price</code>.</li>
 </ul>
 <p>Called from outside the treasury (by the post's tick step 3c).</p>
-<hr>
+<hr />
 <h2>Bounded Loss: Structural, Not Policy</h2>
 <p>The treasury enforces loss bounds through capital reservation — not through risk parameters or position limits.</p>
 <ol>
-<li><strong>At funding:</strong> Capital moves from <code>available</code> to <code>reserved</code>. The reserve map is the accounting enforcement: capital in <code>reserved</code> cannot be redeployed. It only returns to <code>available</code> through settlement.</li>
+<li><p><strong>At funding:</strong> Capital moves from <code>available</code> to <code>reserved</code>. The reserve map is the accounting enforcement: capital in <code>reserved</code> cannot be redeployed. It only returns to <code>available</code> through settlement.</p>
+</li>
+<li><p><strong>At settlement (safety stop):</strong> The maximum loss is <code>amount × venue-cost-per-swap</code> — one swap's cost on exit. The rest of the principal returns to <code>available</code>. This is the <strong>hard bound</strong>.</p>
+</li>
+<li><p><strong>At settlement (trailing stop):</strong> P&amp;L is proportional to price movement. Profits return as available capital. Losses are bounded by the same formula as the safety stop.</p>
+</li>
+<li><p><strong>No double-spending is possible</strong> because proposals are drained after funding.</p>
+</li>
 </ol>
-<ol>
-<li><strong>At settlement (safety stop):</strong> The maximum loss is <code>amount × venue-cost-per-swap</code> — one swap's cost on exit. The rest of the principal returns to <code>available</code>. This is the <strong>hard bound</strong>.</li>
-</ol>
-<ol>
-<li><strong>At settlement (trailing stop):</strong> P&L is proportional to price movement. Profits return as available capital. Losses are bounded by the same formula as the safety stop.</li>
-</ol>
-<ol>
-<li><strong>No double-spending is possible</strong> because proposals are drained after funding.</li>
-</ol>
-<blockquote>"The bound is structural, not policy. The reserve map is the accounting enforcement." — T3-treasury-wat</blockquote>
-<hr>
+<blockquote>
+<p>&quot;The bound is structural, not policy. The reserve map is the accounting enforcement.&quot; — T3-treasury-wat</p>
+</blockquote>
+<hr />
 <h2>The Broker's Gate</h2>
-<p>The <a class="wikilink" href="pg-broker.html">broker</a> sits between the market and the treasury. It decides whether proposals are worth submitting.</p>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; sits between the market and the treasury. It decides whether proposals are worth submitting.</p>
 <h3><code>gate_open()</code> — Two-Phase Gate</h3>
-<pre><code>
-cold_start = grace_count < 50 || violence_count < 50
-cold_start || expected_value > 0.0
+<pre><code>cold_start = grace_count &lt; 50 || violence_count &lt; 50
+cold_start || expected_value &gt; 0.0
 </code></pre>
 <ol>
-<li><strong>Cold start</strong> (< 50 of either outcome): gate always open — not enough data for a statistical judgment.</li>
-<li><strong>Warm</strong> (≥ 50 of both): gate opens only when <code>expected_value > 0.0</code>. A broker with negative expected value is suppressed.</li>
+<li><strong>Cold start</strong> (&lt; 50 of either outcome): gate always open — not enough data for a statistical judgment.</li>
+<li><strong>Warm</strong> (≥ 50 of both): gate opens only when <code>expected_value &gt; 0.0</code>. A broker with negative expected value is suppressed.</li>
 </ol>
 <h3>Expected Value Computation</h3>
-<pre><code>
-expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net
+<pre><code>expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net
 </code></pre>
 <ul>
 <li><code>avg_grace_net</code> and <code>avg_violence_net</code> are EMAs (alpha = 0.038, half-life ~50 papers).</li>
-<li>P&L computed against a reference capital of $10,000, including swap fees on both entry and exit.</li>
+<li>P&amp;L computed against a reference capital of $10,000, including swap fees on both entry and exit.</li>
 <li>Propagated from <code>propagate()</code> after each resolution.</li>
 </ul>
-<hr>
+<hr />
 <h2>Full Lifecycle</h2>
-<pre><code>
-1. register_paper()     — broker creates a paper trade every candle
+<pre><code>1. register_paper()     — broker creates a paper trade every candle
 2. tick_papers()        — broker ticks papers: Grace signal, Violence stop, or runner resolution
 3. propagate()          — broker accumulates outcomes, updates EV, returns PropagationFacts
 4. gate_open()          — broker checks EV threshold (cold start always passes)
@@ -260,25 +297,45 @@ expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_
 8. settle-triggered()   — treasury settles triggered trades, returns capital to available
 9. PropagationFacts     — routed back through broker to observers for learning
 </code></pre>
-<hr>
+<hr />
 <h2>Other Treasury Methods</h2>
 <table>
-<thead><tr><th>Method</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Method"><code>available-capital(asset)</code></td><td data-label="Purpose">Returns available balance, defaulting to <code>0.0</code></td></tr>
-<tr><td data-label="Method"><code>deposit(asset, amount)</code></td><td data-label="Purpose">Adds to available capital</td></tr>
-<tr><td data-label="Method"><code>total-equity()</code></td><td data-label="Purpose">Sums all available + reserved across all assets</td></tr>
-<tr><td data-label="Method"><code>trades-for-post(post-idx)</code></td><td data-label="Purpose">Returns all active/runner trades for a given post</td></tr>
+<thead>
+<tr>
+  <th>Method</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Method"><code>available-capital(asset)</code></td>
+  <td data-label="Purpose">Returns available balance, defaulting to <code>0.0</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>deposit(asset, amount)</code></td>
+  <td data-label="">Adds to available capital</td>
+</tr>
+<tr>
+  <td data-label=""><code>total-equity()</code></td>
+  <td data-label="">Sums all available + reserved across all assets</td>
+</tr>
+<tr>
+  <td data-label=""><code>trades-for-post(post-idx)</code></td>
+  <td data-label="">Returns all active/runner trades for a given post</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Known Issues</h2>
 <ul>
-<li><strong><code>total-equity</code></strong> comment says "converted to denomination" but the code sums raw <code>f64</code> values without conversion. If multiple assets exist, this is a bug or incomplete spec.</li>
+<li><strong><code>total-equity</code></strong> comment says &quot;converted to denomination&quot; but the code sums raw <code>f64</code> values without conversion. If multiple assets exist, this is a bug or incomplete spec.</li>
 <li><strong>Entry price set to <code>0.0</code></strong> at funding time. The enterprise must update it before the first tick — otherwise <code>settle-triggered</code> would divide by zero (<code>price / entry-price</code>).</li>
 <li><strong>Broker <code>close_all_runners</code></strong> accepts <code>_current_price</code> but does not use it — all resolution data comes from the paper's own tracked price history.</li>
 </ul>
-<hr>
+<hr />
 <h2>Sources</h2>
 <ul>
 <li><strong>T3-treasury-wat.md</strong> — Context-free verification of <code>wat/treasury.wat</code> (258 lines). Treasury struct, all 7 methods, funding gates, settlement paths, bounded loss model.</li>
-<li><strong>T0-018-broker-rust.md</strong> — Context-free verification of <code>broker.rs</code> (887 lines). Broker struct (24 fields), gate logic, expected value, distance cascade, paper lifecycle, propagation, dollar P&L.</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<li><strong>T0-018-broker-rust.md</strong> — Context-free verification of <code>broker.rs</code> (887 lines). Broker struct (24 fields), gate logic, expected value, distance cascade, paper lifecycle, propagation, dollar P&amp;L.</li>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

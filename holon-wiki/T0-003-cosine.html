@@ -125,101 +125,139 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-003: Cosine Similarity — the only measurement in holon-rs <span class="badge badge-how">HOW</span></h1><div class="prose prose-invert max-w-none"><blockquote><strong>Status:</strong> Verified from source</blockquote>
-<blockquote><strong>Sources:</strong> <code>holon-rs/src/kernel/similarity.rs</code> (581 lines), <code>wat/core/primitives.wat</code> (lines 1–26)</blockquote>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-003: Cosine Similarity — the only measurement in holon-rs <span class="badge badge-how">HOW</span></h1><div class="prose prose-invert max-w-none"><blockquote>
+<p><strong>Status:</strong> Verified from source<br />
+<strong>Sources:</strong> <code>holon-rs/src/kernel/similarity.rs</code> (581 lines), <code>wat/core/primitives.wat</code> (lines 1–26)</p>
+</blockquote>
+<hr />
 <h2>What it IS</h2>
 <p>Cosine similarity is the singular measurement primitive in the holon system. The WAT spec declares it plainly:</p>
-<blockquote>"Measure similarity between two thoughts. The only measurement. One number."</blockquote>
-<blockquote><code>(cosine thought direction) → Float  ; [-1.0, +1.0]</code></blockquote>
+<blockquote>
+<p>&quot;Measure similarity between two thoughts. The only measurement. One number.&quot;<br />
+<code>(cosine thought direction) → Float  ; [-1.0, +1.0]</code></p>
+</blockquote>
 <p>The WAT spec further situates cosine within the algebraic structure:</p>
-<blockquote>"A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism."</blockquote>
+<blockquote>
+<p>&quot;A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism.&quot;</p>
+</blockquote>
 <p>Cosine similarity measures the angle between two vectors, independent of their magnitudes.</p>
-<hr>
+<hr />
 <h2>How it works</h2>
 <h3>Core definition</h3>
 <p>The module doc comment gives the formula:</p>
+<blockquote>
+<p><code>cosine(a, b) = dot(a, b) / (||a|| * ||b||)</code></p>
+</blockquote>
 <h3>Non-SIMD path (default)</h3>
 <p>When the <code>simd</code> feature is not enabled, <code>Similarity::cosine</code> computes:</p>
 <ol>
-<li><strong>Dot product</strong> via <code>dot_raw</code>: iterates over paired i8 elements, casts to i64, multiplies, sums.</li>
-<pre><code>
-   a.data().iter().zip(b.data().iter())
-       .map(|(&x, &y)| (x as i64) * (y as i64))
-       .sum::<i64>() as f64
+<li><p><strong>Dot product</strong> via <code>dot_raw</code>: iterates over paired i8 elements, casts to i64, multiplies, sums.</p>
+<pre><code class="language-rust">a.data().iter().zip(b.data().iter())
+    .map(|(&amp;x, &amp;y)| (x as i64) * (y as i64))
+    .sum::&lt;i64&gt;() as f64
 </code></pre>
-</ol>
-<ol>
-<li><strong>L2 norm</strong> via <code>Vector::norm()</code>: sum of squared i8 values cast to i64, then square-rooted.</li>
-<pre><code>
-   let sum_sq: i64 = self.data.iter().map(|&v| (v as i64) * (v as i64)).sum();
-   (sum_sq as f64).sqrt()
+</li>
+<li><p><strong>L2 norm</strong> via <code>Vector::norm()</code>: sum of squared i8 values cast to i64, then square-rooted.</p>
+<pre><code class="language-rust">let sum_sq: i64 = self.data.iter().map(|&amp;v| (v as i64) * (v as i64)).sum();
+(sum_sq as f64).sqrt()
 </code></pre>
-</ol>
-<ol>
-<li><strong>Division</strong> with zero-guard: if either norm < 1e-10, returns 0.0. Otherwise returns <code>dot / (norm_a * norm_b)</code>.</li>
+</li>
+<li><p><strong>Division</strong> with zero-guard: if either norm &lt; 1e-10, returns 0.0. Otherwise returns <code>dot / (norm_a * norm_b)</code>.</p>
+</li>
 </ol>
 <h3>SIMD path (<code>simd</code> feature)</h3>
 <p>When compiled with the <code>simd</code> feature, cosine uses <code>simsimd::SpatialSimilarity</code>:</p>
-<pre><code>
-let dot_ab = i8::dot(a.data(), b.data()).unwrap_or(0.0);
+<pre><code class="language-rust">let dot_ab = i8::dot(a.data(), b.data()).unwrap_or(0.0);
 let dot_aa = i8::dot(a.data(), a.data()).unwrap_or(0.0);
 let dot_bb = i8::dot(b.data(), b.data()).unwrap_or(0.0);
 let norm_product = (dot_aa * dot_bb).sqrt();
 </code></pre>
-<p>The module header claims this gives "up to 200x faster similarity computations on supported hardware."</p>
+<p>The module header claims this gives &quot;up to 200x faster similarity computations on supported hardware.&quot;</p>
 <h3>f64 variant</h3>
-<p>A separate <code>cosine_f64(a: &[f64], b: &[f64])</code> exists in <code>primitives.rs</code> for when vectors are already in float space. Same formula, different operand type.</p>
-<hr>
+<p>A separate <code>cosine_f64(a: &amp;[f64], b: &amp;[f64])</code> exists in <code>primitives.rs</code> for when vectors are already in float space. Same formula, different operand type.</p>
+<hr />
 <h2>Data types involved</h2>
 <p>Cosine similarity operates on <code>Vector</code>, which the code defines as:</p>
-<blockquote>"A high-dimensional vector with bipolar elements {-1, 0, 1}. Internally stored as i8 for memory efficiency."</blockquote>
-<hr>
+<blockquote>
+<p>&quot;A high-dimensional vector with bipolar elements {-1, 0, 1}. Internally stored as i8 for memory efficiency.&quot;</p>
+</blockquote>
+<hr />
 <h2>Return value semantics</h2>
 <p>The source doc comment on <code>Similarity::cosine</code> states:</p>
-<blockquote>"Returns a value in [-1, 1] where:</blockquote>
-<blockquote>- 1 means identical (parallel)</blockquote>
-<blockquote>- 0 means orthogonal (unrelated)</blockquote>
-<blockquote>- -1 means opposite (anti-parallel)"</blockquote>
+<blockquote>
+<p>&quot;Returns a value in [-1, 1] where:</p>
+<ul>
+<li>1 means identical (parallel)</li>
+<li>0 means orthogonal (unrelated)</li>
+<li>-1 means opposite (anti-parallel)&quot;</li>
+</ul>
+</blockquote>
 <p>Tests confirm: identical vectors yield 1.0, negated vectors yield -1.0.</p>
-<hr>
+<hr />
 <h2>All cosine variants</h2>
 <table>
-<thead><tr><th>Method</th><th>Signature</th><th>Description</th></tr></thead>
-<tr><td data-label="Method"><code>cosine</code></td><td data-label="Signature"><code>(a: &Vector, b: &Vector) -> f64</code></td><td data-label="Description">Standard cosine similarity</td></tr>
-<tr><td data-label="Method"><code>weighted_cosine</code></td><td data-label="Signature"><code>(a: &Vector, b: &Vector, weights: &[f64]) -> f64</code></td><td data-label="Description">Per-dimension importance weighting</td></tr>
-<tr><td data-label="Method"><code>cosine_f64</code></td><td data-label="Signature"><code>(a: &[f64], b: &[f64]) -> f64</code></td><td data-label="Description">Cosine on raw f64 slices</td></tr>
+<thead>
+<tr>
+  <th>Method</th>
+  <th>Signature</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Method"><code>cosine</code></td>
+  <td data-label="Signature"><code>(a: &amp;Vector, b: &amp;Vector) -&gt; f64</code></td>
+  <td data-label="Description">Standard cosine similarity</td>
+</tr>
+<tr>
+  <td data-label=""><code>weighted_cosine</code></td>
+  <td data-label=""><code>(a: &amp;Vector, b: &amp;Vector, weights: &amp;[f64]) -&gt; f64</code></td>
+  <td data-label="">Per-dimension importance weighting</td>
+</tr>
+<tr>
+  <td data-label=""><code>cosine_f64</code></td>
+  <td data-label=""><code>(a: &amp;[f64], b: &amp;[f64]) -&gt; f64</code></td>
+  <td data-label="">Cosine on raw f64 slices</td>
+</tr>
+</tbody>
 </table>
-<p><code>weighted_cosine</code> multiplies each dimension's value by its weight before computing the standard formula. The source describes it as: "Applies <code>weights</code> element-wise before computing cosine similarity."</p>
-<hr>
+<p><code>weighted_cosine</code> multiplies each dimension's value by its weight before computing the standard formula. The source describes it as: &quot;Applies <code>weights</code> element-wise before computing cosine similarity.&quot;</p>
+<hr />
 <h2>Statistical significance transform</h2>
 <p>The module provides a z-score conversion:</p>
-<blockquote>"In high dimensions, random bipolar vectors are nearly orthogonal with cosine similarity ≈ N(0, 1/√d). This converts a raw similarity into a z-score."</blockquote>
+<blockquote>
+<p>&quot;In high dimensions, random bipolar vectors are nearly orthogonal with cosine similarity ≈ N(0, 1/√d). This converts a raw similarity into a z-score.&quot;</p>
+</blockquote>
 <p>Implementation: <code>similarity * sqrt(dimensions)</code>.</p>
 <p>The source provides these thresholds:</p>
-<hr>
-<h2>Cosine is NOT the only metric in the implementation</h2>
-<p>Despite the WAT spec calling it "the only measurement," the Rust implementation provides a full <code>Metric</code> enum with 8 members dispatched through <code>Similarity::compute</code>:</p>
 <ul>
-<li><strong>Cosine</strong> — "most common, scale-invariant"</li>
-<li><strong>Dot</strong> — "raw inner product"</li>
+<li><code>|z| &gt; 2.0</code>: likely meaningful (p &lt; 0.05)</li>
+<li><code>|z| &gt; 3.0</code>: very significant (p &lt; 0.003)</li>
+<li><code>|z| &gt; 5.0</code>: essentially certain</li>
+</ul>
+<hr />
+<h2>Cosine is NOT the only metric in the implementation</h2>
+<p>Despite the WAT spec calling it &quot;the only measurement,&quot; the Rust implementation provides a full <code>Metric</code> enum with 8 members dispatched through <code>Similarity::compute</code>:</p>
+<ul>
+<li><strong>Cosine</strong> — &quot;most common, scale-invariant&quot;</li>
+<li><strong>Dot</strong> — &quot;raw inner product&quot;</li>
 <li><strong>Euclidean</strong> — distance converted to similarity via <code>1 / (1 + distance)</code></li>
 <li><strong>Manhattan</strong> — same conversion scheme</li>
-<li><strong>Hamming</strong> — "fraction of positions that agree"</li>
-<li><strong>Overlap</strong> — "agreement among non-zero positions"</li>
+<li><strong>Hamming</strong> — &quot;fraction of positions that agree&quot;</li>
+<li><strong>Overlap</strong> — &quot;agreement among non-zero positions&quot;</li>
 <li><strong>Agreement</strong> — <code>(agreements - disagreements) / dimension</code></li>
 <li><strong>Chebyshev</strong> — L∞ distance converted via <code>1 - (max_diff / 2)</code></li>
 </ul>
 <p>Additionally: <code>weighted_euclidean</code>, <code>minkowski</code>, and <code>minkowski_distance</code> are implemented but not in the <code>Metric</code> enum.</p>
-<p>The WAT spec's "only measurement" statement refers to the <em>conceptual</em> primitive — cosine is the canonical measurement in the algebraic specification. The Rust implementation exposes more metrics for practical flexibility.</p>
-<hr>
+<p>The WAT spec's &quot;only measurement&quot; statement refers to the <em>conceptual</em> primitive — cosine is the canonical measurement in the algebraic specification. The Rust implementation exposes more metrics for practical flexibility.</p>
+<hr />
 <h2>Source quotes</h2>
-<table>
-<thead><tr><th>Quote</th><th>Location</th></tr></thead>
-<tr><td data-label="Quote">"Cosine similarity (most common, scale-invariant)"</td><td data-label="Location"><code>similarity.rs</code> line 11</td></tr>
-<tr><td data-label="Quote">"dot(a, b) / (</td><td data-label="Location"></td><td data-label="">a\</td><td data-label="">\</td><td data-label="">* \</td><td data-label="">\</td><td data-label="">b\</td><td data-label="">\</td><td data-label="">)"</td><td data-label=""><code>similarity.rs</code> line 50</td></tr>
-<tr><td data-label="Quote">"Returns a value in [-1, 1]"</td><td data-label="Location"><code>similarity.rs</code> line 52</td></tr>
-<tr><td data-label="Quote">"The only measurement. One number."</td><td data-label="Location"><code>primitives.wat</code> line 25</td></tr>
-<tr><td data-label="Quote">"cosine as the measurement homomorphism"</td><td data-label="Location"><code>primitives.wat</code> line 10</td></tr>
-<tr><td data-label="Quote">"up to 200x faster similarity computations on supported hardware"</td><td data-label="Location"><code>similarity.rs</code> line 4</td></tr>
-</table></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>| Quote | Location |
+|-------|----------|
+| &quot;Cosine similarity (most common, scale-invariant)&quot; | <code>similarity.rs</code> line 11 |
+| &quot;dot(a, b) / (||a|| * ||b||)&quot; | <code>similarity.rs</code> line 50 |
+| &quot;Returns a value in [-1, 1]&quot; | <code>similarity.rs</code> line 52 |
+| &quot;The only measurement. One number.&quot; | <code>primitives.wat</code> line 25 |
+| &quot;cosine as the measurement homomorphism&quot; | <code>primitives.wat</code> line 10 |
+| &quot;up to 200x faster similarity computations on supported hardware&quot; | <code>similarity.rs</code> line 4 |</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

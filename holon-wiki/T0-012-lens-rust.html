@@ -130,11 +130,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>src/domain/lens.rs</code> (258 lines)</li>
 <li><code>src/types/enums.rs</code> (247 lines)</li>
 </ul>
-<hr>
+<hr />
 <h2>Enum Definitions (enums.rs)</h2>
 <h3>MarketLens — 11 variants, 3 schools</h3>
-<pre><code>
-pub enum MarketLens {
+<pre><code>pub enum MarketLens {
     // Dow school
     DowTrend,
     DowVolume,
@@ -154,41 +153,105 @@ pub enum MarketLens {
 <p>Derives: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code></p>
 <p>Display strings: <code>dow-trend</code>, <code>dow-volume</code>, <code>dow-cycle</code>, <code>dow-generalist</code>, <code>pring-impulse</code>, <code>pring-confirmation</code>, <code>pring-regime</code>, <code>pring-generalist</code>, <code>wyckoff-effort</code>, <code>wyckoff-persistence</code>, <code>wyckoff-position</code></p>
 <h3>PositionLens — 2 variants</h3>
-<pre><code>
-pub enum PositionLens {
+<pre><code>pub enum PositionLens {
     Core,   // 5 trade atoms — lean
     Full,   // 13 trade atoms — rich
 }
 </code></pre>
 <p>Derives: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code></p>
 <p>Display strings: <code>core</code>, <code>full</code></p>
-<hr>
+<hr />
 <h2>Lens Wiring (lens.rs)</h2>
 <h3>Shared Module (all market lenses)</h3>
 <p>Every <code>MarketLens</code> variant includes <code>shared::time</code> (<code>encode_time_facts</code>). This is encoded once before the match, not repeated per arm.</p>
 <h3>Market Lens → Module Map</h3>
 <p>All modules are in <code>vocab::market::*</code> unless noted otherwise.</p>
 <table>
-<thead><tr><th>Lens</th><th>School</th><th>Modules</th></tr></thead>
-<tr><td data-label="Lens"><strong>DowTrend</strong></td><td data-label="School">Dow</td><td data-label="Modules"><code>momentum</code>, <code>persistence</code>, <code>regime</code>, <code>timeframe</code></td></tr>
-<tr><td data-label="Lens"><strong>DowVolume</strong></td><td data-label="School">Dow</td><td data-label="Modules"><code>flow</code>, <code>standard</code>, <code>keltner</code></td></tr>
-<tr><td data-label="Lens"><strong>DowCycle</strong></td><td data-label="School">Dow</td><td data-label="Modules"><code>oscillators</code>, <code>keltner</code>, <code>momentum</code>, <code>standard</code>, <code>timeframe</code></td></tr>
-<tr><td data-label="Lens"><strong>DowGeneralist</strong></td><td data-label="School">Dow</td><td data-label="Modules"><code>momentum</code>, <code>persistence</code>, <code>regime</code>, <code>timeframe</code>, <code>flow</code>, <code>standard</code>, <code>keltner</code>, <code>oscillators</code></td></tr>
-<tr><td data-label="Lens"><strong>PringImpulse</strong></td><td data-label="School">Pring</td><td data-label="Modules"><code>oscillators</code>, <code>momentum</code>, <code>persistence</code></td></tr>
-<tr><td data-label="Lens"><strong>PringConfirmation</strong></td><td data-label="School">Pring</td><td data-label="Modules"><code>flow</code>, <code>oscillators</code>, <code>divergence</code>, <code>timeframe</code></td></tr>
-<tr><td data-label="Lens"><strong>PringRegime</strong></td><td data-label="School">Pring</td><td data-label="Modules"><code>regime</code>, <code>persistence</code>, <code>keltner</code></td></tr>
-<tr><td data-label="Lens"><strong>PringGeneralist</strong></td><td data-label="School">Pring</td><td data-label="Modules"><code>oscillators</code>, <code>momentum</code>, <code>persistence</code>, <code>flow</code>, <code>divergence</code>, <code>timeframe</code>, <code>regime</code>, <code>keltner</code></td></tr>
-<tr><td data-label="Lens"><strong>WyckoffEffort</strong></td><td data-label="School">Wyckoff</td><td data-label="Modules"><code>flow</code>, <code>price_action</code>, <code>oscillators</code>, <code>standard</code></td></tr>
-<tr><td data-label="Lens"><strong>WyckoffPersistence</strong></td><td data-label="School">Wyckoff</td><td data-label="Modules"><code>persistence</code>, <code>regime</code>, <code>momentum</code>, <code>oscillators</code></td></tr>
-<tr><td data-label="Lens"><strong>WyckoffPosition</strong></td><td data-label="School">Wyckoff</td><td data-label="Modules"><code>momentum</code>, <code>standard</code>, <code>regime</code>, <code>divergence</code>, <code>fibonacci</code></td></tr>
+<thead>
+<tr>
+  <th>Lens</th>
+  <th>School</th>
+  <th>Modules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Lens"><strong>DowTrend</strong></td>
+  <td data-label="School">Dow</td>
+  <td data-label="Modules"><code>momentum</code>, <code>persistence</code>, <code>regime</code>, <code>timeframe</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>DowVolume</strong></td>
+  <td data-label="">Dow</td>
+  <td data-label=""><code>flow</code>, <code>standard</code>, <code>keltner</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>DowCycle</strong></td>
+  <td data-label="">Dow</td>
+  <td data-label=""><code>oscillators</code>, <code>keltner</code>, <code>momentum</code>, <code>standard</code>, <code>timeframe</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>DowGeneralist</strong></td>
+  <td data-label="">Dow</td>
+  <td data-label=""><code>momentum</code>, <code>persistence</code>, <code>regime</code>, <code>timeframe</code>, <code>flow</code>, <code>standard</code>, <code>keltner</code>, <code>oscillators</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>PringImpulse</strong></td>
+  <td data-label="">Pring</td>
+  <td data-label=""><code>oscillators</code>, <code>momentum</code>, <code>persistence</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>PringConfirmation</strong></td>
+  <td data-label="">Pring</td>
+  <td data-label=""><code>flow</code>, <code>oscillators</code>, <code>divergence</code>, <code>timeframe</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>PringRegime</strong></td>
+  <td data-label="">Pring</td>
+  <td data-label=""><code>regime</code>, <code>persistence</code>, <code>keltner</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>PringGeneralist</strong></td>
+  <td data-label="">Pring</td>
+  <td data-label=""><code>oscillators</code>, <code>momentum</code>, <code>persistence</code>, <code>flow</code>, <code>divergence</code>, <code>timeframe</code>, <code>regime</code>, <code>keltner</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>WyckoffEffort</strong></td>
+  <td data-label="">Wyckoff</td>
+  <td data-label=""><code>flow</code>, <code>price_action</code>, <code>oscillators</code>, <code>standard</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>WyckoffPersistence</strong></td>
+  <td data-label="">Wyckoff</td>
+  <td data-label=""><code>persistence</code>, <code>regime</code>, <code>momentum</code>, <code>oscillators</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>WyckoffPosition</strong></td>
+  <td data-label="">Wyckoff</td>
+  <td data-label=""><code>momentum</code>, <code>standard</code>, <code>regime</code>, <code>divergence</code>, <code>fibonacci</code></td>
+</tr>
+</tbody>
 </table>
 <p><strong>Generalist property:</strong> Each <code>*Generalist</code> is the union of its school's three specialist lenses (superset of modules).</p>
 <h3>Position Lens → Module Map</h3>
-<p>Modules are in <code>vocab::exit::<em></code> and <code>vocab::shared::</em></code>.</p>
+<p>Modules are in <code>vocab::exit::*</code> and <code>vocab::shared::*</code>.</p>
 <table>
-<thead><tr><th>Lens</th><th>Modules</th></tr></thead>
-<tr><td data-label="Lens"><strong>Core</strong></td><td data-label="Modules"><code>exit::regime</code>, <code>exit::time</code></td></tr>
-<tr><td data-label="Lens"><strong>Full</strong></td><td data-label="Modules"><code>exit::regime</code>, <code>exit::time</code>, <code>exit::phase</code> (current facts + series thought + scalar facts)</td></tr>
+<thead>
+<tr>
+  <th>Lens</th>
+  <th>Modules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Lens"><strong>Core</strong></td>
+  <td data-label="Modules"><code>exit::regime</code>, <code>exit::time</code></td>
+</tr>
+<tr>
+  <td data-label=""><strong>Full</strong></td>
+  <td data-label=""><code>exit::regime</code>, <code>exit::time</code>, <code>exit::phase</code> (current facts + series thought + scalar facts)</td>
+</tr>
+</tbody>
 </table>
 <h3>Removed (Proposals 041+042)</h3>
 <p>Per <code>lens.rs</code> comments:</p>
@@ -198,33 +261,110 @@ pub enum PositionLens {
 <li>Their modules still exist but are no longer called</li>
 <li><code>fibonacci</code> is used only by <code>WyckoffPosition</code></li>
 </ul>
-<hr>
+<hr />
 <h2>Vocabulary Module Reference</h2>
 <p>Complete list of modules actually wired into lenses (encoder function → source path):</p>
 <table>
-<thead><tr><th>Encoder Function</th><th>Module Path</th><th>Used By</th></tr></thead>
-<tr><td data-label="Encoder Function"><code>encode_time_facts</code></td><td data-label="Module Path"><code>vocab::shared::time</code></td><td data-label="Used By">All 11 market lenses (pre-match)</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_momentum_facts</code></td><td data-label="Module Path"><code>vocab::market::momentum</code></td><td data-label="Used By">DowTrend, DowCycle, DowGeneralist, PringImpulse, PringGeneralist, WyckoffPersistence, WyckoffPosition</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_persistence_facts</code></td><td data-label="Module Path"><code>vocab::market::persistence</code></td><td data-label="Used By">DowTrend, DowGeneralist, PringImpulse, PringGeneralist, PringRegime, WyckoffPersistence</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_regime_facts</code></td><td data-label="Module Path"><code>vocab::market::regime</code></td><td data-label="Used By">DowTrend, DowGeneralist, PringRegime, PringGeneralist, WyckoffPersistence, WyckoffPosition</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_timeframe_facts</code></td><td data-label="Module Path"><code>vocab::market::timeframe</code></td><td data-label="Used By">DowTrend, DowCycle, DowGeneralist, PringConfirmation, PringGeneralist</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_flow_facts</code></td><td data-label="Module Path"><code>vocab::market::flow</code></td><td data-label="Used By">DowVolume, DowGeneralist, PringConfirmation, PringGeneralist, WyckoffEffort</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_standard_facts</code></td><td data-label="Module Path"><code>vocab::market::standard</code></td><td data-label="Used By">DowVolume, DowCycle, DowGeneralist, WyckoffEffort, WyckoffPosition</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_keltner_facts</code></td><td data-label="Module Path"><code>vocab::market::keltner</code></td><td data-label="Used By">DowVolume, DowCycle, DowGeneralist, PringRegime, PringGeneralist</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_oscillator_facts</code></td><td data-label="Module Path"><code>vocab::market::oscillators</code></td><td data-label="Used By">DowCycle, DowGeneralist, PringImpulse, PringConfirmation, PringGeneralist, WyckoffEffort, WyckoffPersistence</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_divergence_facts</code></td><td data-label="Module Path"><code>vocab::market::divergence</code></td><td data-label="Used By">PringConfirmation, PringGeneralist, WyckoffPosition</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_price_action_facts</code></td><td data-label="Module Path"><code>vocab::market::price_action</code></td><td data-label="Used By">WyckoffEffort</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_fibonacci_facts</code></td><td data-label="Module Path"><code>vocab::market::fibonacci</code></td><td data-label="Used By">WyckoffPosition</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_exit_regime_facts</code></td><td data-label="Module Path"><code>vocab::exit::regime</code></td><td data-label="Used By">Core, Full</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_exit_time_facts</code></td><td data-label="Module Path"><code>vocab::exit::time</code></td><td data-label="Used By">Core, Full</td></tr>
-<tr><td data-label="Encoder Function"><code>encode_phase_current_facts</code></td><td data-label="Module Path"><code>vocab::exit::phase</code></td><td data-label="Used By">Full</td></tr>
-<tr><td data-label="Encoder Function"><code>phase_series_thought</code></td><td data-label="Module Path"><code>vocab::exit::phase</code></td><td data-label="Used By">Full</td></tr>
-<tr><td data-label="Encoder Function"><code>phase_scalar_facts</code></td><td data-label="Module Path"><code>vocab::exit::phase</code></td><td data-label="Used By">Full</td></tr>
+<thead>
+<tr>
+  <th>Encoder Function</th>
+  <th>Module Path</th>
+  <th>Used By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Encoder Function"><code>encode_time_facts</code></td>
+  <td data-label="Module Path"><code>vocab::shared::time</code></td>
+  <td data-label="Used By">All 11 market lenses (pre-match)</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_momentum_facts</code></td>
+  <td data-label=""><code>vocab::market::momentum</code></td>
+  <td data-label="">DowTrend, DowCycle, DowGeneralist, PringImpulse, PringGeneralist, WyckoffPersistence, WyckoffPosition</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_persistence_facts</code></td>
+  <td data-label=""><code>vocab::market::persistence</code></td>
+  <td data-label="">DowTrend, DowGeneralist, PringImpulse, PringGeneralist, PringRegime, WyckoffPersistence</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_regime_facts</code></td>
+  <td data-label=""><code>vocab::market::regime</code></td>
+  <td data-label="">DowTrend, DowGeneralist, PringRegime, PringGeneralist, WyckoffPersistence, WyckoffPosition</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_timeframe_facts</code></td>
+  <td data-label=""><code>vocab::market::timeframe</code></td>
+  <td data-label="">DowTrend, DowCycle, DowGeneralist, PringConfirmation, PringGeneralist</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_flow_facts</code></td>
+  <td data-label=""><code>vocab::market::flow</code></td>
+  <td data-label="">DowVolume, DowGeneralist, PringConfirmation, PringGeneralist, WyckoffEffort</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_standard_facts</code></td>
+  <td data-label=""><code>vocab::market::standard</code></td>
+  <td data-label="">DowVolume, DowCycle, DowGeneralist, WyckoffEffort, WyckoffPosition</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_keltner_facts</code></td>
+  <td data-label=""><code>vocab::market::keltner</code></td>
+  <td data-label="">DowVolume, DowCycle, DowGeneralist, PringRegime, PringGeneralist</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_oscillator_facts</code></td>
+  <td data-label=""><code>vocab::market::oscillators</code></td>
+  <td data-label="">DowCycle, DowGeneralist, PringImpulse, PringConfirmation, PringGeneralist, WyckoffEffort, WyckoffPersistence</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_divergence_facts</code></td>
+  <td data-label=""><code>vocab::market::divergence</code></td>
+  <td data-label="">PringConfirmation, PringGeneralist, WyckoffPosition</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_price_action_facts</code></td>
+  <td data-label=""><code>vocab::market::price_action</code></td>
+  <td data-label="">WyckoffEffort</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_fibonacci_facts</code></td>
+  <td data-label=""><code>vocab::market::fibonacci</code></td>
+  <td data-label="">WyckoffPosition</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_exit_regime_facts</code></td>
+  <td data-label=""><code>vocab::exit::regime</code></td>
+  <td data-label="">Core, Full</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_exit_time_facts</code></td>
+  <td data-label=""><code>vocab::exit::time</code></td>
+  <td data-label="">Core, Full</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_phase_current_facts</code></td>
+  <td data-label=""><code>vocab::exit::phase</code></td>
+  <td data-label="">Full</td>
+</tr>
+<tr>
+  <td data-label=""><code>phase_series_thought</code></td>
+  <td data-label=""><code>vocab::exit::phase</code></td>
+  <td data-label="">Full</td>
+</tr>
+<tr>
+  <td data-label=""><code>phase_scalar_facts</code></td>
+  <td data-label=""><code>vocab::exit::phase</code></td>
+  <td data-label="">Full</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Tests (lens.rs, lines 192–258)</h2>
 <ol>
 <li><code>test_market_lens_facts_differ_by_lens</code> — asserts DowTrend ≠ WyckoffEffort ≠ PringImpulse by fact count</li>
 <li><code>test_generalists_include_school_modules</code> — asserts DowGeneralist ≥ each Dow specialist, PringGeneralist ≥ each Pring specialist by fact count</li>
 <li><code>test_position_lens_facts_variants</code> — asserts Core produces exactly 10 facts (regime 8 + time 2), Full produces exactly 13 facts (regime 8 + time 2 + phase 3)</li>
-</ol></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ol>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

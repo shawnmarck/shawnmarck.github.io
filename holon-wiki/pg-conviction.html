@@ -126,79 +126,125 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Conviction — the strength of a prediction <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p>Conviction is the absolute value of the winning cosine similarity in a <a class="wikilink" href="pg-reckoner.html">Reckoner</a>'s discrete prediction. It measures how strongly the reckoner leans toward one classification direction, on a scale of 0.0 (no preference) to 1.0 (maximum alignment). It is the primary input to the reckoner's self-evaluation mechanism — the <a class="wikilink" href="pg-curve.html">conviction–accuracy curve</a> — which validates whether the reckoner's confidence is well-calibrated.</p>
-<hr></div><div class="prose prose-invert max-w-none"><blockquote><strong>Composite wiki page.</strong> Every claim below is traced to verified source documents.</blockquote>
-<hr>
+<p>Conviction is the absolute value of the winning cosine similarity in a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;'s discrete prediction. It measures how strongly the reckoner leans toward one classification direction, on a scale of 0.0 (no preference) to 1.0 (maximum alignment). It is the primary input to the reckoner's self-evaluation mechanism — the &lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;conviction–accuracy curve&lt;/a&gt; — which validates whether the reckoner's confidence is well-calibrated.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><blockquote>
+<p><strong>Composite wiki page.</strong> Every claim below is traced to verified source documents.</p>
+</blockquote>
+<hr />
 <h2>Definition</h2>
-<p>In discrete mode, a <a class="wikilink" href="pg-reckoner.html">Reckoner</a> computes the cosine similarity between the input thought and each label's learned <a class="wikilink" href="pg-reckoner.html">discriminant</a> direction. The label with the highest raw cosine becomes the predicted <code>direction</code>. The <strong>conviction</strong> is the absolute value of that cosine:</p>
-<pre><code>
-conviction = |best_raw_cosine|
+<p>In discrete mode, a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; computes the cosine similarity between the input thought and each label's learned &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;discriminant&lt;/a&gt; direction. The label with the highest raw cosine becomes the predicted <code>direction</code>. The <strong>conviction</strong> is the absolute value of that cosine:</p>
+<pre><code>conviction = |best_raw_cosine|
 </code></pre>
 <p>The <code>Prediction</code> struct carries conviction as a first-class field:</p>
-<pre><code>
-pub struct Prediction {
-    pub scores: Vec<LabelScore>,      // cosine per label, ordered descending
-    pub direction: Option<Label>,     // label with highest raw cosine
+<pre><code class="language-rust">pub struct Prediction {
+    pub scores: Vec&lt;LabelScore&gt;,      // cosine per label, ordered descending
+    pub direction: Option&lt;Label&gt;,     // label with highest raw cosine
     pub conviction: f64,              // |max cosine|
     pub raw_cos: f64,                 // raw signed cosine of winning direction
 }
 </code></pre>
 <p>— T0-008 §3.2</p>
 <p>Conviction is always non-negative <code>[0.0, 1.0]</code>. A conviction of 0.0 means the thought is orthogonal to all discriminant directions (the reckoner has no opinion). A conviction of 1.0 means perfect alignment with the winning discriminant.</p>
-<hr>
+<hr />
 <h2>Computation</h2>
 <p>The prediction path in <code>Reckoner::predict()</code>:</p>
 <ol>
 <li>For each label, compute cosine similarity between the (mean-stripped) thought and that label's discriminant vector.</li>
 <li>Sort all scores by raw cosine descending.</li>
 <li>The winning label = highest raw cosine.</li>
+<li><strong>conviction</strong> = <code>|winning_raw_cosine|</code>.</li>
 </ol>
 <p>An important subtlety: scores are sorted by <strong>raw</strong> cosine (not absolute), but conviction is the absolute value of the winner. This means a strongly <em>negative</em> cosine also produces high conviction — the reckoner is equally sure it is <em>not</em> that direction. As T0-008 notes:</p>
-<blockquote>"Scores are sorted by raw cosine descending … but conviction is set to <code>best.cosine.abs()</code>. This means the winning label is the one with the highest raw cosine, and conviction measures magnitude."</blockquote>
-<blockquote>— T0-008 §3.2</blockquote>
-<hr>
+<blockquote>
+<p>&quot;Scores are sorted by raw cosine descending … but conviction is set to <code>best.cosine.abs()</code>. This means the winning label is the one with the highest raw cosine, and conviction measures magnitude.&quot;
+— T0-008 §3.2</p>
+</blockquote>
+<hr />
 <h2>The conviction–accuracy curve</h2>
 <p>Conviction's deeper purpose is self-evaluation. Through the <code>resolve(conviction, correct)</code> method, the reckoner records a sliding window of <code>(conviction, was_it_right?)</code> pairs. Once enough data accumulates (≥500 resolved predictions), <code>curve()</code> fits the empirical relationship:</p>
-<pre><code>
-accuracy = (1/N) + a × exp(b × conviction)
+<pre><code>accuracy = (1/N) + a × exp(b × conviction)
 </code></pre>
 <p>where <code>N</code> is the number of labels and <code>1/N</code> is random-chance baseline. The WAT spec states:</p>
-<blockquote>"At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal."</blockquote>
-<blockquote>— <code>primitives.wat</code>, quoted in T0-008 §3.6</blockquote>
-<p>A positive <code>b</code> coefficient means higher conviction genuinely predicts higher accuracy — the reckoner knows what it knows. The fitted curve enables <code>accuracy_at(conviction)</code>, letting downstream systems ask: <em>"If this reckoner says conviction = 0.7, how often is it actually right?"</em></p>
+<blockquote>
+<p>&quot;At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal.&quot;
+— <code>primitives.wat</code>, quoted in T0-008 §3.6</p>
+</blockquote>
+<p>A positive <code>b</code> coefficient means higher conviction genuinely predicts higher accuracy — the reckoner knows what it knows. The fitted curve enables <code>accuracy_at(conviction)</code>, letting downstream systems ask: <em>&quot;If this reckoner says conviction = 0.7, how often is it actually right?&quot;</em></p>
 <p>This is the curve-fitting input point: <code>resolve()</code> is the only way external code feeds conviction data back into the reckoner for self-calibration.</p>
-<blockquote>"By recording (conviction, correct) pairs and fitting accuracy = 1/N + a·exp(b·conviction), the system gets a self-calibration measure."</blockquote>
-<blockquote>— T0-008 §6.7</blockquote>
-<hr>
+<blockquote>
+<p>&quot;By recording (conviction, correct) pairs and fitting accuracy = 1/N + a·exp(b·conviction), the system gets a self-calibration measure.&quot;
+— T0-008 §6.7</p>
+</blockquote>
+<hr />
 <h2>Relationship to cosine similarity</h2>
-<p>Conviction is a direct application of <a class="wikilink" href="T0-003-cosine.html">cosine similarity</a> — the singular measurement primitive in the holon system. The WAT spec declares:</p>
-<blockquote>"The only measurement. One number."</blockquote>
-<blockquote>— <code>primitives.wat</code>, quoted in T0-003</blockquote>
+<p>Conviction is a direct application of &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt; — the singular measurement primitive in the holon system. The WAT spec declares:</p>
+<blockquote>
+<p>&quot;The only measurement. One number.&quot;
+— <code>primitives.wat</code>, quoted in T0-003</p>
+</blockquote>
 <p>Cosine returns a value in <code>[-1, 1]</code> measuring the angle between two vectors, independent of magnitude. Conviction folds the sign away to produce a scalar confidence measure: alignment with the discriminant direction, regardless of polarity.</p>
 <p>The cosine similarity in this context operates on the f64 pipeline (<code>cosine_f64</code>), since discriminants are normalized f64 vectors, not the i8 bipolar <code>Vector</code> type used elsewhere.</p>
-<hr>
+<hr />
 <h2>Role in the system</h2>
 <p>Conviction appears in three contexts:</p>
 <ol>
-<li><strong><a class="wikilink" href="pg-reckoner.html">Reckoner</a> prediction output</strong> — as <code>Prediction.conviction</code>, the immediate confidence signal accompanying every discrete classification.</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; prediction output</strong> — as <code>Prediction.conviction</code>, the immediate confidence signal accompanying every discrete classification.</li>
 <li><strong>Self-evaluation input</strong> — via <code>resolve(conviction, correct)</code>, feeding the sliding window that trains the conviction–accuracy curve.</li>
 <li><strong>Calibrated downstream decisions</strong> — via <code>accuracy_at(conviction)</code>, which lets application code use the reckoner's self-assessed reliability rather than raw cosine.</li>
 </ol>
 <p>The primers frame the Reckoner (and thus conviction) within the memory layer:</p>
-<blockquote>"Where OnlineSubspace learns what <em>normal</em> looks like (anomaly detection), Reckoner learns what <em>separates classes</em> or <em>predicts values</em>."</blockquote>
-<blockquote>— Primer 003, quoted in T-1-000</blockquote>
+<blockquote>
+<p>&quot;Where OnlineSubspace learns what <em>normal</em> looks like (anomaly detection), Reckoner learns what <em>separates classes</em> or <em>predicts values</em>.&quot;
+— Primer 003, quoted in T-1-000</p>
+</blockquote>
 <p>Conviction is how that separation expresses its confidence.</p>
-<hr>
+<hr />
 <h2>Sources</h2>
 <table>
-<thead><tr><th>Claim</th><th>Source</th></tr></thead>
-<tr><td data-label="Claim"><code>Prediction</code> struct with <code>conviction: f64</code> field</td><td data-label="Source">T0-008 §3.2</td></tr>
-<tr><td data-label="Claim"><code>conviction = \|best.cosine\|</code> computation</td><td data-label="Source">T0-008 §3.2</td></tr>
-<tr><td data-label="Claim">Sorting by raw cosine, conviction as absolute value</td><td data-label="Source">T0-008 §3.2</td></tr>
-<tr><td data-label="Claim">Curve model: <code>accuracy = 1/N + a·exp(b·conviction)</code></td><td data-label="Source">T0-008 §3.6, <code>primitives.wat</code></td></tr>
-<tr><td data-label="Claim">"The curve IS the proof. Monotonically increasing = real signal."</td><td data-label="Source"><code>primitives.wat</code>, via T0-008 §3.6</td></tr>
-<tr><td data-label="Claim"><code>resolve()</code> sliding window (cap 5000, min 500)</td><td data-label="Source">T0-008 §3.5</td></tr>
-<tr><td data-label="Claim">Self-calibration interpretation</td><td data-label="Source">T0-008 §6.7</td></tr>
-<tr><td data-label="Claim">Cosine as "the only measurement. One number."</td><td data-label="Source">T0-003, <code>primitives.wat</code></td></tr>
-<tr><td data-label="Claim">Reckoner as class-separation learner (vs. anomaly detection)</td><td data-label="Source">T-1-000 (Primer 003)</td></tr>
-</table></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<thead>
+<tr>
+  <th>Claim</th>
+  <th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Claim"><code>Prediction</code> struct with <code>conviction: f64</code> field</td>
+  <td data-label="Source">T0-008 §3.2</td>
+</tr>
+<tr>
+  <td data-label=""><code>conviction = \|best.cosine\|</code> computation</td>
+  <td data-label="">T0-008 §3.2</td>
+</tr>
+<tr>
+  <td data-label="">Sorting by raw cosine, conviction as absolute value</td>
+  <td data-label="">T0-008 §3.2</td>
+</tr>
+<tr>
+  <td data-label="">Curve model: <code>accuracy = 1/N + a·exp(b·conviction)</code></td>
+  <td data-label="">T0-008 §3.6, <code>primitives.wat</code></td>
+</tr>
+<tr>
+  <td data-label="">&quot;The curve IS the proof. Monotonically increasing = real signal.&quot;</td>
+  <td data-label=""><code>primitives.wat</code>, via T0-008 §3.6</td>
+</tr>
+<tr>
+  <td data-label=""><code>resolve()</code> sliding window (cap 5000, min 500)</td>
+  <td data-label="">T0-008 §3.5</td>
+</tr>
+<tr>
+  <td data-label="">Self-calibration interpretation</td>
+  <td data-label="">T0-008 §6.7</td>
+</tr>
+<tr>
+  <td data-label="">Cosine as &quot;the only measurement. One number.&quot;</td>
+  <td data-label="">T0-003, <code>primitives.wat</code></td>
+</tr>
+<tr>
+  <td data-label="">Reckoner as class-separation learner (vs. anomaly detection)</td>
+  <td data-label="">T-1-000 (Primer 003)</td>
+</tr>
+</tbody>
+</table>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

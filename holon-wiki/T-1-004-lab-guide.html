@@ -126,12 +126,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T-1-004 — Lab GUIDE.md Verification <span class="badge badge-why">WHY</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p>The GUIDE.md (2,568 lines, 126KB) is the master architectural blueprint for a self-organizing trading system built on holon-rs primitives. It declares every struct, interface, and dependency — no implementation, only specification. The system is an "organism" that observes markets via candle data, encodes observations as high-dimensional vectors (thoughts), predicts direction and exit distances via <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s, and learns from outcomes (Grace/Violence). The architecture is pair-agnostic: deploy capital, ride the trade, recover principal, accumulate residue (permanent gain). Five holon-rs primitives (atom, bind, bundle, cosine, reckoner), one learning mechanism (the Reckoner), one accountability surface (the curve). Everything is specified in s-expression (Scheme-like) syntax implemented by wat files; Rust implements what the wat specifies.</p>
-<hr></div><div class="prose prose-invert max-w-none"><h2>1. Overall Architecture and Philosophy</h2>
+<p>The GUIDE.md (2,568 lines, 126KB) is the master architectural blueprint for a self-organizing trading system built on holon-rs primitives. It declares every struct, interface, and dependency — no implementation, only specification. The system is an &quot;organism&quot; that observes markets via candle data, encodes observations as high-dimensional vectors (thoughts), predicts direction and exit distances via &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;s, and learns from outcomes (Grace/Violence). The architecture is pair-agnostic: deploy capital, ride the trade, recover principal, accumulate residue (permanent gain). Five holon-rs primitives (atom, bind, bundle, cosine, reckoner), one learning mechanism (the Reckoner), one accountability surface (the curve). Everything is specified in s-expression (Scheme-like) syntax implemented by wat files; Rust implements what the wat specifies.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>1. Overall Architecture and Philosophy</h2>
 <h3>Core Metaphor: The Organism</h3>
-<p>The system is described as a "machine that measures thoughts against reality." A <strong>thought</strong> is a high-dimensional vector (10,000 dimensions by default). The machine encodes market candles into thoughts and measures whether those thoughts predicted value (Grace) or destruction (Violence).</p>
+<p>The system is described as a &quot;machine that measures thoughts against reality.&quot; A <strong>thought</strong> is a high-dimensional vector (10,000 dimensions by default). The machine encodes market candles into thoughts and measures whether those thoughts predicted value (Grace) or destruction (Violence).</p>
 <h3>The Enterprise</h3>
-<p>The enterprise is a tree of <strong><a class="wikilink" href="pg-four-step-loop.html">Post</a></strong>s. Each post watches one asset pair — (USDC, WBTC), (SPY, GOLD), any pair. No cross-talk between posts. The enterprise coordinates the four-step loop across all posts and the <a class="wikilink" href="pg-treasury.html">Treasury</a>.</p>
+<p>The enterprise is a tree of <strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt;</strong>s. Each post watches one asset pair — (USDC, WBTC), (SPY, GOLD), any pair. No cross-talk between posts. The enterprise coordinates the four-step loop across all posts and the &lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt;.</p>
 <p><strong>Hierarchical containment:</strong></p>
 <ul>
 <li><strong>Binary</strong> → creates the world, drives the fold, writes the ledger</li>
@@ -142,65 +143,65 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>Reckoner</strong> → the learning primitive (one per observer concern)</li>
 </ul>
 <h3>ctx — The Immutable World</h3>
-<p>Born at startup, flows as a parameter. Contains three fields: <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a>, dims, recalib-interval. Nobody owns it, everybody borrows it. <strong>One seam:</strong> the <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a>'s composition cache is mutable, but only between candles (not during). Cache misses are returned as values during parallel encoding, inserted sequentially after all steps complete.</p>
+<p>Born at startup, flows as a parameter. Contains three fields: &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt;, dims, recalib-interval. Nobody owns it, everybody borrows it. <strong>One seam:</strong> the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt;'s composition cache is mutable, but only between candles (not during). Cache misses are returned as values during parallel encoding, inserted sequentially after all steps complete.</p>
 <h3>Key Principles</h3>
 <ol>
 <li><strong>Values up, not queues down</strong> — side-effects flow up through return types, not down through queue parameters or shared mutation.</li>
 <li><strong>The binary orchestrates</strong> — it does not think, predict, or learn.</li>
 <li><strong>One encoding path</strong> — encoding is identical at prediction and resolution time.</li>
-<li><strong>No zones, only scalars</strong> — emit continuous values, let the discriminant learn boundaries. "Overbought" is a premature measurement.</li>
+<li><strong>No zones, only scalars</strong> — emit continuous values, let the discriminant learn boundaries. &quot;Overbought&quot; is a premature measurement.</li>
 <li><strong>Pair-agnostic</strong> — the same mechanics work for any asset pair in either direction.</li>
 <li><strong>Residue compounds</strong> — permanent gain stays as the target asset, never withdrawn.</li>
 </ol>
-<hr>
+<hr />
 <h2>2. The Four-Step Loop (per candle, per post)</h2>
 <p>The enterprise's <code>on-candle</code> is the root. Each candle flows through:</p>
 <h3>Step 1: RESOLVE + PROPAGATE (real trades)</h3>
 <ul>
-<li><a class="wikilink" href="pg-treasury.html">Treasury</a> settles triggered trades against current prices</li>
-<li>For each settlement: computes direction (exit vs entry price) and optimal distances (via <a class="wikilink" href="pg-paper-trade.html">Simulation</a> replaying full price-history)</li>
-<li>Routes outcomes through enterprise → posts → <a class="wikilink" href="pg-broker.html">Broker</a>s → propagation → observers learn</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt; settles triggered trades against current prices</li>
+<li>For each settlement: computes direction (exit vs entry price) and optimal distances (via &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;Simulation&lt;/a&gt; replaying full price-history)</li>
+<li>Routes outcomes through enterprise → posts → &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;s → propagation → observers learn</li>
 <li>Both settlement paths: safety-stop fires → Violence (bounded loss); trailing-stop fires → Grace (residue) or Violence</li>
 </ul>
 <h3>Step 2: COMPUTE + DISPATCH</h3>
 <ul>
-<li><a class="wikilink" href="pg-four-step-loop.html">Post</a> ticks its IndicatorBank on the raw candle → enriched Candle</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt; ticks its IndicatorBank on the raw candle → enriched Candle</li>
 <li>Market observers encode simultaneously (<code>par_iter</code>) — the heaviest step (6× 10K-dim encodings)</li>
-<li>Each market observer: calls vocabulary modules matching its <a class="wikilink" href="pg-lens.html">Lens</a> → produces <code>Vec<ThoughtAST></code> → wraps in Bundle → encodes via <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> → (Vector, Prediction, edge, misses)</li>
+<li>Each market observer: calls vocabulary modules matching its &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;Lens&lt;/a&gt; → produces <code>Vec&lt;ThoughtAST&gt;</code> → wraps in Bundle → encodes via &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; → (Vector, Prediction, edge, misses)</li>
 <li>Exit observers receive market-thoughts → encode exit facts → <code>evaluate-and-compose</code> → composed vector + distances</li>
-<li><a class="wikilink" href="pg-broker.html">Broker</a>s <code>propose(composed)</code> → Grace/Violence prediction</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;s <code>propose(composed)</code> → Grace/Violence prediction</li>
 <li>Post assembles Proposals (composed-thought, distances, edge, side, assets, prediction, indices) → submits to treasury</li>
 </ul>
 <h3>Step 3a: TICK (parallel)</h3>
 <ul>
 <li>All 24 brokers tick their papers simultaneously (<code>par_iter</code>)</li>
 <li>Each broker touches only its own paper deque — disjoint, lock-free</li>
-<li>Produces <code>Vec<Resolution></code> facts (not mutations)</li>
+<li>Produces <code>Vec&lt;Resolution&gt;</code> facts (not mutations)</li>
 <li>Papers don't carry price-history; approximate optimal distances from tracked extremes (MFE/MAE)</li>
 </ul>
 <h3>Step 3b: PROPAGATE (sequential — paper resolutions)</h3>
 <ul>
 <li>Fold over resolutions from 3a → apply to shared observers</li>
-<li><a class="wikilink" href="pg-broker.html">Broker</a>s learn Grace/Violence. Market observers learn Up/Down. Exit observers learn optimal distances</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;s learn Grace/Violence. Market observers learn Up/Down. Exit observers learn optimal distances</li>
 <li>Same <code>broker.propagate</code> mechanism as Step 1, different source (papers vs real trades)</li>
 </ul>
 <h3>Step 3c: UPDATE TRIGGERS (sequential)</h3>
 <ul>
 <li>Treasury passes active trades per post</li>
 <li>Posts compose fresh thoughts (with current context), query exit observers for updated distances</li>
-<li>"The stops breathe" — distances adapt each candle based on current market context</li>
+<li>&quot;The stops breathe&quot; — distances adapt each candle based on current market context</li>
 <li>Enterprise writes updated Levels back to treasury</li>
 <li>Runner transition: when trailing stop passes break-even, trade phase changes from <code>:active</code> to <code>:runner</code></li>
 </ul>
 <h3>Step 4: COLLECT + FUND</h3>
 <ul>
-<li>Treasury evaluates all proposals, sorted by edge (the <a class="wikilink" href="pg-curve.html">Curve</a>'s accuracy measure)</li>
+<li>Treasury evaluates all proposals, sorted by edge (the &lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;Curve&lt;/a&gt;'s accuracy measure)</li>
 <li>Funds top N that fit available capital; rejects the rest</li>
 <li>Reserves <code>amount + worst-case-venue-costs</code> (2 swaps)</li>
 <li>Proposal whose edge doesn't exceed total venue cost rate → rejected</li>
 <li>Drains proposals after funding</li>
 </ul>
-<hr>
+<hr />
 <h2>3. The Vocabulary System</h2>
 <h3>Structure</h3>
 <p>Three domains, each with scoped subfiles:</p>
@@ -209,7 +210,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>time.wat</code> — minute (mod 60), hour (mod 24), day-of-week (mod 7), day-of-month (mod 31), month-of-year (mod 12). Circular scalars.</li>
 </ul>
 <h4>Market (<code>market/</code>) — direction signal</h4>
-<p>Mapped by <a class="wikilink" href="pg-lens.html">MarketLens</a>:</p>
+<p>Mapped by &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt;:</p>
 <ul>
 <li><code>:momentum</code> → oscillators, momentum, stochastic</li>
 <li><code>:structure</code> → keltner, fibonacci, ichimoku, price-action</li>
@@ -218,7 +219,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>:regime</code> → regime, persistence</li>
 <li><code>:generalist</code> → all of the above</li>
 </ul>
-<p><strong>Every <a class="wikilink" href="pg-lens.html">MarketLens</a> variant includes <code>shared/time</code> AND <code>standard</code> automatically.</strong></p>
+<p><strong>Every &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; variant includes <code>shared/time</code> AND <code>standard</code> automatically.</strong></p>
 <p>Market vocabulary modules (each emits a defined set of atoms):</p>
 <ul>
 <li><code>oscillators.wat</code> — rsi, cci, mfi, williams-r, roc-1/3/6/12</li>
@@ -245,20 +246,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ul>
 <h3>How Vocabularies Compose</h3>
 <ol>
-<li>Each vocabulary module is a <strong>pure function</strong>: <code>candle → Vec<ThoughtAST></code></li>
-<li>A <strong><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a></strong> is deferred computation — data describing a composition, not yet executed</li>
+<li>Each vocabulary module is a <strong>pure function</strong>: <code>candle → Vec&lt;ThoughtAST&gt;</code></li>
+<li>A <strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt;</strong> is deferred computation — data describing a composition, not yet executed</li>
 <li>The observer calls each module matching its lens, appends all AST lists</li>
-<li>Wraps in a <code>Bundle</code> <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a></li>
-<li>Calls <code>encode(encoder, bundle-ast)</code> on the <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> → (Vector, misses)</li>
+<li>Wraps in a <code>Bundle</code> &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt;</li>
+<li>Calls <code>encode(encoder, bundle-ast)</code> on the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; → (Vector, misses)</li>
 <li>Multiple fact-vectors get bundled into one <strong>thought</strong> via <code>bundle</code> primitive</li>
 </ol>
 <p><strong>Example fact composition:</strong></p>
-<pre><code>
-"RSI is at 0.73" → (Linear "rsi" 0.73 1.0) → encoded as bind(atom("rsi"), encode-linear(0.73, 1.0)) → Vector
+<pre><code>&quot;RSI is at 0.73&quot; → (Linear &quot;rsi&quot; 0.73 1.0) → encoded as bind(atom(&quot;rsi&quot;), encode-linear(0.73, 1.0)) → Vector
 </code></pre>
 <h3>The AST</h3>
-<pre><code>
-(enum thought-ast
+<pre><code class="language-scheme">(enum thought-ast
   (Atom name)                    ; dictionary lookup
   (Linear name value scale)      ; bind(atom, encode-linear)
   (Log name value)               ; bind(atom, encode-log)
@@ -273,10 +272,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>encode-circular</strong> — periodic scalars (minute mod 60, hour mod 24, day-of-week mod 7)</li>
 </ul>
 <p>The vocabulary owns both encode and decode — it put the value on the scalar, it can take it back.</p>
-<hr>
+<hr />
 <h2>4. The Training Approach</h2>
 <h3>The Reckoner — The Only Learning Primitive</h3>
-<p>The <a class="wikilink" href="pg-reckoner.html">Reckoner</a> accumulates experience and delivers a verdict. Internally builds a <strong><a class="wikilink" href="pg-reckoner.html">Discriminant</a></strong> — the direction in thought-space that separates outcomes. Cosine against the discriminant → <strong><a class="wikilink" href="pg-conviction.html">Conviction</a></strong>.</p>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; accumulates experience and delivers a verdict. Internally builds a <strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Discriminant&lt;/a&gt;</strong> — the direction in thought-space that separates outcomes. Cosine against the discriminant → <strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-conviction.html&quot;&gt;Conviction&lt;/a&gt;</strong>.</p>
 <p><strong>Two modes:</strong></p>
 <ul>
 <li><strong>Discrete</strong> — classification (Up/Down for market observers, Grace/Violence for brokers). Returns <code>(label, score)</code> pairs + conviction.</li>
@@ -292,35 +291,35 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Recalibration: periodically recomputes discriminant from accumulated observations</li>
 </ul>
 <h3>The Curve — Self-Evaluation</h3>
-<p>The <a class="wikilink" href="pg-reckoner.html">Reckoner</a> carries its own <a class="wikilink" href="pg-curve.html">Curve</a> internally. <code>resolve()</code> feeds it, <code>edge-at()</code> reads it. Input: conviction. Output: accuracy. A continuous surface — not "is this proven?" but "how much edge at this conviction?"</p>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; carries its own &lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;Curve&lt;/a&gt; internally. <code>resolve()</code> feeds it, <code>edge-at()</code> reads it. Input: conviction. Output: accuracy. A continuous surface — not &quot;is this proven?&quot; but &quot;how much edge at this conviction?&quot;</p>
 <p><strong>Communicated as one scalar (f64):</strong> the producer calls <code>edge-at(reckoner, conviction)</code> and attaches the result to its message. The consumer encodes it as a scalar fact. No meta-journal, no curve snapshot.</p>
 <h3>Noise Subspace — OnlineSubspace</h3>
-<p>Learns what normal thoughts look like. <code>strip-noise</code> returns the anomalous component — what the subspace cannot explain. The <a class="wikilink" href="pg-reckoner.html">Reckoner</a> learns from the residual (unusual = signal, normal = boring).</p>
+<p>Learns what normal thoughts look like. <code>strip-noise</code> returns the anomalous component — what the subspace cannot explain. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; learns from the residual (unusual = signal, normal = boring).</p>
 <h3>Engram Gating</h3>
-<p>After recalibration with good accuracy, snapshot the discriminant as a "good state." A separate <a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a> learns what good discriminants look like. Future recalibrations are checked against this memory.</p>
-<p>Shared by both <a class="wikilink" href="pg-market-observer.html">MarketObserver</a> and <a class="wikilink" href="pg-broker.html">Broker</a> — same four fields, different reckoner, different purpose.</p>
+<p>After recalibration with good accuracy, snapshot the discriminant as a &quot;good state.&quot; A separate &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt; learns what good discriminants look like. Future recalibrations are checked against this memory.</p>
+<p>Shared by both &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt; and &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; — same four fields, different reckoner, different purpose.</p>
 <h3>Scalar Accumulators</h3>
-<p>Per-magic-number f64 learning for distances (trail, stop). Lives on the broker. Separates Grace/Violence observations into separate vector prototypes. <code>extract-scalar</code> sweeps candidate values against the Grace prototype via cosine. "What value does Grace prefer for this pair overall?" Global per-pair, not contextual.</p>
+<p>Per-magic-number f64 learning for distances (trail, stop). Lives on the broker. Separates Grace/Violence observations into separate vector prototypes. <code>extract-scalar</code> sweeps candidate values against the Grace prototype via cosine. &quot;What value does Grace prefer for this pair overall?&quot; Global per-pair, not contextual.</p>
 <h3>The Distance Cascade</h3>
 <p>When queried for a distance:</p>
 <ol>
-<li>If exit <a class="wikilink" href="pg-reckoner.html">Reckoner</a> is experienced → <code>predict(reckoner, composed)</code> (contextual — for THIS thought)</li>
-<li>Else if broker <a class="wikilink" href="T0-007-accumulator.html">Accumulator</a> has data → <code>extract-scalar(accum, ...)</code> (global per-pair)</li>
+<li>If exit &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; is experienced → <code>predict(reckoner, composed)</code> (contextual — for THIS thought)</li>
+<li>Else if broker &lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;Accumulator&lt;/a&gt; has data → <code>extract-scalar(accum, ...)</code> (global per-pair)</li>
 <li>Else → default (crutch value)</li>
 </ol>
 <h3>Paper Trades — The Fast Learning Stream</h3>
 <p>Every candle, every broker gets a paper entry (both buy and sell sides tracked simultaneously). When both sides resolve, the paper teaches optimal distances. Papers are treated equally with real trades by the learning system. Both start ignorant (crutch values), both feed Grace/Violence back.</p>
 <h3>Ignorance → Bootstrap</h3>
-<p>Every reckoner begins with zero experience. No special bootstrap logic. Papers fill the reckoner, experience grows, the <a class="wikilink" href="pg-treasury.html">Treasury</a> starts listening. "Start ignorant. Learn. Graduate."</p>
+<p>Every reckoner begins with zero experience. No special bootstrap logic. Papers fill the reckoner, experience grows, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt; starts listening. &quot;Start ignorant. Learn. Graduate.&quot;</p>
 <h3>Propagation — Routing Learning Signals</h3>
 <p>When a trade or paper resolves:</p>
 <ul>
-<li>Grace/Violence → broker's reckoner + internal <a class="wikilink" href="pg-curve.html">Curve</a> + engram gate + track record + <a class="wikilink" href="T0-007-accumulator.html">Accumulator</a>s</li>
+<li>Grace/Violence → broker's reckoner + internal &lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;Curve&lt;/a&gt; + engram gate + track record + &lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;Accumulator&lt;/a&gt;s</li>
 <li>Actual direction (Up/Down) → market observer's reckoner via <code>resolve</code></li>
 <li>Optimal distances → exit observer's reckoners via <code>observe-distances</code></li>
 <li>Weight: magnitude of outcome (large Grace teaches harder)</li>
 </ul>
-<hr>
+<hr />
 <h2>5. Key Design Decisions and Principles</h2>
 <h3>Residue-Based Growth (The Core Economic Model)</h3>
 <ul>
@@ -340,14 +339,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <ul>
 <li>Brokers live in a flat vec with pre-computed slot indices</li>
 <li>At construction: enumerate all sets → allocate flat vec → build frozen map</li>
-<li>At runtime: frozen map (read-only) → slot-idx → <code>&mut broker</code> (disjoint)</li>
+<li>At runtime: frozen map (read-only) → slot-idx → <code>&amp;mut broker</code> (disjoint)</li>
 <li>The borrow checker proves writes are disjoint. No mutex.</li>
 </ul>
 <h3>Pair-Agnostic Architecture</h3>
 <ul>
 <li>Asset pair is a routing key — only the matching post receives a candle</li>
 <li>Any pair, any direction — the mechanics are identical</li>
-<li>N = number of market observers (one per <a class="wikilink" href="pg-lens.html">MarketLens</a> variant), M = number of exit observers (one per ExitLens variant)</li>
+<li>N = number of market observers (one per &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; variant), M = number of exit observers (one per ExitLens variant)</li>
 <li>N×M brokers total</li>
 </ul>
 <h3>Values Up, Not Queues Down</h3>
@@ -366,7 +365,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ul>
 <h3>No Zones, Only Scalars</h3>
 <ul>
-<li>"Overbought" is a premature measurement — a magic number wearing a name</li>
+<li>&quot;Overbought&quot; is a premature measurement — a magic number wearing a name</li>
 <li>Emit the scalar, let the discriminant learn where boundaries are</li>
 <li>The sign carries direction. The magnitude carries conviction.</li>
 </ul>
@@ -377,7 +376,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Prediction = what you think will happen</li>
 <li>Edge = how accurate you are when you predict this strongly ([0.0, 1.0])</li>
 </ul>
-<hr>
+<hr />
 <h2>6. Specific Algorithms, Formulas, and Data Structures</h2>
 <h3>Struct Hierarchy (Construction Order)</h3>
 <ol>
@@ -385,18 +384,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>RawCandle</strong> — 8 fields: source-asset, target-asset, ts, open, high, low, close, volume</li>
 <li><strong>Candle</strong> — raw OHLCV + 100+ computed indicators (SMA, Bollinger, RSI, MACD, DMI, ATR, Stochastic, CCI, MFI, OBV, Keltner, ROC, range position, trend consistency, multi-timeframe, Ichimoku, persistence metrics, regime metrics, divergence, cross deltas, price action, timeframe agreement, time fields)</li>
 <li><strong>IndicatorBank</strong> — streaming state machine composed from ring buffers, EMA states, Wilder smoothers, RSI states, ATR states, OBV states, SMA states, rolling stddev, stochastic states, CCI states, MFI states, Ichimoku states, MACD states, DMI states</li>
-<li><strong><a class="wikilink" href="T0-004-encoder.html">WindowSampler</a></strong> — deterministic log-uniform window selection (seed, min, max)</li>
-<li><strong><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a></strong> modules — pure functions producing <code>Vec<ThoughtAST></code></li>
-<li><strong><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a></strong> — atoms dictionary (Map<String, Vector>) + compositions LRU cache (Map<ThoughtAST, Vector>)</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;WindowSampler&lt;/a&gt;</strong> — deterministic log-uniform window selection (seed, min, max)</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt;</strong> modules — pure functions producing <code>Vec&lt;ThoughtAST&gt;</code></li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt;</strong> — atoms dictionary (Map&lt;String, Vector&gt;) + compositions LRU cache (Map&lt;ThoughtAST, Vector&gt;)</li>
 <li><strong>Distances</strong> — <code>{trail: f64, stop: f64}</code> (percentages)</li>
 <li><strong>Levels</strong> — <code>{trail-stop: f64, safety-stop: f64}</code> (absolute prices)</li>
-<li><strong><a class="wikilink" href="T0-007-accumulator.html">ScalarAccumulator</a></strong> — name, encoding (log/linear/circular), grace-acc, violence-acc, count</li>
-<li><strong><a class="wikilink" href="T2-003-engram-gate.html">EngramGate</a></strong> — recalib-wins, recalib-total, last-recalib-count</li>
-<li><strong><a class="wikilink" href="pg-market-observer.html">MarketObserver</a></strong> — lens, reckoner (discrete), noise-subspace, window-sampler, resolved count, engram gate fields, last-prediction</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;ScalarAccumulator&lt;/a&gt;</strong> — name, encoding (log/linear/circular), grace-acc, violence-acc, count</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T2-003-engram-gate.html&quot;&gt;EngramGate&lt;/a&gt;</strong> — recalib-wins, recalib-total, last-recalib-count</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt;</strong> — lens, reckoner (discrete), noise-subspace, window-sampler, resolved count, engram gate fields, last-prediction</li>
 <li><strong>ExitObserver</strong> — lens, trail-reckoner (continuous), stop-reckoner (continuous), default-distances</li>
-<li><strong><a class="wikilink" href="pg-broker.html">Broker</a></strong> — observer-names, slot-idx, exit-count, reckoner (discrete), noise-subspace, cumulative grace/violence, trade-count, papers, scalar-accums, engram gate</li>
-<li><strong><a class="wikilink" href="pg-four-step-loop.html">Post</a></strong> — post-idx, assets, indicator-bank, candle-window, market-observers [N], exit-observers [M], registry (brokers [N×M]), encode-count</li>
-<li><strong><a class="wikilink" href="pg-treasury.html">Treasury</a></strong> — denomination, available, reserved, proposals, trades, trade-origins, swap-fee, slippage, next-trade-id</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;</strong> — observer-names, slot-idx, exit-count, reckoner (discrete), noise-subspace, cumulative grace/violence, trade-count, papers, scalar-accums, engram gate</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt;</strong> — post-idx, assets, indicator-bank, candle-window, market-observers [N], exit-observers [M], registry (brokers [N×M]), encode-count</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt;</strong> — denomination, available, reserved, proposals, trades, trade-origins, swap-fee, slippage, next-trade-id</li>
 <li><strong>Enterprise</strong> — posts, treasury, market-thoughts-cache</li>
 </ol>
 <h3>Key Enums</h3>
@@ -404,18 +403,21 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>Side</strong> — <code>:buy</code>, <code>:sell</code> (trading action, on Proposal and Trade)</li>
 <li><strong>Direction</strong> — <code>:up</code>, <code>:down</code> (price movement, used in propagation)</li>
 <li><strong>Outcome</strong> — <code>:grace</code>, <code>:violence</code> (accountability)</li>
-<li><strong><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a></strong> — Atom, Linear, Log, Circular, Bind, Bundle</li>
+<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt;</strong> — Atom, Linear, Log, Circular, Bind, Bundle</li>
+<li><strong>Prediction</strong> — Discrete (scores + conviction) | Continuous (value + experience)</li>
 <li><strong>TradePhase</strong> — <code>:active</code>, <code>:runner</code>, <code>:settled-violence</code>, <code>:settled-grace</code></li>
 <li><strong>LogEntry</strong> — ProposalSubmitted, ProposalFunded, ProposalRejected, TradeSettled, PaperResolved, Propagated</li>
+<li><strong>reckoner-config</strong> — Discrete(labels) | Continuous(default-value)</li>
+<li><strong>scalar-encoding</strong> — <code>:log</code> | (Linear scale) | (Circular period)</li>
 </ul>
 <h3>Slot Indexing</h3>
 <p><code>slot-idx = market-idx × M + exit-idx</code> — one broker per (market, exit) pair. <code>market-idx = slot-idx / exit-count</code>, <code>exit-idx = slot-idx mod exit-count</code>.</p>
 <h3>Proposed Naming Conventions (from Proposal 050/051 per CLAUDE.md)</h3>
 <ul>
-<li>"Exit observer" renamed to <strong>Position observer</strong> in the running codebase (Proposal 050)</li>
+<li>&quot;Exit observer&quot; renamed to <strong>Position observer</strong> in the running codebase (Proposal 050)</li>
 <li>Proposal 051 deleted the binary Grace/Violence reckoner on brokers — continuous reckoners only</li>
 </ul>
-<p><strong>Note:</strong> The GUIDE.md itself still uses "exit observer" throughout and describes a discrete reckoner on the broker. This is a potential divergence with CLAUDE.md's statement about Proposal 051. The GUIDE.md is declared authoritative: "When layers diverge, the guide is right."</p>
+<p><strong>Note:</strong> The GUIDE.md itself still uses &quot;exit observer&quot; throughout and describes a discrete reckoner on the broker. This is a potential divergence with CLAUDE.md's statement about Proposal 051. The GUIDE.md is declared authoritative: &quot;When layers diverge, the guide is right.&quot;</p>
 <h3>Performance Targets</h3>
 <ul>
 <li>75–500 candles/second at 10,000 dimensions</li>
@@ -435,23 +437,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>slippage: 0.0025 (25 bps)</li>
 <li>max-window-size: 2016</li>
 </ul>
-<hr>
+<hr />
 <h2>Observations and Notes</h2>
 <ol>
-<li><strong>GUIDE vs CLAUDE.md divergence on broker reckoner:</strong> The GUIDE specifies a discrete <code>Reckoner</code> on the broker (for Grace/Violence prediction). CLAUDE.md says Proposal 051 deleted this. Per the stated principle ("the guide is right"), the GUIDE's discrete broker reckoner is authoritative.</li>
+<li><p><strong>GUIDE vs CLAUDE.md divergence on broker reckoner:</strong> The GUIDE specifies a discrete <code>Reckoner</code> on the broker (for Grace/Violence prediction). CLAUDE.md says Proposal 051 deleted this. Per the stated principle (&quot;the guide is right&quot;), the GUIDE's discrete broker reckoner is authoritative.</p>
+</li>
+<li><p><strong>GUIDE vs CLAUDE.md on &quot;exit observer&quot; vs &quot;position observer&quot;:</strong> CLAUDE.md says Proposal 050 renamed exit observer to position observer. The GUIDE uses &quot;exit observer&quot; throughout. Again, guide is authoritative per stated principle.</p>
+</li>
+<li><p><strong>The <code>side</code> derivation formula</strong> is specified clearly: compare Up-score vs Down-score from the market observer's prediction. <code>(if (&gt;= up-score down-score) :buy :sell)</code>. The winning label maps to Side.</p>
+</li>
+<li><p><strong>The concrete residue examples</strong> (lines 294–341) are thorough — they trace the number flow for both long and short trades, including both asset sides, with explicit dollar amounts.</p>
+</li>
+<li><p><strong>Forge coordinates</strong> (lines 2532–2555) note known technical debt: <code>broker.edge</code> called on zero vector (should take composed thought), <code>treasury.settle_triggered</code> complexity, <code>market_thoughts_cache</code> as explicit field vs return value, and missing lifecycle-level tests.</p>
+</li>
+<li><p><strong>The GUIDE claims authority over everything:</strong> &quot;Each section declares its dependencies. The order of sections IS the build order.&quot; The wat files implement what the GUIDE declares; the Rust implements what the wat specifies.</p>
+</li>
 </ol>
-<ol>
-<li><strong>GUIDE vs CLAUDE.md on "exit observer" vs "position observer":</strong> CLAUDE.md says Proposal 050 renamed exit observer to position observer. The GUIDE uses "exit observer" throughout. Again, guide is authoritative per stated principle.</li>
-</ol>
-<ol>
-<li><strong>The <code>side</code> derivation formula</strong> is specified clearly: compare Up-score vs Down-score from the market observer's prediction. <code>(if (>= up-score down-score) :buy :sell)</code>. The winning label maps to Side.</li>
-</ol>
-<ol>
-<li><strong>The concrete residue examples</strong> (lines 294–341) are thorough — they trace the number flow for both long and short trades, including both asset sides, with explicit dollar amounts.</li>
-</ol>
-<ol>
-<li><strong>Forge coordinates</strong> (lines 2532–2555) note known technical debt: <code>broker.edge</code> called on zero vector (should take composed thought), <code>treasury.settle_triggered</code> complexity, <code>market_thoughts_cache</code> as explicit field vs return value, and missing lifecycle-level tests.</li>
-</ol>
-<ol>
-<li><strong>The GUIDE claims authority over everything:</strong> "Each section declares its dependencies. The order of sections IS the build order." The wat files implement what the GUIDE declares; the Rust implements what the wat specifies.</li>
-</ol></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

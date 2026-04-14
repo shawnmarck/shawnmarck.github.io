@@ -125,28 +125,80 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-013: MarketObserver (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>File:</strong> <code>holon-lab-trading/src/domain/market_observer.rs</code> (270 lines)</p>
-<p><strong>Ward:</strong> ignorant — no context, reads as a stranger</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-013: MarketObserver (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>File:</strong> <code>holon-lab-trading/src/domain/market_observer.rs</code> (270 lines)<br />
+<strong>Ward:</strong> ignorant — no context, reads as a stranger</p>
+<hr />
 <h2>What is MarketObserver?</h2>
-<p>A struct that predicts price direction (Up/Down) from candle-encoded thought vectors. It does <strong>not</strong> label itself — reality labels it via broker propagation. Each observer has a "lens" (vocabulary selection) and is one of N per-asset-pair market observers in the architecture.</p>
-<hr>
+<p>A struct that predicts price direction (Up/Down) from candle-encoded thought vectors. It does <strong>not</strong> label itself — reality labels it via broker propagation. Each observer has a &quot;lens&quot; (vocabulary selection) and is one of N per-asset-pair market observers in the architecture.</p>
+<hr />
 <h2>Struct Fields</h2>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>lens</code></td><td data-label="Type"><code>MarketLens</code></td><td data-label="Purpose">Which vocabulary modules this observer attends to</td></tr>
-<tr><td data-label="Field"><code>reckoner</code></td><td data-label="Type"><code>Reckoner</code></td><td data-label="Purpose">Discrete classifier — Up/Down. The core prediction engine</td></tr>
-<tr><td data-label="Field"><code>noise_subspace</code></td><td data-label="Type"><code>OnlineSubspace</code></td><td data-label="Purpose">Learns the background distribution (8 principal components). Used to strip "normal" and expose anomaly</td></tr>
-<tr><td data-label="Field"><code>window_sampler</code></td><td data-label="Type"><code>WindowSampler</code></td><td data-label="Purpose">Own time scale for window selection</td></tr>
-<tr><td data-label="Field"><code>resolved</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">How many predictions have been resolved</td></tr>
-<tr><td data-label="Field"><code>good_state_subspace</code></td><td data-label="Type"><code>OnlineSubspace</code></td><td data-label="Purpose">Learns what good discriminants look like for engram gating (4 components)</td></tr>
-<tr><td data-label="Field"><code>recalib_wins</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Wins since last recalibration</td></tr>
-<tr><td data-label="Field"><code>recalib_total</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Total resolved since last recalibration</td></tr>
-<tr><td data-label="Field"><code>last_recalib_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Recalib count at last engram check</td></tr>
-<tr><td data-label="Field"><code>last_prediction</code></td><td data-label="Type"><code>Direction</code></td><td data-label="Purpose">Set by <code>observe</code>, read by <code>resolve</code> and self-grading</td></tr>
-<tr><td data-label="Field"><code>incremental</code></td><td data-label="Type"><code>IncrementalBundle</code></td><td data-label="Purpose">Optimization cache maintaining sums across candles to avoid re-summing</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>lens</code></td>
+  <td data-label="Type"><code>MarketLens</code></td>
+  <td data-label="Purpose">Which vocabulary modules this observer attends to</td>
+</tr>
+<tr>
+  <td data-label=""><code>reckoner</code></td>
+  <td data-label=""><code>Reckoner</code></td>
+  <td data-label="">Discrete classifier — Up/Down. The core prediction engine</td>
+</tr>
+<tr>
+  <td data-label=""><code>noise_subspace</code></td>
+  <td data-label=""><code>OnlineSubspace</code></td>
+  <td data-label="">Learns the background distribution (8 principal components). Used to strip &quot;normal&quot; and expose anomaly</td>
+</tr>
+<tr>
+  <td data-label=""><code>window_sampler</code></td>
+  <td data-label=""><code>WindowSampler</code></td>
+  <td data-label="">Own time scale for window selection</td>
+</tr>
+<tr>
+  <td data-label=""><code>resolved</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">How many predictions have been resolved</td>
+</tr>
+<tr>
+  <td data-label=""><code>good_state_subspace</code></td>
+  <td data-label=""><code>OnlineSubspace</code></td>
+  <td data-label="">Learns what good discriminants look like for engram gating (4 components)</td>
+</tr>
+<tr>
+  <td data-label=""><code>recalib_wins</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Wins since last recalibration</td>
+</tr>
+<tr>
+  <td data-label=""><code>recalib_total</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Total resolved since last recalibration</td>
+</tr>
+<tr>
+  <td data-label=""><code>last_recalib_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Recalib count at last engram check</td>
+</tr>
+<tr>
+  <td data-label=""><code>last_prediction</code></td>
+  <td data-label=""><code>Direction</code></td>
+  <td data-label="">Set by <code>observe</code>, read by <code>resolve</code> and self-grading</td>
+</tr>
+<tr>
+  <td data-label=""><code>incremental</code></td>
+  <td data-label=""><code>IncrementalBundle</code></td>
+  <td data-label="">Optimization cache maintaining sums across candles to avoid re-summing</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>How does <code>predict()</code> (observe) work?</h2>
 <p><code>observe()</code> is the prediction path (there is no method literally named <code>predict</code> — prediction lives in <code>observe</code>):</p>
 <ol>
@@ -159,7 +211,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>Return <code>ObserveResult</code></strong> — contains <code>raw_thought</code>, <code>anomaly</code>, <code>prediction</code> (scores + conviction), and <code>edge</code>.</li>
 </ol>
 <p>Key design: prediction and learning are aligned — both operate on the anomaly, not the raw thought.</p>
-<hr>
+<hr />
 <h2>How does it learn?</h2>
 <p>Learning happens in <code>resolve()</code>, called by broker propagation when a trade settles:</p>
 <ol>
@@ -169,33 +221,57 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>Feed the conviction curve</strong> — a second <code>predict</code> + <code>resolve</code> cycle updates the internal conviction→accuracy curve with the actual correctness signal.</li>
 <li><strong>Engram gate check</strong> — accumulates <code>recalib_wins</code> and <code>recalib_total</code>, then calls <code>check_engram_gate()</code> which evaluates whether the observer has proven itself. The engram gate uses <code>good_state_subspace</code> to learn what good discriminant states look like. Gate state (wins/total/recalib_count) is updated in place.</li>
 </ol>
-<p>The observer is described as "its own teacher. The market is the judge." It self-grades previous predictions when new candles arrive.</p>
-<hr>
+<p>The observer is described as &quot;its own teacher. The market is the judge.&quot; It self-grades previous predictions when new candles arrive.</p>
+<hr />
 <h2>ObserveResult</h2>
 <p>A second struct returned by <code>observe()</code>:</p>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>raw_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Before noise stripping</td></tr>
-<tr><td data-label="Field"><code>anomaly</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">After noise subspace removal — the residual signal</td></tr>
-<tr><td data-label="Field"><code>prediction</code></td><td data-label="Type"><code>holon::memory::Prediction</code></td><td data-label="Purpose">Scores + conviction from reckoner</td></tr>
-<tr><td data-label="Field"><code>edge</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose"><code>accuracy_at(conviction)</code> or 0.0</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>raw_thought</code></td>
+  <td data-label="Type"><code>Vector</code></td>
+  <td data-label="Purpose">Before noise stripping</td>
+</tr>
+<tr>
+  <td data-label=""><code>anomaly</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">After noise subspace removal — the residual signal</td>
+</tr>
+<tr>
+  <td data-label=""><code>prediction</code></td>
+  <td data-label=""><code>holon::memory::Prediction</code></td>
+  <td data-label="">Scores + conviction from reckoner</td>
+</tr>
+<tr>
+  <td data-label=""><code>edge</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>accuracy_at(conviction)</code> or 0.0</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Constructor (<code>new</code>)</h2>
 <ul>
-<li><code>Reckoner</code>: discrete, two labels ("Up", "Down"), named <code>"direction-{lens}"</code>.</li>
+<li><code>Reckoner</code>: discrete, two labels (&quot;Up&quot;, &quot;Down&quot;), named <code>&quot;direction-{lens}&quot;</code>.</li>
 <li><code>noise_subspace</code>: 8 principal components.</li>
 <li><code>good_state_subspace</code>: 4 principal components.</li>
 <li><code>resolved</code> starts at 0. <code>last_prediction</code> defaults to <code>Down</code> (arbitrary).</li>
 <li>Takes <code>lens</code>, <code>dims</code>, <code>recalib_interval</code>, and <code>window_sampler</code>.</li>
 </ul>
-<hr>
+<hr />
 <h2>Helper Methods</h2>
 <ul>
-<li><strong><code>strip_noise(thought)</code></strong> — standalone noise-stripping, returns the anomalous component. "The residual IS the signal."</li>
+<li><strong><code>strip_noise(thought)</code></strong> — standalone noise-stripping, returns the anomalous component. &quot;The residual IS the signal.&quot;</li>
 <li><strong><code>experience()</code></strong> — delegates to <code>reckoner.experience()</code>. Returns how much the observer has learned.</li>
 </ul>
-<hr>
+<hr />
 <h2>Tests (6)</h2>
 <p>All use 4096-dim vectors from <code>VectorManager</code>, <code>DowTrend</code> lens, recalib interval of 100, <code>WindowSampler::new(42, 10, 500)</code>:</p>
 <ol>
@@ -208,7 +284,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong><code>test_multiple_resolves</code></strong> — 10 resolves → resolved=10, recalib_total=10.</li>
 </ol>
 <p>No test validates prediction accuracy, noise stripping quality, or engram gate behavior. Tests are structural, not behavioral.</p>
-<hr>
+<hr />
 <h2>Dependencies</h2>
 <ul>
 <li><code>holon::kernel::vector::Vector</code> — the fundamental vector type</li>
@@ -217,4 +293,5 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>crate::types::enums::{Direction, MarketLens}</code> — domain types</li>
 <li><code>crate::encoding::thought_encoder::IncrementalBundle</code> — optimization cache</li>
 <li><code>crate::learning::window_sampler::WindowSampler</code> — time-scale selection</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

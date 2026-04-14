@@ -125,22 +125,56 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Exit Observer — Perceiving When to Leave a Position <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>PositionObserver</code> (also called "exit observer") predicts two continuous values — <strong>trailing stop distance</strong> and <strong>safety stop distance</strong> — from a position thought vector using two independent continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s. It learns from hindsight-optimal distances determined by simulation. Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that selects its trade-state vocabulary. It has a <a class="wikilink" href="T0-010-subspace.html">noise subspace</a> for anomaly detection despite its own docstring claiming it doesn't. The <a class="wikilink" href="pg-broker.html">broker</a> owns the production cascade (reckoner → accumulator → default); the observer only exposes raw reckoner queries. M per trading system; N×M brokers total.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Exit Observer — Perceiving When to Leave a Position <span class="badge badge-explain">EXPLAIN</span></h1><div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>PositionObserver</code> (also called &quot;exit observer&quot;) predicts two continuous values — <strong>trailing stop distance</strong> and <strong>safety stop distance</strong> — from a position thought vector using two independent continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;s. It learns from hindsight-optimal distances determined by simulation. Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt; that selects its trade-state vocabulary. It has a &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;noise subspace&lt;/a&gt; for anomaly detection despite its own docstring claiming it doesn't. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; owns the production cascade (reckoner → accumulator → default); the observer only exposes raw reckoner queries. M per trading system; N×M brokers total.</p>
+<hr />
 <h2>Anatomy</h2>
 <table>
-<thead><tr><th>Component</th><th>Type</th><th>Role</th></tr></thead>
-<tr><td data-label="Component"><code>lens</code></td><td data-label="Type"><a class="wikilink" href="pg-lens.html">PositionLens</a></td><td data-label="Role">Which trade-state vocabulary this observer uses: <code>Core</code> (5 trade atoms) or <code>Full</code> (13 trade atoms)</td></tr>
-<tr><td data-label="Component"><code>trail_reckoner</code></td><td data-label="Type"><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td><td data-label="Role">Predicts trailing stop distance. Named <code>"trail-{lens}"</code>. 10 buckets.</td></tr>
-<tr><td data-label="Component"><code>stop_reckoner</code></td><td data-label="Type"><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td><td data-label="Role">Predicts safety stop distance. Named <code>"stop-{lens}"</code>. 10 buckets.</td></tr>
-<tr><td data-label="Component"><code>default_distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Role">Fallback <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free. Returned when reckoners have no experience.</td></tr>
-<tr><td data-label="Component"><code>noise_subspace</code></td><td data-label="Type"><a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a></td><td data-label="Role">8 principal components. Learns the background distribution for this exit lens. The anomaly is what the subspace cannot explain.</td></tr>
-<tr><td data-label="Component"><code>incremental</code></td><td data-label="Type"><code>IncrementalBundle</code></td><td data-label="Role">Optimization cache — running element-wise sums + last-facts cache for incremental encoding. Not cognition.</td></tr>
+<thead>
+<tr>
+  <th>Component</th>
+  <th>Type</th>
+  <th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Component"><code>lens</code></td>
+  <td data-label="Type">&lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt;</td>
+  <td data-label="Role">Which trade-state vocabulary this observer uses: <code>Core</code> (5 trade atoms) or <code>Full</code> (13 trade atoms)</td>
+</tr>
+<tr>
+  <td data-label=""><code>trail_reckoner</code></td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; (continuous)</td>
+  <td data-label="">Predicts trailing stop distance. Named <code>&quot;trail-{lens}&quot;</code>. 10 buckets.</td>
+</tr>
+<tr>
+  <td data-label=""><code>stop_reckoner</code></td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; (continuous)</td>
+  <td data-label="">Predicts safety stop distance. Named <code>&quot;stop-{lens}&quot;</code>. 10 buckets.</td>
+</tr>
+<tr>
+  <td data-label=""><code>default_distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label="">Fallback <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free. Returned when reckoners have no experience.</td>
+</tr>
+<tr>
+  <td data-label=""><code>noise_subspace</code></td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt;</td>
+  <td data-label="">8 principal components. Learns the background distribution for this exit lens. The anomaly is what the subspace cannot explain.</td>
+</tr>
+<tr>
+  <td data-label=""><code>incremental</code></td>
+  <td data-label=""><code>IncrementalBundle</code></td>
+  <td data-label="">Optimization cache — running element-wise sums + last-facts cache for incremental encoding. Not cognition.</td>
+</tr>
+</tbody>
 </table>
-<blockquote><em>"Intentionally simpler than MarketObserver."</em> — module docstring (though the struct <em>does</em> include a noise subspace, contradicting this claim — see <a href="#discrepancies">Discrepancies</a>).</blockquote>
-<hr>
+<blockquote>
+<p><em>&quot;Intentionally simpler than MarketObserver.&quot;</em> — module docstring (though the struct <em>does</em> include a noise subspace, contradicting this claim — see <a href="#discrepancies">Discrepancies</a>).</p>
+</blockquote>
+<hr />
 <h2>Prediction (<code>reckoner_distances</code>)</h2>
-<p>One public prediction method: <code>reckoner_distances(position_thought: &Vector) -> Option<Distances></code>.</p>
+<p>One public prediction method: <code>reckoner_distances(position_thought: &amp;Vector) -&gt; Option&lt;Distances&gt;</code>.</p>
 <ol>
 <li><strong>Check experience</strong> — if either reckoner has zero experience, return <code>None</code>.</li>
 <li><strong>Query trail</strong> — <code>trail_reckoner.query(position_thought)</code> → trailing stop distance.</li>
@@ -149,94 +183,192 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ol>
 <p><strong>Tier 1 only</strong> — raw reckoner output with no fallback. The broker owns the full three-tier cascade:</p>
 <table>
-<thead><tr><th>Tier</th><th>Source</th><th>Owner</th></tr></thead>
-<tr><td data-label="Tier">1</td><td data-label="Source">Reckoner query (this method)</td><td data-label="Owner">Position observer</td></tr>
-<tr><td data-label="Tier">2</td><td data-label="Source">Scalar accumulators (per-broker)</td><td data-label="Owner">Broker</td></tr>
-<tr><td data-label="Tier">3</td><td data-label="Source"><code>default_distances</code></td><td data-label="Owner">Broker</td></tr>
+<thead>
+<tr>
+  <th>Tier</th>
+  <th>Source</th>
+  <th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Tier">1</td>
+  <td data-label="Source">Reckoner query (this method)</td>
+  <td data-label="Owner">Position observer</td>
+</tr>
+<tr>
+  <td data-label="">2</td>
+  <td data-label="">Scalar accumulators (per-broker)</td>
+  <td data-label="">Broker</td>
+</tr>
+<tr>
+  <td data-label="">3</td>
+  <td data-label=""><code>default_distances</code></td>
+  <td data-label="">Broker</td>
+</tr>
+</tbody>
 </table>
-<p>Per <a class="wikilink" href="pg-signal-propagation.html">Proposal 026</a>, queries operate on <code>position_thought</code> only — no composition with market thought at query time.</p>
-<blockquote><em>"The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned."</em> — T0-018</blockquote>
-<hr>
+<p>Per &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;Proposal 026&lt;/a&gt;, queries operate on <code>position_thought</code> only — no composition with market thought at query time.</p>
+<blockquote>
+<p><em>&quot;The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned.&quot;</em> — T0-018</p>
+</blockquote>
+<hr />
 <h2>Learning (<code>observe_distances</code>)</h2>
-<p>One learning method: <code>observe_distances(position_thought: &Vector, optimal: &Distances) -> (f64, f64, f64, f64, f64, f64)</code>.</p>
+<p>One learning method: <code>observe_distances(position_thought: &amp;Vector, optimal: &amp;Distances) -&gt; (f64, f64, f64, f64, f64, f64)</code>.</p>
 <ol>
 <li><strong>Pre-learning prediction</strong> — query each reckoner for what it <em>would</em> predict given current state. If no experience, use default.</li>
+<li><strong>Error computation</strong> — <code>|predicted - optimal| / optimal.max(0.0001)</code> for both trail and stop. Normalized error. Read-only diagnostic — no feedback loop.</li>
 <li><strong>Observe</strong> — <code>trail_reckoner.observe_scalar(position_thought, optimal.trail, 1.0)</code> and <code>stop_reckoner.observe_scalar(position_thought, optimal.stop, 1.0)</code>. Weight is always 1.0 — each observation counts once.</li>
 <li><strong>Return</strong> — <code>(trail_error, stop_error, predicted_trail, predicted_stop, optimal_trail, optimal_stop)</code>.</li>
 </ol>
-<p>The "optimal" distances come from <strong>hindsight</strong> — the simulation module sweeps candidate trail/stop values against actual price histories to determine what would have been ideal.</p>
+<p>The &quot;optimal&quot; distances come from <strong>hindsight</strong> — the simulation module sweeps candidate trail/stop values against actual price histories to determine what would have been ideal.</p>
 <h3>How the Continuous Reckoner Learns</h3>
-<p>Each continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a> uses bucketed nearest-neighbor regression:</p>
+<p>Each continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; uses bucketed nearest-neighbor regression:</p>
 <ul>
-<li><strong>10 buckets</strong> span the discovered value range. The first observation seeds a tiny range (±0.001); out-of-range values expand it; every 100 observations the range contracts to where alive weight lives (<em>"breathing range"</em>).</li>
-<li><strong>Implicit decay</strong> — every observation decays all buckets by 0.999. <em>"Every observation is a tick of time."</em></li>
+<li><strong>10 buckets</strong> span the discovered value range. The first observation seeds a tiny range (±0.001); out-of-range values expand it; every 100 observations the range contracts to where alive weight lives (<em>&quot;breathing range&quot;</em>).</li>
+<li><strong>Implicit decay</strong> — every observation decays all buckets by 0.999. <em>&quot;Every observation is a tick of time.&quot;</em></li>
 <li><strong>Query</strong> — cosine against bucket prototypes, soft-weight top-3, interpolate. O(K×D), constant in observation count.</li>
-<li><strong>Range is data-driven</strong> — <em>"No magic min/max. The data teaches the range. K is the only parameter."</em> — T0-008</li>
+<li><strong>Range is data-driven</strong> — <em>&quot;No magic min/max. The data teaches the range. K is the only parameter.&quot;</em> — T0-008</li>
 </ul>
-<hr>
+<hr />
 <h2>Noise Stripping</h2>
-<p><code>strip_noise(thought: &Vector) -> Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as the <a class="wikilink" href="pg-market-observer.html">market observer</a>.</p>
-<hr>
+<p><code>strip_noise(thought: &amp;Vector) -&gt; Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as the &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observer&lt;/a&gt;.</p>
+<hr />
 <h2>The Lens — What the Observer Sees</h2>
-<p>Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that determines its trade-state vocabulary (T0-005):</p>
+<p>Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt; that determines its trade-state vocabulary (T0-005):</p>
 <table>
-<thead><tr><th>Lens</th><th>Trade Atoms</th><th>Description</th></tr></thead>
-<tr><td data-label="Lens"><code>Core</code></td><td data-label="Trade Atoms">5</td><td data-label="Description">Excursion, retracement, age, peak-age, signaled. The consensus view.</td></tr>
-<tr><td data-label="Lens"><code>Full</code></td><td data-label="Trade Atoms">13</td><td data-label="Description">All Core atoms + 3 phase biography atoms. All three voices plus phase context.</td></tr>
+<thead>
+<tr>
+  <th>Lens</th>
+  <th>Trade Atoms</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Lens"><code>Core</code></td>
+  <td data-label="Trade Atoms">5</td>
+  <td data-label="Description">Excursion, retracement, age, peak-age, signaled. The consensus view.</td>
+</tr>
+<tr>
+  <td data-label=""><code>Full</code></td>
+  <td data-label="">13</td>
+  <td data-label="">All Core atoms + 3 phase biography atoms. All three voices plus phase context.</td>
+</tr>
+</tbody>
 </table>
-<blockquote><em>"Core: lean — regime + time. 5 trade atoms downstream."</em> — T0-005</blockquote>
-<blockquote><em>"Full: rich — regime + time + phase series. 13 trade atoms downstream."</em> — T0-005</blockquote>
-<p>N is the number of market observers (one per <a class="wikilink" href="pg-lens.html">MarketLens</a> variant); M is the number of exit observers (one per <a class="wikilink" href="pg-lens.html">PositionLens</a> variant). N×M brokers bind every market observer to every exit observer.</p>
-<hr>
+<blockquote>
+<p><em>&quot;Core: lean — regime + time. 5 trade atoms downstream.&quot;</em> — T0-005
+<em>&quot;Full: rich — regime + time + phase series. 13 trade atoms downstream.&quot;</em> — T0-005</p>
+</blockquote>
+<p>N is the number of market observers (one per &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; variant); M is the number of exit observers (one per &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt; variant). N×M brokers bind every market observer to every exit observer.</p>
+<hr />
 <h2>Discrepancies</h2>
-<p>The module docstring (lines 1–5) states: <em>"Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating."</em></p>
+<p>The module docstring (lines 1–5) states: <em>&quot;Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating.&quot;</em></p>
 <p>The struct <strong>does</strong> have a <code>noise_subspace</code> field and a <code>strip_noise</code> method. The docstring contradicts the code. All 7 tests confirm the noise subspace is initialized and functional.</p>
-<hr>
+<hr />
 <h2>Comparison — Exit Observer vs. Market Observer</h2>
 <table>
-<thead><tr><th>Property</th><th>Market Observer</th><th>Exit Observer</th></tr></thead>
-<tr><td data-label="Property">Prediction type</td><td data-label="Market Observer">Discrete (Up/Down)</td><td data-label="Exit Observer">Continuous (trail distance, stop distance)</td></tr>
-<tr><td data-label="Property">Reckoner mode</td><td data-label="Market Observer">Discrete, 2 labels</td><td data-label="Exit Observer">Continuous, 10 buckets each (×2 reckoners)</td></tr>
-<tr><td data-label="Property">Noise subspace</td><td data-label="Market Observer">8 components</td><td data-label="Exit Observer">8 components</td></tr>
-<tr><td data-label="Property">Conviction curve</td><td data-label="Market Observer">Yes — self-evaluates accuracy</td><td data-label="Exit Observer">No curve mechanism</td></tr>
-<tr><td data-label="Property">Engram gate</td><td data-label="Market Observer">Yes — gates long-term memory</td><td data-label="Exit Observer">No engram gating</td></tr>
-<tr><td data-label="Property">Learning source</td><td data-label="Market Observer">Market outcomes (actual direction)</td><td data-label="Exit Observer">Hindsight simulation (optimal distances)</td></tr>
-<tr><td data-label="Property">Lens</td><td data-label="Market Observer"><a class="wikilink" href="pg-lens.html">MarketLens</a> (11 variants, 3 schools)</td><td data-label="Exit Observer"><a class="wikilink" href="pg-lens.html">PositionLens</a> (2 variants: Core, Full)</td></tr>
+<thead>
+<tr>
+  <th>Property</th>
+  <th>Market Observer</th>
+  <th>Exit Observer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Property">Prediction type</td>
+  <td data-label="Market Observer">Discrete (Up/Down)</td>
+  <td data-label="Exit Observer">Continuous (trail distance, stop distance)</td>
+</tr>
+<tr>
+  <td data-label="">Reckoner mode</td>
+  <td data-label="">Discrete, 2 labels</td>
+  <td data-label="">Continuous, 10 buckets each (×2 reckoners)</td>
+</tr>
+<tr>
+  <td data-label="">Noise subspace</td>
+  <td data-label="">8 components</td>
+  <td data-label="">8 components</td>
+</tr>
+<tr>
+  <td data-label="">Conviction curve</td>
+  <td data-label="">Yes — self-evaluates accuracy</td>
+  <td data-label="">No curve mechanism</td>
+</tr>
+<tr>
+  <td data-label="">Engram gate</td>
+  <td data-label="">Yes — gates long-term memory</td>
+  <td data-label="">No engram gating</td>
+</tr>
+<tr>
+  <td data-label="">Learning source</td>
+  <td data-label="">Market outcomes (actual direction)</td>
+  <td data-label="">Hindsight simulation (optimal distances)</td>
+</tr>
+<tr>
+  <td data-label="">Lens</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; (11 variants, 3 schools)</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt; (2 variants: Core, Full)</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Construction</h2>
-<pre><code>
-PositionObserver::new(lens: PositionLens, dims: usize, recalib_interval: usize,
+<pre><code class="language-rust">PositionObserver::new(lens: PositionLens, dims: usize, recalib_interval: usize,
                       default_trail: f64, default_stop: f64)
-</code></pre>
+
 <ul>
-<li>Two continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s: <code>"trail-{lens}"</code> and <code>"stop-{lens}"</code>, each with 10 buckets.</li>
+<li>Two continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;s: <code>&quot;trail-{lens}&quot;</code> and <code>&quot;stop-{lens}&quot;</code>, each with 10 buckets.</li>
 <li><code>noise_subspace</code>: 8 principal components, initialized with <code>(dims, 8)</code>.</li>
 <li>Test constants: <code>DIMS=4096</code>, <code>RECALIB=100</code>, <code>DEFAULT_TRAIL=0.02</code>, <code>DEFAULT_STOP=0.05</code>.</li>
 </ul>
-<hr>
+<hr />
 <h2>Position in the Pipeline</h2>
 <p>The exit observer sits between market observers and brokers in the concurrent pipeline:</p>
-<pre class="mermaid">
-flowchart TD
-    market_obs["Market Observer"] -->|"Topic\n(MarketChain)"| position_obs["Position Observer"]
-    position_obs -->|"Queue\n(MarketPositionChain)"| broker["Broker"]
-    broker -.->|"ObsLearn\n(Mailbox)"| market_obs
-    broker -.->|"PositionLearn\n(Mailbox)"| position_obs
+<pre class="mermaid">flowchart TD
+    market_obs[&quot;Market Observer&quot;] --&gt;|&quot;Topic\n(MarketChain)&quot;| position_obs[&quot;Position Observer&quot;]
+    position_obs --&gt;|&quot;Queue\n(MarketPositionChain)&quot;| broker[&quot;Broker&quot;]
+    broker -.-&gt;|&quot;ObsLearn\n(Mailbox)&quot;| market_obs
+    broker -.-&gt;|&quot;PositionLearn\n(Mailbox)&quot;| position_obs
 </code></pre>
 <ul>
-<li><strong>Input</strong>: <a class="wikilink" href="pg-chain-types.html">MarketChain</a> from each market observer (via <a class="wikilink" href="pg-services.html">Topic</a>, fan-out 1→N).</li>
-<li><strong>Output</strong>: <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> to each broker (via <a class="wikilink" href="pg-services.html">Queue</a>).</li>
-<li><strong>Feedback</strong>: <code>PositionLearn</code> signals from brokers (via <a class="wikilink" href="pg-services.html">Mailbox</a>, fan-in N→1).</li>
+<li><strong>Input</strong>: &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; from each market observer (via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;, fan-out 1→N).</li>
+<li><strong>Output</strong>: &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; to each broker (via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;).</li>
+<li><strong>Feedback</strong>: <code>PositionLearn</code> signals from brokers (via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt;, fan-in N→1).</li>
 </ul>
-<p>Each arrow is a <a class="wikilink" href="pg-services.html">Queue</a>. The fan-out uses <a class="wikilink" href="pg-services.html">Topic</a> (1→N). The learn-signal aggregation uses <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1).</p>
-<hr>
+<p>Each arrow is a &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;. The fan-out uses &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; (1→N). The learn-signal aggregation uses &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; (N→1).</p>
+<hr />
 <h2>Sources</h2>
 <table>
-<thead><tr><th>Source</th><th>Key Contribution</th></tr></thead>
-<tr><td data-label="Source">T0-014 (<code>position_observer.rs</code>, 291 lines)</td><td data-label="Key Contribution">Struct fields (6), reckoners (trail/stop), prediction, learning, noise subspace, docstring discrepancy, 7 tests</td></tr>
-<tr><td data-label="Source">T0-008 (<code>reckoner.rs</code>, 1107 lines; <code>primitives.wat</code>)</td><td data-label="Key Contribution">Continuous mode: bucketed regression, breathing range, soft-weight top-3 interpolation, O(K×D) query</td></tr>
-<tr><td data-label="Source">T0-018 (<code>broker.rs</code>)</td><td data-label="Key Contribution">Three-tier cascade (reckoner → accumulator → default), runner resolution, deferred batch training</td></tr>
-<tr><td data-label="Source">T0-005 (<code>lens.rs</code>, <code>enums.rs</code>)</td><td data-label="Key Contribution">PositionLens enum: Core (5 atoms) and Full (13 atoms), vocab wiring</td></tr>
-<tr><td data-label="Source">T0-017 (<code>wat-vm.rs</code>)</td><td data-label="Key Contribution">Pipeline wiring: topic fan-out to position observers, mailbox fan-in for learning</td></tr>
-</table></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<thead>
+<tr>
+  <th>Source</th>
+  <th>Key Contribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Source">T0-014 (<code>position_observer.rs</code>, 291 lines)</td>
+  <td data-label="Key Contribution">Struct fields (6), reckoners (trail/stop), prediction, learning, noise subspace, docstring discrepancy, 7 tests</td>
+</tr>
+<tr>
+  <td data-label="">T0-008 (<code>reckoner.rs</code>, 1107 lines; <code>primitives.wat</code>)</td>
+  <td data-label="">Continuous mode: bucketed regression, breathing range, soft-weight top-3 interpolation, O(K×D) query</td>
+</tr>
+<tr>
+  <td data-label="">T0-018 (<code>broker.rs</code>)</td>
+  <td data-label="">Three-tier cascade (reckoner → accumulator → default), runner resolution, deferred batch training</td>
+</tr>
+<tr>
+  <td data-label="">T0-005 (<code>lens.rs</code>, <code>enums.rs</code>)</td>
+  <td data-label="">PositionLens enum: Core (5 atoms) and Full (13 atoms), vocab wiring</td>
+</tr>
+<tr>
+  <td data-label="">T0-017 (<code>wat-vm.rs</code>)</td>
+  <td data-label="">Pipeline wiring: topic fan-out to position observers, mailbox fan-in for learning</td>
+</tr>
+</tbody>
+</table>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

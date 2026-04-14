@@ -133,13 +133,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ul>
 <h2>What They Are</h2>
 <p>Three messaging primitives. Point-to-point (Queue), fan-out (Topic), fan-in (Mailbox). All built on <code>crossbeam::channel</code>. Zero <code>Mutex</code>. Concurrency through message passing alone.</p>
-<hr>
+<hr />
 <h2>Queue — Point-to-Point</h2>
 <p>One producer, one consumer. The atom.</p>
 <p><strong>Wrapper around <code>crossbeam::channel</code>.</strong> Two newtypes:</p>
 <ul>
-<li><code>QueueSender<T></code> — wraps <code>Sender<T></code></li>
-<li><code>QueueReceiver<T></code> — wraps <code>Receiver<T></code></li>
+<li><code>QueueSender&lt;T&gt;</code> — wraps <code>Sender&lt;T&gt;</code></li>
+<li><code>QueueReceiver&lt;T&gt;</code> — wraps <code>Receiver&lt;T&gt;</code></li>
 </ul>
 <p><strong>Constructors:</strong></p>
 <ul>
@@ -148,54 +148,50 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ul>
 <p><strong>Methods on sender:</strong></p>
 <ul>
-<li><code>send(value: T)</code> — blocks if bounded and full. Returns <code>SendError<T></code> if receiver dropped.</li>
+<li><code>send(value: T)</code> — blocks if bounded and full. Returns <code>SendError&lt;T&gt;</code> if receiver dropped.</li>
 </ul>
 <p><strong>Methods on receiver:</strong></p>
 <ul>
 <li><code>recv()</code> — blocking receive. Returns <code>RecvError::Disconnected</code> when sender dropped and queue empty.</li>
 <li><code>try_recv()</code> — non-blocking. Returns <code>crossbeam::TryRecvError</code> directly (not wrapped — composing programs like cache already have crossbeam in scope).</li>
-<li><code>inner()</code> — <code>pub(crate)</code>, exposes the underlying <code>&Receiver<T></code>. Used by Mailbox and cache for <code>crossbeam::Select</code> across multiple receivers.</li>
+<li><code>inner()</code> — <code>pub(crate)</code>, exposes the underlying <code>&amp;Receiver&lt;T&gt;</code>. Used by Mailbox and cache for <code>crossbeam::Select</code> across multiple receivers.</li>
 </ul>
-<p><strong>Error types:</strong> <code>SendError<T></code> and <code>RecvError</code> — both custom, both implement <code>Display</code>. Purpose is to decouple the public API from crossbeam's error types.</p>
+<p><strong>Error types:</strong> <code>SendError&lt;T&gt;</code> and <code>RecvError</code> — both custom, both implement <code>Display</code>. Purpose is to decouple the public API from crossbeam's error types.</p>
 <p><strong>Tests (4):</strong> send/receive one, multiple in order, bounded backpressure (sender blocks in spawned thread until consumer frees a slot), shutdown on sender drop.</p>
-<hr>
+<hr />
 <h2>Topic — Fan-Out</h2>
 <p>One producer, N consumers. A proxy that writes to N queues.</p>
 <p><strong>How it works:</strong></p>
 <ol>
-<li>Caller provides a <code>Vec<QueueSender<T>></code> — the write ends of N already-created queues. The kernel created these queues and gave the read ends to subscriber programs. The programs see plain queues; they don't know a topic exists.</li>
-<li><code>topic(capacity, outputs)</code> creates:</li>
-</ol>
-<ul>
+<li>Caller provides a <code>Vec&lt;QueueSender&lt;T&gt;&gt;</code> — the write ends of N already-created queues. The kernel created these queues and gave the read ends to subscriber programs. The programs see plain queues; they don't know a topic exists.</li>
+<li><code>topic(capacity, outputs)</code> creates:<ul>
 <li>An internal bounded input queue (<code>in_tx</code>, <code>in_rx</code>).</li>
 <li>A spawned thread that loops: <code>recv()</code> from input, <code>send(msg.clone())</code> to each output.</li>
 </ul>
-<ol>
-<li>Returns <code>(TopicSender<T>, TopicHandle)</code>.</li>
+</li>
+<li>Returns <code>(TopicSender&lt;T&gt;, TopicHandle)</code>.</li>
 </ol>
-<p><strong><code>TopicSender<T></code></strong> — wraps the input <code>QueueSender</code>. Same <code>.send()</code> interface as a queue. Writing here clones to all subscribers.</p>
-<p><strong><code>TopicHandle</code></strong> — holds the <code>JoinHandle<()></code> for the fan-out thread. The thread exits when the producer drops <code>TopicSender</code> (input queue disconnects). When the thread exits, all output <code>QueueSender</code>s are dropped, cascading disconnection to every subscriber's receiver.</p>
+<p><strong><code>TopicSender&lt;T&gt;</code></strong> — wraps the input <code>QueueSender</code>. Same <code>.send()</code> interface as a queue. Writing here clones to all subscribers.</p>
+<p><strong><code>TopicHandle</code></strong> — holds the <code>JoinHandle&lt;()&gt;</code> for the fan-out thread. The thread exits when the producer drops <code>TopicSender</code> (input queue disconnects). When the thread exits, all output <code>QueueSender</code>s are dropped, cascading disconnection to every subscriber's receiver.</p>
 <p><strong>Backpressure:</strong> Bounded send to each subscriber. One slow subscriber stalls all others. Intentional — backpressure propagation.</p>
 <p><strong>Bounds:</strong> <code>T: Send + Clone + 'static</code>. Clone is required because the message is cloned to each subscriber.</p>
 <p><strong>Tests (3):</strong> one message reaches all subscribers, N messages in order per subscriber, shutdown cascades on sender drop.</p>
-<hr>
+<hr />
 <h2>Mailbox — Fan-In</h2>
 <p>N producers, one consumer. A proxy that reads from N queues.</p>
 <p><strong>How it works:</strong></p>
 <ol>
-<li>Caller provides a <code>Vec<QueueReceiver<T>></code> — the read ends of N already-created queues. The kernel created these queues and gave the write ends to producer programs. The programs see plain queues; they don't know a mailbox exists.</li>
-<li><code>mailbox(inputs)</code> creates:</li>
-</ol>
-<ul>
+<li>Caller provides a <code>Vec&lt;QueueReceiver&lt;T&gt;&gt;</code> — the read ends of N already-created queues. The kernel created these queues and gave the write ends to producer programs. The programs see plain queues; they don't know a mailbox exists.</li>
+<li><code>mailbox(inputs)</code> creates:<ul>
 <li>An internal unbounded output queue (<code>out_tx</code>, <code>out_rx</code>).</li>
 <li>A spawned thread that uses <code>crossbeam::channel::Select</code> to wait on all input receivers simultaneously.</li>
 </ul>
-<ol>
-<li>Returns <code>MailboxReceiver<T></code> — wraps the output <code>QueueReceiver</code>.</li>
+</li>
+<li>Returns <code>MailboxReceiver&lt;T&gt;</code> — wraps the output <code>QueueReceiver</code>.</li>
 </ol>
 <p><strong>Fan-in thread logic:</strong></p>
 <ul>
-<li>Maintains a <code>Vec<QueueReceiver<T>></code> called <code>alive</code>.</li>
+<li>Maintains a <code>Vec&lt;QueueReceiver&lt;T&gt;&gt;</code> called <code>alive</code>.</li>
 <li>Each iteration: builds a fresh <code>Select</code> over all alive receivers, calls <code>select()</code>, identifies which receiver fired via <code>oper.index()</code>, receives the message, forwards to output queue.</li>
 <li>If a receiver returns <code>Err</code> (disconnected), that receiver is removed from <code>alive</code>.</li>
 <li>Loop breaks when <code>alive</code> is empty (all inputs disconnected).</li>
@@ -203,14 +199,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </ul>
 <p><strong>Partial disconnect resilience:</strong> If some producers drop but others remain, the mailbox continues receiving from the living ones. Only when <em>all</em> are gone does it signal disconnection.</p>
 <p><strong>Bounds:</strong> <code>T: Send + 'static</code>. No <code>Clone</code> needed — messages are moved, not copied.</p>
-<p><strong><code>MailboxReceiver<T></code></strong> — wraps <code>QueueReceiver<T></code>. Same interface as queue receiver:</p>
+<p><strong><code>MailboxReceiver&lt;T&gt;</code></strong> — wraps <code>QueueReceiver&lt;T&gt;</code>. Same interface as queue receiver:</p>
 <ul>
 <li><code>recv()</code> — blocking.</li>
 <li><code>try_recv()</code> — non-blocking, returns <code>crossbeam::TryRecvError</code> directly.</li>
-<li><code>inner()</code> — <code>pub(crate)</code>, exposes underlying <code>&Receiver<T></code> for composing programs.</li>
+<li><code>inner()</code> — <code>pub(crate)</code>, exposes underlying <code>&amp;Receiver&lt;T&gt;</code> for composing programs.</li>
 </ul>
 <p><strong>Tests (4):</strong> multiple senders one receiver, interleaved messages from different threads, shutdown on all senders dropped, partial sender drop still works.</p>
-<hr>
+<hr />
 <h2>How Concurrency Is Achieved Without Mutex</h2>
 <p><strong>All three primitives use <code>crossbeam::channel</code> as their sole concurrency mechanism.</strong></p>
 <p><code>crossbeam::channel</code> is a lock-free multi-producer multi-consumer channel built on atomic operations. The internal implementation uses compare-and-swap and spin-locks — no <code>std::sync::Mutex</code> anywhere.</p>
@@ -218,14 +214,39 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <ul>
 <li><strong>Ownership transfer via types.</strong> <code>QueueSender</code> and <code>QueueReceiver</code> are separate types that can be moved between threads. Rust's type system enforces that the producer and consumer sides are distinct.</li>
 <li><strong>Threads communicate by sending messages, not by sharing memory.</strong> No shared mutable state exists within any of these primitives. Each spawned thread (topic fan-out, mailbox fan-in) owns its inputs exclusively.</li>
-<li><strong>Shutdown by disconnection.</strong> Dropping a sender/receiver propagates through the channel as a <code>Disconnected</code> error. No explicit coordination, no <code>Arc<Mutex<bool>></code> shutdown flags.</li>
+<li><strong>Shutdown by disconnection.</strong> Dropping a sender/receiver propagates through the channel as a <code>Disconnected</code> error. No explicit coordination, no <code>Arc&lt;Mutex&lt;bool&gt;&gt;</code> shutdown flags.</li>
 <li><strong>Backpressure via bounded channels.</strong> The topic uses bounded inputs; when full, the sender blocks naturally. The mailbox uses an unbounded output — it never stalls producers.</li>
 </ul>
 <p><strong>One subtle design choice:</strong> <code>QueueReceiver::inner()</code> and <code>MailboxReceiver::inner()</code> expose the raw crossbeam <code>Receiver</code> as <code>pub(crate)</code>. This allows composing code (the cache, which uses <code>crossbeam::Select</code>) to treat queue receivers and mailbox receivers uniformly in a multi-channel select — without pulling the internal implementation up through the public API.</p>
 <p><strong>Summary table:</strong></p>
 <table>
-<thead><tr><th>Primitive</th><th>Pattern</th><th>Internal mechanism</th><th>Mutex used</th></tr></thead>
-<tr><td data-label="Primitive">Queue</td><td data-label="Pattern">1→1</td><td data-label="Internal mechanism"><code>crossbeam::channel</code> (bounded or unbounded)</td><td data-label="Mutex used">No</td></tr>
-<tr><td data-label="Primitive">Topic</td><td data-label="Pattern">1→N</td><td data-label="Internal mechanism">Bounded input queue → spawned thread → clone to N output queues</td><td data-label="Mutex used">No</td></tr>
-<tr><td data-label="Primitive">Mailbox</td><td data-label="Pattern">N→1</td><td data-label="Internal mechanism">Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output queue</td><td data-label="Mutex used">No</td></tr>
-</table></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<thead>
+<tr>
+  <th>Primitive</th>
+  <th>Pattern</th>
+  <th>Internal mechanism</th>
+  <th>Mutex used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Primitive">Queue</td>
+  <td data-label="Pattern">1→1</td>
+  <td data-label="Internal mechanism"><code>crossbeam::channel</code> (bounded or unbounded)</td>
+  <td data-label="Mutex used">No</td>
+</tr>
+<tr>
+  <td data-label="">Topic</td>
+  <td data-label="">1→N</td>
+  <td data-label="">Bounded input queue → spawned thread → clone to N output queues</td>
+  <td data-label="">No</td>
+</tr>
+<tr>
+  <td data-label="">Mailbox</td>
+  <td data-label="">N→1</td>
+  <td data-label="">Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output queue</td>
+  <td data-label="">No</td>
+</tr>
+</tbody>
+</table>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

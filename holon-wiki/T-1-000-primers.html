@@ -125,29 +125,31 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">The Primers — Conceptual Foundations from algebraic-intelligence.dev <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><p><strong>Tier: -1</strong> (conceptual root)</p>
-<p><strong>Source:</strong> 6 primer files, series-001, 000–005</p>
-<p><strong>Read:</strong> 2026-04-14</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">The Primers — Conceptual Foundations from algebraic-intelligence.dev <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><p><strong>Tier: -1</strong> (conceptual root)
+<strong>Source:</strong> 6 primer files, series-001, 000–005
+<strong>Read:</strong> 2026-04-14</p>
+<hr />
 <h2>What This Document Is</h2>
 <p>An honest extraction of the conceptual chain from the six primers on the algebraic-intelligence.dev site. These primers explain <em>why</em> the holon-rs primitives exist before the code explains <em>how</em>. They are the conceptual root of the dependency graph.</p>
 <p>Each primer is summarized below with: what it introduces, the key claims/definitions (quoted verbatim where possible), what holon-rs primitive it maps to, and what downstream concept it motivates.</p>
-<hr>
+<hr />
 <h2>Primer 000: VSA/HDC — A Working Introduction (162 lines)</h2>
 <h3>What It Introduces</h3>
 <p>The foundational mathematical framework: Vector Symbolic Architectures / Hyperdimensional Computing. The minimum you need to understand everything else in the project.</p>
 <h3>Key Claims and Definitions</h3>
 <ul>
-<li><strong>Hypervector:</strong> "A very large vector of numbers — thousands of dimensions of values in <code>{-1, 0, 1}</code>."</li>
-<li><strong>Near-orthogonality:</strong> "Random vectors are nearly orthogonal. Two random bipolar vectors have an expected cosine similarity of 0, with standard deviation ~1/√d where d is dimensionality."</li>
-<li><strong>Dimension guidance:</strong> "The literature (Kanerva) suggests at least 10,000 dimensions for the guarantees to hold comfortably." Holon's experiments ran at 16,384 and 4,096.</li>
-<li><strong>MAP variant:</strong> "Holon follows MAP. ... bipolar vectors <code>{-1, 0, 1}</code>, element-wise multiplication for binding, element-wise addition for bundling."</li>
-<li><strong>Self-inverse binding:</strong> "Binding is self-inverse. <code>bind(bind(A, B), A) = B</code>. Unbinding uses the same operation as binding."</li>
-<li><strong>Three operations, everything built from these:</strong> "VSA defines three core operations. Everything in Holon is built from these."</li>
+<li><strong>Hypervector:</strong> &quot;A very large vector of numbers — thousands of dimensions of values in <code>{-1, 0, 1}</code>.&quot;</li>
+<li><strong>Near-orthogonality:</strong> &quot;Random vectors are nearly orthogonal. Two random bipolar vectors have an expected cosine similarity of 0, with standard deviation ~1/√d where d is dimensionality.&quot;</li>
+<li><strong>Dimension guidance:</strong> &quot;The literature (Kanerva) suggests at least 10,000 dimensions for the guarantees to hold comfortably.&quot; Holon's experiments ran at 16,384 and 4,096.</li>
+<li><strong>MAP variant:</strong> &quot;Holon follows MAP. ... bipolar vectors <code>{-1, 0, 1}</code>, element-wise multiplication for binding, element-wise addition for bundling.&quot;</li>
+<li><strong>Self-inverse binding:</strong> &quot;Binding is self-inverse. <code>bind(bind(A, B), A) = B</code>. Unbinding uses the same operation as binding.&quot;</li>
+<li><strong>Three operations, everything built from these:</strong> &quot;VSA defines three core operations. Everything in Holon is built from these.&quot;<ul>
 <li><strong>Bind</strong> — element-wise multiplication. Encodes role-filler relationships.</li>
 <li><strong>Bundle</strong> — element-wise majority vote. Superposes bound pairs into a document vector.</li>
 <li><strong>Query/Probe/Search</strong> — cosine similarity, all the same operation at different abstraction levels.</li>
-<li><strong>Structure over semantics:</strong> "VSA encodes <em>structure</em>: the relationship between a role and a filler, regardless of what those things mean."</li>
+</ul>
+</li>
+<li><strong>Structure over semantics:</strong> &quot;VSA encodes <em>structure</em>: the relationship between a role and a filler, regardless of what those things mean.&quot;</li>
 <li><strong>What Holon adds (preview):</strong> Deterministic atom generation, multiple scalar encoding paths, the algebraic primitives (prototype, difference, negate, amplify, blend), accumulators with decay, engram memory.</li>
 </ul>
 <h3>Maps To</h3>
@@ -158,24 +160,26 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <ul>
 <li>Everything downstream — all algebra ops, memory layer, encoding stack, the entire project.</li>
 </ul>
-<hr>
+<hr />
 <h2>Primer 001: Atoms, Vectors, and the Encoding Stack (231 lines)</h2>
 <h3>What It Introduces</h3>
 <p>The complete encoding pipeline: how structured data (JSON, events, documents) becomes a single point in high-dimensional vector space. The stack is atomization → binding → bundling.</p>
 <h3>Key Claims and Definitions</h3>
 <ul>
-<li><strong>Three scalar encoding paths:</strong></li>
-<li><strong>String atomization</strong> — "The value is treated as an opaque identifier and mapped to a unique high-dimensional vector called an <em>atom</em>." No proximity implied between string atoms.</li>
-<li><strong>Magnitude-aware encoding</strong> (<code>$linear</code>, <code>$log</code>) — "For numeric values where proximity should be geometrically reflected." Interpolation between deterministic orthogonal basis vectors.</li>
-<li><strong>Temporal encoding</strong> (<code>$time</code>) — "For timestamps where the relevant similarity is cyclical." Decomposes into circular components (hour-of-day, day-of-week, month).</li>
-<li><strong>Deterministic atom generation:</strong> "<code>SHA-256(atom_string) XOR global_seed</code> → deterministic 4096-dimensional vector. Same atom, same language implementation, any machine, any process: identical vector."</li>
-<li><strong>Choosing wrong encoding corrupts geometry:</strong> "Encode a byte count as a string atom and you've thrown away the ordering that makes '3x normal rate' detectable."</li>
-<li><strong>List encoding modes:</strong> <code>positional</code> (default), <code>bundle</code>, <code>chained</code>, <code>ngram</code>. "The current set covers the cases that came up in the experiments; what's right for a given domain is a design choice, not a constraint."</li>
-<li><strong>Sets vs bundle-mode lists:</strong> "A set encoding and a bundle-mode list encoding of the same elements are <em>not</em> similar to each other. It's a type tag baked into the geometry."</li>
-<li><strong>Document vector as structural fingerprint:</strong> "The document vector is simultaneously a <em>hash function</em> and a <em>queryable fingerprint</em>." Same document → identical vector. Different documents → cosine similarity reflects structural proximity.</li>
-<li><strong>Hash function with geometric properties:</strong> "Regular hash functions map inputs to fixed-size integers where the output is opaque. Holon's atom vectors map inputs to high-dimensional vectors where the output has exploitable geometry."</li>
-<li><strong>Codebook is a cache, not source of truth:</strong> "'Codebook' appears in Holon's source and docs to mean something much narrower: the runtime cache of already-computed atom vectors. Pure performance optimization."</li>
-<li><strong>Claimed contribution — hash-function codebook:</strong> "Standard VSA systems require a pre-shared codebook. Holon eliminates this entirely by deriving atom vectors deterministically from a hash function. ... We haven't found this approach documented in the VSA literature."</li>
+<li><strong>Three scalar encoding paths:</strong><ul>
+<li><strong>String atomization</strong> — &quot;The value is treated as an opaque identifier and mapped to a unique high-dimensional vector called an <em>atom</em>.&quot; No proximity implied between string atoms.</li>
+<li><strong>Magnitude-aware encoding</strong> (<code>$linear</code>, <code>$log</code>) — &quot;For numeric values where proximity should be geometrically reflected.&quot; Interpolation between deterministic orthogonal basis vectors.</li>
+<li><strong>Temporal encoding</strong> (<code>$time</code>) — &quot;For timestamps where the relevant similarity is cyclical.&quot; Decomposes into circular components (hour-of-day, day-of-week, month).</li>
+</ul>
+</li>
+<li><strong>Deterministic atom generation:</strong> &quot;<code>SHA-256(atom_string) XOR global_seed</code> → deterministic 4096-dimensional vector. Same atom, same language implementation, any machine, any process: identical vector.&quot;</li>
+<li><strong>Choosing wrong encoding corrupts geometry:</strong> &quot;Encode a byte count as a string atom and you've thrown away the ordering that makes '3x normal rate' detectable.&quot;</li>
+<li><strong>List encoding modes:</strong> <code>positional</code> (default), <code>bundle</code>, <code>chained</code>, <code>ngram</code>. &quot;The current set covers the cases that came up in the experiments; what's right for a given domain is a design choice, not a constraint.&quot;</li>
+<li><strong>Sets vs bundle-mode lists:</strong> &quot;A set encoding and a bundle-mode list encoding of the same elements are <em>not</em> similar to each other. It's a type tag baked into the geometry.&quot;</li>
+<li><strong>Document vector as structural fingerprint:</strong> &quot;The document vector is simultaneously a <em>hash function</em> and a <em>queryable fingerprint</em>.&quot; Same document → identical vector. Different documents → cosine similarity reflects structural proximity.</li>
+<li><strong>Hash function with geometric properties:</strong> &quot;Regular hash functions map inputs to fixed-size integers where the output is opaque. Holon's atom vectors map inputs to high-dimensional vectors where the output has exploitable geometry.&quot;</li>
+<li><strong>Codebook is a cache, not source of truth:</strong> &quot;'Codebook' appears in Holon's source and docs to mean something much narrower: the runtime cache of already-computed atom vectors. Pure performance optimization.&quot;</li>
+<li><strong>Claimed contribution — hash-function codebook:</strong> &quot;Standard VSA systems require a pre-shared codebook. Holon eliminates this entirely by deriving atom vectors deterministically from a hash function. ... We haven't found this approach documented in the VSA literature.&quot;</li>
 </ul>
 <h3>Maps To</h3>
 <ul>
@@ -189,27 +193,29 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Challenge batches (every experiment tests what can be expressed as atomize → bind → bundle)</li>
 <li>Trading lab encoding layers (thought vectors built from this stack)</li>
 </ul>
-<hr>
+<hr />
 <h2>Primer 002: The Holon Algebra — Operations Reference (685 lines)</h2>
 <h3>What It Introduces</h3>
 <p>The full set of algebraic primitives Holon provides on top of the VSA foundation (bind, bundle, cosine). Organized into sections: Core Algebra, Pattern Extraction, Extended Algebra, Vector Operations, Streaming Operations, Advanced Operations.</p>
 <h3>Key Claims and Definitions</h3>
 <ul>
-<li><strong>Motivation:</strong> "The experiments kept running into things the base algebra couldn't express cleanly: extracting the common pattern from a set of examples, detecting what changed between two states, asking 'find this but not that,' maintaining a running sense of normal over a stream."</li>
-<li><strong>Core operations beyond VSA:</strong></li>
-<li><code>unbind</code> — "Binding is self-inverse for bipolar vectors: <code>bind(bind(A, B), A) = B</code>." Used for field attribution / surprise fingerprint.</li>
-<li><code>prototype</code> — "Finds the dimensions where a set of vectors agree — the stable signal across examples, with incidental variation filtered out." Unlike bundle, discards frequency. "Challenge 002: 100% topology classification across five families with no labeled training data."</li>
-<li><code>negate</code> — "Removes a component's influence from a superposition." Three methods: subtract, orthogonalize, flip. "Challenge 003 (topic exclusion: differentiation but not integration, 5/5 precision)."</li>
-<li><code>amplify</code> — "Boosts a component's presence in a superposition." "Challenge 003: boosted matching scores from 0.22 to 0.59 (2.6×)."</li>
-<li><code>blend</code> — "A vector geometrically between two inputs. Soft OR."</li>
-<li><code>difference</code> — "Encodes the delta between two states as a vector." "Consistent transformation rules cluster at ~0.58 cosine similarity within a type vs ~0.19 across types."</li>
-<li><code>analogy</code> — "Transfers a learned relationship to a new context. Computes <code>C + (B - A)</code>."</li>
+<li><strong>Motivation:</strong> &quot;The experiments kept running into things the base algebra couldn't express cleanly: extracting the common pattern from a set of examples, detecting what changed between two states, asking 'find this but not that,' maintaining a running sense of normal over a stream.&quot;</li>
+<li><strong>Core operations beyond VSA:</strong><ul>
+<li><code>unbind</code> — &quot;Binding is self-inverse for bipolar vectors: <code>bind(bind(A, B), A) = B</code>.&quot; Used for field attribution / surprise fingerprint.</li>
+<li><code>prototype</code> — &quot;Finds the dimensions where a set of vectors agree — the stable signal across examples, with incidental variation filtered out.&quot; Unlike bundle, discards frequency. &quot;Challenge 002: 100% topology classification across five families with no labeled training data.&quot;</li>
+<li><code>negate</code> — &quot;Removes a component's influence from a superposition.&quot; Three methods: subtract, orthogonalize, flip. &quot;Challenge 003 (topic exclusion: differentiation but not integration, 5/5 precision).&quot;</li>
+<li><code>amplify</code> — &quot;Boosts a component's presence in a superposition.&quot; &quot;Challenge 003: boosted matching scores from 0.22 to 0.59 (2.6×).&quot;</li>
+<li><code>blend</code> — &quot;A vector geometrically between two inputs. Soft OR.&quot;</li>
+<li><code>difference</code> — &quot;Encodes the delta between two states as a vector.&quot; &quot;Consistent transformation rules cluster at ~0.58 cosine similarity within a type vs ~0.19 across types.&quot;</li>
+<li><code>analogy</code> — &quot;Transfers a learned relationship to a new context. Computes <code>C + (B - A)</code>.&quot;</li>
+</ul>
+</li>
 <li><strong>Pattern extraction:</strong> <code>resonance</code> (sign-agreement filter), <code>permute</code> (circular shift for positional encoding), <code>cleanup</code> (nearest-atom snap), <code>similarity_profile</code>, <code>complexity</code>, <code>invert</code></li>
-<li><strong>Extended algebra:</strong> <code>attend</code> (soft attention, no learned weights), <code>project</code> (subspace projection), <code>reject</code> (orthogonal complement — "what the subspace cannot account for"), <code>conditional_bind</code> (gated binding), <code>segment</code> (structural breakpoints)</li>
-<li><strong>Streaming:</strong> <code>accumulate</code>/<code>decay</code> — "Maintains a running float sum over a stream — not thresholded, not normalized yet. ... the accumulator preserves the fact that a field appearing in 99% of packets should dominate the baseline 99× more than one appearing once." Plus: <code>accumulate_weighted</code>, <code>merge_accumulators</code>, <code>capacity</code>, <code>purity</code>, <code>participation_ratio</code>, <code>drift_rate</code>, <code>autocorrelate</code>, <code>cross_correlate</code></li>
-<li><strong>Algebraic explainability:</strong> "Explainability falls out of the algebra for free. ... every document vector is built from reversible operations. ... any composite vector can be decomposed back into field-level contributions using <code>unbind</code>." "Neural anomaly detectors can't do this. Their representations aren't decomposable."</li>
-<li><strong>Composition as the primary use model:</strong> "The primitives were designed to be combinable. The interesting applications — and most of the ones that appeared in the challenge batches — come from composition rather than individual operations. The library is a vocabulary; what you build with it is up to you."</li>
-<li><strong>Claimed contributions:</strong></li>
+<li><strong>Extended algebra:</strong> <code>attend</code> (soft attention, no learned weights), <code>project</code> (subspace projection), <code>reject</code> (orthogonal complement — &quot;what the subspace cannot account for&quot;), <code>conditional_bind</code> (gated binding), <code>segment</code> (structural breakpoints)</li>
+<li><strong>Streaming:</strong> <code>accumulate</code>/<code>decay</code> — &quot;Maintains a running float sum over a stream — not thresholded, not normalized yet. ... the accumulator preserves the fact that a field appearing in 99% of packets should dominate the baseline 99× more than one appearing once.&quot; Plus: <code>accumulate_weighted</code>, <code>merge_accumulators</code>, <code>capacity</code>, <code>purity</code>, <code>participation_ratio</code>, <code>drift_rate</code>, <code>autocorrelate</code>, <code>cross_correlate</code></li>
+<li><strong>Algebraic explainability:</strong> &quot;Explainability falls out of the algebra for free. ... every document vector is built from reversible operations. ... any composite vector can be decomposed back into field-level contributions using <code>unbind</code>.&quot; &quot;Neural anomaly detectors can't do this. Their representations aren't decomposable.&quot;</li>
+<li><strong>Composition as the primary use model:</strong> &quot;The primitives were designed to be combinable. The interesting applications — and most of the ones that appeared in the challenge batches — come from composition rather than individual operations. The library is a vocabulary; what you build with it is up to you.&quot;</li>
+<li><strong>Claimed contributions:</strong><ul>
 <li><code>negate</code> and <code>amplify</code> as named first-class query operators</li>
 <li><code>difference</code> as standalone query primitive</li>
 <li><code>drift_rate</code> — temporal derivative of similarity</li>
@@ -218,6 +224,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Frequency-preserving accumulation for baseline learning</li>
 <li>Hash-function-as-codebook (detailed in 001)</li>
 <li>Algebraic explainability without a separate explainer</li>
+</ul>
+</li>
 </ul>
 <h3>Maps To</h3>
 <ul>
@@ -231,22 +239,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Trading lab (thought vectors composed from these operations, <code>difference</code> for state changes, <code>coherence</code> for regime detection)</li>
 <li>Challenge batches 001–018 (every result traces back to composition of these primitives)</li>
 </ul>
-<hr>
+<hr />
 <h2>Primer 003: Holon Memory — Subspaces and Engrams (401 lines)</h2>
 <h3>What It Introduces</h3>
 <p>The memory layer: how Holon learns geometric patterns from streaming data, snapshots them as named portable artifacts called <em>engrams</em>, and matches against them. Three major components: <code>OnlineSubspace</code> (incremental manifold learning), <code>StripedSubspace</code> (crosstalk-free attribution for high-cardinality data), and <code>Reckoner</code> (unified discriminant learner with discrete/continuous modes).</p>
 <h3>Key Claims and Definitions</h3>
 <ul>
-<li><strong>OnlineSubspace — incremental manifold learning:</strong> "Any stream of encoded vectors occupies a region of the high-dimensional vector space. That region isn't random; it has structure." Uses CCIPCA (Candid Covariance-free Incremental PCA, Weng et al. 2003). "O(k·dim) cost per update — no matrix inversions, no batch requirements, no stored history."</li>
-<li><strong>Residual as anomaly signal:</strong> "Low residual = the subspace explains most of the vector = in-distribution. High residual = the subspace can't account for it = anomalous."</li>
-<li><strong>Capacity ceiling:</strong> "A network packet with ~7 bindings. The subspace learns these directions comfortably with k=32 components. HTTP requests ... 80–100+ leaf bindings. CCIPCA with k=32 components can't separate them." The fix is <code>StripedSubspace</code>, not more dimensions.</li>
-<li><strong>StripedSubspace — crosstalk-free attribution:</strong> "Distributes leaf bindings across N independent subspaces. Instead of one vector with 100 bindings, you get N vectors with ~100/N bindings each." Stripe assignment via FNV-1a hash of fully-qualified field path. "With 100 leaf bindings across 32 stripes, each stripe averages ~3 bindings."</li>
-<li><strong>Dual-signal principle:</strong> "Every successful discrimination in the holon project has required both magnitude and direction." Aggregate residual (magnitude) + residual profile (direction). "Neither alone is sufficient. Combined, they haven't failed."</li>
-<li><strong>Engram — a named memory:</strong> "An engram is a named, serializable snapshot of a trained <code>OnlineSubspace</code>, plus metadata." Contains: <code>snapshot</code> (learned subspace), <code>eigenvalue_signature</code> (compact shape fingerprint), <code>surprise_profile</code> (per-field anomaly attribution), <code>metadata</code> (application-defined).</li>
-<li><strong>Surprise fingerprint:</strong> "The <code>surprise_profile</code> ... unbinding the reconstruction residual with field role vectors to isolate per-field anomaly contributions." Concrete example: <code>dst_port: 0.91, ttl: 0.87, bytes: 0.79</code> → rule generator writes <code>(and (= dst_port 53) (= ttl 245))</code>.</li>
+<li><strong>OnlineSubspace — incremental manifold learning:</strong> &quot;Any stream of encoded vectors occupies a region of the high-dimensional vector space. That region isn't random; it has structure.&quot; Uses CCIPCA (Candid Covariance-free Incremental PCA, Weng et al. 2003). &quot;O(k·dim) cost per update — no matrix inversions, no batch requirements, no stored history.&quot;</li>
+<li><strong>Residual as anomaly signal:</strong> &quot;Low residual = the subspace explains most of the vector = in-distribution. High residual = the subspace can't account for it = anomalous.&quot;</li>
+<li><strong>Capacity ceiling:</strong> &quot;A network packet with ~7 bindings. The subspace learns these directions comfortably with k=32 components. HTTP requests ... 80–100+ leaf bindings. CCIPCA with k=32 components can't separate them.&quot; The fix is <code>StripedSubspace</code>, not more dimensions.</li>
+<li><strong>StripedSubspace — crosstalk-free attribution:</strong> &quot;Distributes leaf bindings across N independent subspaces. Instead of one vector with 100 bindings, you get N vectors with ~100/N bindings each.&quot; Stripe assignment via FNV-1a hash of fully-qualified field path. &quot;With 100 leaf bindings across 32 stripes, each stripe averages ~3 bindings.&quot;</li>
+<li><strong>Dual-signal principle:</strong> &quot;Every successful discrimination in the holon project has required both magnitude and direction.&quot; Aggregate residual (magnitude) + residual profile (direction). &quot;Neither alone is sufficient. Combined, they haven't failed.&quot;</li>
+<li><strong>Engram — a named memory:</strong> &quot;An engram is a named, serializable snapshot of a trained <code>OnlineSubspace</code>, plus metadata.&quot; Contains: <code>snapshot</code> (learned subspace), <code>eigenvalue_signature</code> (compact shape fingerprint), <code>surprise_profile</code> (per-field anomaly attribution), <code>metadata</code> (application-defined).</li>
+<li><strong>Surprise fingerprint:</strong> &quot;The <code>surprise_profile</code> ... unbinding the reconstruction residual with field role vectors to isolate per-field anomaly contributions.&quot; Concrete example: <code>dst_port: 0.91, ttl: 0.87, bytes: 0.79</code> → rule generator writes <code>(and (= dst_port 53) (= ttl 245))</code>.</li>
 <li><strong>EngramLibrary — pattern memory bank:</strong> Two-tier matching: eigenvalue pre-filter O(k·n) then full residual scoring O(k·dim). <code>match_spectrum</code> enables early warning by comparing eigenvalue shapes of traffic windows against known patterns.</li>
-<li><strong>Reckoner — unified discriminant learner:</strong> "Where <code>OnlineSubspace</code> learns what <em>normal</em> looks like (anomaly detection), <code>Reckoner</code> learns what <em>separates classes</em> or <em>predicts values</em>." Two readout modes: discrete (N-ary classification via discriminant directions) and continuous (scalar regression via f64 pipeline). Self-evaluates via curve: <code>accuracy = 1/N + a × exp(b × conviction)</code>.</li>
-<li><strong>Claimed contributions:</strong></li>
+<li><strong>Reckoner — unified discriminant learner:</strong> &quot;Where <code>OnlineSubspace</code> learns what <em>normal</em> looks like (anomaly detection), <code>Reckoner</code> learns what <em>separates classes</em> or <em>predicts values</em>.&quot; Two readout modes: discrete (N-ary classification via discriminant directions) and continuous (scalar regression via f64 pipeline). Self-evaluates via curve: <code>accuracy = 1/N + a × exp(b × conviction)</code>.</li>
+<li><strong>Claimed contributions:</strong><ul>
 <li>Engram architecture as a whole (learned subspace, not centroid, as memory artifact)</li>
 <li>CCIPCA subspace learning as detection primitive (manifold-aware, not prototype-based)</li>
 <li>Two-tier eigenvalue pre-filter for engram matching</li>
@@ -255,6 +263,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Striped FQDN leaf hashing for crosstalk-free VSA attribution</li>
 <li>Residual profile as dual-signal detection primitive</li>
 <li>Reckoner with discrete/continuous dual readout + self-evaluating curve</li>
+</ul>
+</li>
 </ul>
 <h3>Maps To</h3>
 <ul>
@@ -267,21 +277,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>DDoS lab (OnlineSubspace for baselines, StripedSubspace for HTTP, engrams for pattern distribution, surprise fingerprint for rule synthesis)</li>
 <li>Trading lab (Reckoner for direction prediction in discrete mode, stop distance learning in continuous mode, conviction curves for self-evaluation)</li>
 </ul>
-<hr>
+<hr />
 <h2>Primer 004: Coordination-Free at Scale (126 lines)</h2>
 <h3>What It Introduces</h3>
 <p>The distributed systems architecture that falls out of the hash-function codebook decision. How a single early design choice eliminates an entire class of distributed coordination problems.</p>
 <h3>Key Claims and Definitions</h3>
 <ul>
-<li><strong>No codebook:</strong> "Holon doesn't have a codebook. It never did. That was a deliberate early design decision, and it turns out to have been the right one."</li>
-<li><strong>Operational checklist — Holon:</strong> "Same seed constant in every node's config. That's it."</li>
-<li><strong>HQ/Edge model:</strong> HQ learns and mints engrams centrally. Edge receives serialized engrams and scores in real time. "The edge node loads the engram, re-derives atom vectors on demand from the same hash function, and immediately operates in the same geometric space as HQ."</li>
-<li><strong>Determinism as correctness requirement:</strong> "If the edge derived different atom vectors from the same inputs, those stored vectors would be geometrically incoherent in the edge's space. ... Determinism isn't an optimization here; it's the foundation the entire memory layer stands on."</li>
-<li><strong>Passive upgrade:</strong> "Adding a new detection capability means distributing a new engram. ... The engram <em>is</em> the capability; it carries the learned pattern, the threshold, and the metadata that describes what a hit means."</li>
-<li><strong>Engrams are config, not code:</strong> "Config can be swapped, rolled back, and audited as data. Code changes require a whole different process."</li>
-<li><strong>One constraint:</strong> "Stay in one language per deployment." Different language implementations produce different vectors from the same seed.</li>
-<li><strong>The broader implication:</strong> "The seed and dimensionality define a coordinate system that exists nowhere physically but is instantiated identically everywhere. ... The space <em>is</em> the network."</li>
-<li><strong>Stability across time:</strong> "Engrams minted today are valid indefinitely — the geometric relationships they encode don't expire. There's no model to retrain, no vocabulary to version, no stored representations that go stale."</li>
+<li><strong>No codebook:</strong> &quot;Holon doesn't have a codebook. It never did. That was a deliberate early design decision, and it turns out to have been the right one.&quot;</li>
+<li><strong>The function is the codebook:</strong> &quot;<code>SHA-256(seed || atom_string)</code> seeds an RNG that generates the vector. Same atom, same seed, same implementation: identical vector, every time, on any machine, without coordination.&quot;</li>
+<li><strong>Operational checklist — Holon:</strong> &quot;Same seed constant in every node's config. That's it.&quot;</li>
+<li><strong>HQ/Edge model:</strong> HQ learns and mints engrams centrally. Edge receives serialized engrams and scores in real time. &quot;The edge node loads the engram, re-derives atom vectors on demand from the same hash function, and immediately operates in the same geometric space as HQ.&quot;</li>
+<li><strong>Determinism as correctness requirement:</strong> &quot;If the edge derived different atom vectors from the same inputs, those stored vectors would be geometrically incoherent in the edge's space. ... Determinism isn't an optimization here; it's the foundation the entire memory layer stands on.&quot;</li>
+<li><strong>Passive upgrade:</strong> &quot;Adding a new detection capability means distributing a new engram. ... The engram <em>is</em> the capability; it carries the learned pattern, the threshold, and the metadata that describes what a hit means.&quot;</li>
+<li><strong>Engrams are config, not code:</strong> &quot;Config can be swapped, rolled back, and audited as data. Code changes require a whole different process.&quot;</li>
+<li><strong>One constraint:</strong> &quot;Stay in one language per deployment.&quot; Different language implementations produce different vectors from the same seed.</li>
+<li><strong>The broader implication:</strong> &quot;The seed and dimensionality define a coordinate system that exists nowhere physically but is instantiated identically everywhere. ... The space <em>is</em> the network.&quot;</li>
+<li><strong>Stability across time:</strong> &quot;Engrams minted today are valid indefinitely — the geometric relationships they encode don't expire. There's no model to retrain, no vocabulary to version, no stored representations that go stale.&quot;</li>
 </ul>
 <h3>Maps To</h3>
 <ul>
@@ -294,22 +305,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Trading lab deployment model (central learning, distributed scoring)</li>
 <li>Primer 005 (Wat language compiles to Rust — single-language constraint)</li>
 </ul>
-<hr>
+<hr />
 <h2>Primer 005: The Wat Language (193 lines)</h2>
 <h3>What It Introduces</h3>
 <p>The specification language for the system: s-expressions that describe programs, with automated verification that Rust implementations match specifications. Two algebras, three structural forms, host language forms, standard library, and compilation path to Rust.</p>
 <h3>Key Claims and Definitions</h3>
 <ul>
-<li><strong>What Wat is:</strong> "Wat is a specification language. It describes programs in s-expression form — what a module reads, what it emits, what it does not read. The wat leads. The Rust follows."</li>
-<li><strong>Two algebras:</strong></li>
-<li><strong>Algebra 1: Vector algebra</strong> — 4 generators: <code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code>. "These are defined in <code>core/primitives.wat</code>. Everything in the algebra ops primer — <code>negate</code>, <code>amplify</code>, <code>difference</code>, <code>prototype</code>, <code>attend</code>, <code>coherence</code> — derives from these four in <code>std/vectors.wat</code>."</li>
-<li><strong>Algebra 2: Reckoner coalgebra</strong> — Learning & prediction: <code>reckoner</code>, <code>register</code>, <code>observe</code>, <code>predict</code>, <code>decay</code>, <code>resolve</code>, <code>curve</code>, <code>discriminant</code>. "Five core operations, four accessors. The accumulators are private — the coalgebra is defined by its interface, not its representation."</li>
+<li><strong>What Wat is:</strong> &quot;Wat is a specification language. It describes programs in s-expression form — what a module reads, what it emits, what it does not read. The wat leads. The Rust follows.&quot;</li>
+<li><strong>Two algebras:</strong><ul>
+<li><strong>Algebra 1: Vector algebra</strong> — 4 generators: <code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code>. &quot;These are defined in <code>core/primitives.wat</code>. Everything in the algebra ops primer — <code>negate</code>, <code>amplify</code>, <code>difference</code>, <code>prototype</code>, <code>attend</code>, <code>coherence</code> — derives from these four in <code>std/vectors.wat</code>.&quot;</li>
+<li><strong>Algebra 2: Reckoner coalgebra</strong> — Learning &amp; prediction: <code>reckoner</code>, <code>register</code>, <code>observe</code>, <code>predict</code>, <code>decay</code>, <code>resolve</code>, <code>curve</code>, <code>discriminant</code>. &quot;Five core operations, four accessors. The accumulators are private — the coalgebra is defined by its interface, not its representation.&quot;</li>
+</ul>
+</li>
 <li><strong>Three structural forms:</strong> Products (structs with <code>?</code> suffix for optional), Coproducts (enums with exhaustive match), Protocols (type classes — check-only, no dynamic dispatch).</li>
-<li><strong>No <code>nil</code>:</strong> "Absence is structural — optional fields use <code>?</code> suffix, conditional execution uses <code>when</code>. There is no null value to accidentally propagate."</li>
-<li><strong>Quote is data:</strong> "<code>'(bind role filler)</code> is an s-expression tree, not an execution. This enables thought vectors to be specified as data structures that the encoder evaluates — the vocabulary IS a quoted program."</li>
-<li><strong>The wards:</strong> Five automated verification skills (<code>/sever</code>, <code>/reap</code>, <code>/scry</code>, <code>/gaze</code>, <code>/forge</code>). "When they disagree, the wat wins."</li>
-<li><strong>Size:</strong> "8 files. 652 lines. Everything the system needs to specify itself." Standard library is 128 lines across 4 files.</li>
-<li><strong>Design principle:</strong> "The stdlib enables. The application decides. ... No vocabulary. No encoding conventions. No application patterns. The boundary is the Fact interface: the language knows how to bind and bundle. The application knows what 'RSI divergence' means."</li>
+<li><strong>No <code>nil</code>:</strong> &quot;Absence is structural — optional fields use <code>?</code> suffix, conditional execution uses <code>when</code>. There is no null value to accidentally propagate.&quot;</li>
+<li><strong>Quote is data:</strong> &quot;<code>'(bind role filler)</code> is an s-expression tree, not an execution. This enables thought vectors to be specified as data structures that the encoder evaluates — the vocabulary IS a quoted program.&quot;</li>
+<li><strong>The wards:</strong> Five automated verification skills (<code>/sever</code>, <code>/reap</code>, <code>/scry</code>, <code>/gaze</code>, <code>/forge</code>). &quot;When they disagree, the wat wins.&quot;</li>
+<li><strong>Size:</strong> &quot;8 files. 652 lines. Everything the system needs to specify itself.&quot; Standard library is 128 lines across 4 files.</li>
+<li><strong>Design principle:</strong> &quot;The stdlib enables. The application decides. ... No vocabulary. No encoding conventions. No application patterns. The boundary is the Fact interface: the language knows how to bind and bundle. The application knows what 'RSI divergence' means.&quot;</li>
 </ul>
 <h3>Maps To</h3>
 <ul>
@@ -321,11 +334,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Trading lab enterprise architecture (wat as source of truth, Rust follows)</li>
 <li>Verification methodology across the project (specification-first development)</li>
 </ul>
-<hr>
+<hr />
 <h2>The Conceptual Chain</h2>
 <p>The primers form a strict dependency chain, bottom to top:</p>
-<pre><code>
-000  VSA Primer
+<pre><code>000  VSA Primer
  │   Three operations (bind, bundle, cosine). Near-orthogonality of random hypervectors.
  │   MAP variant. Self-inverse binding. Structure encoding over semantic encoding.
  │
@@ -349,34 +361,31 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
  │    └─→ 004  Coordination-Free at Scale
  │         Hash-function codebook eliminates distributed coordination.
  │         HQ/edge model. Engrams as config, not code. Passive upgrade.
- │         "The space is the network."
+ │         &quot;The space is the network.&quot;
  │
  └─→ 005  The Wat Language
       Specification layer: two algebras, three structural forms, wards.
-      "The wat leads. The Rust follows."
+      &quot;The wat leads. The Rust follows.&quot;
       Quote is data. No nil. Protocols are check-only.
 </code></pre>
 <h2>Recurring Themes</h2>
 <ol>
-<li><strong>Geometry encodes structure, not semantics.</strong> The algebra doesn't know what the data means. It encodes structural relationships. Similarity falls out of cosine similarity.</li>
-</ol>
-<ol>
-<li><strong>Determinism is load-bearing.</strong> The hash-function codebook isn't an optimization — it's the correctness foundation. Without identical atom vectors on every node, engrams are geometrically incoherent.</li>
-</ol>
-<ol>
-<li><strong>Explainability is algebraic, not post-hoc.</strong> <code>unbind(anomalous_component, role_vec)</code> recovers per-field anomaly contributions because the encoding was built from reversible operations. No SHAP, no approximation.</li>
-</ol>
-<ol>
-<li><strong>Capacity is finite and real.</strong> Near-orthogonality has limits (~O(dim/log(dim))). Striping solves the practical crosstalk problem for high-cardinality data. Accumulators saturate; capacity and purity diagnose when.</li>
-</ol>
-<ol>
-<li><strong>Composition over individual operations.</strong> "The interesting applications come from composition rather than individual operations. The library is a vocabulary; what you build with it is up to you."</li>
-</ol>
-<ol>
-<li><strong>Honest claims.</strong> Every "likely contribution" is explicitly caveated: "We haven't done an exhaustive literature survey." "Not a claim of priority, but a flag." "If any of this maps to existing published work, we'd genuinely want to know."</li>
+<li><p><strong>Geometry encodes structure, not semantics.</strong> The algebra doesn't know what the data means. It encodes structural relationships. Similarity falls out of cosine similarity.</p>
+</li>
+<li><p><strong>Determinism is load-bearing.</strong> The hash-function codebook isn't an optimization — it's the correctness foundation. Without identical atom vectors on every node, engrams are geometrically incoherent.</p>
+</li>
+<li><p><strong>Explainability is algebraic, not post-hoc.</strong> <code>unbind(anomalous_component, role_vec)</code> recovers per-field anomaly contributions because the encoding was built from reversible operations. No SHAP, no approximation.</p>
+</li>
+<li><p><strong>Capacity is finite and real.</strong> Near-orthogonality has limits (~O(dim/log(dim))). Striping solves the practical crosstalk problem for high-cardinality data. Accumulators saturate; capacity and purity diagnose when.</p>
+</li>
+<li><p><strong>Composition over individual operations.</strong> &quot;The interesting applications come from composition rather than individual operations. The library is a vocabulary; what you build with it is up to you.&quot;</p>
+</li>
+<li><p><strong>Honest claims.</strong> Every &quot;likely contribution&quot; is explicitly caveated: &quot;We haven't done an exhaustive literature survey.&quot; &quot;Not a claim of priority, but a flag.&quot; &quot;If any of this maps to existing published work, we'd genuinely want to know.&quot;</p>
+</li>
 </ol>
 <h2>Honest Assessment</h2>
 <p>The primers are internally consistent and well-structured. The conceptual chain is clear: VSA math → encoding pipeline → algebra operations → memory/learning → deployment architecture → specification language. Each primer builds on exactly the previous ones.</p>
 <p>The claimed contributions are stated with appropriate humility and concrete references to what they enable (specific challenge batch results, specific F1 scores). The writing is unusually transparent about provenance (the VSA foundation came from a conference video + LLM conversations, not paper reading).</p>
 <p>No conflicts or contradictions were found between primers. The only hard constraint stated across the system is the single-language-per-deployment requirement for vector compatibility — which is clearly documented and honestly presented as a non-problem for any sane deployment.</p>
-<p>This document serves as Tier -1 in the dependency graph: the conceptual root from which all code-level tiers descend.</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>This document serves as Tier -1 in the dependency graph: the conceptual root from which all code-level tiers descend.</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

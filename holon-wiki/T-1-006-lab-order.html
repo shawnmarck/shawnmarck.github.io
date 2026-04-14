@@ -125,11 +125,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T-1-006 — Lab Order (ORDER.md) <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><blockquote><strong>TL;DR:</strong> ORDER.md is not an order-type specification for trading. It is the <strong>construction order</strong> — a dependency-sorted reading/inscribing sequence for the <code>.wat</code> specification files that implement the trading system. Each file can only depend on files listed above it. The order IS the path from leaves (no dependencies) to root (depends on everything).</blockquote>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T-1-006 — Lab Order (ORDER.md) <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><blockquote>
+<p><strong>TL;DR:</strong> ORDER.md is not an order-type specification for trading. It is the <strong>construction order</strong> — a dependency-sorted reading/inscribing sequence for the <code>.wat</code> specification files that implement the trading system. Each file can only depend on files listed above it. The order IS the path from leaves (no dependencies) to root (depends on everything).</p>
+</blockquote>
+<hr />
 <h2>Source</h2>
 <p><code>wat/ORDER.md</code> — 109 lines, ~5KB.</p>
-<hr>
+<hr />
 <h2>What It Actually Is</h2>
 <p>Despite the filename, this document does <strong>not</strong> define trading order types (market, limit, stop, etc.). It defines:</p>
 <ol>
@@ -137,112 +139,350 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>A <strong>dependency-sorted file list</strong> for the <code>.wat</code> specification files</li>
 <li>The <strong>inscription rule</strong> — each file is written after its dependencies and verified against the guide before proceeding</li>
 </ol>
-<p>The project uses "order" in the sense of <strong>sequence/arrangement</strong>, not in the financial order sense.</p>
-<hr>
+<p>The project uses &quot;order&quot; in the sense of <strong>sequence/arrangement</strong>, not in the financial order sense.</p>
+<hr />
 <h2>Reading Order (Section 1)</h2>
-<pre><code>
-1. GUIDE.md                    — the specification (read first, always)
+<pre><code>1. GUIDE.md                    — the specification (read first, always)
 2. CIRCUIT.md                  — the visualization (read after the guide)
 3. wat files (leaves to root)  — the implementation
 4. src/ (leaves to root)       — the compiled code (future)
 </code></pre>
 <p>The guide is the source of truth. The circuit visualizes it. The wat implements it. The Rust compiles it. The market proves it.</p>
-<hr>
+<hr />
 <h2>Wat File Dependency Order (Section 2)</h2>
 <h3>Leaves — depend on nothing</h3>
 <table>
-<thead><tr><th>File</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>raw-candle.wat</code></td><td data-label="Exports"><code>Asset</code>, <code>RawCandle</code></td></tr>
-<tr><td data-label="File"><code>window-sampler.wat</code></td><td data-label="Exports"><code>WindowSampler</code></td></tr>
-<tr><td data-label="File"><code>enums.wat</code></td><td data-label="Exports"><code>Side</code>, <code>Direction</code>, <code>Outcome</code>, <code>TradePhase</code>, <code>reckoner-config</code>, <code>prediction</code>, <code>ScalarEncoding</code></td></tr>
-<tr><td data-label="File"><code>newtypes.wat</code></td><td data-label="Exports"><code>TradeId</code></td></tr>
-<tr><td data-label="File"><code>scalar-accumulator.wat</code></td><td data-label="Exports"><code>ScalarAccumulator</code> (requires <code>Outcome</code> from enums)</td></tr>
-<tr><td data-label="File"><code>engram-gate.wat</code></td><td data-label="Exports"><code>check-engram-gate</code> (requires <code>Outcome</code>, <code>Reckoner+OnlineSubspace</code> from holon-rs)</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>raw-candle.wat</code></td>
+  <td data-label="Exports"><code>Asset</code>, <code>RawCandle</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>window-sampler.wat</code></td>
+  <td data-label=""><code>WindowSampler</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>enums.wat</code></td>
+  <td data-label=""><code>Side</code>, <code>Direction</code>, <code>Outcome</code>, <code>TradePhase</code>, <code>reckoner-config</code>, <code>prediction</code>, <code>ScalarEncoding</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>newtypes.wat</code></td>
+  <td data-label=""><code>TradeId</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>scalar-accumulator.wat</code></td>
+  <td data-label=""><code>ScalarAccumulator</code> (requires <code>Outcome</code> from enums)</td>
+</tr>
+<tr>
+  <td data-label=""><code>engram-gate.wat</code></td>
+  <td data-label=""><code>check-engram-gate</code> (requires <code>Outcome</code>, <code>Reckoner+OnlineSubspace</code> from holon-rs)</td>
+</tr>
+</tbody>
 </table>
 <h3>Distances and Levels — depend on nothing</h3>
 <table>
-<thead><tr><th>File</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>distances.wat</code></td><td data-label="Exports"><code>Distances</code>, <code>Levels</code></td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>distances.wat</code></td>
+  <td data-label="Exports"><code>Distances</code>, <code>Levels</code></td>
+</tr>
+</tbody>
 </table>
 <h3>Indicator Layer</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>indicator-bank.wat</code></td><td data-label="Depends On">raw-candle</td><td data-label="Exports"><code>IndicatorBank</code> (streaming primitives, tick takes RawCandle)</td></tr>
-<tr><td data-label="File"><code>candle.wat</code></td><td data-label="Depends On">indicator-bank</td><td data-label="Exports"><code>Candle</code> struct (output of tick)</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>indicator-bank.wat</code></td>
+  <td data-label="Depends On">raw-candle</td>
+  <td data-label="Exports"><code>IndicatorBank</code> (streaming primitives, tick takes RawCandle)</td>
+</tr>
+<tr>
+  <td data-label=""><code>candle.wat</code></td>
+  <td data-label="">indicator-bank</td>
+  <td data-label=""><code>Candle</code> struct (output of tick)</td>
+</tr>
+</tbody>
 </table>
 <h3>Simulation — pure functions</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>simulation.wat</code></td><td data-label="Depends On">distances</td><td data-label="Exports"><code>compute-optimal-distances</code> + helpers</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>simulation.wat</code></td>
+  <td data-label="Depends On">distances</td>
+  <td data-label="Exports"><code>compute-optimal-distances</code> + helpers</td>
+</tr>
+</tbody>
 </table>
 <h3>Vocabulary Layer</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th></tr></thead>
-<tr><td data-label="File"><code>vocab/shared/time.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/oscillators.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/flow.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/persistence.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/regime.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/divergence.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/ichimoku.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/stochastic.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/fibonacci.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/keltner.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/momentum.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/price-action.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/timeframe.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/market/standard.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/exit/volatility.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/exit/structure.wat</code></td><td data-label="Depends On">candle</td></tr>
-<tr><td data-label="File"><code>vocab/exit/timing.wat</code></td><td data-label="Depends On">candle</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>vocab/shared/time.wat</code></td>
+  <td data-label="Depends On">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/oscillators.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/flow.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/persistence.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/regime.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/divergence.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/ichimoku.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/stochastic.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/fibonacci.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/keltner.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/momentum.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/price-action.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/timeframe.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/market/standard.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/exit/volatility.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/exit/structure.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>vocab/exit/timing.wat</code></td>
+  <td data-label="">candle</td>
+</tr>
+</tbody>
 </table>
 <p>16 vocabulary modules total: 1 shared, 13 market, 3 exit.</p>
 <h3>Encoder and Context</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>thought-encoder.wat</code></td><td data-label="Depends On">VectorManager (holon-rs)</td><td data-label="Exports"><code>ThoughtAST</code>, <code>ThoughtEncoder</code></td></tr>
-<tr><td data-label="File"><code>ctx.wat</code></td><td data-label="Depends On">thought-encoder</td><td data-label="Exports"><code>Ctx</code> (thought-encoder, dims, recalib-interval)</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>thought-encoder.wat</code></td>
+  <td data-label="Depends On">VectorManager (holon-rs)</td>
+  <td data-label="Exports"><code>ThoughtAST</code>, <code>ThoughtEncoder</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>ctx.wat</code></td>
+  <td data-label="">thought-encoder</td>
+  <td data-label=""><code>Ctx</code> (thought-encoder, dims, recalib-interval)</td>
+</tr>
+</tbody>
 </table>
 <h3>Observer Layer</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>market-observer.wat</code></td><td data-label="Depends On">Reckoner, OnlineSubspace, WindowSampler</td><td data-label="Exports">Market observer interface</td></tr>
-<tr><td data-label="File"><code>exit-observer.wat</code></td><td data-label="Depends On">Reckoner :continuous, Distances</td><td data-label="Exports">Exit observer interface</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>market-observer.wat</code></td>
+  <td data-label="Depends On">Reckoner, OnlineSubspace, WindowSampler</td>
+  <td data-label="Exports">Market observer interface</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-observer.wat</code></td>
+  <td data-label="">Reckoner :continuous, Distances</td>
+  <td data-label="">Exit observer interface</td>
+</tr>
+</tbody>
 </table>
 <h3>Paper and Broker</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>paper-entry.wat</code></td><td data-label="Depends On">distances</td><td data-label="Exports"><code>PaperEntry</code> struct</td></tr>
-<tr><td data-label="File"><code>broker.wat</code></td><td data-label="Depends On">Reckoner, OnlineSubspace, ScalarAccumulator, PaperEntry</td><td data-label="Exports"><code>Broker</code>, <code>Resolution</code>, <code>PropagationFacts</code></td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>paper-entry.wat</code></td>
+  <td data-label="Depends On">distances</td>
+  <td data-label="Exports"><code>PaperEntry</code> struct</td>
+</tr>
+<tr>
+  <td data-label=""><code>broker.wat</code></td>
+  <td data-label="">Reckoner, OnlineSubspace, ScalarAccumulator, PaperEntry</td>
+  <td data-label=""><code>Broker</code>, <code>Resolution</code>, <code>PropagationFacts</code></td>
+</tr>
+</tbody>
 </table>
 <h3>Trade Lifecycle</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>proposal.wat</code></td><td data-label="Depends On">enums, distances, levels</td><td data-label="Exports"><code>Proposal</code> struct</td></tr>
-<tr><td data-label="File"><code>trade.wat</code></td><td data-label="Depends On">enums, distances, levels</td><td data-label="Exports"><code>Trade</code> struct</td></tr>
-<tr><td data-label="File"><code>settlement.wat</code></td><td data-label="Depends On">(trade lifecycle)</td><td data-label="Exports"><code>TreasurySettlement</code></td></tr>
-<tr><td data-label="File"><code>log-entry.wat</code></td><td data-label="Depends On">(trade lifecycle)</td><td data-label="Exports"><code>LogEntry</code> enum</td></tr>
-<tr><td data-label="File"><code>trade-origin.wat</code></td><td data-label="Depends On">(trade lifecycle)</td><td data-label="Exports"><code>TradeOrigin</code> struct</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>proposal.wat</code></td>
+  <td data-label="Depends On">enums, distances, levels</td>
+  <td data-label="Exports"><code>Proposal</code> struct</td>
+</tr>
+<tr>
+  <td data-label=""><code>trade.wat</code></td>
+  <td data-label="">enums, distances, levels</td>
+  <td data-label=""><code>Trade</code> struct</td>
+</tr>
+<tr>
+  <td data-label=""><code>settlement.wat</code></td>
+  <td data-label="">(trade lifecycle)</td>
+  <td data-label=""><code>TreasurySettlement</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>log-entry.wat</code></td>
+  <td data-label="">(trade lifecycle)</td>
+  <td data-label=""><code>LogEntry</code> enum</td>
+</tr>
+<tr>
+  <td data-label=""><code>trade-origin.wat</code></td>
+  <td data-label="">(trade lifecycle)</td>
+  <td data-label=""><code>TradeOrigin</code> struct</td>
+</tr>
+</tbody>
 </table>
 <h3>Services</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>encoder-service.wat</code></td><td data-label="Depends On">thought-encoder, log-entry</td><td data-label="Exports">LRU cache thread, N client pipes, select loop</td></tr>
-<tr><td data-label="File"><code>log-service.wat</code></td><td data-label="Depends On">thought-encoder, log-entry</td><td data-label="Exports">SQLite writer, batch commits, WAL, drain-on-shutdown</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>encoder-service.wat</code></td>
+  <td data-label="Depends On">thought-encoder, log-entry</td>
+  <td data-label="Exports">LRU cache thread, N client pipes, select loop</td>
+</tr>
+<tr>
+  <td data-label=""><code>log-service.wat</code></td>
+  <td data-label="">thought-encoder, log-entry</td>
+  <td data-label="">SQLite writer, batch commits, WAL, drain-on-shutdown</td>
+</tr>
+</tbody>
 </table>
 <h3>Root — depends on everything</h3>
 <table>
-<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
-<tr><td data-label="File"><code>post.wat</code></td><td data-label="Depends On">everything above</td><td data-label="Exports"><code>Post</code> struct + interface</td></tr>
-<tr><td data-label="File"><code>treasury.wat</code></td><td data-label="Depends On">proposal, trade, settlement</td><td data-label="Exports"><code>Treasury</code> struct + interface</td></tr>
-<tr><td data-label="File"><code>enterprise.wat</code></td><td data-label="Depends On">post, treasury</td><td data-label="Exports"><code>Enterprise</code> struct + four-step loop</td></tr>
-<tr><td data-label="File"><code>bin/enterprise.wat</code></td><td data-label="Depends On">everything</td><td data-label="Exports">The binary — pipes, threads, the fold, the ledger</td></tr>
+<thead>
+<tr>
+  <th>File</th>
+  <th>Depends On</th>
+  <th>Exports</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="File"><code>post.wat</code></td>
+  <td data-label="Depends On">everything above</td>
+  <td data-label="Exports"><code>Post</code> struct + interface</td>
+</tr>
+<tr>
+  <td data-label=""><code>treasury.wat</code></td>
+  <td data-label="">proposal, trade, settlement</td>
+  <td data-label=""><code>Treasury</code> struct + interface</td>
+</tr>
+<tr>
+  <td data-label=""><code>enterprise.wat</code></td>
+  <td data-label="">post, treasury</td>
+  <td data-label=""><code>Enterprise</code> struct + four-step loop</td>
+</tr>
+<tr>
+  <td data-label=""><code>bin/enterprise.wat</code></td>
+  <td data-label="">everything</td>
+  <td data-label="">The binary — pipes, threads, the fold, the ledger</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>The Inscription Rule</h2>
-<blockquote>Each file is inscribed after its dependencies. Each file is judged by the ignorant against the guide before the next is inscribed.</blockquote>
+<blockquote>
+<p>Each file is inscribed after its dependencies. Each file is judged by the ignorant against the guide before the next is inscribed.</p>
+</blockquote>
 <p>This is the project's verification discipline — a form of incremental, dependency-ordered review. No file is written until its inputs exist and have been verified.</p>
-<hr>
+<hr />
 <h2>External Dependencies (from holon-rs)</h2>
 <p>The wat files depend on these holon-rs primitives (not defined in the wat layer):</p>
 <ul>
@@ -250,11 +490,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>Reckoner</code> — learning mechanism (discrete and continuous readout)</li>
 <li><code>OnlineSubspace</code> — noise reduction for reckoners</li>
 </ul>
-<hr>
+<hr />
 <h2>Notes</h2>
 <ul>
-<li>The file lists <code>exit-observer.wat</code>; per CLAUDE.md this was renamed to "position observer" in Proposal 050, but ORDER.md has not been updated.</li>
-<li><code>src/</code> is listed as "(future)" in the reading order — the Rust implementation exists but the ordering document was written before it was complete.</li>
+<li>The file lists <code>exit-observer.wat</code>; per CLAUDE.md this was renamed to &quot;position observer&quot; in Proposal 050, but ORDER.md has not been updated.</li>
+<li><code>src/</code> is listed as &quot;(future)&quot; in the reading order — the Rust implementation exists but the ordering document was written before it was complete.</li>
 <li>The dependency graph is a DAG (directed acyclic graph) — the topological sort from leaves to root ensures no circular dependencies.</li>
 <li>Total: ~40+ wat files across all layers.</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

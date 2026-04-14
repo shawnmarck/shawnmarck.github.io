@@ -126,17 +126,18 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html" active>wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">wat-vm — the training harness <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<hr></div><div class="prose prose-invert max-w-none"><p><strong>Composite wiki page.</strong> Sources: T0-017 (wat-vm + chain types), T0-016 (services/messaging), T1-001 (wat language).</p>
-<hr>
+<p>wat-vm is a standalone Rust binary (846 lines at <code>src/bin/wat-vm.rs</code>) that replays historical candle data through a parallel grid of &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observers&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position observers&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;brokers&lt;/a&gt; so they can learn. It is emphatically <strong>not a live trading system</strong> — its own CLI summary says it best: <em>&quot;Candles in, observers learn, results discarded.&quot;</em> It is the training/learning harness, the &quot;second heartbeat&quot; of the Holon system.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><p><strong>Composite wiki page.</strong> Sources: T0-017 (wat-vm + chain types), T0-016 (services/messaging), T1-001 (wat language).</p>
+<hr />
 <h2>Architecture overview</h2>
-<pre class="mermaid">
-flowchart TD
-    main_thread["Main thread"] -->|"candles"| market_obs["N market observers"]
-    market_obs -->|"fan-out"| position_obs["M position observers"]
-    position_obs -->|"chain"| brokers["N×M brokers"]
-    brokers -.->|"learn signals"| market_obs
-    brokers -.->|"learn signals + Trade updates"| position_obs
-</code></pre>
+<pre class="mermaid">flowchart TD
+    main_thread[&quot;Main thread&quot;] --&gt;|&quot;candles&quot;| market_obs[&quot;N market observers&quot;]
+    market_obs --&gt;|&quot;fan-out&quot;| position_obs[&quot;M position observers&quot;]
+    position_obs --&gt;|&quot;chain&quot;| brokers[&quot;N×M brokers&quot;]
+    brokers -.-&gt;|&quot;learn signals&quot;| market_obs
+    brokers -.-&gt;|&quot;learn signals + Trade updates&quot;| position_obs
+
 <ul>
 <li><strong>N market observers</strong> encode candles into vectors, detect anomalies, predict direction.</li>
 <li><strong>M position observers</strong> combine market signals with position features, compute stop distances.</li>
@@ -144,42 +145,75 @@ flowchart TD
 <li>Default configuration: N=6 market lenses, M=2 position lenses → <strong>23+ threads</strong> for a single stream.</li>
 </ul>
 <h3>Thread budget</h3>
-<p>N + M + (N×M) brokers + database driver + cache driver + console driver. With defaults (6+2+12+3) = <strong>23 threads minimum</strong>. Multiple streams or internal service threads push it higher — the project docs reference "30+ threads."</p>
-<hr>
+<p>N + M + (N×M) brokers + database driver + cache driver + console driver. With defaults (6+2+12+3) = <strong>23 threads minimum</strong>. Multiple streams or internal service threads push it higher — the project docs reference &quot;30+ threads.&quot;</p>
+<hr />
 <h2>CLI interface</h2>
-<pre><code>
-wat-vm --stream SOURCE:TARGET:PATH [--max-candles N] [--dims D] [--recalib-interval R] [--swap-fee F]
+<pre><code>wat-vm --stream SOURCE:TARGET:PATH [--max-candles N] [--dims D] [--recalib-interval R] [--swap-fee F]
 </code></pre>
 <table>
-<thead><tr><th>Flag</th><th>Default</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Flag"><code>--stream</code></td><td data-label="Default">(required, repeatable)</td><td data-label="Purpose"><code>SOURCE:TARGET:PATH</code> — e.g. <code>binance:BTCUSDT:data/btc.csv</code>. Multiple streams processed sequentially.</td></tr>
-<tr><td data-label="Flag"><code>--max-candles</code></td><td data-label="Default">per-stream cap</td><td data-label="Purpose">Each pipeline owns its own limit.</td></tr>
-<tr><td data-label="Flag"><code>--dims</code></td><td data-label="Default">10000</td><td data-label="Purpose">Vector dimension for encodings.</td></tr>
-<tr><td data-label="Flag"><code>--recalib-interval</code></td><td data-label="Default">500</td><td data-label="Purpose">Observations between recalibrations (see <a class="wikilink" href="pg-reckoner.html">Reckoner</a>).</td></tr>
-<tr><td data-label="Flag"><code>--swap-fee</code></td><td data-label="Default">0.0010 (10 bps)</td><td data-label="Purpose">Venue fee fraction.</td></tr>
+<thead>
+<tr>
+  <th>Flag</th>
+  <th>Default</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Flag"><code>--stream</code></td>
+  <td data-label="Default">(required, repeatable)</td>
+  <td data-label="Purpose"><code>SOURCE:TARGET:PATH</code> — e.g. <code>binance:BTCUSDT:data/btc.csv</code>. Multiple streams processed sequentially.</td>
+</tr>
+<tr>
+  <td data-label=""><code>--max-candles</code></td>
+  <td data-label="">per-stream cap</td>
+  <td data-label="">Each pipeline owns its own limit.</td>
+</tr>
+<tr>
+  <td data-label=""><code>--dims</code></td>
+  <td data-label="">10000</td>
+  <td data-label="">Vector dimension for encodings.</td>
+</tr>
+<tr>
+  <td data-label=""><code>--recalib-interval</code></td>
+  <td data-label="">500</td>
+  <td data-label="">Observations between recalibrations (see &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;).</td>
+</tr>
+<tr>
+  <td data-label=""><code>--swap-fee</code></td>
+  <td data-label="">0.0010 (10 bps)</td>
+  <td data-label="">Venue fee fraction.</td>
+</tr>
+</tbody>
 </table>
-<blockquote><strong>Source:</strong> T0-017, "CLI interface" section.</blockquote>
-<hr>
+<blockquote>
+<p><strong>Source:</strong> T0-017, &quot;CLI interface&quot; section.</p>
+</blockquote>
+<hr />
 <h2>Startup sequence</h2>
 <ol>
 <li><strong>Parse args.</strong> Derive observer counts from <code>config::MARKET_LENSES</code> and <code>config::POSITION_LENSES</code>. Compute <code>num_brokers = N×M</code>, <code>noise_floor = 5.0 / sqrt(dims)</code>.</li>
 <li><strong>Console pool.</strong> Create N+M+(N×M)+streams+1 handles. Claim main + stream handles.</li>
-<li><strong>Encoding cache.</strong> <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> + <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> → LRU cache (256K capacity) for <code>ThoughtAST → Vector</code>. Rate-gated telemetry via database sender.</li>
+<li><strong>Database.</strong> SQLite at <code>runs/wat-vm_&lt;timestamp&gt;.db</code>. Unbounded queues merged via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;mailbox&lt;/a&gt;. Batch-insert driver (batch size 100, telemetry every 5s).</li>
+<li><strong>Encoding cache.</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; + &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; → LRU cache (256K capacity) for <code>ThoughtAST → Vector</code>. Rate-gated telemetry via database sender.</li>
 <li><strong>Reserve handle pools.</strong> Pre-allocate console/cache/db handles for position observers and brokers; market observers get whatever remains. Pools assert <code>finish()</code> — orphan detection prevents deadlocks.</li>
+<li><strong>Learn queues.</strong> N×M <code>ObsLearn</code> queues (fan-in to each market observer's &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;mailbox&lt;/a&gt;), M×N <code>PositionLearn</code> queues, N×M <code>TradeUpdate</code> queues.</li>
+<li><strong>Wire market observers.</strong> For each of N: bounded candle input (capacity 1), M bounded fan-out &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; queues, spawn <code>market_observer_program</code>.</li>
 <li><strong>Wire position observers.</strong> Transpose [mi][ei] receiver grid into [ei][mi]. For each of M: build N <code>PositionSlot</code>s, spawn <code>position_observer_program</code>.</li>
 <li><strong>Wire brokers.</strong> Flatten 2D learn-tx grids. For each of N×M: assign output_rx, learn txs, trade tx. Spawn <code>broker_program</code>.</li>
 <li><strong>Build pipelines.</strong> For each <code>--stream</code>: open <code>CandleStream</code>, create <code>IndicatorBank</code>.</li>
 <li><strong>Run main loop.</strong></li>
 <li><strong>Shutdown.</strong></li>
 </ol>
-<blockquote><strong>Source:</strong> T0-017, "Startup sequence (main)" section.</blockquote>
-<hr>
+<blockquote>
+<p><strong>Source:</strong> T0-017, &quot;Startup sequence (main)&quot; section.</p>
+</blockquote>
+<hr />
 <h2>Main loop</h2>
 <p>Per-stream, sequential candle replay:</p>
-<pre><code>
-while count < max && !STOP {
+<pre><code class="language-rust">while count &lt; max &amp;&amp; !STOP {
     let candle = pipeline.stream.next();      // raw OHLCV from file
-    let candle = pipeline.bank.tick(&ohlcv);  // enrich with indicators
+    let candle = pipeline.bank.tick(&amp;ohlcv);  // enrich with indicators
     for each market observer candle_tx:
         send ObsInput { candle, window, encode_count };
     every 100 candles: log throughput;
@@ -188,40 +222,114 @@ while count < max && !STOP {
 <p>Key design choices:</p>
 <ul>
 <li><strong>Fire-and-forget.</strong> The main thread pushes candles to all N market observers and never waits for results. It is the sole candle producer in a push architecture.</li>
-<li><strong><code>ObsInput</code></strong> carries the enriched candle, a window (<code>Arc<Vec<Candle>></code>, currently length 1), and a global monotonic <code>encode_count</code>.</li>
+<li><strong><code>ObsInput</code></strong> carries the enriched candle, a window (<code>Arc&lt;Vec&lt;Candle&gt;&gt;</code>, currently length 1), and a global monotonic <code>encode_count</code>.</li>
 <li><strong><code>IndicatorBank::tick()</code></strong> enriches raw OHLCV into a full <code>Candle</code> struct.</li>
 </ul>
-<blockquote><strong>Source:</strong> T0-017, "The main loop" section.</blockquote>
-<hr>
+<blockquote>
+<p><strong>Source:</strong> T0-017, &quot;The main loop&quot; section.</p>
+</blockquote>
+<hr />
 <h2>Data flow: the chain types</h2>
-<p>The grid communicates through two wire types defined in <code>src/programs/chain.rs</code> (40 lines). The module's design principle: <em>"Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire."</em></p>
-<h3><a class="wikilink" href="pg-chain-types.html">MarketChain</a> (Clone)</h3>
+<p>The grid communicates through two wire types defined in <code>src/programs/chain.rs</code> (40 lines). The module's design principle: <em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em></p>
+<h3>&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; (Clone)</h3>
+<p>Produced by market observers, consumed by position observers via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; fan-out.</p>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Field"><code>candle</code></td><td data-label="Type"><code>Candle</code></td><td data-label="Meaning">Enriched candle</td></tr>
-<tr><td data-label="Field"><code>window</code></td><td data-label="Type"><code>Arc<Vec<Candle>></code></td><td data-label="Meaning">Recent candles (currently length 1)</td></tr>
-<tr><td data-label="Field"><code>encode_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Meaning">Global monotonic counter</td></tr>
-<tr><td data-label="Field"><code>market_raw</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Raw encoding of market features</td></tr>
-<tr><td data-label="Field"><code>market_anomaly</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Deviation from noise subspace</td></tr>
-<tr><td data-label="Field"><code>market_ast</code></td><td data-label="Type"><code>ThoughtAST</code></td><td data-label="Meaning">The <a class="wikilink" href="pg-thought-system.html">AST</a> that was encoded</td></tr>
-<tr><td data-label="Field"><code>prediction</code></td><td data-label="Type"><code>Prediction</code></td><td data-label="Meaning">Direction (Up/Down)</td></tr>
-<tr><td data-label="Field"><code>edge</code></td><td data-label="Type"><code>f64</code></td><td data-label="Meaning">Confidence score</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>candle</code></td>
+  <td data-label="Type"><code>Candle</code></td>
+  <td data-label="Meaning">Enriched candle</td>
+</tr>
+<tr>
+  <td data-label=""><code>window</code></td>
+  <td data-label=""><code>Arc&lt;Vec&lt;Candle&gt;&gt;</code></td>
+  <td data-label="">Recent candles (currently length 1)</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Global monotonic counter</td>
+</tr>
+<tr>
+  <td data-label=""><code>market_raw</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Raw encoding of market features</td>
+</tr>
+<tr>
+  <td data-label=""><code>market_anomaly</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Deviation from noise subspace</td>
+</tr>
+<tr>
+  <td data-label=""><code>market_ast</code></td>
+  <td data-label=""><code>ThoughtAST</code></td>
+  <td data-label="">The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;AST&lt;/a&gt; that was encoded</td>
+</tr>
+<tr>
+  <td data-label=""><code>prediction</code></td>
+  <td data-label=""><code>Prediction</code></td>
+  <td data-label="">Direction (Up/Down)</td>
+</tr>
+<tr>
+  <td data-label=""><code>edge</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Confidence score</td>
+</tr>
+</tbody>
 </table>
-<h3><a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> (not Clone)</h3>
+<h3>&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; (not Clone)</h3>
+<p>Produced by position observers, consumed by brokers via unbounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;queues&lt;/a&gt;. <strong>Flattens</strong> all <code>MarketChain</code> fields (duplicated, not borrowed — self-contained, no shared references) and adds position-specific fields:</p>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Field"><code>position_raw</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Position observer's raw encoding</td></tr>
-<tr><td data-label="Field"><code>position_anomaly</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Position observer's anomaly</td></tr>
-<tr><td data-label="Field"><code>position_ast</code></td><td data-label="Type"><code>ThoughtAST</code></td><td data-label="Meaning">Position observer's AST</td></tr>
-<tr><td data-label="Field"><code>position_distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Meaning">Trailing stop and safety stop distances</td></tr>
-<tr><td data-label="Field"><em>(all MarketChain fields)</em></td><td data-label="Type"><em>(duplicated)</em></td><td data-label="Meaning">Renamed: <code>prediction→market_prediction</code>, <code>edge→market_edge</code></td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>position_raw</code></td>
+  <td data-label="Type"><code>Vector</code></td>
+  <td data-label="Meaning">Position observer's raw encoding</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_anomaly</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Position observer's anomaly</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_ast</code></td>
+  <td data-label=""><code>ThoughtAST</code></td>
+  <td data-label="">Position observer's AST</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label="">Trailing stop and safety stop distances</td>
+</tr>
+<tr>
+  <td data-label=""><em>(all MarketChain fields)</em></td>
+  <td data-label=""><em>(duplicated)</em></td>
+  <td data-label="">Renamed: <code>prediction→market_prediction</code>, <code>edge→market_edge</code></td>
+</tr>
+</tbody>
 </table>
-<p>The deliberate lack of <code>Clone</code> and reference-free layout makes this struct large but ownership-simple — a "values on the wire" design.</p>
-<blockquote><strong>Source:</strong> T0-017, "Chain types" section.</blockquote>
-<hr>
+<p>The deliberate lack of <code>Clone</code> and reference-free layout makes this struct large but ownership-simple — a &quot;values on the wire&quot; design.</p>
+<blockquote>
+<p><strong>Source:</strong> T0-017, &quot;Chain types&quot; section.</p>
+</blockquote>
+<hr />
 <h2>Signal handling</h2>
 <p>A single <code>static AtomicBool</code> named <code>STOP</code>. A C signal handler (via <code>libc::signal</code>) sets it on <code>SIGINT</code>/<code>SIGTERM</code>. The main loop reads it each iteration. Nothing else touches it. Simple, correct, no async machinery.</p>
-<hr>
+<hr />
 <h2>Shutdown sequence</h2>
 <p>Ordered teardown — critical for correctness:</p>
 <ol>
@@ -234,36 +342,69 @@ while count < max && !STOP {
 <li>Print cache summary (hits/misses/rate).</li>
 <li><strong>Drop stream handles. Join cache driver</strong> (must join before db — its emit closure holds a <code>db_tx</code>). Join db driver. Drop main handle. Join console driver.</li>
 </ol>
-<blockquote><strong>Source:</strong> T0-017, "Shutdown sequence" section.</blockquote>
-<hr>
+<blockquote>
+<p><strong>Source:</strong> T0-017, &quot;Shutdown sequence&quot; section.</p>
+</blockquote>
+<hr />
 <h2>Messaging primitives</h2>
 <p>Three primitives, zero <code>Mutex</code>. All built on <code>crossbeam::channel</code>. Concurrency through message passing alone.</p>
 <table>
-<thead><tr><th>Primitive</th><th>Pattern</th><th>Mechanism</th><th>Mutex?</th></tr></thead>
-<tr><td data-label="Primitive"><a class="wikilink" href="pg-services.html">Queue</a> (bounded/unbounded)</td><td data-label="Pattern">1→1 point-to-point</td><td data-label="Mechanism"><code>crossbeam::channel</code></td><td data-label="Mutex?">No</td></tr>
-<tr><td data-label="Primitive"><a class="wikilink" href="pg-services.html">Topic</a></td><td data-label="Pattern">1→N fan-out</td><td data-label="Mechanism">Bounded input → spawned thread → <code>clone()</code> to N output queues</td><td data-label="Mutex?">No</td></tr>
-<tr><td data-label="Primitive"><a class="wikilink" href="pg-services.html">Mailbox</a></td><td data-label="Pattern">N→1 fan-in</td><td data-label="Mechanism">Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output</td><td data-label="Mutex?">No</td></tr>
+<thead>
+<tr>
+  <th>Primitive</th>
+  <th>Pattern</th>
+  <th>Mechanism</th>
+  <th>Mutex?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Primitive">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; (bounded/unbounded)</td>
+  <td data-label="Pattern">1→1 point-to-point</td>
+  <td data-label="Mechanism"><code>crossbeam::channel</code></td>
+  <td data-label="Mutex?">No</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;</td>
+  <td data-label="">1→N fan-out</td>
+  <td data-label="">Bounded input → spawned thread → <code>clone()</code> to N output queues</td>
+  <td data-label="">No</td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt;</td>
+  <td data-label="">N→1 fan-in</td>
+  <td data-label="">Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output</td>
+  <td data-label="">No</td>
+</tr>
+</tbody>
 </table>
 <ul>
 <li><strong>Backpressure:</strong> Topics use bounded sends — one slow subscriber stalls all. Intentional.</li>
 <li><strong>Partial disconnect:</strong> Mailbox continues receiving from living producers until <em>all</em> disconnect.</li>
 <li><strong>Shutdown by disconnection:</strong> Dropping a sender/receiver propagates as a <code>Disconnected</code> error. No explicit coordination flags.</li>
 </ul>
-<blockquote><strong>Source:</strong> T0-016, "Services (Rust) — Verification."</blockquote>
-<hr>
+<blockquote>
+<p><strong>Source:</strong> T0-016, &quot;Services (Rust) — Verification.&quot;</p>
+</blockquote>
+<hr />
+<h2>Relationship to &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;the wat language&lt;/a&gt;</h2>
+<p>wat-vm is implemented in Rust but its architecture is specified in &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat&lt;/a&gt;:</p>
 <ul>
-<li><strong>Concurrency forms</strong> in wat (<code>make-pipe</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>, <code>select</code>) map directly to the Rust <a class="wikilink" href="pg-services.html">Queue</a>, <a class="wikilink" href="pg-services.html">Topic</a>, and threading patterns used by wat-vm. The wat spec states: <em>"No defpipe. No defprocess. Pipes are values. Topics are values. Processes are functions."</em></li>
+<li><strong>Concurrency forms</strong> in wat (<code>make-pipe</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>, <code>select</code>) map directly to the Rust &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;, and threading patterns used by wat-vm. The wat spec states: <em>&quot;No defpipe. No defprocess. Pipes are values. Topics are values. Processes are functions.&quot;</em></li>
 <li><strong>The reckoner coalgebra</strong> (wat's learning construct: <code>observe</code>, <code>predict</code>, <code>resolve</code>, <code>edge-at</code>, <code>proven?</code>) is the learning engine that the observers and brokers run inside their program threads.</li>
 <li><strong>Structural forms</strong> (<code>struct</code>, <code>update</code>, <code>defprotocol</code>) define the chain types and observer/broker records.</li>
-<li>wat is <em>"not interpreted at runtime"</em> — it specifies Rust implementations. wat-vm is one of those implementations.</li>
+<li>wat is <em>&quot;not interpreted at runtime&quot;</em> — it specifies Rust implementations. wat-vm is one of those implementations.</li>
 </ul>
-<blockquote><strong>Source:</strong> T1-001, "The wat Language — forms, evaluation, and structural types."</blockquote>
-<hr>
+<blockquote>
+<p><strong>Source:</strong> T1-001, &quot;The wat Language — forms, evaluation, and structural types.&quot;</p>
+</blockquote>
+<hr />
 <h2>Design principles distilled</h2>
 <ol>
 <li><strong>Push architecture.</strong> Main thread is the sole candle producer. Fire-and-forget to all observers.</li>
 <li><strong>Ownership over locking.</strong> Zero <code>Mutex</code>. All concurrency through channel message passing.</li>
 <li><strong>Type-is-proof chain stages.</strong> <code>MarketChain</code> and <code>MarketPositionChain</code> are pure data structs. The type name documents which stage produced it.</li>
 <li><strong>Graceful ordered shutdown.</strong> Teardown follows the dependency graph. Pools assert all handles claimed (orphan detection).</li>
-<li><strong>Training only.</strong> Results are logged but discarded. No order routing, no live execution. <em>"Candles in, observers learn, results discarded."</em></li>
-</ol></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<li><strong>Training only.</strong> Results are logged but discarded. No order routing, no live execution. <em>&quot;Candles in, observers learn, results discarded.&quot;</em></li>
+</ol>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

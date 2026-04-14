@@ -125,115 +125,248 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-015 — PaperEntry (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines)</p>
-<p><strong>Method:</strong> Context-free ignorant — read only the file and its immediate type dependencies.</p>
-<p><strong>Derived from:</strong> <code>wat/paper-entry.wat</code></p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-015 — PaperEntry (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines)
+<strong>Method:</strong> Context-free ignorant — read only the file and its immediate type dependencies.
+<strong>Derived from:</strong> <code>wat/paper-entry.wat</code></p>
+<hr />
 <h2>What is a PaperEntry</h2>
-<p>A hypothetical ("paper") trade inside a broker. It does not execute. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct. Two triggers govern its lifecycle:</p>
+<p>A hypothetical (&quot;paper&quot;) trade inside a broker. It does not execute. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct. Two triggers govern its lifecycle:</p>
 <ul>
 <li><strong>Trail (Grace):</strong> A trailing stop that follows the best price in the predicted direction. Signals confirmation that the prediction was right.</li>
 <li><strong>Stop (Violence):</strong> A fixed stop loss for capital protection. Signals the prediction was wrong.</li>
 </ul>
-<hr>
+<hr />
 <h2>Fields</h2>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>paper_id</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Unique identifier assigned by the broker.</td></tr>
-<tr><td data-label="Field"><code>composed_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">The composed thought at entry (market + position combined).</td></tr>
-<tr><td data-label="Field"><code>market_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Raw market thought (for market observer learning at resolution).</td></tr>
-<tr><td data-label="Field"><code>position_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Position observer's own encoded facts (for position observer learning at resolution). Proposal 026: position learns from <code>position_thought</code>, not <code>composed_thought</code>.</td></tr>
-<tr><td data-label="Field"><code>prediction</code></td><td data-label="Type"><code>Direction</code></td><td data-label="Purpose"><code>Up</code> or <code>Down</code> — what the market observer predicted.</td></tr>
-<tr><td data-label="Field"><code>entry_price</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Price at creation.</td></tr>
-<tr><td data-label="Field"><code>distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Purpose"><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td></tr>
-<tr><td data-label="Field"><code>extreme</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose">Best price in the predicted direction seen so far. Starts at entry. Monotonically favorable (higher for Up, lower for Down).</td></tr>
-<tr><td data-label="Field"><code>trail_level</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Trailing stop level. Follows <code>extreme</code> with <code>trail</code> gap. Starts at entry price.</td></tr>
-<tr><td data-label="Field"><code>stop_level</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Fixed stop loss. Set at creation: <code>entry ± entry * stop</code>. Never moves.</td></tr>
-<tr><td data-label="Field"><code>signaled</code></td><td data-label="Type"><code>bool</code></td><td data-label="Purpose">Has the trail trigger crossed (Grace signal sent)?</td></tr>
-<tr><td data-label="Field"><code>resolved</code></td><td data-label="Type"><code>bool</code></td><td data-label="Purpose">Has any trigger fired (paper is done)?</td></tr>
-<tr><td data-label="Field"><code>age</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">How many <code>tick()</code> calls this paper has survived.</td></tr>
-<tr><td data-label="Field"><code>entry_candle</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Candle number at creation (for phase biography).</td></tr>
-<tr><td data-label="Field"><code>price_history</code></td><td data-label="Type"><code>Vec<f64></code></td><td data-label="Purpose">Every tick's price, starting with entry price.</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>paper_id</code></td>
+  <td data-label="Type"><code>usize</code></td>
+  <td data-label="Purpose">Unique identifier assigned by the broker.</td>
+</tr>
+<tr>
+  <td data-label=""><code>composed_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">The composed thought at entry (market + position combined).</td>
+</tr>
+<tr>
+  <td data-label=""><code>market_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Raw market thought (for market observer learning at resolution).</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Position observer's own encoded facts (for position observer learning at resolution). Proposal 026: position learns from <code>position_thought</code>, not <code>composed_thought</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>prediction</code></td>
+  <td data-label=""><code>Direction</code></td>
+  <td data-label=""><code>Up</code> or <code>Down</code> — what the market observer predicted.</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_price</code></td>
+  <td data-label=""><code>Price</code></td>
+  <td data-label="">Price at creation.</td>
+</tr>
+<tr>
+  <td data-label=""><code>distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label=""><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td>
+</tr>
+<tr>
+  <td data-label=""><code>extreme</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Best price in the predicted direction seen so far. Starts at entry. Monotonically favorable (higher for Up, lower for Down).</td>
+</tr>
+<tr>
+  <td data-label=""><code>trail_level</code></td>
+  <td data-label=""><code>Price</code></td>
+  <td data-label="">Trailing stop level. Follows <code>extreme</code> with <code>trail</code> gap. Starts at entry price.</td>
+</tr>
+<tr>
+  <td data-label=""><code>stop_level</code></td>
+  <td data-label=""><code>Price</code></td>
+  <td data-label="">Fixed stop loss. Set at creation: <code>entry ± entry * stop</code>. Never moves.</td>
+</tr>
+<tr>
+  <td data-label=""><code>signaled</code></td>
+  <td data-label=""><code>bool</code></td>
+  <td data-label="">Has the trail trigger crossed (Grace signal sent)?</td>
+</tr>
+<tr>
+  <td data-label=""><code>resolved</code></td>
+  <td data-label=""><code>bool</code></td>
+  <td data-label="">Has any trigger fired (paper is done)?</td>
+</tr>
+<tr>
+  <td data-label=""><code>age</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">How many <code>tick()</code> calls this paper has survived.</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_candle</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Candle number at creation (for phase biography).</td>
+</tr>
+<tr>
+  <td data-label=""><code>price_history</code></td>
+  <td data-label=""><code>Vec&lt;f64&gt;</code></td>
+  <td data-label="">Every tick's price, starting with entry price.</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Construction (<code>new</code>)</h2>
 <p>Takes: <code>paper_id</code>, three thoughts (<code>composed</code>, <code>market</code>, <code>position</code>), <code>prediction</code>, <code>entry_price</code>, <code>distances</code>, <code>entry_candle</code>.</p>
 <p>Initial state:</p>
 <ul>
 <li><code>extreme</code> = entry price.</li>
 <li><code>trail_level</code> = entry price (for both directions).</li>
-<li><code>stop_level</code>:</li>
+<li><code>stop_level</code>:<ul>
 <li>Up: <code>entry - entry * distances.stop</code> (below entry).</li>
 <li>Down: <code>entry + entry * distances.stop</code> (above entry).</li>
+</ul>
+</li>
 <li><code>signaled = false</code>, <code>resolved = false</code>, <code>age = 0</code>.</li>
 <li><code>price_history = vec![entry_price]</code>.</li>
 </ul>
-<hr>
-<h2><code>tick(&mut self, current_price: f64)</code></h2>
+<hr />
+<h2><code>tick(&amp;mut self, current_price: f64)</code></h2>
 <p>No-op if already resolved. Otherwise increments <code>age</code>, appends price to <code>price_history</code>, then branches on direction.</p>
 <h3>Direction::Up</h3>
 <ol>
-<li><strong>Update extreme:</strong> If <code>current_price > extreme</code>, set <code>extreme = current_price</code>.</li>
-<li><strong>Update trail:</strong> Compute <code>new_trail = extreme - extreme * distances.trail</code>. If <code>new_trail > trail_level</code>, advance it (trail only ratchets in the favorable direction).</li>
-<li><strong>Check stop (Violence):</strong> If <code>current_price <= stop_level</code> → <code>resolved = true</code>, return immediately.</li>
-<li><strong>Check Grace signal:</strong> If <code>extreme >= entry + entry * distances.trail</code> → <code>signaled = true</code>.</li>
-<li><strong>Check trail fire:</strong> If <code>signaled && current_price <= trail_level</code> → <code>resolved = true</code>.</li>
+<li><strong>Update extreme:</strong> If <code>current_price &gt; extreme</code>, set <code>extreme = current_price</code>.</li>
+<li><strong>Update trail:</strong> Compute <code>new_trail = extreme - extreme * distances.trail</code>. If <code>new_trail &gt; trail_level</code>, advance it (trail only ratchets in the favorable direction).</li>
+<li><strong>Check stop (Violence):</strong> If <code>current_price &lt;= stop_level</code> → <code>resolved = true</code>, return immediately.</li>
+<li><strong>Check Grace signal:</strong> If <code>extreme &gt;= entry + entry * distances.trail</code> → <code>signaled = true</code>.</li>
+<li><strong>Check trail fire:</strong> If <code>signaled &amp;&amp; current_price &lt;= trail_level</code> → <code>resolved = true</code>.</li>
 </ol>
 <h3>Direction::Down (mirror)</h3>
 <ol>
-<li><strong>Update extreme:</strong> If <code>current_price < extreme</code>, set <code>extreme = current_price</code>.</li>
-<li><strong>Update trail:</strong> <code>new_trail = extreme + extreme * distances.trail</code>. If <code>new_trail < trail_level</code>, advance it.</li>
-<li><strong>Check stop (Violence):</strong> If <code>current_price >= stop_level</code> → <code>resolved = true</code>, return immediately.</li>
-<li><strong>Check Grace signal:</strong> If <code>extreme <= entry - entry * distances.trail</code> → <code>signaled = true</code>.</li>
-<li><strong>Check trail fire:</strong> If <code>signaled && current_price >= trail_level</code> → <code>resolved = true</code>.</li>
+<li><strong>Update extreme:</strong> If <code>current_price &lt; extreme</code>, set <code>extreme = current_price</code>.</li>
+<li><strong>Update trail:</strong> <code>new_trail = extreme + extreme * distances.trail</code>. If <code>new_trail &lt; trail_level</code>, advance it.</li>
+<li><strong>Check stop (Violence):</strong> If <code>current_price &gt;= stop_level</code> → <code>resolved = true</code>, return immediately.</li>
+<li><strong>Check Grace signal:</strong> If <code>extreme &lt;= entry - entry * distances.trail</code> → <code>signaled = true</code>.</li>
+<li><strong>Check trail fire:</strong> If <code>signaled &amp;&amp; current_price &gt;= trail_level</code> → <code>resolved = true</code>.</li>
 </ol>
 <p><strong>Key ordering:</strong> Stop (Violence) is checked <em>before</em> Grace signal. If both would fire on the same tick, Violence wins (the <code>return</code> after stop check prevents Grace from being set). This means a price that simultaneously hits the stop and the trail-cross threshold is classified as Violence, not Grace.</p>
-<hr>
+<hr />
 <h2>Resolution Classifications</h2>
 <table>
-<thead><tr><th>Method</th><th>Condition</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Method"><code>is_grace()</code></td><td data-label="Condition"><code>signaled</code> (regardless of resolved)</td><td data-label="Meaning">Market confirmed the prediction. Trail crossed at some point.</td></tr>
-<tr><td data-label="Method"><code>is_violence()</code></td><td data-label="Condition"><code>resolved && !signaled</code></td><td data-label="Meaning">Stop fired before trail ever crossed. Prediction was wrong.</td></tr>
-<tr><td data-label="Method"><code>is_runner()</code></td><td data-label="Condition"><code>signaled && !resolved</code></td><td data-label="Meaning">Trail crossed, still running. Not yet resolved.</td></tr>
+<thead>
+<tr>
+  <th>Method</th>
+  <th>Condition</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Method"><code>is_grace()</code></td>
+  <td data-label="Condition"><code>signaled</code> (regardless of resolved)</td>
+  <td data-label="Meaning">Market confirmed the prediction. Trail crossed at some point.</td>
+</tr>
+<tr>
+  <td data-label=""><code>is_violence()</code></td>
+  <td data-label=""><code>resolved &amp;&amp; !signaled</code></td>
+  <td data-label="">Stop fired before trail ever crossed. Prediction was wrong.</td>
+</tr>
+<tr>
+  <td data-label=""><code>is_runner()</code></td>
+  <td data-label=""><code>signaled &amp;&amp; !resolved</code></td>
+  <td data-label="">Trail crossed, still running. Not yet resolved.</td>
+</tr>
+</tbody>
 </table>
 <p>These three are not mutually exhaustive across all states but are mutually exclusive in any given state:</p>
 <ul>
 <li>Unsignaled and unresolved: none of the three return true.</li>
 <li>Signaled and resolved: <code>is_grace() = true</code> but <code>is_violence() = false</code> and <code>is_runner() = false</code>.</li>
 </ul>
-<hr>
-<h2><code>excursion() -> f64</code></h2>
+<hr />
+<h2><code>excursion() -&gt; f64</code></h2>
 <p>How far price moved in the predicted direction, as a fraction of entry.</p>
 <ul>
 <li>Up: <code>(extreme - entry) / entry</code></li>
 <li>Down: <code>(entry - extreme) / entry</code></li>
 </ul>
 <p>Always ≥ 0 by construction (extreme only moves favorably). Zero at creation.</p>
-<hr>
+<hr />
 <h2>Tests (12 total)</h2>
 <p>All tests use <code>Distances::new(0.05, 0.10)</code> (trail=5%, stop=10%) and <code>Price(100.0)</code> unless noted.</p>
 <table>
-<thead><tr><th>Test</th><th>What it verifies</th></tr></thead>
-<tr><td data-label="Test"><code>test_paper_entry_new_up</code></td><td data-label="What it verifies">Up construction: stop=90, trail=100, not signaled, not resolved.</td></tr>
-<tr><td data-label="Test"><code>test_paper_entry_new_down</code></td><td data-label="What it verifies">Down construction: stop=110, trail=100.</td></tr>
-<tr><td data-label="Test"><code>test_tick_up_grace_signal</code></td><td data-label="What it verifies">Price 106 → extreme=106, signaled=true, not resolved. <code>is_runner()=true</code>.</td></tr>
-<tr><td data-label="Test"><code>test_tick_up_violence</code></td><td data-label="What it verifies">Price 89 (≤ stop 90) → resolved, not signaled. <code>is_violence()=true</code>.</td></tr>
-<tr><td data-label="Test"><code>test_tick_up_runner_then_resolved</code></td><td data-label="What it verifies">Price 110 (signaled, trail=104.5), then 104 (≤ trail) → resolved. <code>is_violence()=false</code>.</td></tr>
-<tr><td data-label="Test"><code>test_tick_down_grace_signal</code></td><td data-label="What it verifies">Price 94 → signaled=true, not resolved. <code>is_runner()=true</code>.</td></tr>
-<tr><td data-label="Test"><code>test_tick_down_violence</code></td><td data-label="What it verifies">Price 111 (≥ stop 110) → resolved, not signaled. <code>is_violence()=true</code>.</td></tr>
-<tr><td data-label="Test"><code>test_tick_down_runner_then_resolved</code></td><td data-label="What it verifies">Price 90 (signaled, trail=94.5), then 95 (≥ trail) → resolved.</td></tr>
-<tr><td data-label="Test"><code>test_excursion_up</code></td><td data-label="What it verifies">Price 110 on Up entry 100 → excursion = 0.10.</td></tr>
-<tr><td data-label="Test"><code>test_excursion_down</code></td><td data-label="What it verifies">Price 90 on Down entry 100 → excursion = 0.10.</td></tr>
-<tr><td data-label="Test"><code>test_resolved_stops_tracking</code></td><td data-label="What it verifies">After violence at 89, tick(120.0) does not update extreme.</td></tr>
-<tr><td data-label="Test"><code>test_initial_excursion_zero</code></td><td data-label="What it verifies">New paper → excursion = 0.0.</td></tr>
+<thead>
+<tr>
+  <th>Test</th>
+  <th>What it verifies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Test"><code>test_paper_entry_new_up</code></td>
+  <td data-label="What it verifies">Up construction: stop=90, trail=100, not signaled, not resolved.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_paper_entry_new_down</code></td>
+  <td data-label="">Down construction: stop=110, trail=100.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_up_grace_signal</code></td>
+  <td data-label="">Price 106 → extreme=106, signaled=true, not resolved. <code>is_runner()=true</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_up_violence</code></td>
+  <td data-label="">Price 89 (≤ stop 90) → resolved, not signaled. <code>is_violence()=true</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_up_runner_then_resolved</code></td>
+  <td data-label="">Price 110 (signaled, trail=104.5), then 104 (≤ trail) → resolved. <code>is_violence()=false</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_down_grace_signal</code></td>
+  <td data-label="">Price 94 → signaled=true, not resolved. <code>is_runner()=true</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_down_violence</code></td>
+  <td data-label="">Price 111 (≥ stop 110) → resolved, not signaled. <code>is_violence()=true</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_down_runner_then_resolved</code></td>
+  <td data-label="">Price 90 (signaled, trail=94.5), then 95 (≥ trail) → resolved.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_excursion_up</code></td>
+  <td data-label="">Price 110 on Up entry 100 → excursion = 0.10.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_excursion_down</code></td>
+  <td data-label="">Price 90 on Down entry 100 → excursion = 0.10.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_resolved_stops_tracking</code></td>
+  <td data-label="">After violence at 89, tick(120.0) does not update extreme.</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_initial_excursion_zero</code></td>
+  <td data-label="">New paper → excursion = 0.0.</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Lifecycle Summary</h2>
-<pre class="mermaid">
-flowchart TD
-    created["Created"] -->|"tick() — price moves against prediction\nhits stop"| violence["Violence\n(resolved, never signaled)"]
-    created -->|"tick() — price moves in predicted direction\nfar enough to cross trail threshold"| runner["signaled = true\nnow a Runner"]
-    runner -->|"price reverses\ncrosses trailing stop"| grace["resolved = true\n(Grace resolution — was signaled)"]
-    runner -->|"price continues favorably"| ratchet["extreme/trail ratchet\nkeeps running"]
-    created -->|"price never moves enough\nin either direction"| open["stays open indefinitely\n(neither signaled nor resolved)"]
-</code></pre></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<pre class="mermaid">flowchart TD
+    created[&quot;Created&quot;] --&gt;|&quot;tick() — price moves against prediction\nhits stop&quot;| violence[&quot;Violence\n(resolved, never signaled)&quot;]
+    created --&gt;|&quot;tick() — price moves in predicted direction\nfar enough to cross trail threshold&quot;| runner[&quot;signaled = true\nnow a Runner&quot;]
+    runner --&gt;|&quot;price reverses\ncrosses trailing stop&quot;| grace[&quot;resolved = true\n(Grace resolution — was signaled)&quot;]
+    runner --&gt;|&quot;price continues favorably&quot;| ratchet[&quot;extreme/trail ratchet\nkeeps running&quot;]
+    created --&gt;|&quot;price never moves enough\nin either direction&quot;| open[&quot;stays open indefinitely\n(neither signaled nor resolved)&quot;]
+
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

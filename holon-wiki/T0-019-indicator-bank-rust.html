@@ -126,31 +126,29 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-019: indicator_bank.rs — Verified Documentation <span class="badge badge-what">WHAT</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p><code>IndicatorBank</code> is a stateful, streaming technical indicator engine. One instance per asset pair ("post"). Each call to <code>tick(&Ohlcv) → Candle</code> advances all internal state machines by one raw candle and returns an enriched <code>Candle</code> struct carrying ~65 computed indicator fields. These enriched candles are the sole input to the encoding pipeline (<code>ThoughtEncoder</code>). The file is self-contained at 2363 lines: streaming primitives, helper functions, the composed bank, and ~400 lines of tests.</p>
-<hr></div><div class="prose prose-invert max-w-none"><h2>File Location</h2>
-<pre><code>
-src/domain/indicator_bank.rs  (2363 lines, 72KB)
+<p><code>IndicatorBank</code> is a stateful, streaming technical indicator engine. One instance per asset pair (&quot;post&quot;). Each call to <code>tick(&amp;Ohlcv) → Candle</code> advances all internal state machines by one raw candle and returns an enriched <code>Candle</code> struct carrying ~65 computed indicator fields. These enriched candles are the sole input to the encoding pipeline (<code>ThoughtEncoder</code>). The file is self-contained at 2363 lines: streaming primitives, helper functions, the composed bank, and ~400 lines of tests.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>File Location</h2>
+<pre><code>src/domain/indicator_bank.rs  (2363 lines, 72KB)
 </code></pre>
-<p>Origin note from the file header: "Compiled from <code>wat/indicator-bank.wat</code> — the tick contract."</p>
-<hr>
+<p>Origin note from the file header: &quot;Compiled from <code>wat/indicator-bank.wat</code> — the tick contract.&quot;</p>
+<hr />
 <h2>Architecture Overview</h2>
-<pre><code>
-Ohlcv (raw) ──► IndicatorBank.tick() ──► Candle (enriched)
+<pre><code>Ohlcv (raw) ──► IndicatorBank.tick() ──► Candle (enriched)
                                             │
                                             ▼
                                      ThoughtEncoder
                                      (encoding pipeline)
 </code></pre>
 <p>One <code>IndicatorBank</code> per post (per asset pair). Stateful. Not thread-safe — accessed sequentially.</p>
-<p><strong>Upstream:</strong> <code>Ohlcv</code> from <code>types::ohlcv</code> (raw OHLCV + asset pair + timestamp).</p>
-<p><strong>Downstream:</strong> <code>Candle</code> from <code>types::candle</code> (raw fields preserved + ~65 computed indicator <code>f64</code>s + phase label fields).</p>
-<hr>
+<p><strong>Upstream:</strong> <code>Ohlcv</code> from <code>types::ohlcv</code> (raw OHLCV + asset pair + timestamp).
+<strong>Downstream:</strong> <code>Candle</code> from <code>types::candle</code> (raw fields preserved + ~65 computed indicator <code>f64</code>s + phase label fields).</p>
+<hr />
 <h2>Streaming Primitives (Lines 1–535)</h2>
 <p>These are the building blocks. All stateful. All <code>Clone + Debug</code>.</p>
 <h3>RingBuffer (line 19)</h3>
-<pre><code>
-pub struct RingBuffer {
-    pub data: Vec<f64>,
+<pre><code class="language-rust">pub struct RingBuffer {
+    pub data: Vec&lt;f64&gt;,
     pub capacity: usize,
     pub head: usize,
     pub len: usize,
@@ -158,8 +156,7 @@ pub struct RingBuffer {
 </code></pre>
 <p>Fixed-capacity circular buffer. <code>get(ago)</code> indexes backward from most recent (ago=0 = newest). <code>fill_vec</code> reuses caller's allocation to avoid heap churn inside <code>tick()</code>.</p>
 <h3>EmaState (line 108)</h3>
-<pre><code>
-pub struct EmaState {
+<pre><code class="language-rust">pub struct EmaState {
     pub value: f64,
     pub smoothing: f64,   // 2/(period+1)
     pub period: usize,
@@ -167,10 +164,9 @@ pub struct EmaState {
     pub accum: f64,
 }
 </code></pre>
-<p>Exponential moving average. Seeds with SMA for the first <code>period</code> values, then switches to standard EMA formula. <code>ready()</code> when <code>count >= period</code>.</p>
+<p>Exponential moving average. Seeds with SMA for the first <code>period</code> values, then switches to standard EMA formula. <code>ready()</code> when <code>count &gt;= period</code>.</p>
 <h3>WilderState (line 148)</h3>
-<pre><code>
-pub struct WilderState {
+<pre><code class="language-rust">pub struct WilderState {
     pub value: f64,
     pub period: usize,
     pub count: usize,
@@ -179,16 +175,14 @@ pub struct WilderState {
 </code></pre>
 <p>Wilder's smoothing (<code>value = new/p + value*(p-1)/p</code>). Used by RSI, ATR, DMI. Same seed-with-SMA pattern.</p>
 <h3>SmaState (line 187)</h3>
-<pre><code>
-pub struct SmaState {
+<pre><code class="language-rust">pub struct SmaState {
     pub buffer: RingBuffer,
     pub sum: f64,
 }
 </code></pre>
 <p>Simple moving average over a <code>RingBuffer</code>. O(1) update via running sum. <code>ready()</code> when buffer is full.</p>
 <h3>RollingStddev (line 225)</h3>
-<pre><code>
-pub struct RollingStddev {
+<pre><code class="language-rust">pub struct RollingStddev {
     pub buffer: RingBuffer,
     pub sum: f64,
     pub sum_sq: f64,
@@ -196,8 +190,7 @@ pub struct RollingStddev {
 </code></pre>
 <p>Population standard deviation. O(1) update via running <code>sum</code> and <code>sum_sq</code>. Clamps variance to ≥0 before sqrt.</p>
 <h3>RsiState (line 270)</h3>
-<pre><code>
-pub struct RsiState {
+<pre><code class="language-rust">pub struct RsiState {
     pub gain_smoother: WilderState,
     pub loss_smoother: WilderState,
     pub prev_close: f64,
@@ -206,8 +199,7 @@ pub struct RsiState {
 </code></pre>
 <p>Wilder-smoothed RSI (default period 14). First candle seeds <code>prev_close</code> without computing change. <code>value()</code> returns 100 when avg_loss=0.</p>
 <h3>AtrState (line 319)</h3>
-<pre><code>
-pub struct AtrState {
+<pre><code class="language-rust">pub struct AtrState {
     pub wilder: WilderState,
     pub prev_close: f64,
     pub started: bool,
@@ -215,8 +207,7 @@ pub struct AtrState {
 </code></pre>
 <p>Wilder-smoothed true range. First candle uses <code>high - low</code> only (no gap component).</p>
 <h3>ObvState (line 360)</h3>
-<pre><code>
-pub struct ObvState {
+<pre><code class="language-rust">pub struct ObvState {
     pub obv: f64,
     pub prev_close: f64,
     pub history: RingBuffer,  // history_len=12
@@ -225,8 +216,7 @@ pub struct ObvState {
 </code></pre>
 <p>Cumulative on-balance volume. <code>history</code> buffer retains last N OBV values for slope computation.</p>
 <h3>MacdState (line 395)</h3>
-<pre><code>
-pub struct MacdState {
+<pre><code class="language-rust">pub struct MacdState {
     pub fast_ema: EmaState,    // period 12
     pub slow_ema: EmaState,    // period 26
     pub signal_ema: EmaState,  // period 9
@@ -234,8 +224,7 @@ pub struct MacdState {
 </code></pre>
 <p>MACD. Signal EMA only starts updating once both fast and slow EMAs are ready. <code>ready()</code> requires slow_ema (26 bars) + signal_ema (9 more bars) = ~35 bars minimum.</p>
 <h3>DmiState (line 440)</h3>
-<pre><code>
-pub struct DmiState {
+<pre><code class="language-rust">pub struct DmiState {
     pub plus_smoother: WilderState,
     pub minus_smoother: WilderState,
     pub tr_smoother: WilderState,
@@ -249,8 +238,7 @@ pub struct DmiState {
 </code></pre>
 <p>Directional Movement Index with ADX. Four Wilder smoothers. ADX smoothing only begins after <code>tr_smoother.ready()</code>. DI calculation is <code>100 * dm_smoother / tr_smoother</code>.</p>
 <h3>StochState (line 541)</h3>
-<pre><code>
-pub struct StochState {
+<pre><code class="language-rust">pub struct StochState {
     pub high_buf: RingBuffer,   // period 14
     pub low_buf: RingBuffer,    // period 14
     pub k_buf: RingBuffer,      // d_period 3
@@ -258,16 +246,14 @@ pub struct StochState {
 </code></pre>
 <p>Stochastic oscillator. %K only pushed after high/low buffers are full. %D = SMA of %K buffer. Defaults to 50.0 when unfilled.</p>
 <h3>CciState (line 597)</h3>
-<pre><code>
-pub struct CciState {
+<pre><code class="language-rust">pub struct CciState {
     pub tp_buf: RingBuffer,   // period 20
     pub tp_sma: SmaState,     // period 20
 }
 </code></pre>
 <p>Commodity Channel Index. TP = (H+L+C)/3. Computes mean deviation by iterating over <code>tp_buf</code> each tick.</p>
 <h3>MfiState (line 645)</h3>
-<pre><code>
-pub struct MfiState {
+<pre><code class="language-rust">pub struct MfiState {
     pub pos_flow_buf: RingBuffer,   // period 14
     pub neg_flow_buf: RingBuffer,   // period 14
     pub prev_tp: f64,
@@ -276,8 +262,7 @@ pub struct MfiState {
 </code></pre>
 <p>Money Flow Index. Raw flow = TP × volume. Positive or negative based on TP direction. Equal TP → pushes to positive flow (not zero).</p>
 <h3>IchimokuState (line 698)</h3>
-<pre><code>
-pub struct IchimokuState {
+<pre><code class="language-rust">pub struct IchimokuState {
     pub high_9: RingBuffer,    // tenkan
     pub low_9: RingBuffer,
     pub high_26: RingBuffer,   // kijun
@@ -287,36 +272,35 @@ pub struct IchimokuState {
 }
 </code></pre>
 <p>Ichimoku Cloud. Tenkan = midpoint(9-period high/low). Kijun = midpoint(26). Senkou A = avg(tenkan, kijun). Senkou B = midpoint(52). <code>ready()</code> when 52-period buffer fills.</p>
-<hr>
+<hr />
 <h2>Helper Functions (Lines 753–1239)</h2>
 <p>Pure functions operating on slices/buffers. No state.</p>
-<table>
-<thead><tr><th>Function</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Function"><code>linreg_slope(ys)</code></td><td data-label="Purpose">OLS slope treating index as x-axis</td></tr>
-<tr><td data-label="Function"><code>obv_slope_12(vals)</code></td><td data-label="Purpose">Linreg slope of OBV history</td></tr>
-<tr><td data-label="Function"><code>hurst_exponent(values)</code></td><td data-label="Purpose">R/S analysis on log returns; returns 0.5 for degenerate cases</td></tr>
-<tr><td data-label="Function"><code>autocorrelation_lag1(values)</code></td><td data-label="Purpose">Lag-1 autocorrelation coefficient</td></tr>
-<tr><td data-label="Function"><code>dfa_fluctuation(cum_dev, seg_len)</code></td><td data-label="Purpose">DFA windowed fluctuation</td></tr>
-<tr><td data-label="Function"><code>linear_detrend(xs)</code></td><td data-label="Purpose">Subtract best-fit line</td></tr>
-<tr><td data-label="Function"><code>dfa_alpha(values)</code></td><td data-label="Purpose">DFA exponent from two scales (4, 8); min 16 points</td></tr>
-<tr><td data-label="Function"><code>variance_of(vals)</code></td><td data-label="Purpose">Population variance</td></tr>
-<tr><td data-label="Function"><code>variance_ratio(values)</code></td><td data-label="Purpose">VR = var(5-step returns) / (5 × var(1-step returns)); min 10 points</td></tr>
-<tr><td data-label="Function"><code>entropy_rate(values)</code></td><td data-label="Purpose">Shannon entropy of discretized returns (5 bins: {-2,-1,0,1,2})</td></tr>
-<tr><td data-label="Function"><code>kama_efficiency_ratio(values)</code></td><td data-label="Purpose">Net direction / gross path length; 1.0 for constant or pure trend</td></tr>
-<tr><td data-label="Function"><code>choppiness_index(atr_sum, high_buf, low_buf)</code></td><td data-label="Purpose">Log(ATR sum / range) / log(14)</td></tr>
-<tr><td data-label="Function"><code>aroon_up/down(vals)</code></td><td data-label="Purpose">Most-recent-index of max/min × 100/(n-1)</td></tr>
-<tr><td data-label="Function"><code>fractal_dimension(values)</code></td><td data-label="Purpose">Higuchi method; clamped [1.0, 2.0]; min 10 points</td></tr>
-<tr><td data-label="Function"><code>detect_divergence(prices, rsis)</code></td><td data-label="Purpose">Splits into halves, checks for price/RSI divergence</td></tr>
-<tr><td data-label="Function"><code>compute_roc(buf, n)</code></td><td data-label="Purpose">Rate of change at lag n</td></tr>
-<tr><td data-label="Function"><code>compute_range_pos(high_buf, low_buf, close)</code></td><td data-label="Purpose">(close - lowest) / (highest - lowest)</td></tr>
-<tr><td data-label="Function"><code>compute_tf_ret(buf)</code></td><td data-label="Purpose">Return over buffer's full span</td></tr>
-<tr><td data-label="Function"><code>compute_tf_body(buf)</code></td><td data-label="Purpose">Body ratio:</td><td data-label="">close - open</td><td data-label="">/ range</td></tr>
-<tr><td data-label="Function"><code>compute_tf_agreement(prev_close, close, tf_1h, tf_4h)</code></td><td data-label="Purpose">Pairwise sign agreement across 3 timeframes</td></tr>
-<tr><td data-label="Function"><code>compute_williams_r(stoch, close)</code></td><td data-label="Purpose">-100 × (highest - close) / range</td></tr>
-<tr><td data-label="Function"><code>compute_vwap_distance(cum_vol, cum_pv, close)</code></td><td data-label="Purpose">(close - VWAP) / close</td></tr>
-</table>
+<p>| Function | Purpose |
+|---|---|
+| <code>linreg_slope(ys)</code> | OLS slope treating index as x-axis |
+| <code>obv_slope_12(vals)</code> | Linreg slope of OBV history |
+| <code>hurst_exponent(values)</code> | R/S analysis on log returns; returns 0.5 for degenerate cases |
+| <code>autocorrelation_lag1(values)</code> | Lag-1 autocorrelation coefficient |
+| <code>dfa_fluctuation(cum_dev, seg_len)</code> | DFA windowed fluctuation |
+| <code>linear_detrend(xs)</code> | Subtract best-fit line |
+| <code>dfa_alpha(values)</code> | DFA exponent from two scales (4, 8); min 16 points |
+| <code>variance_of(vals)</code> | Population variance |
+| <code>variance_ratio(values)</code> | VR = var(5-step returns) / (5 × var(1-step returns)); min 10 points |
+| <code>entropy_rate(values)</code> | Shannon entropy of discretized returns (5 bins: {-2,-1,0,1,2}) |
+| <code>kama_efficiency_ratio(values)</code> | Net direction / gross path length; 1.0 for constant or pure trend |
+| <code>choppiness_index(atr_sum, high_buf, low_buf)</code> | Log(ATR sum / range) / log(14) |
+| <code>aroon_up/down(vals)</code> | Most-recent-index of max/min × 100/(n-1) |
+| <code>fractal_dimension(values)</code> | Higuchi method; clamped [1.0, 2.0]; min 10 points |
+| <code>detect_divergence(prices, rsis)</code> | Splits into halves, checks for price/RSI divergence |
+| <code>compute_roc(buf, n)</code> | Rate of change at lag n |
+| <code>compute_range_pos(high_buf, low_buf, close)</code> | (close - lowest) / (highest - lowest) |
+| <code>compute_tf_ret(buf)</code> | Return over buffer's full span |
+| <code>compute_tf_body(buf)</code> | Body ratio: |close - open| / range |
+| <code>compute_tf_agreement(prev_close, close, tf_1h, tf_4h)</code> | Pairwise sign agreement across 3 timeframes |
+| <code>compute_williams_r(stoch, close)</code> | -100 × (highest - close) / range |
+| <code>compute_vwap_distance(cum_vol, cum_pv, close)</code> | (close - VWAP) / close |</p>
 <h3>Time Parsing (Lines 1243–1290)</h3>
-<p>Pure string parsing of ISO timestamps (<code>"YYYY-MM-DDTHH:MM:SS"</code> format):</p>
+<p>Pure string parsing of ISO timestamps (<code>&quot;YYYY-MM-DDTHH:MM:SS&quot;</code> format):</p>
 <ul>
 <li><code>parse_minute</code> → chars [14:16]</li>
 <li><code>parse_hour</code> → chars [11:13]</li>
@@ -324,10 +308,9 @@ pub struct IchimokuState {
 <li><code>parse_month_of_year</code> → chars [5:7]</li>
 <li><code>parse_day_of_week</code> → Zeller's congruence (0=Mon, 6=Sun)</li>
 </ul>
-<hr>
+<hr />
 <h2>IndicatorBank Struct (Lines 1297–1376)</h2>
-<pre><code>
-pub struct IndicatorBank {
+<pre><code class="language-rust">pub struct IndicatorBank {
     // Moving averages
     pub sma20: SmaState,          // period 20
     pub sma50: SmaState,          // period 50
@@ -385,19 +368,18 @@ pub struct IndicatorBank {
     // Phase labeler
     pub phase_state: PhaseState,
     pub last_phase_generation: u64,
-    pub cached_phase_history: Vec<PhaseRecord>,
+    pub cached_phase_history: Vec&lt;PhaseRecord&gt;,
     // Scratch buffer (capacity 48, reused each tick)
-    scratch: Vec<f64>,
+    scratch: Vec&lt;f64&gt;,
     // Counter
     pub count: usize,
 }
 </code></pre>
 <p><strong>Total state fields:</strong> ~55 public fields + 1 private <code>scratch</code>.</p>
-<hr>
+<hr />
 <h2>The <code>tick()</code> Method (Lines 1632–1949)</h2>
 <p>Signature:</p>
-<pre><code>
-pub fn tick(&mut self, raw: &Ohlcv) -> Candle
+<pre><code class="language-rust">pub fn tick(&amp;mut self, raw: &amp;Ohlcv) -&gt; Candle
 </code></pre>
 <h3>Phase 1: Advance all streaming primitives (lines 1641–1667)</h3>
 <p>27 step functions called sequentially, each pushing one candle's worth of data into its indicator(s):</p>
@@ -420,16 +402,15 @@ pub fn tick(&mut self, raw: &Ohlcv) -> Candle
 <li><strong>Timeframe agreement:</strong> sign agreement across 5m/1h/4h</li>
 <li><strong>Time features:</strong> minute, hour, day-of-week, day-of-month, month-of-year</li>
 </ul>
-<p><strong>Memory optimization:</strong> A single <code>scratch: Vec<f64></code> (capacity 48) is taken via <code>std::mem::take</code> at the start of derived-value computation and returned at the end. This avoids split-borrow issues and prevents per-tick allocations.</p>
+<p><strong>Memory optimization:</strong> A single <code>scratch: Vec&lt;f64&gt;</code> (capacity 48) is taken via <code>std::mem::take</code> at the start of derived-value computation and returned at the end. This avoids split-borrow issues and prevents per-tick allocations.</p>
 <p><strong>Phase labeler</strong> (lines 1856–1866): After indicators, <code>PhaseState.step()</code> is called with smoothing = 2×ATR (Proposal 052). Phase history is only re-cloned when <code>generation</code> changes (~every 6 candles).</p>
 <h3>Phase 3: Update prev-state (lines 1868–1872)</h3>
 <p>Stores <code>prev_tk_spread</code>, <code>prev_stoch_kd</code>, <code>prev_close</code>, increments <code>count</code>.</p>
 <h3>Phase 4: Assemble enriched Candle (lines 1874–1948)</h3>
 <p>All computed values are packed into a <code>Candle</code> struct (65+ fields). Raw OHLCV fields are preserved from input.</p>
-<hr>
+<hr />
 <h2>Output: Candle Struct (types::candle.rs)</h2>
-<pre><code>
-pub struct Candle {
+<pre><code class="language-rust">pub struct Candle {
     // Raw: ts, open, high, low, close, volume
     // Moving averages: sma20, sma50, sma200
     // Bollinger: bb_width, bb_pos
@@ -451,35 +432,77 @@ pub struct Candle {
     // Phase: phase_label, phase_direction, phase_duration, phase_history
 }
 </code></pre>
-<p>All indicator fields are <code>f64</code>. Phase fields use enum types (<code>PhaseLabel</code>, <code>PhaseDirection</code>) plus <code>usize</code> duration and <code>Vec<PhaseRecord></code>.</p>
-<hr>
+<p>All indicator fields are <code>f64</code>. Phase fields use enum types (<code>PhaseLabel</code>, <code>PhaseDirection</code>) plus <code>usize</code> duration and <code>Vec&lt;PhaseRecord&gt;</code>.</p>
+<hr />
 <h2>Connection to Encoding System</h2>
 <p>In <code>src/bin/wat-vm.rs</code> line 704:</p>
-<pre><code>
-let candle = pipeline.bank.tick(&ohlcv);
+<pre><code class="language-rust">let candle = pipeline.bank.tick(&amp;ohlcv);
 </code></pre>
-<p>The enriched <code>Candle</code> is then wrapped in <code>Arc<Vec<Candle>></code> as a window and sent to observers. Observers extract indicator values as "facts" (via <code>ThoughtAST</code>), which are encoded by the <code>ThoughtEncoder</code> into sparse vectors for cosine similarity matching.</p>
+<p>The enriched <code>Candle</code> is then wrapped in <code>Arc&lt;Vec&lt;Candle&gt;&gt;</code> as a window and sent to observers. Observers extract indicator values as &quot;facts&quot; (via <code>ThoughtAST</code>), which are encoded by the <code>ThoughtEncoder</code> into sparse vectors for cosine similarity matching.</p>
 <p>The encoding pipeline does NOT import <code>IndicatorBank</code> — it only consumes <code>Candle</code>. The bank is the sole producer of enriched candles.</p>
-<hr>
+<hr />
 <h2>Warm-up Requirements</h2>
 <p>Different indicators become valid at different candle counts:</p>
 <table>
-<thead><tr><th>Indicator</th><th>Minimum candles</th></tr></thead>
-<tr><td data-label="Indicator">SMA20 / BB / CCI</td><td data-label="Minimum candles">20</td></tr>
-<tr><td data-label="Indicator">EMA20 / Keltner</td><td data-label="Minimum candles">20</td></tr>
-<tr><td data-label="Indicator">RSI / ATR / DMI / Stoch / MFI</td><td data-label="Minimum candles">15 (14-period + 1 seed)</td></tr>
-<tr><td data-label="Indicator">MACD</td><td data-label="Minimum candles">~35 (slow_ema=26 + signal=9)</td></tr>
-<tr><td data-label="Indicator">SMA50</td><td data-label="Minimum candles">50</td></tr>
-<tr><td data-label="Indicator">SMA200</td><td data-label="Minimum candles">200</td></tr>
-<tr><td data-label="Indicator">Ichimoku</td><td data-label="Minimum candles">52</td></tr>
-<tr><td data-label="Indicator">Choppiness / Aroon</td><td data-label="Minimum candles">14 (ATR ready) + buffer fill</td></tr>
-<tr><td data-label="Indicator">DFA alpha</td><td data-label="Minimum candles">48</td></tr>
-<tr><td data-label="Indicator">Variance ratio</td><td data-label="Minimum candles">30</td></tr>
-<tr><td data-label="Indicator">Entropy rate</td><td data-label="Minimum candles">30</td></tr>
-<tr><td data-label="Indicator">Fractal dim</td><td data-label="Minimum candles">30</td></tr>
+<thead>
+<tr>
+  <th>Indicator</th>
+  <th>Minimum candles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Indicator">SMA20 / BB / CCI</td>
+  <td data-label="Minimum candles">20</td>
+</tr>
+<tr>
+  <td data-label="">EMA20 / Keltner</td>
+  <td data-label="">20</td>
+</tr>
+<tr>
+  <td data-label="">RSI / ATR / DMI / Stoch / MFI</td>
+  <td data-label="">15 (14-period + 1 seed)</td>
+</tr>
+<tr>
+  <td data-label="">MACD</td>
+  <td data-label="">~35 (slow_ema=26 + signal=9)</td>
+</tr>
+<tr>
+  <td data-label="">SMA50</td>
+  <td data-label="">50</td>
+</tr>
+<tr>
+  <td data-label="">SMA200</td>
+  <td data-label="">200</td>
+</tr>
+<tr>
+  <td data-label="">Ichimoku</td>
+  <td data-label="">52</td>
+</tr>
+<tr>
+  <td data-label="">Choppiness / Aroon</td>
+  <td data-label="">14 (ATR ready) + buffer fill</td>
+</tr>
+<tr>
+  <td data-label="">DFA alpha</td>
+  <td data-label="">48</td>
+</tr>
+<tr>
+  <td data-label="">Variance ratio</td>
+  <td data-label="">30</td>
+</tr>
+<tr>
+  <td data-label="">Entropy rate</td>
+  <td data-label="">30</td>
+</tr>
+<tr>
+  <td data-label="">Fractal dim</td>
+  <td data-label="">30</td>
+</tr>
+</tbody>
 </table>
 <p>Before warm-up, indicators return neutral defaults (0.0, 0.5, 50.0, etc. — see <code>Candle::default()</code>). The test <code>test_tick_produces_finite_after_warmup</code> verifies all fields are finite after 300 candles.</p>
-<hr>
+<hr />
 <h2>Tests (Lines 1956–2363)</h2>
 <p>16 tests covering:</p>
 <ul>
@@ -494,23 +517,20 @@ let candle = pipeline.bank.tick(&ohlcv);
 <li><code>IndicatorBank</code>: new, tick count, raw field preservation, finite after 300-candle warmup, consecutive counts, SMA convergence, Hurst of constant → 0.5, fractal dimension range [1,2], KAMA ER constant → 1.0</li>
 </ul>
 <p>No tests for: MACD, DMI, ATR, Stoch, CCI, MFI, OBV, Ichimoku divergence detection, choppiness, DFA, variance ratio, entropy, Aroon, squeeze, VWAP, timeframe synthesis, or phase labeling within this file (some may have coverage in their own modules).</p>
-<hr>
-<h2>Observations & Uncertainties</h2>
+<hr />
+<h2>Observations &amp; Uncertainties</h2>
 <ol>
-<li><strong>VWAP never resets.</strong> <code>vwap_cum_vol</code> and <code>vwap_cum_pv</code> grow without bound. Over 652k candles this could produce very large floats. The comment doesn't address whether this is intentional (session VWAP) or an oversight.</li>
+<li><p><strong>VWAP never resets.</strong> <code>vwap_cum_vol</code> and <code>vwap_cum_pv</code> grow without bound. Over 652k candles this could produce very large floats. The comment doesn't address whether this is intentional (session VWAP) or an oversight.</p>
+</li>
+<li><p><strong>Bollinger stddev and SMA20 are independent.</strong> <code>bb_stddev</code> (RollingStddev period 20) and <code>sma20</code> (SmaState period 20) both track close prices but don't share state. Bollinger width is <code>4σ / close</code>. This is correct but means two separate rolling windows for the same data.</p>
+</li>
+<li><p><strong>Multi-timeframe synthesis is naive.</strong> 1h = 12 candles, 4h = 48 candles of 5m data. The &quot;body&quot; and &quot;return&quot; are computed over the oldest-to-newest span of the ring buffer. This approximates but doesn't aggregate (no proper OHLC rolling). The code acknowledges this implicitly by using <code>compute_tf_body</code> which treats oldest as open and newest as close.</p>
+</li>
+<li><p><strong><code>step_timeframe</code> pushes the same H/L to both 1h and 4h buffers.</strong> Every 5m candle's high and low go into both buffers. This means 4h high is max of last 48 individual candle highs (not max of 48 aggregated 5m candles), which is actually correct for highest-high.</p>
+</li>
+<li><p><strong>Entropy bin thresholds are hardcoded:</strong> -0.5%, -0.1%, +0.1%, +0.5%. These are appropriate for 5m BTC but won't transfer to other assets without adjustment.</p>
+</li>
+<li><p><strong><code>prev_tf_1h_ret</code> and <code>prev_tf_4h_ret</code> are stored but never read</strong> within <code>tick()</code>. They appear to be vestigial fields — the timeframe agreement computation uses <code>compute_tf_ret</code> directly rather than stored previous values.</p>
+</li>
 </ol>
-<ol>
-<li><strong>Bollinger stddev and SMA20 are independent.</strong> <code>bb_stddev</code> (RollingStddev period 20) and <code>sma20</code> (SmaState period 20) both track close prices but don't share state. Bollinger width is <code>4σ / close</code>. This is correct but means two separate rolling windows for the same data.</li>
-</ol>
-<ol>
-<li><strong>Multi-timeframe synthesis is naive.</strong> 1h = 12 candles, 4h = 48 candles of 5m data. The "body" and "return" are computed over the oldest-to-newest span of the ring buffer. This approximates but doesn't aggregate (no proper OHLC rolling). The code acknowledges this implicitly by using <code>compute_tf_body</code> which treats oldest as open and newest as close.</li>
-</ol>
-<ol>
-<li><strong><code>step_timeframe</code> pushes the same H/L to both 1h and 4h buffers.</strong> Every 5m candle's high and low go into both buffers. This means 4h high is max of last 48 individual candle highs (not max of 48 aggregated 5m candles), which is actually correct for highest-high.</li>
-</ol>
-<ol>
-<li><strong>Entropy bin thresholds are hardcoded:</strong> -0.5%, -0.1%, +0.1%, +0.5%. These are appropriate for 5m BTC but won't transfer to other assets without adjustment.</li>
-</ol>
-<ol>
-<li><strong><code>prev_tf_1h_ret</code> and <code>prev_tf_4h_ret</code> are stored but never read</strong> within <code>tick()</code>. They appear to be vestigial fields — the timeframe agreement computation uses <code>compute_tf_ret</code> directly rather than stored previous values.</li>
-</ol></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

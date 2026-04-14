@@ -125,22 +125,44 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Vector — the atomic data structure of holon-rs <span class="badge badge-how">HOW</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-rs/src/kernel/vector.rs</code> (132 lines)</p>
-<p><strong>Verified:</strong> 2026-04-14</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Vector — the atomic data structure of holon-rs <span class="badge badge-how">HOW</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-rs/src/kernel/vector.rs</code> (132 lines)
+<strong>Verified:</strong> 2026-04-14</p>
+<hr />
 <h2>What it IS</h2>
-<p><code>Vector</code> is a struct containing a single field: a <code>Vec<i8></code> called <code>data</code>. Each element is constrained to the set <strong>{-1, 0, 1}</strong> — a <em>bipolar</em> vector with a zero state.</p>
-<blockquote>"A high-dimensional vector with bipolar elements {-1, 0, 1}."</blockquote>
-<blockquote>"This is the core data structure for all VSA operations."</blockquote>
-<p>The source doc comment states the purpose plainly: <em>"Holon uses bipolar vectors with elements in {-1, 0, 1}. Internally stored as i8 for memory efficiency."</em></p>
-<p>The struct derives <code>Clone</code> and <code>Debug</code>. It implements <code>PartialEq</code>/<code>Eq</code> (exact element-wise equality) and <code>Index</code>/<code>IndexMut<usize></code> for direct element access.</p>
+<p><code>Vector</code> is a struct containing a single field: a <code>Vec&lt;i8&gt;</code> called <code>data</code>. Each element is constrained to the set <strong>{-1, 0, 1}</strong> — a <em>bipolar</em> vector with a zero state.</p>
+<blockquote>
+<p>&quot;A high-dimensional vector with bipolar elements {-1, 0, 1}.&quot;
+&quot;This is the core data structure for all VSA operations.&quot;</p>
+</blockquote>
+<p>The source doc comment states the purpose plainly: <em>&quot;Holon uses bipolar vectors with elements in {-1, 0, 1}. Internally stored as i8 for memory efficiency.&quot;</em></p>
+<p>The struct derives <code>Clone</code> and <code>Debug</code>. It implements <code>PartialEq</code>/<code>Eq</code> (exact element-wise equality) and <code>Index</code>/<code>IndexMut&lt;usize&gt;</code> for direct element access.</p>
 <h2>How it works</h2>
 <h3>Construction</h3>
 <table>
-<thead><tr><th>Constructor</th><th>Input</th><th>Behavior</th></tr></thead>
-<tr><td data-label="Constructor"><code>Vector::zeros(dimensions)</code></td><td data-label="Input"><code>usize</code></td><td data-label="Behavior">Returns a zero-filled vector of the given length.</td></tr>
-<tr><td data-label="Constructor"><code>Vector::from_data(data)</code></td><td data-label="Input"><code>Vec<i8></code></td><td data-label="Behavior">Wraps raw <code>i8</code> data directly — <strong>no validation</strong> that elements are in {-1, 0, 1}.</td></tr>
-<tr><td data-label="Constructor"><code>Vector::from_f64(values)</code></td><td data-label="Input"><code>&[f64]</code></td><td data-label="Behavior">Thresholds each value: positive → 1, negative → -1, zero → 0.</td></tr>
+<thead>
+<tr>
+  <th>Constructor</th>
+  <th>Input</th>
+  <th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Constructor"><code>Vector::zeros(dimensions)</code></td>
+  <td data-label="Input"><code>usize</code></td>
+  <td data-label="Behavior">Returns a zero-filled vector of the given length.</td>
+</tr>
+<tr>
+  <td data-label=""><code>Vector::from_data(data)</code></td>
+  <td data-label=""><code>Vec&lt;i8&gt;</code></td>
+  <td data-label="">Wraps raw <code>i8</code> data directly — <strong>no validation</strong> that elements are in {-1, 0, 1}.</td>
+</tr>
+<tr>
+  <td data-label=""><code>Vector::from_f64(values)</code></td>
+  <td data-label=""><code>&amp;[f64]</code></td>
+  <td data-label="">Thresholds each value: positive → 1, negative → -1, zero → 0.</td>
+</tr>
+</tbody>
 </table>
 <p>The <code>from_f64</code> constructor is the only place bipolar discipline is enforced. <code>from_data</code> trusts the caller.</p>
 <h3>Query operations</h3>
@@ -149,7 +171,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>data()</code> / <code>data_mut()</code> → raw slice access</li>
 <li><code>nnz()</code> → count of non-zero elements</li>
 <li><code>norm()</code> → <strong>L2 norm</strong> (Euclidean): computed as <code>sqrt(Σ v_i²)</code> where each <code>v_i</code> is cast to <code>i64</code> before squaring to avoid overflow</li>
-<li><code>normalized()</code> → returns <code>Vec<f64></code> (not a <code>Vector</code>), each element divided by the L2 norm; returns a zero vector if the norm is below <code>1e-10</code></li>
+<li><code>normalized()</code> → returns <code>Vec&lt;f64&gt;</code> (not a <code>Vector</code>), each element divided by the L2 norm; returns a zero vector if the norm is below <code>1e-10</code></li>
 <li><code>to_f64()</code> → casts each element to <code>f64</code></li>
 </ul>
 <h2>Key properties</h2>
@@ -157,15 +179,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>No dimension check on construction.</strong> <code>from_data</code> and <code>from_f64</code> accept any-length input. No fixed dimensionality is enforced at the type level.</li>
 <li><strong>No bipolar invariant enforced at rest.</strong> Only <code>from_f64</code> guarantees {-1, 0, 1}. <code>from_data</code> and <code>data_mut()</code> allow arbitrary <code>i8</code> values to be injected.</li>
 <li><strong>Equality is element-wise exact.</strong> <code>PartialEq</code> compares <code>data</code> directly.</li>
-<li><strong>Normalization escapes the type.</strong> <code>normalized()</code> returns <code>Vec<f64></code>, not <code>Vector</code> — it leaves the bipolar domain.</li>
+<li><strong>Normalization escapes the type.</strong> <code>normalized()</code> returns <code>Vec&lt;f64&gt;</code>, not <code>Vector</code> — it leaves the bipolar domain.</li>
 <li><strong>Sparse-friendly API.</strong> <code>nnz()</code> is provided, suggesting vectors may often be mostly zeros.</li>
 </ol>
 <h2>Source quotes</h2>
 <ul>
-<li>Module doc: <em>"Holon uses bipolar vectors with elements in {-1, 0, 1}. Internally stored as i8 for memory efficiency."</em></li>
-<li>Struct doc: <em>"A high-dimensional vector with bipolar elements {-1, 0, 1}."</em> / <em>"This is the core data structure for all VSA operations."</em></li>
-<li><code>from_data</code> doc: <em>"Create a vector from raw data."</em></li>
-<li><code>from_f64</code> doc: <em>"Create a vector from f64 values (thresholds to bipolar)."</em></li>
+<li>Module doc: <em>&quot;Holon uses bipolar vectors with elements in {-1, 0, 1}. Internally stored as i8 for memory efficiency.&quot;</em></li>
+<li>Struct doc: <em>&quot;A high-dimensional vector with bipolar elements {-1, 0, 1}.&quot;</em> / <em>&quot;This is the core data structure for all VSA operations.&quot;</em></li>
+<li><code>from_data</code> doc: <em>&quot;Create a vector from raw data.&quot;</em></li>
+<li><code>from_f64</code> doc: <em>&quot;Create a vector from f64 values (thresholds to bipolar).&quot;</em></li>
 </ul>
 <h2>Test coverage (lines 110–132)</h2>
 <p>Three tests exist:</p>
@@ -173,4 +195,5 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>test_zeros</code>: verifies <code>Vector::zeros(100)</code> produces 100 zero elements.</li>
 <li><code>test_from_f64</code>: verifies <code>[1.0, -0.5, 0.0, 2.3, -10.0]</code> maps to <code>[1, -1, 0, 1, -1]</code>.</li>
 <li><code>test_norm</code>: verifies a 4-element vector <code>[1, -1, 1, -1]</code> has norm <code>2.0</code> (since <code>sqrt(1+1+1+1) = 2</code>).</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

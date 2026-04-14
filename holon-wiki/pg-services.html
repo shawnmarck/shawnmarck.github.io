@@ -126,102 +126,154 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Services — Queue, Topic, and Mailbox <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p>Holon's messaging layer provides three primitives built on <a class="wikilink" href="pg-services.html">crossbeam::channel</a>: <strong>Queue</strong> (1→1 point-to-point), <strong>Topic</strong> (1→N fan-out), and <strong>Mailbox</strong> (N→1 fan-in). All concurrency is achieved through message passing — zero <code>Mutex</code>. In the <a class="wikilink" href="T1-001-wat-language.html">wat language</a>, these appear as values created by <code>make-pipe</code>, <code>make-topic</code>, and <code>select</code>, with no special declarations needed. Shutdown propagates automatically by dropping senders/receivers.</p>
-<hr></div><div class="prose prose-invert max-w-none"><p><strong>Wiki composite · Sources: T0-016 (services-rust), T1-001 (wat-language)</strong></p>
-<hr>
+<p>Holon's messaging layer provides three primitives built on &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;crossbeam::channel&lt;/a&gt;: <strong>Queue</strong> (1→1 point-to-point), <strong>Topic</strong> (1→N fan-out), and <strong>Mailbox</strong> (N→1 fan-in). All concurrency is achieved through message passing — zero <code>Mutex</code>. In the &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt;, these appear as values created by <code>make-pipe</code>, <code>make-topic</code>, and <code>select</code>, with no special declarations needed. Shutdown propagates automatically by dropping senders/receivers.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><p><strong>Wiki composite · Sources: T0-016 (services-rust), T1-001 (wat-language)</strong></p>
+<hr />
 <h2>Architecture</h2>
 <table>
-<thead><tr><th>Primitive</th><th>Pattern</th><th>Mechanism</th><th>Mutex?</th><th>wat form</th></tr></thead>
-<tr><td data-label="Primitive"><a class="wikilink" href="pg-services.html">Queue</a></td><td data-label="Pattern">1→1</td><td data-label="Mechanism"><code>crossbeam::channel</code> (bounded or unbounded)</td><td data-label="Mutex?">No</td><td data-label="wat form"><code>make-pipe</code></td></tr>
-<tr><td data-label="Primitive"><a class="wikilink" href="pg-services.html">Topic</a></td><td data-label="Pattern">1→N</td><td data-label="Mechanism">Bounded input → spawned thread → clone to N outputs</td><td data-label="Mutex?">No</td><td data-label="wat form"><code>make-topic</code></td></tr>
-<tr><td data-label="Primitive"><a class="wikilink" href="pg-services.html">Mailbox</a></td><td data-label="Pattern">N→1</td><td data-label="Mechanism">Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output</td><td data-label="Mutex?">No</td><td data-label="wat form"><code>select</code> over N rx ends</td></tr>
+<thead>
+<tr>
+  <th>Primitive</th>
+  <th>Pattern</th>
+  <th>Mechanism</th>
+  <th>Mutex?</th>
+  <th>wat form</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Primitive">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;</td>
+  <td data-label="Pattern">1→1</td>
+  <td data-label="Mechanism"><code>crossbeam::channel</code> (bounded or unbounded)</td>
+  <td data-label="Mutex?">No</td>
+  <td data-label="wat form"><code>make-pipe</code></td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;</td>
+  <td data-label="">1→N</td>
+  <td data-label="">Bounded input → spawned thread → clone to N outputs</td>
+  <td data-label="">No</td>
+  <td data-label=""><code>make-topic</code></td>
+</tr>
+<tr>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt;</td>
+  <td data-label="">N→1</td>
+  <td data-label="">Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output</td>
+  <td data-label="">No</td>
+  <td data-label=""><code>select</code> over N rx ends</td>
+</tr>
+</tbody>
 </table>
-<p>All three use <a class="wikilink" href="pg-services.html">crossbeam::channel</a> as their sole concurrency primitive — a lock-free MPSC channel built on atomic compare-and-swap operations (T0-016, §"How Concurrency Is Achieved Without Mutex").</p>
-<hr>
+<p>All three use &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;crossbeam::channel&lt;/a&gt; as their sole concurrency primitive — a lock-free MPSC channel built on atomic compare-and-swap operations (T0-016, §&quot;How Concurrency Is Achieved Without Mutex&quot;).</p>
+<hr />
 <h2>Queue — Point-to-Point</h2>
 <p>The atom of the system. One producer, one consumer.</p>
 <p><strong>Rust types:</strong></p>
 <ul>
-<li><code>QueueSender<T></code> — wraps <code>crossbeam::Sender<T></code></li>
-<li><code>QueueReceiver<T></code> — wraps <code>crossbeam::Receiver<T></code></li>
+<li><code>QueueSender&lt;T&gt;</code> — wraps <code>crossbeam::Sender&lt;T&gt;</code></li>
+<li><code>QueueReceiver&lt;T&gt;</code> — wraps <code>crossbeam::Receiver&lt;T&gt;</code></li>
 </ul>
 <p><strong>Constructors:</strong></p>
 <ul>
 <li><code>queue_bounded(capacity)</code> — bounded channel; sender blocks when full (backpressure)</li>
 <li><code>queue_unbounded()</code> — unbounded channel; no backpressure</li>
 </ul>
-<p><strong>Sender API:</strong> <code>send(value: T)</code> — blocks if bounded and full; returns <code>SendError<T></code> if receiver dropped.</p>
+<p><strong>Sender API:</strong> <code>send(value: T)</code> — blocks if bounded and full; returns <code>SendError&lt;T&gt;</code> if receiver dropped.</p>
 <p><strong>Receiver API:</strong></p>
 <ul>
 <li><code>recv()</code> — blocking; returns <code>RecvError::Disconnected</code> when sender dropped and queue empty</li>
 <li><code>try_recv()</code> — non-blocking; returns raw <code>crossbeam::TryRecvError</code></li>
-<li><code>inner()</code> — <code>pub(crate)</code> raw <code>&Receiver<T></code>, used by <a class="wikilink" href="pg-services.html">Mailbox</a> and the <a class="wikilink" href="pg-encoding-cache.html">cache</a> for <code>crossbeam::Select</code></li>
+<li><code>inner()</code> — <code>pub(crate)</code> raw <code>&amp;Receiver&lt;T&gt;</code>, used by &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; and the &lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;cache&lt;/a&gt; for <code>crossbeam::Select</code></li>
 </ul>
-<p><strong>Error types</strong> (<code>SendError<T></code>, <code>RecvError</code>) are custom wrappers that decouple the public API from crossbeam's types (T0-016, §Queue).</p>
-<p><strong>wat layer:</strong> <code>(make-pipe :capacity N :carries T)</code> returns <code>(tx rx)</code>. Send via <code>(send tx value)</code>, receive via <code>(recv rx)</code> or <code>(try-recv rx)</code>. "Destructure at creation" (T1-001, §Pipes). Pipes are values — "no defpipe, no defprocess, no defservice" (T1-001, §Design principle).</p>
-<hr>
+<p><strong>Error types</strong> (<code>SendError&lt;T&gt;</code>, <code>RecvError</code>) are custom wrappers that decouple the public API from crossbeam's types (T0-016, §Queue).</p>
+<p><strong>wat layer:</strong> <code>(make-pipe :capacity N :carries T)</code> returns <code>(tx rx)</code>. Send via <code>(send tx value)</code>, receive via <code>(recv rx)</code> or <code>(try-recv rx)</code>. &quot;Destructure at creation&quot; (T1-001, §Pipes). Pipes are values — &quot;no defpipe, no defprocess, no defservice&quot; (T1-001, §Design principle).</p>
+<hr />
 <h2>Topic — Fan-Out (1→N)</h2>
 <p>One producer, N consumers. A proxy that writes to N queues by cloning each message.</p>
 <p><strong>How it works (T0-016, §Topic):</strong></p>
 <ol>
-<li>Caller provides <code>Vec<QueueSender<T>></code> — write ends of queues whose read ends belong to subscriber programs. Subscribers see plain queues; they don't know a topic exists.</li>
+<li>Caller provides <code>Vec&lt;QueueSender&lt;T&gt;&gt;</code> — write ends of queues whose read ends belong to subscriber programs. Subscribers see plain queues; they don't know a topic exists.</li>
 <li><code>topic(capacity, outputs)</code> creates an internal bounded input queue and spawns a fan-out thread that loops: <code>recv()</code> from input, <code>send(msg.clone())</code> to each output.</li>
-<li>Returns <code>(TopicSender<T>, TopicHandle)</code>.</li>
+<li>Returns <code>(TopicSender&lt;T&gt;, TopicHandle)</code>.</li>
 </ol>
-<p><strong><code>TopicSender<T></code></strong> — wraps the input <code>QueueSender</code>. Same <code>.send()</code> interface. Writing here clones to all subscribers.</p>
-<p><strong><code>TopicHandle</code></strong> — holds the <code>JoinHandle<()></code> for the fan-out thread. When the producer drops <code>TopicSender</code>, the input disconnects, the thread exits, and all output <code>QueueSender</code>s are dropped — cascading disconnection to every subscriber.</p>
+<p><strong><code>TopicSender&lt;T&gt;</code></strong> — wraps the input <code>QueueSender</code>. Same <code>.send()</code> interface. Writing here clones to all subscribers.</p>
+<p><strong><code>TopicHandle</code></strong> — holds the <code>JoinHandle&lt;()&gt;</code> for the fan-out thread. When the producer drops <code>TopicSender</code>, the input disconnects, the thread exits, and all output <code>QueueSender</code>s are dropped — cascading disconnection to every subscriber.</p>
 <p><strong>Bounds:</strong> <code>T: Send + Clone + 'static</code>. Clone is required because the message is cloned to each subscriber.</p>
 <p><strong>Backpressure:</strong> Bounded send to each subscriber. One slow subscriber stalls all others — intentional backpressure propagation (T0-016, §Topic).</p>
-<p><strong>wat layer:</strong> <code>(make-topic)</code> wires 1→N fan-out over existing pipes. The wat spec notes this is <em>synchronous, no thread, no queue</em> at the specification level — "The caller's send IS the fan-out" (T1-001, §Topics). The Rust implementation adds the thread and internal queue for execution.</p>
-<hr>
+<p><strong>wat layer:</strong> <code>(make-topic)</code> wires 1→N fan-out over existing pipes. The wat spec notes this is <em>synchronous, no thread, no queue</em> at the specification level — &quot;The caller's send IS the fan-out&quot; (T1-001, §Topics). The Rust implementation adds the thread and internal queue for execution.</p>
+<hr />
 <h2>Mailbox — Fan-In (N→1)</h2>
 <p>N producers, one consumer. A proxy that reads from N queues via <code>crossbeam::Select</code>.</p>
 <p><strong>How it works (T0-016, §Mailbox):</strong></p>
 <ol>
-<li>Caller provides <code>Vec<QueueReceiver<T>></code> — read ends of queues whose write ends belong to producer programs. Producers see plain queues; they don't know a mailbox exists.</li>
+<li>Caller provides <code>Vec&lt;QueueReceiver&lt;T&gt;&gt;</code> — read ends of queues whose write ends belong to producer programs. Producers see plain queues; they don't know a mailbox exists.</li>
 <li><code>mailbox(inputs)</code> creates an internal unbounded output queue and spawns a fan-in thread using <code>crossbeam::channel::Select</code>.</li>
-<li>Returns <code>MailboxReceiver<T></code>.</li>
+<li>Returns <code>MailboxReceiver&lt;T&gt;</code>.</li>
 </ol>
 <p><strong>Fan-in thread logic:</strong></p>
 <ul>
-<li>Maintains a <code>Vec<QueueReceiver<T>></code> called <code>alive</code>.</li>
+<li>Maintains a <code>Vec&lt;QueueReceiver&lt;T&gt;&gt;</code> called <code>alive</code>.</li>
 <li>Each iteration: builds a fresh <code>Select</code> over all alive receivers, calls <code>select()</code>, identifies which fired via <code>oper.index()</code>, receives the message, forwards to output.</li>
 <li>Disconnected receivers are removed from <code>alive</code>.</li>
 <li>Loop breaks when <code>alive</code> is empty — all inputs disconnected. Output sender drops; consumer sees <code>Disconnected</code>.</li>
 </ul>
 <p><strong>Partial disconnect resilience:</strong> If some producers drop but others remain, the mailbox continues receiving from the living ones. Only when <em>all</em> are gone does it signal disconnection (T0-016, §Mailbox).</p>
 <p><strong>Bounds:</strong> <code>T: Send + 'static</code>. No <code>Clone</code> needed — messages are moved, not copied.</p>
-<p><strong><code>MailboxReceiver<T></code></strong> — wraps <code>QueueReceiver<T></code> with the same interface: <code>recv()</code>, <code>try_recv()</code>, <code>inner()</code>.</p>
-<p><strong>wat layer:</strong> <code>(select rx1 rx2 ...)</code> multiplexes N receive ends → <code>(Some (idx value))</code> or <code>:closed</code>. "Parks when idle — zero CPU" (T1-001, §Pipes). This is the wat-level expression of what the Rust <a class="wikilink" href="pg-services.html">Mailbox</a> implements as a dedicated composing thread.</p>
-<hr>
+<p><strong><code>MailboxReceiver&lt;T&gt;</code></strong> — wraps <code>QueueReceiver&lt;T&gt;</code> with the same interface: <code>recv()</code>, <code>try_recv()</code>, <code>inner()</code>.</p>
+<p><strong>wat layer:</strong> <code>(select rx1 rx2 ...)</code> multiplexes N receive ends → <code>(Some (idx value))</code> or <code>:closed</code>. &quot;Parks when idle — zero CPU&quot; (T1-001, §Pipes). This is the wat-level expression of what the Rust &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; implements as a dedicated composing thread.</p>
+<hr />
 <h2>Design Principles</h2>
 <h3>Concurrency without Mutex</h3>
-<p>"Threads communicate by sending messages, not by sharing memory" (T0-016). The pattern:</p>
+<p>&quot;Threads communicate by sending messages, not by sharing memory&quot; (T0-016). The pattern:</p>
 <ul>
 <li><strong>Ownership transfer via types.</strong> <code>QueueSender</code> and <code>QueueReceiver</code> are separate, moveable types. Rust's type system enforces producer/consumer separation.</li>
-<li><strong>Shutdown by disconnection.</strong> Dropping a sender/receiver propagates as <code>Disconnected</code>. No explicit coordination, no <code>Arc<Mutex<bool>></code> shutdown flags.</li>
+<li><strong>Shutdown by disconnection.</strong> Dropping a sender/receiver propagates as <code>Disconnected</code>. No explicit coordination, no <code>Arc&lt;Mutex&lt;bool&gt;&gt;</code> shutdown flags.</li>
 <li><strong>Backpressure via bounded channels.</strong> Topics use bounded inputs; mailboxes use unbounded outputs (never stall producers).</li>
 </ul>
 <h3>Everything is a Value</h3>
 <p>In wat, pipes, topics, and processes are all plain values created by regular functions — not special declarations (T1-001, §Design principle):</p>
-<blockquote>"No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions."</blockquote>
+<blockquote>
+<p>&quot;No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions.&quot;</p>
+</blockquote>
 <p>The seven concurrency forms are: <code>make-pipe</code>, <code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>.</p>
 <h3>Composition via <code>inner()</code></h3>
-<p><code>QueueReceiver::inner()</code> and <code>MailboxReceiver::inner()</code> expose the raw crossbeam <code>Receiver</code> as <code>pub(crate)</code>, allowing composing code (e.g., the <a class="wikilink" href="pg-encoding-cache.html">cache</a>) to treat queue receivers and mailbox receivers uniformly in a multi-channel <code>crossbeam::Select</code> — without leaking the internal implementation through the public API (T0-016, §"One subtle design choice").</p>
-<hr>
+<p><code>QueueReceiver::inner()</code> and <code>MailboxReceiver::inner()</code> expose the raw crossbeam <code>Receiver</code> as <code>pub(crate)</code>, allowing composing code (e.g., the &lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;cache&lt;/a&gt;) to treat queue receivers and mailbox receivers uniformly in a multi-channel <code>crossbeam::Select</code> — without leaking the internal implementation through the public API (T0-016, §&quot;One subtle design choice&quot;).</p>
+<hr />
 <h2>Tests</h2>
 <table>
-<thead><tr><th>Primitive</th><th>Count</th><th>Coverage</th></tr></thead>
-<tr><td data-label="Primitive">Queue</td><td data-label="Count">4</td><td data-label="Coverage">send/receive, ordering, bounded backpressure, shutdown on sender drop</td></tr>
-<tr><td data-label="Primitive">Topic</td><td data-label="Count">3</td><td data-label="Coverage">fan-out delivery, ordering per subscriber, shutdown cascade</td></tr>
-<tr><td data-label="Primitive">Mailbox</td><td data-label="Count">4</td><td data-label="Coverage">multiple senders, interleaved threads, full shutdown, partial sender drop</td></tr>
+<thead>
+<tr>
+  <th>Primitive</th>
+  <th>Count</th>
+  <th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Primitive">Queue</td>
+  <td data-label="Count">4</td>
+  <td data-label="Coverage">send/receive, ordering, bounded backpressure, shutdown on sender drop</td>
+</tr>
+<tr>
+  <td data-label="">Topic</td>
+  <td data-label="">3</td>
+  <td data-label="">fan-out delivery, ordering per subscriber, shutdown cascade</td>
+</tr>
+<tr>
+  <td data-label="">Mailbox</td>
+  <td data-label="">4</td>
+  <td data-label="">multiple senders, interleaved threads, full shutdown, partial sender drop</td>
+</tr>
+</tbody>
 </table>
 <p>Total: <strong>11 tests</strong> across the three primitives (T0-016).</p>
-<hr>
+<hr />
 <h2>Source Files</h2>
 <ul>
 <li><code>src/services/queue.rs</code> — 123 lines</li>
 <li><code>src/services/topic.rs</code> — 129 lines</li>
 <li><code>src/services/mailbox.rs</code> — 200 lines</li>
 </ul>
-<p>Total: <strong>452 lines</strong> of Rust implementing the full messaging layer (T0-016).</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>Total: <strong>452 lines</strong> of Rust implementing the full messaging layer (T0-016).</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

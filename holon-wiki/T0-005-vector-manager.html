@@ -128,15 +128,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-005 · VectorManager <span class="badge badge-how">HOW</span></h1><div class="prose prose-invert max-w-none"><h2>What it IS</h2>
 <p>VectorManager is the deterministic atom-to-vector registry inside the Holon kernel. It guarantees that <strong>the same atomic value always produces the same vector</strong>, given the same seed and dimensionality.</p>
 <p>Source: <code>holon-rs/src/kernel/vector_manager.rs</code> (325 lines)</p>
-<blockquote>"This module provides the core guarantee of Holon: The same atomic value ALWAYS produces the SAME vector."</blockquote>
-<p>It is a <code>#[derive(Clone)]</code> struct wrapping two <code>Arc<RwLock<HashMap<…>>></code> caches — one for atom vectors, one for position vectors — backed by a SHA-256 → ChaCha8Rng deterministic pipeline.</p>
+<blockquote>
+<p>&quot;This module provides the core guarantee of Holon: The same atomic value ALWAYS produces the SAME vector.&quot;</p>
+</blockquote>
+<p>It is a <code>#[derive(Clone)]</code> struct wrapping two <code>Arc&lt;RwLock&lt;HashMap&lt;…&gt;&gt;&gt;</code> caches — one for atom vectors, one for position vectors — backed by a SHA-256 → ChaCha8Rng deterministic pipeline.</p>
 <h2>Structure</h2>
-<pre><code>
-pub struct VectorManager {
+<pre><code class="language-rust">pub struct VectorManager {
     dimensions: usize,
     global_seed: u64,
-    cache: Arc<RwLock<HashMap<String, Vector>>>,
-    position_cache: Arc<RwLock<HashMap<i64, Vector>>>,
+    cache: Arc&lt;RwLock&lt;HashMap&lt;String, Vector&gt;&gt;&gt;,
+    position_cache: Arc&lt;RwLock&lt;HashMap&lt;i64, Vector&gt;&gt;&gt;,
 }
 </code></pre>
 <p>Two constructors:</p>
@@ -144,46 +145,87 @@ pub struct VectorManager {
 <li><code>new(dimensions)</code> — seed defaults to <code>0</code></li>
 <li><code>with_seed(dimensions, global_seed)</code> — explicit seed for reproducibility</li>
 </ul>
-<p>The <code>Arc<RwLock<…>></code> caches are shared across clones: all clones see the same underlying store.</p>
+<p>The <code>Arc&lt;RwLock&lt;…&gt;&gt;</code> caches are shared across clones: all clones see the same underlying store.</p>
 <h2>How it works</h2>
 <h3>Atom vector computation (<code>get_vector</code>)</h3>
 <ol>
 <li>Check the <code>cache</code> read-lock for a hit. Return immediately if found.</li>
-<li>Otherwise, call <code>compute_vector(atom)</code>:</li>
-</ol>
-<ul>
+<li>Otherwise, call <code>compute_vector(atom)</code>:<ul>
+<li>Hash <code>global_seed.to_le_bytes() || atom.as_bytes()</code> with <strong>SHA-256</strong></li>
 <li>Take the first 8 bytes of the hash as a <code>u64</code> seed</li>
 <li>Seed a <strong>ChaCha8Rng</strong> from that seed</li>
 <li>Generate <code>dimensions</code> values, each <code>rng.next_u32() % 3</code>, mapped to <code>{-1, 0, 1}</code></li>
 <li>Wrap in a <code>Vector</code></li>
 </ul>
-<ol>
+</li>
 <li>Write-lock the cache and insert the result.</li>
 </ol>
-<blockquote>"Generate random bipolar vector with {-1, 0, 1}. Match Python's distribution: 1/3 probability each."</blockquote>
+<blockquote>
+<p>&quot;Generate random bipolar vector with {-1, 0, 1}. Match Python's distribution: 1/3 probability each.&quot;</p>
+</blockquote>
 <p>The distribution is uniform: each dimension independently takes -1, 0, or 1 with equal probability.</p>
 <h3>Position vector computation (<code>get_position_vector</code>)</h3>
-<p>Position vectors are atom vectors with a synthetic key. The method formats the position as <code>"__pos__{position}"</code> and delegates to <code>compute_vector</code>. This matches the Python implementation's <code>_position_to_seed()</code>.</p>
-<blockquote>"Position vectors are seeded with <code>__pos__{position}</code> to match the Python implementation's <code>_position_to_seed()</code>."</blockquote>
-<p>Position vectors live in a separate <code>position_cache</code> keyed by <code>i64</code>, so <code>get_position_vector(0)</code> is never confused with <code>get_vector("0")</code>.</p>
+<p>Position vectors are atom vectors with a synthetic key. The method formats the position as <code>&quot;__pos__{position}&quot;</code> and delegates to <code>compute_vector</code>. This matches the Python implementation's <code>_position_to_seed()</code>.</p>
+<blockquote>
+<p>&quot;Position vectors are seeded with <code>__pos__{position}</code> to match the Python implementation's <code>_position_to_seed()</code>.&quot;</p>
+</blockquote>
+<p>Position vectors live in a separate <code>position_cache</code> keyed by <code>i64</code>, so <code>get_position_vector(0)</code> is never confused with <code>get_vector(&quot;0&quot;)</code>.</p>
 <h3>Codebook export/import</h3>
 <ul>
-<li><code>export_codebook()</code> → <code>HashMap<String, Vec<i8>></code> — serializes the atom cache</li>
+<li><code>export_codebook()</code> → <code>HashMap&lt;String, Vec&lt;i8&gt;&gt;</code> — serializes the atom cache</li>
 <li><code>import_codebook(codebook)</code> — restores cached vectors; existing entries preserved, imported entries overwrite on conflict</li>
 </ul>
 <p>This enables persisting the vector mapping across process restarts or sharing identical mappings between distributed nodes — even with a <strong>different</strong> seed, imported vectors are served from cache and never recomputed.</p>
 <h2>Key properties</h2>
 <table>
-<thead><tr><th>Property</th><th>Detail</th></tr></thead>
-<tr><td data-label="Property"><strong>Determinism</strong></td><td data-label="Detail">Same <code>(dimensions, seed, atom)</code> → identical vector, always. Verified by test <code>test_verify_determinism</code> across 5 atoms × 3 repetitions.</td></tr>
-<tr><td data-label="Property"><strong>Seed isolation</strong></td><td data-label="Detail">Different seeds → different vectors for the same atom.</td></tr>
-<tr><td data-label="Property"><strong>Atom isolation</strong></td><td data-label="Detail">Different atoms → different vectors (with overwhelming probability).</td></tr>
-<tr><td data-label="Property"><strong>Position isolation</strong></td><td data-label="Detail"><code>get_position_vector(n)</code> ≠ <code>get_vector(str(n))</code>.</td></tr>
-<tr><td data-label="Property"><strong>Cache sharing</strong></td><td data-label="Detail">Clones share <code>Arc</code>-backed caches; thread-safe via <code>RwLock</code>.</td></tr>
-<tr><td data-label="Property"><strong>Bipolar distribution</strong></td><td data-label="Detail">Uniform {-1, 0, 1} — 1/3 probability each dimension.</td></tr>
-<tr><td data-label="Property"><strong>Hash pipeline</strong></td><td data-label="Detail">SHA-256(global_seed ∥ atom)[0..8] → ChaCha8Rng → bipolar vector.</td></tr>
+<thead>
+<tr>
+  <th>Property</th>
+  <th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Property"><strong>Determinism</strong></td>
+  <td data-label="Detail">Same <code>(dimensions, seed, atom)</code> → identical vector, always. Verified by test <code>test_verify_determinism</code> across 5 atoms × 3 repetitions.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Seed isolation</strong></td>
+  <td data-label="">Different seeds → different vectors for the same atom.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Atom isolation</strong></td>
+  <td data-label="">Different atoms → different vectors (with overwhelming probability).</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Position isolation</strong></td>
+  <td data-label=""><code>get_position_vector(n)</code> ≠ <code>get_vector(str(n))</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Cache sharing</strong></td>
+  <td data-label="">Clones share <code>Arc</code>-backed caches; thread-safe via <code>RwLock</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Bipolar distribution</strong></td>
+  <td data-label="">Uniform {-1, 0, 1} — 1/3 probability each dimension.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Hash pipeline</strong></td>
+  <td data-label="">SHA-256(global_seed ∥ atom)[0..8] → ChaCha8Rng → bipolar vector.</td>
+</tr>
+</tbody>
 </table>
 <h2>Source quotes</h2>
-<blockquote>"Export the atom codebook as a serializable map. Returns atom names mapped to their raw i8 vector data. Useful for persisting the vector cache across process restarts or sharing identical mappings between distributed nodes."</blockquote>
-<blockquote>"Import a previously exported codebook. Restores cached vectors from the format produced by <code>export_codebook()</code>. Existing cache entries are preserved; imported entries overwrite on conflict."</blockquote>
-<blockquote>"Clear the vector cache" — clears both <code>cache</code> and <code>position_cache</code>.</blockquote></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<blockquote>
+<p>&quot;Uses SHA-256 hash of (global_seed || atom) to seed a ChaCha8 RNG, then generates random bipolar values in {-1, 0, 1}.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Export the atom codebook as a serializable map. Returns atom names mapped to their raw i8 vector data. Useful for persisting the vector cache across process restarts or sharing identical mappings between distributed nodes.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Import a previously exported codebook. Restores cached vectors from the format produced by <code>export_codebook()</code>. Existing cache entries are preserved; imported entries overwrite on conflict.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Clear the vector cache&quot; — clears both <code>cache</code> and <code>position_cache</code>.</p>
+</blockquote>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

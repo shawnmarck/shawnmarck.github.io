@@ -126,7 +126,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-009: Engram — Observation Storage and Retrieval <span class="badge badge-how">HOW</span></h1><div class="prose prose-invert max-w-none"><h2>What It IS</h2>
-<p>An <code>Engram</code> is "a named, serializable snapshot of a trained <code>OnlineSubspace</code>." It records what a learned pattern "looks like" at the moment of training and is <strong>immutable once created</strong>.</p>
+<p>An <code>Engram</code> is &quot;a named, serializable snapshot of a trained <code>OnlineSubspace</code>.&quot; It records what a learned pattern &quot;looks like&quot; at the moment of training and is <strong>immutable once created</strong>.</p>
 <p>An <code>EngramLibrary</code> is a <code>HashMap</code>-backed collection of named engrams that provides three matching strategies against probes:</p>
 <ol>
 <li><strong>Two-tier matching</strong> (<code>match_vec</code>): eigenvalue pre-filter → full residual scoring</li>
@@ -138,44 +138,76 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>When <code>EngramLibrary::add()</code> mints an engram from a trained <code>OnlineSubspace</code>, it:</p>
 <ol>
 <li>Extracts the subspace's eigenvalue vector.</li>
-<li><strong>L2-normalizes</strong> it to produce an <code>eigenvalue_signature</code> — "so that engrams of different sizes can be compared on a level playing field." (Normalization guard: if <code>eig_norm ≤ 1e-10</code>, the raw eigenvalues are used as-is.)</li>
+<li><strong>L2-normalizes</strong> it to produce an <code>eigenvalue_signature</code> — &quot;so that engrams of different sizes can be compared on a level playing field.&quot; (Normalization guard: if <code>eig_norm ≤ 1e-10</code>, the raw eigenvalues are used as-is.)</li>
 <li>Calls <code>subspace.snapshot()</code> to capture the full <code>SubspaceSnapshot</code> (mean, component matrix, n, threshold state).</li>
 <li>Stores optional <code>surprise_profile</code> (per-feature surprise scores) and arbitrary <code>metadata</code> (JSON).</li>
 </ol>
 <h3>Subspace Cache</h3>
 <p>Engrams do <strong>not</strong> serialize a live <code>OnlineSubspace</code>. The field <code>subspace_cache</code> is <code>#[serde(skip)]</code>. When <code>engram.subspace()</code> is called, it lazily reconstructs the <code>OnlineSubspace</code> from the stored snapshot via <code>OnlineSubspace::from_snapshot()</code>.</p>
 <h3>Two-Tier Matching (<code>match_vec</code>)</h3>
-<p>Takes a raw <code>&[f64]</code> probe, <code>top_k</code>, and <code>prefilter_k</code>:</p>
+<p>Takes a raw <code>&amp;[f64]</code> probe, <code>top_k</code>, and <code>prefilter_k</code>:</p>
 <ol>
 <li><strong>Eigenvalue pre-filter</strong> (O(k·n)): ranks engrams by eigenvalue energy (sum of squared signature values), takes the top <code>prefilter_k</code> candidates. Skipped entirely if <code>len(engrams) ≤ prefilter_k</code>.</li>
-<li><strong>Full residual</strong> (O(k·dim)): scores candidates by computing <code>engram.residual(x)</code> on each — the residual norm after projecting the probe onto the engram's learned manifold. Returns <code>Vec<(name, residual)></code> sorted ascending (lower = better fit).</li>
+<li><strong>Full residual</strong> (O(k·dim)): scores candidates by computing <code>engram.residual(x)</code> on each — the residual norm after projecting the probe onto the engram's learned manifold. Returns <code>Vec&lt;(name, residual)&gt;</code> sorted ascending (lower = better fit).</li>
 </ol>
 <h3>Spectrum Matching (<code>match_spectrum</code>)</h3>
-<p>Takes an eigenvalue slice and <code>top_k</code>. Computes cosine similarity between the probe's eigenvalue spectrum and each engram's stored L2-normalized <code>eigenvalue_signature</code>. "Use for rough pre-screening." Returns sorted descending (higher = better).</p>
+<p>Takes an eigenvalue slice and <code>top_k</code>. Computes cosine similarity between the probe's eigenvalue spectrum and each engram's stored L2-normalized <code>eigenvalue_signature</code>. &quot;Use for rough pre-screening.&quot; Returns sorted descending (higher = better).</p>
 <h3>Alignment Matching (<code>match_alignment</code>)</h3>
-<p>Takes a probe <code>OnlineSubspace</code> and <code>top_k</code>. Calls <code>subspace_alignment(engram.subspace(), 0)</code> for each engram — measuring whether variance lives in the same part of the vector space. Returns <code>Vec<(name, alignment_score)></code> sorted descending; "alignment is in [0, 1]: 1.0 = same directions, 0.0 = orthogonal."</p>
+<p>Takes a probe <code>OnlineSubspace</code> and <code>top_k</code>. Calls <code>subspace_alignment(engram.subspace(), 0)</code> for each engram — measuring whether variance lives in the same part of the vector space. Returns <code>Vec&lt;(name, alignment_score)&gt;</code> sorted descending; &quot;alignment is in [0, 1]: 1.0 = same directions, 0.0 = orthogonal.&quot;</p>
 <h3>Persistence</h3>
 <p><code>EngramLibrary</code> implements JSON round-trip via <code>save()</code> / <code>load()</code>. The test <code>test_serialization_round_trip</code> confirms that match results are bitwise identical after save→load.</p>
 <h2>Key Properties</h2>
 <table>
-<thead><tr><th>Property</th><th>Detail</th></tr></thead>
-<tr><td data-label="Property">Immutability</td><td data-label="Detail">Engrams are immutable after minting; only <code>metadata_mut()</code> allows mutation of metadata</td></tr>
-<tr><td data-label="Property">Eigenvalue normalization</td><td data-label="Detail">L2-normalized signature for cross-size comparison</td></tr>
-<tr><td data-label="Property">Lazy reconstruction</td><td data-label="Detail"><code>OnlineSubspace</code> rebuilt on first access, not serialized</td></tr>
-<tr><td data-label="Property">Default parameters</td><td data-label="Detail"><code>OnlineSubspace::new(dim, k)</code> defaults: <code>amnesia=2.0, ema_alpha=0.01, sigma_mult=3.5, reorth_interval=500</code></td></tr>
-<tr><td data-label="Property">Serialization</td><td data-label="Detail"><code>serde</code> derive on <code>Engram</code> and <code>EngramLibrary</code>; JSON file I/O</td></tr>
+<thead>
+<tr>
+  <th>Property</th>
+  <th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Property">Immutability</td>
+  <td data-label="Detail">Engrams are immutable after minting; only <code>metadata_mut()</code> allows mutation of metadata</td>
+</tr>
+<tr>
+  <td data-label="">Eigenvalue normalization</td>
+  <td data-label="">L2-normalized signature for cross-size comparison</td>
+</tr>
+<tr>
+  <td data-label="">Lazy reconstruction</td>
+  <td data-label=""><code>OnlineSubspace</code> rebuilt on first access, not serialized</td>
+</tr>
+<tr>
+  <td data-label="">Default parameters</td>
+  <td data-label=""><code>OnlineSubspace::new(dim, k)</code> defaults: <code>amnesia=2.0, ema_alpha=0.01, sigma_mult=3.5, reorth_interval=500</code></td>
+</tr>
+<tr>
+  <td data-label="">Serialization</td>
+  <td data-label=""><code>serde</code> derive on <code>Engram</code> and <code>EngramLibrary</code>; JSON file I/O</td>
+</tr>
+</tbody>
 </table>
 <h2>Source Quotes</h2>
-<blockquote>"An engram represents a learned pattern ('what normal looks like' for a given class of input)."</blockquote>
-<blockquote>— module-level doc, line 3–4</blockquote>
-<blockquote>"Engrams are immutable once created — they record what a specific pattern 'looks like' at the moment of training."</blockquote>
-<blockquote>— <code>Engram</code> struct doc, line 49–50</blockquote>
-<blockquote>"The eigenvalue signature is L2-normalised so that engrams of different sizes can be compared on a level playing field."</blockquote>
-<blockquote>— <code>add()</code> doc, line 159–160</blockquote>
-<blockquote>"Matching uses a two-tier strategy to avoid scoring every engram against every probe: 1. Eigenvalue pre-filter (O(k·n)): rank engrams by eigenvalue energy. 2. Full residual (O(k·dim)): score top-prefilter_k candidates."</blockquote>
-<blockquote>— <code>EngramLibrary</code> struct doc, line 136–140</blockquote>
-<blockquote>"Lower residual = better fit (vector is more 'in-distribution' for the pattern this engram represents)."</blockquote>
-<blockquote>— <code>residual()</code> doc, line 122–123</blockquote>
+<blockquote>
+<p>&quot;An engram represents a learned pattern ('what normal looks like' for a given class of input).&quot;
+— module-level doc, line 3–4</p>
+</blockquote>
+<blockquote>
+<p>&quot;Engrams are immutable once created — they record what a specific pattern 'looks like' at the moment of training.&quot;
+— <code>Engram</code> struct doc, line 49–50</p>
+</blockquote>
+<blockquote>
+<p>&quot;The eigenvalue signature is L2-normalised so that engrams of different sizes can be compared on a level playing field.&quot;
+— <code>add()</code> doc, line 159–160</p>
+</blockquote>
+<blockquote>
+<p>&quot;Matching uses a two-tier strategy to avoid scoring every engram against every probe: 1. Eigenvalue pre-filter (O(k·n)): rank engrams by eigenvalue energy. 2. Full residual (O(k·dim)): score top-prefilter_k candidates.&quot;
+— <code>EngramLibrary</code> struct doc, line 136–140</p>
+</blockquote>
+<blockquote>
+<p>&quot;Lower residual = better fit (vector is more 'in-distribution' for the pattern this engram represents).&quot;
+— <code>residual()</code> doc, line 122–123</p>
+</blockquote>
 <h2>Test Coverage</h2>
 <ul>
 <li><code>test_add_and_match</code>: probes from distribution A match engram A first</li>
@@ -185,4 +217,5 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>test_match_alignment</code>: even-distribution probe aligns best with even engram</li>
 <li><code>test_match_alignment_empty_library</code>: returns empty for empty library</li>
 <li><code>test_match_spectrum</code>: returns both engrams, sorted descending by similarity</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

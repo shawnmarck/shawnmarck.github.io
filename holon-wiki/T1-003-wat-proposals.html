@@ -125,20 +125,20 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T1-003: wat Proposals System <span class="badge badge-describe">DESCRIBE</span></h1><div class="prose prose-invert max-w-none"><p><strong>Verified:</strong> 2026-04-14</p>
-<p><strong>Source:</strong> <code>/root/projects/holon-workspace/wat/docs/proposals/</code></p>
-<p><strong>Correction:</strong> The system contains <strong>18 proposals</strong> (15 in 2026/03, 3 in 2026/04), not 31 as stated in the task. Each proposal has exactly 4 files: <code>PROPOSAL.md</code>, <code>RESOLUTION.md</code>, <code>review-beckman.md</code>, <code>review-hickey.md</code> — 72 files total.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T1-003: wat Proposals System <span class="badge badge-describe">DESCRIBE</span></h1><div class="prose prose-invert max-w-none"><p><strong>Verified:</strong> 2026-04-14
+<strong>Source:</strong> <code>/root/projects/holon-workspace/wat/docs/proposals/</code>
+<strong>Correction:</strong> The system contains <strong>18 proposals</strong> (15 in 2026/03, 3 in 2026/04), not 31 as stated in the task. Each proposal has exactly 4 files: <code>PROPOSAL.md</code>, <code>RESOLUTION.md</code>, <code>review-beckman.md</code>, <code>review-hickey.md</code> — 72 files total.</p>
+<hr />
 <h2>1. The Proposal Process</h2>
 <h3>How a proposal is created</h3>
 <p>A proposal follows a fixed structure in its <code>PROPOSAL.md</code>:</p>
 <ol>
 <li><strong>Scope</strong> — classified as <code>core</code>, <code>structural</code>, or follows from a prior proposal</li>
 <li><strong>The Current State</strong> — what exists today, with code examples from the enterprise codebase or the wat runtime</li>
-<li><strong>The Problem</strong> — concrete gap, often discovered by automated "wards" (gaze, forge, sever, scry, reap) or by tracing type violations between wat specs and Rust implementation</li>
+<li><strong>The Problem</strong> — concrete gap, often discovered by automated &quot;wards&quot; (gaze, forge, sever, scry, reap) or by tracing type violations between wat specs and Rust implementation</li>
 <li><strong>The Proposed Change</strong> — options with code examples, usually 2-3 alternatives</li>
 <li><strong>The Algebraic Question</strong> — does this compose with the existing monoid (bind/bundle)? Does it introduce new algebraic structure? Every proposal must address this.</li>
-<li><strong>The Simplicity Question</strong> — Hickey's test: "Is this simple or easy?" What is being complected? Could existing primitives solve it?</li>
+<li><strong>The Simplicity Question</strong> — Hickey's test: &quot;Is this simple or easy?&quot; What is being complected? Could existing primitives solve it?</li>
 <li><strong>Questions for Designers</strong> — specific yes/no and tradeoff questions for the review panel</li>
 </ol>
 <h3>How proposals are reviewed</h3>
@@ -148,7 +148,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>CONDITIONAL</strong> — accepted with specific conditions</li>
 <li><strong>REJECTED</strong> — with reasoning</li>
 </ul>
-<p>The reviews are <strong>not rubber stamps</strong>. They have reversed proposals (001), overruled each other, and been overruled by a "datamancer" role that synthesizes final decisions (see 013, 003/003).</p>
+<p>The reviews are <strong>not rubber stamps</strong>. They have reversed proposals (001), overruled each other, and been overruled by a &quot;datamancer&quot; role that synthesizes final decisions (see 013, 003/003).</p>
 <h3>How proposals are resolved</h3>
 <p>The <code>RESOLUTION.md</code> synthesizes the two reviews into a final decision:</p>
 <ul>
@@ -157,57 +157,120 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>ACCEPTED with tension</strong> — accepted but a specific disagreement is deferred</li>
 <li><strong>SUPERSEDED</strong> — the debate revealed a simpler answer (see 04/003)</li>
 </ul>
-<p>Resolution often involves <strong>overriding</strong> one designer. The resolution document records who was overridden and why. Beckman tends toward categorical framing (product/coproduct/co-algebra). Hickey tends toward simplicity and "don't add what functions already provide."</p>
-<hr>
+<p>Resolution often involves <strong>overriding</strong> one designer. The resolution document records who was overridden and why. Beckman tends toward categorical framing (product/coproduct/co-algebra). Hickey tends toward simplicity and &quot;don't add what functions already provide.&quot;</p>
+<hr />
 <h2>2. The Panel System</h2>
 <h3>Brian Beckman</h3>
 <ul>
 <li><strong>Role:</strong> Algebraic authority. Frames proposals in category theory — monoids, coalgebras, functors, catamorphisms, universal constructions.</li>
-<li><strong>Pattern:</strong> Asks "does this compose?" and "what categorical construction is this?" Tends to see structure where Hickey sees convention.</li>
-<li><strong>Key moves:</strong> Proposed <code>fold</code> as the catamorphism (001 review, accepted as 002). Framed protocols as "type classes — the third construction alongside struct (product) and enum (coproduct)" (014). Argued journal operations are co-generators of a coalgebra and belong in core (004).</li>
+<li><strong>Pattern:</strong> Asks &quot;does this compose?&quot; and &quot;what categorical construction is this?&quot; Tends to see structure where Hickey sees convention.</li>
+<li><strong>Key moves:</strong> Proposed <code>fold</code> as the catamorphism (001 review, accepted as 002). Framed protocols as &quot;type classes — the third construction alongside struct (product) and enum (coproduct)&quot; (014). Argued journal operations are co-generators of a coalgebra and belong in core (004).</li>
 <li><strong>Overridden:</strong> On struct field types (007 — wanted mandatory types, Hickey's untyped won). On <code>defservice</code> (04/003 — the datamancer showed functions + select suffice).</li>
 </ul>
 <h3>Rich Hickey</h3>
 <ul>
-<li><strong>Role:</strong> Simplicity authority. Applies "simple made easy" — distinguishes simple (one concept, one job) from easy (familiar, convenient). Protects the six primitives from growth.</li>
-<li><strong>Pattern:</strong> Asks "does this complect?" and "could existing forms do this?" Tends to reject new forms when discipline or data restructuring suffices.</li>
-<li><strong>Key moves:</strong> Rejected <code>defprocessor</code> flatly — "the function shape IS the declaration" (001). Won on untyped struct fields — "types are documentation, not enforcement" (007). Won keyword-as-function access — "keywords read like English" (007). Argued <code>fold</code> is a caller concern, not a callee declaration (002 — partially reversed when <code>fold</code> was accepted as control form).</li>
+<li><strong>Role:</strong> Simplicity authority. Applies &quot;simple made easy&quot; — distinguishes simple (one concept, one job) from easy (familiar, convenient). Protects the six primitives from growth.</li>
+<li><strong>Pattern:</strong> Asks &quot;does this complect?&quot; and &quot;could existing forms do this?&quot; Tends to reject new forms when discipline or data restructuring suffices.</li>
+<li><strong>Key moves:</strong> Rejected <code>defprocessor</code> flatly — &quot;the function shape IS the declaration&quot; (001). Won on untyped struct fields — &quot;types are documentation, not enforcement&quot; (007). Won keyword-as-function access — &quot;keywords read like English&quot; (007). Argued <code>fold</code> is a caller concern, not a callee declaration (002 — partially reversed when <code>fold</code> was accepted as control form).</li>
 <li><strong>Overridden:</strong> On journal operations in stdlib (004 — reversed after opacity argument). On <code>nil</code> (013 — datamancer chose structural absence, no nil value). On channels (003 — channels deleted as contradicting fold-based design).</li>
 </ul>
 <h3>The Datamancer</h3>
-<p>Not a formal reviewer but an <strong>arbitrating role</strong> visible in resolutions. Appears when the two designers disagree or when neither option is right. Overruled both designers on boolean/nil (013 — chose "structural absence" with <code>?</code> field convention, neither Clojure truthiness nor Rust separation). Overruled both on <code>defservice</code> (04/003 — showed that <code>select</code> + functions + <code>spawn</code> subsume <code>defprocess</code> and <code>defservice</code> entirely).</p>
-<hr>
+<p>Not a formal reviewer but an <strong>arbitrating role</strong> visible in resolutions. Appears when the two designers disagree or when neither option is right. Overruled both designers on boolean/nil (013 — chose &quot;structural absence&quot; with <code>?</code> field convention, neither Clojure truthiness nor Rust separation). Overruled both on <code>defservice</code> (04/003 — showed that <code>select</code> + functions + <code>spawn</code> subsume <code>defprocess</code> and <code>defservice</code> entirely).</p>
+<hr />
 <h2>3. Key Design Decisions Across Proposals</h2>
 <h3>Principles that emerge</h3>
 <ol>
-<li><strong>Transparency to Rust.</strong> Wat compiles to Rust. Form names should match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax should map obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</li>
-</ol>
-<ol>
-<li><strong>Simple > easy.</strong> Every proposal asks "is this simple or easy?" Convenience is rejected if it complected concerns. Variadic <code>update</code> (012) accepted because it completes an existing form. <code>defprocessor</code> (001) rejected because it packaged four concerns into one form.</li>
-</ol>
-<ol>
-<li><strong>Types are documentation, not enforcement.</strong> Structs are untyped (007). Protocols check arity, not return types (014). <code>when</code> without else generates <code>Option<T></code> — the compiler infers, the specifier doesn't annotate (013).</li>
-</ol>
-<ol>
-<li><strong>Opacity creates boundaries.</strong> If a type is opaque, its interface operations are core (004). This rule determined that <code>observe</code>/<code>predict</code>/<code>decay</code> are core, not stdlib.</li>
-</ol>
-<ol>
-<li><strong>The four-layer model</strong> (003): Syntax (compiler builtins), Core (algebra), Stdlib (derived operations), Userland (domain code). Each layer has a boundary rule — stdlib cannot import from userland, core can only be extended by proposal.</li>
+<li><p><strong>Transparency to Rust.</strong> Wat compiles to Rust. Form names should match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax should map obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</p>
+</li>
+<li><p><strong>Protect the algebra.</strong> The six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; (&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;atom, bind, bundle, cosine&lt;/a&gt;) and journal coalgebra (&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;journal, observe, predict, decay, curve&lt;/a&gt;) are the foundation. Proposal 001 was rejected to prevent a seventh primitive. Only <code>fold</code> was added — as a control form, not a primitive.</p>
+</li>
+<li><p><strong>Simple &gt; easy.</strong> Every proposal asks &quot;is this simple or easy?&quot; Convenience is rejected if it complected concerns. Variadic <code>update</code> (012) accepted because it completes an existing form. <code>defprocessor</code> (001) rejected because it packaged four concerns into one form.</p>
+</li>
+<li><p><strong>Types are documentation, not enforcement.</strong> Structs are untyped (007). Protocols check arity, not return types (014). <code>when</code> without else generates <code>Option&lt;T&gt;</code> — the compiler infers, the specifier doesn't annotate (013).</p>
+</li>
+<li><p><strong>Opacity creates boundaries.</strong> If a type is opaque, its interface operations are core (004). This rule determined that <code>observe</code>/<code>predict</code>/<code>decay</code> are core, not stdlib.</p>
+</li>
+<li><p><strong>The four-layer model</strong> (003): Syntax (compiler builtins), Core (algebra), Stdlib (derived operations), Userland (domain code). Each layer has a boundary rule — stdlib cannot import from userland, core can only be extended by proposal.</p>
+</li>
 </ol>
 <h3>Forms added to the language</h3>
 <table>
-<thead><tr><th>Form</th><th>Proposal</th><th>Layer</th><th>Notes</th></tr></thead>
-<tr><td data-label="Form"><code>fold</code></td><td data-label="Proposal">002</td><td data-label="Layer">Syntax (control)</td><td data-label="Notes">Catamorphism. Caller declares reduction.</td></tr>
-<tr><td data-label="Form"><code>struct</code></td><td data-label="Proposal">007</td><td data-label="Layer"><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td data-label="Notes">Product types. Rust's word. Untyped. Named construction.</td></tr>
-<tr><td data-label="Form"><code>(:field record)</code></td><td data-label="Proposal">007</td><td data-label="Layer"><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td data-label="Notes">Keyword-as-function projection.</td></tr>
-<tr><td data-label="Form"><code>(update record :field value)</code></td><td data-label="Proposal">006, 012</td><td data-label="Layer"><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td data-label="Notes">Functional update. Variadic (parallel semantics) from 012.</td></tr>
-<tr><td data-label="Form"><code>enum</code></td><td data-label="Proposal">010</td><td data-label="Layer"><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td data-label="Notes">Sum types. Simple + tagged variants. Keywords as variants.</td></tr>
-<tr><td data-label="Form"><code>defprotocol</code></td><td data-label="Proposal">014</td><td data-label="Layer"><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td data-label="Notes">Check-only. No dispatch. Maps to Rust trait.</td></tr>
-<tr><td data-label="Form"><code>satisfies</code></td><td data-label="Proposal">014, 015</td><td data-label="Layer"><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td data-label="Notes">Explicit, exhaustive mapping. One per (struct, protocol).</td></tr>
-<tr><td data-label="Form"><code>(field struct name expr)</code></td><td data-label="Proposal">011</td><td data-label="Layer">Stdlib (<code>std/fields.wat</code>)</td><td data-label="Notes">Derived field declarations. DAG dependencies.</td></tr>
-<tr><td data-label="Form"><code>pmap</code>, <code>pfor-each</code></td><td data-label="Proposal">04/001</td><td data-label="Layer">Syntax (iteration)</td><td data-label="Notes">Parallel map/for-each. Permission, not directive.</td></tr>
-<tr><td data-label="Form"><code>defpipe</code></td><td data-label="Proposal">04/002</td><td data-label="Layer">Syntax (concurrency)</td><td data-label="Notes">Typed pipe declarations. Bounded/unbounded capacity.</td></tr>
-<tr><td data-label="Form"><code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>spawn</code></td><td data-label="Proposal">04/002, 04/003</td><td data-label="Layer">Syntax (concurrency)</td><td data-label="Notes">Pipe verbs. <code>select</code> absorbs <code>select-ready</code>.</td></tr>
+<thead>
+<tr>
+  <th>Form</th>
+  <th>Proposal</th>
+  <th>Layer</th>
+  <th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Form"><code>fold</code></td>
+  <td data-label="Proposal">002</td>
+  <td data-label="Layer">Syntax (control)</td>
+  <td data-label="Notes">Catamorphism. Caller declares reduction.</td>
+</tr>
+<tr>
+  <td data-label=""><code>struct</code></td>
+  <td data-label="">007</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label="">Product types. Rust's word. Untyped. Named construction.</td>
+</tr>
+<tr>
+  <td data-label=""><code>(:field record)</code></td>
+  <td data-label="">007</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label="">Keyword-as-function projection.</td>
+</tr>
+<tr>
+  <td data-label=""><code>(update record :field value)</code></td>
+  <td data-label="">006, 012</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label="">Functional update. Variadic (parallel semantics) from 012.</td>
+</tr>
+<tr>
+  <td data-label=""><code>enum</code></td>
+  <td data-label="">010</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label="">Sum types. Simple + tagged variants. Keywords as variants.</td>
+</tr>
+<tr>
+  <td data-label=""><code>defprotocol</code></td>
+  <td data-label="">014</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label="">Check-only. No dispatch. Maps to Rust trait.</td>
+</tr>
+<tr>
+  <td data-label=""><code>satisfies</code></td>
+  <td data-label="">014, 015</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label="">Explicit, exhaustive mapping. One per (struct, protocol).</td>
+</tr>
+<tr>
+  <td data-label=""><code>(field struct name expr)</code></td>
+  <td data-label="">011</td>
+  <td data-label="">Stdlib (<code>std/fields.wat</code>)</td>
+  <td data-label="">Derived field declarations. DAG dependencies.</td>
+</tr>
+<tr>
+  <td data-label=""><code>pmap</code>, <code>pfor-each</code></td>
+  <td data-label="">04/001</td>
+  <td data-label="">Syntax (iteration)</td>
+  <td data-label="">Parallel map/for-each. Permission, not directive.</td>
+</tr>
+<tr>
+  <td data-label=""><code>defpipe</code></td>
+  <td data-label="">04/002</td>
+  <td data-label="">Syntax (concurrency)</td>
+  <td data-label="">Typed pipe declarations. Bounded/unbounded capacity.</td>
+</tr>
+<tr>
+  <td data-label=""><code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>spawn</code></td>
+  <td data-label="">04/002, 04/003</td>
+  <td data-label="">Syntax (concurrency)</td>
+  <td data-label="">Pipe verbs. <code>select</code> absorbs <code>select-ready</code>.</td>
+</tr>
+</tbody>
 </table>
 <h3>Forms rejected or retired</h3>
 <ul>
@@ -217,25 +280,45 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>defprocess</code>, <code>defservice</code> — withdrawn (04/003). Functions + <code>select</code> + <code>spawn</code> suffice.</li>
 <li><code>nil</code> — rejected (013). Absence is structural (<code>when</code> not executing), not a value.</li>
 </ul>
-<hr>
+<hr />
 <h2>4. Scope: Proposed vs Resolved</h2>
 <h3>By status</h3>
 <table>
-<thead><tr><th>Status</th><th>Count</th><th>Proposals</th></tr></thead>
-<tr><td data-label="Status"><strong>ACCEPTED</strong></td><td data-label="Count">16</td><td data-label="Proposals">002-015 (March), 04/001, 04/002, 04/003</td></tr>
-<tr><td data-label="Status"><strong>REJECTED</strong></td><td data-label="Count">1</td><td data-label="Proposals">001 (stream processor)</td></tr>
-<tr><td data-label="Status"><strong>SUPERSEDED</strong></td><td data-label="Count">1</td><td data-label="Proposals">04/003 (select form — debate yielded simpler answer: <code>select</code> + functions)</td></tr>
+<thead>
+<tr>
+  <th>Status</th>
+  <th>Count</th>
+  <th>Proposals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Status"><strong>ACCEPTED</strong></td>
+  <td data-label="Count">16</td>
+  <td data-label="Proposals">002-015 (March), 04/001, 04/002, 04/003</td>
+</tr>
+<tr>
+  <td data-label=""><strong>REJECTED</strong></td>
+  <td data-label="">1</td>
+  <td data-label="">001 (stream processor)</td>
+</tr>
+<tr>
+  <td data-label=""><strong>SUPERSEDED</strong></td>
+  <td data-label="">1</td>
+  <td data-label="">04/003 (select form — debate yielded simpler answer: <code>select</code> + functions)</td>
+</tr>
+</tbody>
 </table>
-<p>All 18 proposals have resolutions. None are in DRAFT or PROPOSED status at the file level (though 004 and 005 PROPOSAL.md headers say "DRAFT," their RESOLUTION.md files show acceptance).</p>
+<p>All 18 proposals have resolutions. None are in DRAFT or PROPOSED status at the file level (though 004 and 005 PROPOSAL.md headers say &quot;DRAFT,&quot; their RESOLUTION.md files show acceptance).</p>
 <h3>By scope area</h3>
 <p><strong>Language structure (4):</strong> 001 (stream processor — rejected), 002 (fold — accepted), 003 (language layers — accepted), 005 (compilation plan — accepted)</p>
 <p><strong>Core algebra (2):</strong> 004 (journal operations — core vs stdlib — accepted), 008 (honest gate — type boundary fix — accepted)</p>
-<p><strong><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> (7):</strong> 006 (aggregate types/defrecord — accepted), 007 (struct syntax — accepted), 010 (enum/sum types — accepted), 011 (derived fields — accepted), 012 (multi-field update — accepted), 013 (boolean/nil — accepted), 014 (protocols — accepted)</p>
+<p><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; (7):</strong> 006 (aggregate types/defrecord — accepted), 007 (struct syntax — accepted), 010 (enum/sum types — accepted), 011 (derived fields — accepted), 012 (multi-field update — accepted), 013 (boolean/nil — accepted), 014 (protocols — accepted)</p>
 <p><strong>Protocol mechanics (1):</strong> 015 (protocol satisfaction — accepted)</p>
 <p><strong>Stdlib (1):</strong> 009 (fact constructors + statistics — accepted)</p>
 <p><strong>Concurrency (3):</strong> 04/001 (parallel map — accepted), 04/002 (pipes — accepted), 04/003 (select — superseded/simplified)</p>
 <h3>Temporal pattern</h3>
-<p>The March 2026 proposals (001-015) built the language foundation: fold, layers, core boundaries, all of the <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a>, and the stdlib seeds. The April 2026 proposals (04/001-003) extended into concurrency — parallelism, pipes, and service patterns. The April proposals show the system maturing: the datamancer overruled both designers on 04/003, finding that the simplest answer (functions + select) was more powerful than either proposed option.</p>
+<p>The March 2026 proposals (001-015) built the language foundation: fold, layers, core boundaries, all of the &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;, and the stdlib seeds. The April 2026 proposals (04/001-003) extended into concurrency — parallelism, pipes, and service patterns. The April proposals show the system maturing: the datamancer overruled both designers on 04/003, finding that the simplest answer (functions + select) was more powerful than either proposed option.</p>
 <h3>Dependency chain</h3>
 <p>The proposals form a clear dependency graph:</p>
 <ul>
@@ -246,4 +329,5 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>006 → 007 (aggregate types accepted → struct syntax resolved)</li>
 <li>014 → 015 (protocols accepted → satisfaction mechanics)</li>
 <li>04/002 → 04/003 (pipes accepted → select form → superseded by simpler answer)</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

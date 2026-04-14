@@ -126,21 +126,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T2-005 — Lens <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><h2>The vocabulary subset selector.</h2>
-<hr>
+<hr />
 <h2>Overview</h2>
 <p>From <code>src/domain/lens.rs</code> (line 1–4):</p>
-<blockquote>"Lens wiring. Maps MarketLens/PositionLens to vocabulary facts. Extracted from orchestration/post.rs. These are the live functions that the wat-vm programs call to wire vocab modules to observer lenses."</blockquote>
+<blockquote>
+<p>&quot;Lens wiring. Maps MarketLens/PositionLens to vocabulary facts. Extracted from orchestration/post.rs. These are the live functions that the wat-vm programs call to wire vocab modules to observer lenses.&quot;</p>
+</blockquote>
 <p>From <code>src/domain/lens.rs</code> (line 38):</p>
-<blockquote>"Proposals 041+042: three schools (Dow, Pring, Wyckoff), 11 lenses."</blockquote>
+<blockquote>
+<p>&quot;Proposals 041+042: three schools (Dow, Pring, Wyckoff), 11 lenses.&quot;</p>
+</blockquote>
 <h3>Divergence: GUIDE vs Rust</h3>
 <p>The GUIDE (lines 1260–1266) describes a <strong>flat</strong> MarketLens with 6 variants: <code>:momentum</code>, <code>:structure</code>, <code>:volume</code>, <code>:narrative</code>, <code>:regime</code>, <code>:generalist</code>. The actual Rust has <strong>replaced</strong> this with 11 variants organized into 3 named schools (Dow, Pring, Wyckoff). This is a complete restructuring, not a minor update.</p>
 <p>The GUIDE also describes exit lenses (<code>:volatility</code>, <code>:structure</code>, <code>:timing</code>, <code>:generalist</code>) that map to wat vocab modules. The Rust has <strong>two</strong> position lenses (<code>Core</code>, <code>Full</code>) that map to completely different Rust-only vocab modules (exit regime, exit time, phase).</p>
-<hr>
+<hr />
 <h2>MarketLens — 11 Variants in 3 Schools</h2>
 <p>Source: <code>src/types/enums.rs</code> lines 58–93.</p>
 <h3>Enum Definition</h3>
-<pre><code>
-/// Market observer lens — which vocabulary modules an observer attends to.
+<pre><code class="language-rust">/// Market observer lens — which vocabulary modules an observer attends to.
 /// Proposals 041+042: three schools (Dow, Pring, Wyckoff), 11 lenses total.
 pub enum MarketLens {
     // Dow school
@@ -161,31 +164,72 @@ pub enum MarketLens {
 </code></pre>
 <h3>Display Names</h3>
 <table>
-<thead><tr><th>Variant</th><th>Display String</th></tr></thead>
-<tr><td data-label="Variant"><code>DowTrend</code></td><td data-label="Display String"><code>"dow-trend"</code></td></tr>
-<tr><td data-label="Variant"><code>DowVolume</code></td><td data-label="Display String"><code>"dow-volume"</code></td></tr>
-<tr><td data-label="Variant"><code>DowCycle</code></td><td data-label="Display String"><code>"dow-cycle"</code></td></tr>
-<tr><td data-label="Variant"><code>DowGeneralist</code></td><td data-label="Display String"><code>"dow-generalist"</code></td></tr>
-<tr><td data-label="Variant"><code>PringImpulse</code></td><td data-label="Display String"><code>"pring-impulse"</code></td></tr>
-<tr><td data-label="Variant"><code>PringConfirmation</code></td><td data-label="Display String"><code>"pring-confirmation"</code></td></tr>
-<tr><td data-label="Variant"><code>PringRegime</code></td><td data-label="Display String"><code>"pring-regime"</code></td></tr>
-<tr><td data-label="Variant"><code>PringGeneralist</code></td><td data-label="Display String"><code>"pring-generalist"</code></td></tr>
-<tr><td data-label="Variant"><code>WyckoffEffort</code></td><td data-label="Display String"><code>"wyckoff-effort"</code></td></tr>
-<tr><td data-label="Variant"><code>WyckoffPersistence</code></td><td data-label="Display String"><code>"wyckoff-persistence"</code></td></tr>
-<tr><td data-label="Variant"><code>WyckoffPosition</code></td><td data-label="Display String"><code>"wyckoff-position"</code></td></tr>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Display String</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>DowTrend</code></td>
+  <td data-label="Display String"><code>&quot;dow-trend&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>DowVolume</code></td>
+  <td data-label=""><code>&quot;dow-volume&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>DowCycle</code></td>
+  <td data-label=""><code>&quot;dow-cycle&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>DowGeneralist</code></td>
+  <td data-label=""><code>&quot;dow-generalist&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>PringImpulse</code></td>
+  <td data-label=""><code>&quot;pring-impulse&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>PringConfirmation</code></td>
+  <td data-label=""><code>&quot;pring-confirmation&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>PringRegime</code></td>
+  <td data-label=""><code>&quot;pring-regime&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>PringGeneralist</code></td>
+  <td data-label=""><code>&quot;pring-generalist&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>WyckoffEffort</code></td>
+  <td data-label=""><code>&quot;wyckoff-effort&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>WyckoffPersistence</code></td>
+  <td data-label=""><code>&quot;wyckoff-persistence&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>WyckoffPosition</code></td>
+  <td data-label=""><code>&quot;wyckoff-position&quot;</code></td>
+</tr>
+</tbody>
 </table>
 <p>Traits: <code>Clone</code>, <code>Copy</code>, <code>Debug</code>, <code>PartialEq</code>, <code>Eq</code>, <code>Hash</code>.</p>
-<hr>
+<hr />
 <h2>Market Lens Wiring — Exact Module Mapping</h2>
 <p>Source: <code>src/domain/lens.rs</code> function <code>market_lens_facts</code> (lines 42–165).</p>
 <p>From line 43–44:</p>
-<blockquote>"Shared: time facts (all lenses get these)"</blockquote>
+<blockquote>
+<p>&quot;Shared: time facts (all lenses get these)&quot;</p>
+</blockquote>
 <p>Every market lens includes <code>encode_time_facts(candle)</code> — the 5 shared/time atoms (minute, hour, day-of-week, day-of-month, month-of-year).</p>
 <h3>Dow School</h3>
 <h4><code>DowTrend</code></h4>
 <p>From lens.rs lines 48–57:</p>
-<pre><code>
-MarketLens::DowTrend => {
+<pre><code class="language-rust">MarketLens::DowTrend =&gt; {
     // close-sma20/50/200, adx, di-spread, macd-hist, atr-ratio
     facts.extend(encode_momentum_facts(candle, scales));
     // hurst, autocorrelation, adx
@@ -197,18 +241,45 @@ MarketLens::DowTrend => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Function</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Function"><code>encode_time_facts</code></td><td data-label="Atoms">5 atoms</td></tr>
-<tr><td data-label="Module">market/momentum</td><td data-label="Function"><code>encode_momentum_facts</code></td><td data-label="Atoms">6 atoms (close-sma20, close-sma50, close-sma200, macd-hist, di-spread, atr-ratio)</td></tr>
-<tr><td data-label="Module">market/persistence</td><td data-label="Function"><code>encode_persistence_facts</code></td><td data-label="Atoms">3 atoms (hurst, autocorrelation, adx)</td></tr>
-<tr><td data-label="Module">market/regime</td><td data-label="Function"><code>encode_regime_facts</code></td><td data-label="Atoms">8 atoms (kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim)</td></tr>
-<tr><td data-label="Module">market/timeframe</td><td data-label="Function"><code>encode_timeframe_facts</code></td><td data-label="Atoms">6 atoms (tf-1h-trend, tf-1h-ret, tf-4h-trend, tf-4h-ret, tf-agreement, tf-5m-1h-align)</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Function</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Function"><code>encode_time_facts</code></td>
+  <td data-label="Atoms">5 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/momentum</td>
+  <td data-label=""><code>encode_momentum_facts</code></td>
+  <td data-label="">6 atoms (close-sma20, close-sma50, close-sma200, macd-hist, di-spread, atr-ratio)</td>
+</tr>
+<tr>
+  <td data-label="">market/persistence</td>
+  <td data-label=""><code>encode_persistence_facts</code></td>
+  <td data-label="">3 atoms (hurst, autocorrelation, adx)</td>
+</tr>
+<tr>
+  <td data-label="">market/regime</td>
+  <td data-label=""><code>encode_regime_facts</code></td>
+  <td data-label="">8 atoms (kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim)</td>
+</tr>
+<tr>
+  <td data-label="">market/timeframe</td>
+  <td data-label=""><code>encode_timeframe_facts</code></td>
+  <td data-label="">6 atoms (tf-1h-trend, tf-1h-ret, tf-4h-trend, tf-4h-ret, tf-agreement, tf-5m-1h-align)</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 28 atoms</strong></p>
 <h4><code>DowVolume</code></h4>
 <p>From lens.rs lines 58–65:</p>
-<pre><code>
-MarketLens::DowVolume => {
+<pre><code class="language-rust">MarketLens::DowVolume =&gt; {
     // volume-ratio, obv-slope, buying-pressure, selling-pressure, body-ratio
     facts.extend(encode_flow_facts(candle, scales));
     // since-vol-spike, since-rsi-extreme, since-large-move, dist-from-*, ...
@@ -218,17 +289,40 @@ MarketLens::DowVolume => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Function</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Function"><code>encode_time_facts</code></td><td data-label="Atoms">5 atoms</td></tr>
-<tr><td data-label="Module">market/flow</td><td data-label="Function"><code>encode_flow_facts</code></td><td data-label="Atoms">6 atoms</td></tr>
-<tr><td data-label="Module">market/standard</td><td data-label="Function"><code>encode_standard_facts</code></td><td data-label="Atoms">8 atoms</td></tr>
-<tr><td data-label="Module">market/keltner</td><td data-label="Function"><code>encode_keltner_facts</code></td><td data-label="Atoms">6 atoms</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Function</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Function"><code>encode_time_facts</code></td>
+  <td data-label="Atoms">5 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/flow</td>
+  <td data-label=""><code>encode_flow_facts</code></td>
+  <td data-label="">6 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/standard</td>
+  <td data-label=""><code>encode_standard_facts</code></td>
+  <td data-label="">8 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/keltner</td>
+  <td data-label=""><code>encode_keltner_facts</code></td>
+  <td data-label="">6 atoms</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 25 atoms</strong></p>
 <h4><code>DowCycle</code></h4>
 <p>From lens.rs lines 66–77:</p>
-<pre><code>
-MarketLens::DowCycle => {
+<pre><code class="language-rust">MarketLens::DowCycle =&gt; {
     // rsi, cci, mfi, williams-r, roc-1/3/6/12
     facts.extend(encode_oscillator_facts(candle, scales));
     // bb-width, squeeze, bb-pos, kelt-pos, ...
@@ -242,19 +336,50 @@ MarketLens::DowCycle => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Function</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Function"><code>encode_time_facts</code></td><td data-label="Atoms">5 atoms</td></tr>
-<tr><td data-label="Module">market/oscillators</td><td data-label="Function"><code>encode_oscillator_facts</code></td><td data-label="Atoms">8 atoms</td></tr>
-<tr><td data-label="Module">market/keltner</td><td data-label="Function"><code>encode_keltner_facts</code></td><td data-label="Atoms">6 atoms</td></tr>
-<tr><td data-label="Module">market/momentum</td><td data-label="Function"><code>encode_momentum_facts</code></td><td data-label="Atoms">6 atoms</td></tr>
-<tr><td data-label="Module">market/standard</td><td data-label="Function"><code>encode_standard_facts</code></td><td data-label="Atoms">8 atoms</td></tr>
-<tr><td data-label="Module">market/timeframe</td><td data-label="Function"><code>encode_timeframe_facts</code></td><td data-label="Atoms">6 atoms</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Function</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Function"><code>encode_time_facts</code></td>
+  <td data-label="Atoms">5 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/oscillators</td>
+  <td data-label=""><code>encode_oscillator_facts</code></td>
+  <td data-label="">8 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/keltner</td>
+  <td data-label=""><code>encode_keltner_facts</code></td>
+  <td data-label="">6 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/momentum</td>
+  <td data-label=""><code>encode_momentum_facts</code></td>
+  <td data-label="">6 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/standard</td>
+  <td data-label=""><code>encode_standard_facts</code></td>
+  <td data-label="">8 atoms</td>
+</tr>
+<tr>
+  <td data-label="">market/timeframe</td>
+  <td data-label=""><code>encode_timeframe_facts</code></td>
+  <td data-label="">6 atoms</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 39 atoms</strong></p>
 <h4><code>DowGeneralist</code></h4>
 <p>From lens.rs lines 78–88:</p>
-<pre><code>
-MarketLens::DowGeneralist => {
+<pre><code class="language-rust">MarketLens::DowGeneralist =&gt; {
     // All Dow atoms: union of DowTrend + DowVolume + DowCycle modules
     facts.extend(encode_momentum_facts(candle, scales));
     facts.extend(encode_persistence_facts(candle, scales));
@@ -267,24 +392,57 @@ MarketLens::DowGeneralist => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/momentum</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/persistence</td><td data-label="Atoms">3</td></tr>
-<tr><td data-label="Module">market/regime</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/timeframe</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/flow</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/standard</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/keltner</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/oscillators</td><td data-label="Atoms">8</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/momentum</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/persistence</td>
+  <td data-label="">3</td>
+</tr>
+<tr>
+  <td data-label="">market/regime</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/timeframe</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/flow</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/standard</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/keltner</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/oscillators</td>
+  <td data-label="">8</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 56 atoms</strong> (union of all Dow school modules)</p>
-<hr>
+<hr />
 <h3>Pring School</h3>
 <h4><code>PringImpulse</code></h4>
 <p>From lens.rs lines 91–98:</p>
-<pre><code>
-MarketLens::PringImpulse => {
+<pre><code class="language-rust">MarketLens::PringImpulse =&gt; {
     // roc-1, roc-6, roc-12 (also rsi, cci, mfi, williams-r, roc-3)
     facts.extend(encode_oscillator_facts(candle, scales));
     // macd-hist, di-spread (also close-sma*, atr-ratio)
@@ -294,17 +452,35 @@ MarketLens::PringImpulse => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/oscillators</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/momentum</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/persistence</td><td data-label="Atoms">3</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/oscillators</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/momentum</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/persistence</td>
+  <td data-label="">3</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 22 atoms</strong></p>
 <h4><code>PringConfirmation</code></h4>
 <p>From lens.rs lines 99–108:</p>
-<pre><code>
-MarketLens::PringConfirmation => {
+<pre><code class="language-rust">MarketLens::PringConfirmation =&gt; {
     // obv-slope, volume-ratio (also buying/selling-pressure, body-ratio, vwap-distance)
     facts.extend(encode_flow_facts(candle, scales));
     // rsi, mfi (also cci, williams-r, roc-*)
@@ -316,18 +492,39 @@ MarketLens::PringConfirmation => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/flow</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/oscillators</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/divergence</td><td data-label="Atoms">0–3 (conditional)</td></tr>
-<tr><td data-label="Module">market/timeframe</td><td data-label="Atoms">6</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/flow</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/oscillators</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/divergence</td>
+  <td data-label="">0–3 (conditional)</td>
+</tr>
+<tr>
+  <td data-label="">market/timeframe</td>
+  <td data-label="">6</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 25–28 atoms</strong> (divergence conditional)</p>
 <h4><code>PringRegime</code></h4>
 <p>From lens.rs lines 109–116:</p>
-<pre><code>
-MarketLens::PringRegime => {
+<pre><code class="language-rust">MarketLens::PringRegime =&gt; {
     // kama-er, choppiness (also aroon-up/down, dfa-alpha, ...)
     facts.extend(encode_regime_facts(candle, scales));
     // hurst, adx, autocorrelation
@@ -337,17 +534,35 @@ MarketLens::PringRegime => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/regime</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/persistence</td><td data-label="Atoms">3</td></tr>
-<tr><td data-label="Module">market/keltner</td><td data-label="Atoms">6</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/regime</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/persistence</td>
+  <td data-label="">3</td>
+</tr>
+<tr>
+  <td data-label="">market/keltner</td>
+  <td data-label="">6</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 22 atoms</strong></p>
 <h4><code>PringGeneralist</code></h4>
 <p>From lens.rs lines 117–127:</p>
-<pre><code>
-MarketLens::PringGeneralist => {
+<pre><code class="language-rust">MarketLens::PringGeneralist =&gt; {
     // All Pring atoms: union of PringImpulse + PringConfirmation + PringRegime
     facts.extend(encode_oscillator_facts(candle, scales));
     facts.extend(encode_momentum_facts(candle, scales));
@@ -360,24 +575,57 @@ MarketLens::PringGeneralist => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/oscillators</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/momentum</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/persistence</td><td data-label="Atoms">3</td></tr>
-<tr><td data-label="Module">market/flow</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/divergence</td><td data-label="Atoms">0–3 (conditional)</td></tr>
-<tr><td data-label="Module">market/timeframe</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/regime</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/keltner</td><td data-label="Atoms">6</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/oscillators</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/momentum</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/persistence</td>
+  <td data-label="">3</td>
+</tr>
+<tr>
+  <td data-label="">market/flow</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/divergence</td>
+  <td data-label="">0–3 (conditional)</td>
+</tr>
+<tr>
+  <td data-label="">market/timeframe</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/regime</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/keltner</td>
+  <td data-label="">6</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 48–51 atoms</strong></p>
-<hr>
+<hr />
 <h3>Wyckoff School</h3>
 <h4><code>WyckoffEffort</code></h4>
 <p>From lens.rs lines 130–139:</p>
-<pre><code>
-MarketLens::WyckoffEffort => {
+<pre><code class="language-rust">MarketLens::WyckoffEffort =&gt; {
     // volume-ratio, obv-slope, buying-pressure, selling-pressure, body-ratio
     facts.extend(encode_flow_facts(candle, scales));
     // upper-wick, lower-wick, body-ratio-pa, range-ratio, gap, consecutive-*
@@ -389,18 +637,39 @@ MarketLens::WyckoffEffort => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/flow</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/price_action</td><td data-label="Atoms">7</td></tr>
-<tr><td data-label="Module">market/oscillators</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/standard</td><td data-label="Atoms">8</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/flow</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/price_action</td>
+  <td data-label="">7</td>
+</tr>
+<tr>
+  <td data-label="">market/oscillators</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/standard</td>
+  <td data-label="">8</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 34 atoms</strong></p>
 <h4><code>WyckoffPersistence</code></h4>
 <p>From lens.rs lines 140–149:</p>
-<pre><code>
-MarketLens::WyckoffPersistence => {
+<pre><code class="language-rust">MarketLens::WyckoffPersistence =&gt; {
     // adx, hurst, autocorrelation
     facts.extend(encode_persistence_facts(candle, scales));
     // kama-er, choppiness, aroon-up, aroon-down, ...
@@ -412,18 +681,39 @@ MarketLens::WyckoffPersistence => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/persistence</td><td data-label="Atoms">3</td></tr>
-<tr><td data-label="Module">market/regime</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/momentum</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/oscillators</td><td data-label="Atoms">8</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/persistence</td>
+  <td data-label="">3</td>
+</tr>
+<tr>
+  <td data-label="">market/regime</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/momentum</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/oscillators</td>
+  <td data-label="">8</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 30 atoms</strong></p>
 <h4><code>WyckoffPosition</code></h4>
 <p>From lens.rs lines 150–161:</p>
-<pre><code>
-MarketLens::WyckoffPosition => {
+<pre><code class="language-rust">MarketLens::WyckoffPosition =&gt; {
     // close-sma20, close-sma50, close-sma200 (also di-spread, macd-hist, atr-ratio)
     facts.extend(encode_momentum_facts(candle, scales));
     // dist-from-high, dist-from-low (also since-*, dist-from-midpoint, ...)
@@ -437,42 +727,130 @@ MarketLens::WyckoffPosition => {
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">shared/time</td><td data-label="Atoms">5</td></tr>
-<tr><td data-label="Module">market/momentum</td><td data-label="Atoms">6</td></tr>
-<tr><td data-label="Module">market/standard</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/regime</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">market/divergence</td><td data-label="Atoms">0–3 (conditional)</td></tr>
-<tr><td data-label="Module">market/fibonacci</td><td data-label="Atoms">8</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">shared/time</td>
+  <td data-label="Atoms">5</td>
+</tr>
+<tr>
+  <td data-label="">market/momentum</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label="">market/standard</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/regime</td>
+  <td data-label="">8</td>
+</tr>
+<tr>
+  <td data-label="">market/divergence</td>
+  <td data-label="">0–3 (conditional)</td>
+</tr>
+<tr>
+  <td data-label="">market/fibonacci</td>
+  <td data-label="">8</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Total: 35–38 atoms</strong></p>
-<hr>
+<hr />
 <h3>⚠️ No Wyckoff Generalist</h3>
 <p>There is no <code>WyckoffGeneralist</code> variant. The Wyckoff school has 3 specialist lenses but no generalist. This contrasts with Dow (which has DowGeneralist) and Pring (which has PringGeneralist).</p>
-<hr>
+<hr />
 <h2>Market Modules Used vs Available</h2>
 <table>
-<thead><tr><th>Market Module</th><th>Used by which lenses</th><th>Total lenses</th></tr></thead>
-<tr><td data-label="Market Module"><code>shared/time</code></td><td data-label="Used by which lenses">ALL 11</td><td data-label="Total lenses">11</td></tr>
-<tr><td data-label="Market Module"><code>market/oscillators</code></td><td data-label="Used by which lenses">DowCycle, DowGeneralist, PringImpulse, PringConfirmation, PringGeneralist, WyckoffEffort, WyckoffPersistence</td><td data-label="Total lenses">7</td></tr>
-<tr><td data-label="Market Module"><code>market/momentum</code></td><td data-label="Used by which lenses">DowTrend, DowCycle, DowGeneralist, PringImpulse, PringGeneralist, WyckoffPersistence, WyckoffPosition</td><td data-label="Total lenses">7</td></tr>
-<tr><td data-label="Market Module"><code>market/persistence</code></td><td data-label="Used by which lenses">DowTrend, DowGeneralist, PringImpulse, PringRegime, PringGeneralist, WyckoffPersistence</td><td data-label="Total lenses">6</td></tr>
-<tr><td data-label="Market Module"><code>market/regime</code></td><td data-label="Used by which lenses">DowTrend, DowGeneralist, PringRegime, PringGeneralist, WyckoffPersistence, WyckoffPosition</td><td data-label="Total lenses">6</td></tr>
-<tr><td data-label="Market Module"><code>market/timeframe</code></td><td data-label="Used by which lenses">DowTrend, DowCycle, DowGeneralist, PringConfirmation, PringGeneralist</td><td data-label="Total lenses">5</td></tr>
-<tr><td data-label="Market Module"><code>market/flow</code></td><td data-label="Used by which lenses">DowVolume, DowGeneralist, PringConfirmation, PringGeneralist, WyckoffEffort</td><td data-label="Total lenses">5</td></tr>
-<tr><td data-label="Market Module"><code>market/standard</code></td><td data-label="Used by which lenses">DowVolume, DowCycle, DowGeneralist, WyckoffEffort, WyckoffPosition</td><td data-label="Total lenses">5</td></tr>
-<tr><td data-label="Market Module"><code>market/keltner</code></td><td data-label="Used by which lenses">DowVolume, DowCycle, DowGeneralist, PringRegime, PringGeneralist</td><td data-label="Total lenses">5</td></tr>
-<tr><td data-label="Market Module"><code>market/divergence</code></td><td data-label="Used by which lenses">PringConfirmation, PringGeneralist, WyckoffPosition</td><td data-label="Total lenses">3</td></tr>
-<tr><td data-label="Market Module"><code>market/fibonacci</code></td><td data-label="Used by which lenses">WyckoffPosition</td><td data-label="Total lenses">1</td></tr>
-<tr><td data-label="Market Module"><code>market/price_action</code></td><td data-label="Used by which lenses">WyckoffEffort</td><td data-label="Total lenses">1</td></tr>
-<tr><td data-label="Market Module"><code>market/ichimoku</code></td><td data-label="Used by which lenses"><strong>NONE</strong> (removed Proposals 041+042)</td><td data-label="Total lenses">0</td></tr>
-<tr><td data-label="Market Module"><code>market/stochastic</code></td><td data-label="Used by which lenses"><strong>NONE</strong> (removed Proposals 041+042)</td><td data-label="Total lenses">0</td></tr>
+<thead>
+<tr>
+  <th>Market Module</th>
+  <th>Used by which lenses</th>
+  <th>Total lenses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Market Module"><code>shared/time</code></td>
+  <td data-label="Used by which lenses">ALL 11</td>
+  <td data-label="Total lenses">11</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/oscillators</code></td>
+  <td data-label="">DowCycle, DowGeneralist, PringImpulse, PringConfirmation, PringGeneralist, WyckoffEffort, WyckoffPersistence</td>
+  <td data-label="">7</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/momentum</code></td>
+  <td data-label="">DowTrend, DowCycle, DowGeneralist, PringImpulse, PringGeneralist, WyckoffPersistence, WyckoffPosition</td>
+  <td data-label="">7</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/persistence</code></td>
+  <td data-label="">DowTrend, DowGeneralist, PringImpulse, PringRegime, PringGeneralist, WyckoffPersistence</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/regime</code></td>
+  <td data-label="">DowTrend, DowGeneralist, PringRegime, PringGeneralist, WyckoffPersistence, WyckoffPosition</td>
+  <td data-label="">6</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/timeframe</code></td>
+  <td data-label="">DowTrend, DowCycle, DowGeneralist, PringConfirmation, PringGeneralist</td>
+  <td data-label="">5</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/flow</code></td>
+  <td data-label="">DowVolume, DowGeneralist, PringConfirmation, PringGeneralist, WyckoffEffort</td>
+  <td data-label="">5</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/standard</code></td>
+  <td data-label="">DowVolume, DowCycle, DowGeneralist, WyckoffEffort, WyckoffPosition</td>
+  <td data-label="">5</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/keltner</code></td>
+  <td data-label="">DowVolume, DowCycle, DowGeneralist, PringRegime, PringGeneralist</td>
+  <td data-label="">5</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/divergence</code></td>
+  <td data-label="">PringConfirmation, PringGeneralist, WyckoffPosition</td>
+  <td data-label="">3</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/fibonacci</code></td>
+  <td data-label="">WyckoffPosition</td>
+  <td data-label="">1</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/price_action</code></td>
+  <td data-label="">WyckoffEffort</td>
+  <td data-label="">1</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/ichimoku</code></td>
+  <td data-label=""><strong>NONE</strong> (removed Proposals 041+042)</td>
+  <td data-label="">0</td>
+</tr>
+<tr>
+  <td data-label=""><code>market/stochastic</code></td>
+  <td data-label=""><strong>NONE</strong> (removed Proposals 041+042)</td>
+  <td data-label="">0</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>PositionLens — 2 Variants</h2>
 <p>Source: <code>src/types/enums.rs</code> lines 95–103:</p>
-<pre><code>
-/// Position observer lens — which trade-state vocabulary a position observer uses.
+<pre><code class="language-rust">/// Position observer lens — which trade-state vocabulary a position observer uses.
 /// Proposal 040: two lenses based on trade atoms, not market data.
 pub enum PositionLens {
     /// 5 trade atoms — the consensus (excursion, retracement, age, peak-age, signaled).
@@ -484,59 +862,118 @@ pub enum PositionLens {
 <h3>Wiring</h3>
 <p>Source: <code>src/domain/lens.rs</code> function <code>position_lens_facts</code> (lines 171–189).</p>
 <p>From lines 169–170:</p>
-<blockquote>"Core: lean — regime + time. 5 trade atoms downstream."</blockquote>
-<blockquote>"Full: rich — regime + time + phase series. 13 trade atoms downstream."</blockquote>
-<p>Note: The "5 trade atoms" and "13 trade atoms" arrive <strong>through the trade pipe</strong>, not through this vocab function. The vocab function produces only the regime/time/phase atoms. Trade atoms are injected separately by the broker.</p>
+<blockquote>
+<p>&quot;Core: lean — regime + time. 5 trade atoms downstream.&quot;
+&quot;Full: rich — regime + time + phase series. 13 trade atoms downstream.&quot;</p>
+</blockquote>
+<p>Note: The &quot;5 trade atoms&quot; and &quot;13 trade atoms&quot; arrive <strong>through the trade pipe</strong>, not through this vocab function. The vocab function produces only the regime/time/phase atoms. Trade atoms are injected separately by the broker.</p>
 <h4><code>PositionLens::Core</code></h4>
-<pre><code>
-PositionLens::Core => {
+<pre><code class="language-rust">PositionLens::Core =&gt; {
     let mut facts = encode_exit_regime_facts(candle, scales);
     facts.extend(encode_exit_time_facts(candle));
     facts
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">exit/regime</td><td data-label="Atoms">8 (kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim)</td></tr>
-<tr><td data-label="Module">exit/time</td><td data-label="Atoms">2 (hour, day-of-week)</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">exit/regime</td>
+  <td data-label="Atoms">8 (kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim)</td>
+</tr>
+<tr>
+  <td data-label="">exit/time</td>
+  <td data-label="">2 (hour, day-of-week)</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Vocab atoms: 10. Plus 5 trade atoms downstream.</strong></p>
 <h4><code>PositionLens::Full</code></h4>
-<pre><code>
-PositionLens::Full => {
+<pre><code class="language-rust">PositionLens::Full =&gt; {
     let mut facts = encode_exit_regime_facts(candle, scales);
     facts.extend(encode_exit_time_facts(candle));
     facts.extend(encode_phase_current_facts(candle, scales));
-    facts.push(phase_series_thought(&candle.phase_history));
-    facts.extend(phase_scalar_facts(&candle.phase_history, scales));
+    facts.push(phase_series_thought(&amp;candle.phase_history));
+    facts.extend(phase_scalar_facts(&amp;candle.phase_history, scales));
     facts
 }
 </code></pre>
 <table>
-<thead><tr><th>Module</th><th>Atoms</th></tr></thead>
-<tr><td data-label="Module">exit/regime</td><td data-label="Atoms">8</td></tr>
-<tr><td data-label="Module">exit/time</td><td data-label="Atoms">2</td></tr>
-<tr><td data-label="Module">exit/phase (current)</td><td data-label="Atoms">2 (phase label, phase-duration)</td></tr>
-<tr><td data-label="Module">exit/phase (series)</td><td data-label="Atoms">1 Sequential thought (variable-length Bundle per PhaseRecord)</td></tr>
-<tr><td data-label="Module">exit/phase (scalars)</td><td data-label="Atoms">0–4 (phase-valley-trend, phase-peak-trend, phase-range-trend, phase-spacing-trend)</td></tr>
+<thead>
+<tr>
+  <th>Module</th>
+  <th>Atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Module">exit/regime</td>
+  <td data-label="Atoms">8</td>
+</tr>
+<tr>
+  <td data-label="">exit/time</td>
+  <td data-label="">2</td>
+</tr>
+<tr>
+  <td data-label="">exit/phase (current)</td>
+  <td data-label="">2 (phase label, phase-duration)</td>
+</tr>
+<tr>
+  <td data-label="">exit/phase (series)</td>
+  <td data-label="">1 Sequential thought (variable-length Bundle per PhaseRecord)</td>
+</tr>
+<tr>
+  <td data-label="">exit/phase (scalars)</td>
+  <td data-label="">0–4 (phase-valley-trend, phase-peak-trend, phase-range-trend, phase-spacing-trend)</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Vocab atoms: 12–15. Plus 13 trade atoms downstream.</strong></p>
 <h3>Test Assertions</h3>
 <p>From lens.rs lines 250–255:</p>
-<pre><code>
-// Core: regime(8) + time(2) = 10.
+<pre><code class="language-rust">// Core: regime(8) + time(2) = 10.
 // Full: regime(8) + time(2) + phase-label(1) + phase-duration(1) + phase-series(1) = 13.
 // (No scalar summaries from empty phase_history on default candle.)
 // Trade atoms arrive through the trade pipe, not here.
 assert_eq!(core_facts.len(), 10); // regime(8) + time(2)
 assert_eq!(full_facts.len(), 13); // regime(8) + time(2) + phase(3)
 </code></pre>
-<hr>
+<hr />
 <h2>Summary</h2>
 <table>
-<thead><tr><th>System</th><th>GUIDE Says</th><th>Rust Actually Does</th></tr></thead>
-<tr><td data-label="System">MarketLens</td><td data-label="GUIDE Says">6 flat variants (momentum, structure, volume, narrative, regime, generalist)</td><td data-label="Rust Actually Does">11 variants in 3 schools (Dow×4, Pring×4, Wyckoff×3)</td></tr>
-<tr><td data-label="System">PositionLens</td><td data-label="GUIDE Says">4 exit variants (volatility, structure, timing, generalist) mapped to exit wat modules</td><td data-label="Rust Actually Does">2 variants (Core, Full) mapped to Rust-only exit modules</td></tr>
-<tr><td data-label="System">Removed modules</td><td data-label="GUIDE Says">Not mentioned</td><td data-label="Rust Actually Does">ichimoku, stochastic — modules exist but no lens calls them</td></tr>
-<tr><td data-label="System">Exit vocab</td><td data-label="GUIDE Says">volatility.wat, structure.wat, timing.wat</td><td data-label="Rust Actually Does">exit_regime.rs, exit_time.rs, exit_phase.rs — completely different</td></tr>
-</table></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<thead>
+<tr>
+  <th>System</th>
+  <th>GUIDE Says</th>
+  <th>Rust Actually Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="System">MarketLens</td>
+  <td data-label="GUIDE Says">6 flat variants (momentum, structure, volume, narrative, regime, generalist)</td>
+  <td data-label="Rust Actually Does">11 variants in 3 schools (Dow×4, Pring×4, Wyckoff×3)</td>
+</tr>
+<tr>
+  <td data-label="">PositionLens</td>
+  <td data-label="">4 exit variants (volatility, structure, timing, generalist) mapped to exit wat modules</td>
+  <td data-label="">2 variants (Core, Full) mapped to Rust-only exit modules</td>
+</tr>
+<tr>
+  <td data-label="">Removed modules</td>
+  <td data-label="">Not mentioned</td>
+  <td data-label="">ichimoku, stochastic — modules exist but no lens calls them</td>
+</tr>
+<tr>
+  <td data-label="">Exit vocab</td>
+  <td data-label="">volatility.wat, structure.wat, timing.wat</td>
+  <td data-label="">exit_regime.rs, exit_time.rs, exit_phase.rs — completely different</td>
+</tr>
+</tbody>
+</table>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

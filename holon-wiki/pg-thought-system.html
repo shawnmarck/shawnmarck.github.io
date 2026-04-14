@@ -126,85 +126,179 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Thought System — how candles become thoughts and thoughts become meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> (atoms) or <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where "similar market conditions live near each other." The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> then observes and learns from these thoughts over time.</p>
-<hr></div><div class="prose prose-invert max-w-none"><h2>1. The Pipeline: Candle → Facts → AST → Vector → Thought</h2>
-<pre class="mermaid">
-flowchart TD
-    candle["candle"] -->|"facts"| vocab["vocab module\n(pure fn)"]
-    vocab -->|"Vec&lt;ThoughtAST&gt;"| encoder["ThoughtEncoder\n.encode()"]
-    encoder -->|"Vector"| vector["Vector"]
-    encoder -->|"across candles"| incremental["IncrementalBundle"]
-</code></pre>
+<p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; (atoms) or &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where &quot;similar market conditions live near each other.&quot; The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Reckoner Coalgebra&lt;/a&gt; then observes and learns from these thoughts over time.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>1. The Pipeline: Candle → Facts → AST → Vector → Thought</h2>
+<pre class="mermaid">flowchart TD
+    candle[&quot;candle&quot;] --&gt;|&quot;facts&quot;| vocab[&quot;vocab module\n(pure fn)&quot;]
+    vocab --&gt;|&quot;Vec&amp;lt;ThoughtAST&amp;gt;&quot;| encoder[&quot;ThoughtEncoder\n.encode()&quot;]
+    encoder --&gt;|&quot;Vector&quot;| vector[&quot;Vector&quot;]
+    encoder --&gt;|&quot;across candles&quot;| incremental[&quot;IncrementalBundle&quot;]
+
 <h3>Step 1: Vocabulary modules emit facts</h3>
-<p>Vocabulary modules are <strong>pure functions</strong> — something in, facts out, no state. Each domain (market, exit, shared) observes different aspects of a candle and emits a <code>Vec<ThoughtAST></code>.</p>
-<blockquote>"Pure functions. Something in, facts out. No state. Each domain thinks about different things." — T2-004</blockquote>
+<p>Vocabulary modules are <strong>pure functions</strong> — something in, facts out, no state. Each domain (market, exit, shared) observes different aspects of a candle and emits a <code>Vec&lt;ThoughtAST&gt;</code>.</p>
+<blockquote>
+<p>&quot;Pure functions. Something in, facts out. No state. Each domain thinks about different things.&quot; — T2-004</p>
+</blockquote>
 <p>Each fact is a <code>ThoughtAST</code> node carrying an encoding scheme:</p>
 <table>
-<thead><tr><th>Scheme</th><th>When to use</th><th>Examples</th></tr></thead>
-<tr><td data-label="Scheme"><code>Linear { scale }</code></td><td data-label="When to use">Naturally bounded scalars</td><td data-label="Examples">RSI [0,1], Bollinger position [-1,1]</td></tr>
-<tr><td data-label="Scheme"><code>Log</code></td><td data-label="When to use">Unbounded positive scalars</td><td data-label="Examples">ATR ratio, volume ratio</td></tr>
-<tr><td data-label="Scheme"><code>Circular { period }</code></td><td data-label="When to use">Periodic scalars</td><td data-label="Examples">minute (60), hour (24), day-of-week (7)</td></tr>
+<thead>
+<tr>
+  <th>Scheme</th>
+  <th>When to use</th>
+  <th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Scheme"><code>Linear { scale }</code></td>
+  <td data-label="When to use">Naturally bounded scalars</td>
+  <td data-label="Examples">RSI [0,1], Bollinger position [-1,1]</td>
+</tr>
+<tr>
+  <td data-label=""><code>Log</code></td>
+  <td data-label="">Unbounded positive scalars</td>
+  <td data-label="">ATR ratio, volume ratio</td>
+</tr>
+<tr>
+  <td data-label=""><code>Circular { period }</code></td>
+  <td data-label="">Periodic scalars</td>
+  <td data-label="">minute (60), hour (24), day-of-week (7)</td>
+</tr>
+</tbody>
 </table>
-<blockquote>"The encoding scheme IS the bounding strategy." — T2-004</blockquote>
-<p>Every relationship is a <strong>signed scalar</strong>, not a boolean. No "above" or "below" atoms — just the number with sign and magnitude.</p>
-<blockquote>"No zones. No categories. Only scalars. 'Overbought' is a magic number wearing a name." — T2-004</blockquote>
+<blockquote>
+<p>&quot;The encoding scheme IS the bounding strategy.&quot; — T2-004</p>
+</blockquote>
+<p>Every relationship is a <strong>signed scalar</strong>, not a boolean. No &quot;above&quot; or &quot;below&quot; atoms — just the number with sign and magnitude.</p>
+<blockquote>
+<p>&quot;No zones. No categories. Only scalars. 'Overbought' is a magic number wearing a name.&quot; — T2-004</p>
+</blockquote>
 <h3>Step 2: ThoughtAST — the thought expression tree</h3>
 <p>The <code>ThoughtAST</code> enum (T0-011) is the intermediate representation between vocabulary and vector:</p>
 <table>
-<thead><tr><th>Variant</th><th>Purpose</th><th>Example</th></tr></thead>
-<tr><td data-label="Variant"><code>Atom(String)</code></td><td data-label="Purpose">Named symbol, no scalar</td><td data-label="Example"><code>"rsi"</code></td></tr>
-<tr><td data-label="Variant"><code>Linear { value, scale }</code></td><td data-label="Purpose">Bounded scalar</td><td data-label="Example"><code>Linear { value: 0.73, scale: 1.0 }</code></td></tr>
-<tr><td data-label="Variant"><code>Log { value }</code></td><td data-label="Purpose">Unbounded positive scalar</td><td data-label="Example"><code>Log { value: 1.5 }</code></td></tr>
-<tr><td data-label="Variant"><code>Circular { value, period }</code></td><td data-label="Purpose">Wrapping periodic scalar</td><td data-label="Example"><code>Circular { value: 14.0, period: 24.0 }</code></td></tr>
-<tr><td data-label="Variant"><code>Bind(Box, Box)</code></td><td data-label="Purpose">Two concepts composed into a relationship</td><td data-label="Example"><code>Bind(Atom("rsi"), Log(1.5))</code></td></tr>
-<tr><td data-label="Variant"><code>Bundle(Vec)</code></td><td data-label="Purpose">Superposition of multiple relationships</td><td data-label="Example"><code>Bundle([fact1, fact2, fact3])</code></td></tr>
-<tr><td data-label="Variant"><code>Sequential(Vec)</code></td><td data-label="Purpose">Position-sensitive sequence</td><td data-label="Example"><code>[A, B] ≠ [B, A]</code></td></tr>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Purpose</th>
+  <th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>Atom(String)</code></td>
+  <td data-label="Purpose">Named symbol, no scalar</td>
+  <td data-label="Example"><code>&quot;rsi&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Linear { value, scale }</code></td>
+  <td data-label="">Bounded scalar</td>
+  <td data-label=""><code>Linear { value: 0.73, scale: 1.0 }</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Log { value }</code></td>
+  <td data-label="">Unbounded positive scalar</td>
+  <td data-label=""><code>Log { value: 1.5 }</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Circular { value, period }</code></td>
+  <td data-label="">Wrapping periodic scalar</td>
+  <td data-label=""><code>Circular { value: 14.0, period: 24.0 }</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Bind(Box, Box)</code></td>
+  <td data-label="">Two concepts composed into a relationship</td>
+  <td data-label=""><code>Bind(Atom(&quot;rsi&quot;), Log(1.5))</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Bundle(Vec)</code></td>
+  <td data-label="">Superposition of multiple relationships</td>
+  <td data-label=""><code>Bundle([fact1, fact2, fact3])</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Sequential(Vec)</code></td>
+  <td data-label="">Position-sensitive sequence</td>
+  <td data-label=""><code>[A, B] ≠ [B, A]</code></td>
+</tr>
+</tbody>
 </table>
 <p>A typical market candle might produce ~60–80 individual facts across all vocabulary modules, bundled into a single thought vector.</p>
 <p><code>collect_facts()</code> recursively flattens nested Bundles/Sequentials, skipping bare Atoms (names without values are not facts).</p>
 <h3>Step 3: ThoughtEncoder walks the AST</h3>
 <p>The <code>ThoughtEncoder</code> (T0-011) is <strong>stateless</strong> — no cache. It holds only a <code>ScalarEncoder</code> and a <code>VectorManager</code>. Each <code>encode()</code> call re-evaluates the entire subtree:</p>
 <table>
-<thead><tr><th>AST variant</th><th>Encoding action</th></tr></thead>
-<tr><td data-label="AST variant"><code>Atom(name)</code></td><td data-label="Encoding action"><code>VectorManager.get_vector(name)</code> — SHA-256 → ChaCha8Rng → bipolar vector</td></tr>
-<tr><td data-label="AST variant"><code>Linear { value, scale }</code></td><td data-label="Encoding action"><code>ScalarEncoder.encode(value, Linear { scale })</code> — rotational interpolation</td></tr>
-<tr><td data-label="AST variant"><code>Log { value }</code></td><td data-label="Encoding action"><code>ScalarEncoder.encode_log(value)</code> — log₁₀ then rotational</td></tr>
-<tr><td data-label="AST variant"><code>Circular { value, period }</code></td><td data-label="Encoding action"><code>ScalarEncoder.encode(value, Circular { period })</code> — modulo wrap</td></tr>
-<tr><td data-label="AST variant"><code>Bind(left, right)</code></td><td data-label="Encoding action">Recursively encode both, then <code>Primitives::bind(&l, &r)</code></td></tr>
-<tr><td data-label="AST variant"><code>Bundle(children)</code></td><td data-label="Encoding action">Encode all children, then <code>Primitives::bundle(&refs)</code></td></tr>
-<tr><td data-label="AST variant"><code>Sequential(items)</code></td><td data-label="Encoding action">Encode each item, <code>permute</code> by position index, then <code>bundle</code></td></tr>
+<thead>
+<tr>
+  <th>AST variant</th>
+  <th>Encoding action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="AST variant"><code>Atom(name)</code></td>
+  <td data-label="Encoding action"><code>VectorManager.get_vector(name)</code> — SHA-256 → ChaCha8Rng → bipolar vector</td>
+</tr>
+<tr>
+  <td data-label=""><code>Linear { value, scale }</code></td>
+  <td data-label=""><code>ScalarEncoder.encode(value, Linear { scale })</code> — rotational interpolation</td>
+</tr>
+<tr>
+  <td data-label=""><code>Log { value }</code></td>
+  <td data-label=""><code>ScalarEncoder.encode_log(value)</code> — log₁₀ then rotational</td>
+</tr>
+<tr>
+  <td data-label=""><code>Circular { value, period }</code></td>
+  <td data-label=""><code>ScalarEncoder.encode(value, Circular { period })</code> — modulo wrap</td>
+</tr>
+<tr>
+  <td data-label=""><code>Bind(left, right)</code></td>
+  <td data-label="">Recursively encode both, then <code>Primitives::bind(&amp;l, &amp;r)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Bundle(children)</code></td>
+  <td data-label="">Encode all children, then <code>Primitives::bundle(&amp;refs)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Sequential(items)</code></td>
+  <td data-label="">Encode each item, <code>permute</code> by position index, then <code>bundle</code></td>
+</tr>
+</tbody>
 </table>
-<blockquote>"Production encoding goes through <code>encoding::encode::encode()</code> which checks the LRU. This struct exists for tests and IncrementalBundle." — T0-011</blockquote>
-<hr>
+<blockquote>
+<p>&quot;Production encoding goes through <code>encoding::encode::encode()</code> which checks the LRU. This struct exists for tests and IncrementalBundle.&quot; — T0-011</p>
+</blockquote>
+<hr />
 <h2>2. The Vector Algebra — how thoughts are composed</h2>
 <p>The foundation is a <strong>Vector Algebra</strong> defined in the WAT spec (T0-002) as:</p>
-<blockquote>"A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism."</blockquote>
+<blockquote>
+<p>&quot;A commutative monoid under bundle, with bind as the group action and cosine as the measurement homomorphism.&quot;</p>
+</blockquote>
 <h3>atom — concept identity</h3>
-<blockquote>"Name a concept → deterministic bipolar vector. Same seed + same name = same vector everywhere."</blockquote>
-<p>Implemented by <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>: <code>SHA-256(global_seed ∥ name)[0..8] → ChaCha8Rng → {-1, 0, +1}^dim</code>.</p>
+<blockquote>
+<p>&quot;Name a concept → deterministic bipolar vector. Same seed + same name = same vector everywhere.&quot;</p>
+</blockquote>
+<p>Implemented by &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;: <code>SHA-256(global_seed ∥ name)[0..8] → ChaCha8Rng → {-1, 0, +1}^dim</code>.</p>
 <h3>bind — compose relationships</h3>
 <p>Element-wise multiplication of bipolar vectors. Self-inverse: <code>bind(bind(A, B), A) = B</code> (exact for bipolar, not approximate).</p>
-<p>This is how "rsi is 0.73" becomes a single vector: <code>bind(atom("rsi"), encode_linear(0.73, 1.0))</code>.</p>
+<p>This is how &quot;rsi is 0.73&quot; becomes a single vector: <code>bind(atom(&quot;rsi&quot;), encode_linear(0.73, 1.0))</code>.</p>
 <h3>bundle — superimpose facts</h3>
-<p>Element-wise majority vote (sum then sign-threshold): <code>>0 → +1</code>, <code><0 → -1</code>, <code>==0 → 0</code>. Associative and commutative. This is how ~60 individual facts collapse into <strong>one thought vector</strong>.</p>
-<p><strong>Divergence noted</strong>: WAT says "identity = zero vector" but Rust panics on empty input.</p>
+<p>Element-wise majority vote (sum then sign-threshold): <code>&gt;0 → +1</code>, <code>&lt;0 → -1</code>, <code>==0 → 0</code>. Associative and commutative. This is how ~60 individual facts collapse into <strong>one thought vector</strong>.</p>
+<p><strong>Divergence noted</strong>: WAT says &quot;identity = zero vector&quot; but Rust panics on empty input.</p>
 <h3>cosine — measure similarity</h3>
-<p>The only measurement. Returns <code>[-1.0, +1.0]</code>. How the system determines that "this market state is similar to that one."</p>
-<hr>
+<p>The only measurement. Returns <code>[-1.0, +1.0]</code>. How the system determines that &quot;this market state is similar to that one.&quot;</p>
+<hr />
 <h2>3. Scalar Encoding — mapping numbers into meaning-space</h2>
 <p>Scalar encoding ensures that <strong>similar values produce similar vectors</strong> (T0-004). Two independent systems exist:</p>
 <h3>Rotational encoding (ScalarEncoder)</h3>
 <p>Generates two random bipolar vectors (<code>base</code>, <code>ortho</code>) via ChaCha8Rng, then rotates between them:</p>
-<pre><code>
-frac = value / scale
+<pre><code>frac = value / scale
 angle = frac × 2π
 result[i] = sign(base[i] × cos(angle) + ortho[i] × sin(angle))
 </code></pre>
 <p>Used by <code>ThoughtEncoder</code> for <code>Linear</code>, <code>Log</code>, and <code>Circular</code> nodes.</p>
 <h3>Positional encoding (Encoder/Walkable path)</h3>
 <p>Transformer-style sinusoidal encoding with geometrically spaced frequencies:</p>
-<pre><code>
-freq = 1.0 / scale^(i / dim)
+<pre><code>freq = 1.0 / scale^(i / dim)
 if i is even: sin(position × freq)
 if i is odd:  cos(position × freq)
 </code></pre>
@@ -212,84 +306,152 @@ if i is odd:  cos(position × freq)
 <p>These produce <strong>different vectors for the same input</strong> — they are separate code paths.</p>
 <h3>Key encoding properties</h3>
 <ul>
-<li><strong>Similarity gradient</strong>: Closer values → higher cosine. Verified: <code>sim(0,10) > sim(0,50)</code>.</li>
+<li><strong>Similarity gradient</strong>: Closer values → higher cosine. Verified: <code>sim(0,10) &gt; sim(0,50)</code>.</li>
 <li><strong>Circular wrap</strong>: Hour 23 is more similar to hour 0 than hour 12.</li>
 <li><strong>Log ratio preservation</strong>: Equal ratios → approximately equal similarity drops.</li>
 <li><strong>Quantization awareness</strong>: Bipolar thresholding causes quantization; accumulators that average multiple samples recover gradient behavior.</li>
 </ul>
-<hr>
+<hr />
 <h2>4. Walkable — zero-serialization encoding</h2>
 <p>The <code>Walkable</code> trait (T0-006) enables any Rust type to be directly encoded into vectors <strong>without JSON/EDN serialization</strong>. It defines a structural type system (<code>WalkType</code>) that the encoder recursively walks:</p>
 <table>
-<thead><tr><th>WalkType</th><th>Encoding semantics</th></tr></thead>
-<tr><td data-label="WalkType"><code>Scalar</code></td><td data-label="Encoding semantics">Atom lookup or special numeric encoding</td></tr>
-<tr><td data-label="WalkType"><code>Map</code></td><td data-label="Encoding semantics">Role-filler binding: each key bound to its value's vector, then all bundled</td></tr>
-<tr><td data-label="WalkType"><code>List</code></td><td data-label="Encoding semantics">Position-encoded: each element bound to its indexed path, then bundled</td></tr>
-<tr><td data-label="WalkType"><code>Set</code></td><td data-label="Encoding semantics">Items bundled directly, then bound with <code>"set_indicator"</code> role</td></tr>
-<tr><td data-label="WalkType"><code>Spread</code></td><td data-label="Encoding semantics">Fan-out: each element becomes an independent leaf binding</td></tr>
+<thead>
+<tr>
+  <th>WalkType</th>
+  <th>Encoding semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="WalkType"><code>Scalar</code></td>
+  <td data-label="Encoding semantics">Atom lookup or special numeric encoding</td>
+</tr>
+<tr>
+  <td data-label=""><code>Map</code></td>
+  <td data-label="">Role-filler binding: each key bound to its value's vector, then all bundled</td>
+</tr>
+<tr>
+  <td data-label=""><code>List</code></td>
+  <td data-label="">Position-encoded: each element bound to its indexed path, then bundled</td>
+</tr>
+<tr>
+  <td data-label=""><code>Set</code></td>
+  <td data-label="">Items bundled directly, then bound with <code>&quot;set_indicator&quot;</code> role</td>
+</tr>
+<tr>
+  <td data-label=""><code>Spread</code></td>
+  <td data-label="">Fan-out: each element becomes an independent leaf binding</td>
+</tr>
+</tbody>
 </table>
-<blockquote>"The key insight is <strong>role-filler binding</strong>: we bind each value (filler) with its key (role) before bundling." — T0-006</blockquote>
+<blockquote>
+<p>&quot;The key insight is <strong>role-filler binding</strong>: we bind each value (filler) with its key (role) before bundling.&quot; — T0-006</p>
+</blockquote>
 <p>This is an alternative path to <code>ThoughtAST</code> — both produce the same vector algebra operations, but Walkable works on native Rust types while ThoughtAST works on the explicit tree.</p>
-<hr>
+<hr />
 <h2>5. IncrementalBundle — efficiency across candles</h2>
-<p>For streaming data (one candle at a time), re-encoding ~60 facts every tick is expensive. <code>IncrementalBundle</code> (T0-011) maintains running <code>Vec<i32></code> sums:</p>
+<p>For streaming data (one candle at a time), re-encoding ~60 facts every tick is expensive. <code>IncrementalBundle</code> (T0-011) maintains running <code>Vec&lt;i32&gt;</code> sums:</p>
 <ol>
-<li><strong>First candle</strong>: Full encode — encode every fact, accumulate sums, store <code>HashMap<ThoughtAST, Vector></code>.</li>
+<li><strong>First candle</strong>: Full encode — encode every fact, accumulate sums, store <code>HashMap&lt;ThoughtAST, Vector&gt;</code>.</li>
 <li><strong>Subsequent candles</strong>: Diff — remove vectors for facts that disappeared, encode only new/changed facts, update sums.</li>
 <li><strong>Threshold</strong>: <code>sign(sum)</code> produces the bundle — proven <strong>bit-identical</strong> to a full bundle from scratch.</li>
 </ol>
-<blockquote>"round_to at vocab emission is load-bearing for the AST diff. Quantized floats compare reliably." — T0-011</blockquote>
-<p>Without <code>round_to</code>, floating-point drift would cause false "changed" detections, degrading to full recompute.</p>
-<hr>
+<blockquote>
+<p>&quot;round_to at vocab emission is load-bearing for the AST diff. Quantized floats compare reliably.&quot; — T0-011</p>
+</blockquote>
+<p>Without <code>round_to</code>, floating-point drift would cause false &quot;changed&quot; detections, degrading to full recompute.</p>
+<hr />
 <h2>6. The Full Vocabulary Landscape</h2>
 <p>Three domains, scoped subfiles (T2-004):</p>
 <table>
-<thead><tr><th>Domain</th><th>Modules</th><th>Live atoms</th></tr></thead>
-<tr><td data-label="Domain"><strong>shared/</strong></td><td data-label="Modules">time (5 atoms)</td><td data-label="Live atoms">5 — all wired</td></tr>
-<tr><td data-label="Domain"><strong>market/</strong></td><td data-label="Modules">standard (8), oscillators (8), flow (6), persistence (3), regime (8), divergence (3), fibonacci (8), keltner (6), momentum (6), price_action (7), timeframe (6)</td><td data-label="Live atoms">~69 — ichimoku & stochastic removed</td></tr>
-<tr><td data-label="Domain"><strong>exit/</strong> (Rust)</td><td data-label="Modules">regime (8), time (2), phase (2+variable)</td><td data-label="Live atoms">~12+ — wat spec exit modules not wired</td></tr>
+<thead>
+<tr>
+  <th>Domain</th>
+  <th>Modules</th>
+  <th>Live atoms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Domain"><strong>shared/</strong></td>
+  <td data-label="Modules">time (5 atoms)</td>
+  <td data-label="Live atoms">5 — all wired</td>
+</tr>
+<tr>
+  <td data-label=""><strong>market/</strong></td>
+  <td data-label="">standard (8), oscillators (8), flow (6), persistence (3), regime (8), divergence (3), fibonacci (8), keltner (6), momentum (6), price_action (7), timeframe (6)</td>
+  <td data-label="">~69 — ichimoku &amp; stochastic removed</td>
+</tr>
+<tr>
+  <td data-label=""><strong>exit/</strong> (Rust)</td>
+  <td data-label="">regime (8), time (2), phase (2+variable)</td>
+  <td data-label="">~12+ — wat spec exit modules not wired</td>
+</tr>
+</tbody>
 </table>
 <p><strong>~86+ atoms fire per candle</strong> across a typical lens configuration. Each atom becomes one <code>ThoughtAST</code> leaf. All leaves are bundled into one thought vector.</p>
 <h3>Known divergences</h3>
 <ul>
 <li><strong>Exit domain</strong>: GUIDE describes <code>volatility.wat</code>, <code>structure.wat</code>, <code>timing.wat</code> — none are wired in live Rust. The Rust exit vocab uses separate regime/time/phase modules instead.</li>
-<li><strong>Ichimoku & stochastic</strong>: Removed from all lenses per Proposals 041+042. Modules exist but are not called.</li>
+<li><strong>Ichimoku &amp; stochastic</strong>: Removed from all lenses per Proposals 041+042. Modules exist but are not called.</li>
 </ul>
-<hr>
+<hr />
 <h2>7. Caching Architecture</h2>
 <p>Three distinct caching layers:</p>
 <table>
-<thead><tr><th>Layer</th><th>Location</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Layer"><strong>VectorManager cache</strong></td><td data-label="Location"><code>Arc<RwLock<HashMap<String, Vector>>></code></td><td data-label="Purpose">Atom → vector mapping. Persistent across all encodes. Shared via <code>Arc</code>.</td></tr>
-<tr><td data-label="Layer"><strong>Production LRU</strong></td><td data-label="Location"><code>encoding::encode::encode()</code></td><td data-label="Purpose">Avoids re-evaluating identical <code>ThoughtAST</code> subtrees on hot paths.</td></tr>
-<tr><td data-label="Layer"><strong>IncrementalBundle facts cache</strong></td><td data-label="Location"><code>HashMap<ThoughtAST, Vector></code></td><td data-label="Purpose">Avoids re-encoding unchanged facts between candles. Depends on <code>round_to</code>.</td></tr>
+<thead>
+<tr>
+  <th>Layer</th>
+  <th>Location</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Layer"><strong>VectorManager cache</strong></td>
+  <td data-label="Location"><code>Arc&lt;RwLock&lt;HashMap&lt;String, Vector&gt;&gt;&gt;</code></td>
+  <td data-label="Purpose">Atom → vector mapping. Persistent across all encodes. Shared via <code>Arc</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Production LRU</strong></td>
+  <td data-label=""><code>encoding::encode::encode()</code></td>
+  <td data-label="">Avoids re-evaluating identical <code>ThoughtAST</code> subtrees on hot paths.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>IncrementalBundle facts cache</strong></td>
+  <td data-label=""><code>HashMap&lt;ThoughtAST, Vector&gt;</code></td>
+  <td data-label="">Avoids re-encoding unchanged facts between candles. Depends on <code>round_to</code>.</td>
+</tr>
+</tbody>
 </table>
 <p><code>ThoughtEncoder</code> itself holds <strong>zero caching</strong> — it is a pure evaluator.</p>
-<hr>
+<hr />
 <h2>8. What Makes a Thought Meaningful</h2>
 <p>A thought vector is meaningful because of the algebraic properties of its construction:</p>
 <ol>
 <li><strong>Bind is self-inverse</strong>: You can decompose a thought to recover its components. <code>bind(bound_thought, role_vector) ≈ filler_vector</code>.</li>
 <li><strong>Bundle preserves similarity</strong>: A bundled thought is similar (by cosine) to each of its constituent facts.</li>
 <li><strong>Cosine is the only measurement</strong>: One number determines similarity. No thresholds, no categories in the encoding itself.</li>
-<li><strong>The vocabulary owns encode AND decode</strong>: "It put the value on the scalar, it can take it back. That's why scalar accumulators work."</li>
-<li><strong>The Reckoner learns boundaries</strong>: The vocabulary emits raw scalars. The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> learns where boundaries are via <code>observe</code>, <code>predict</code>, and <code>resolve</code> — no human-chosen thresholds.</li>
+<li><strong>The vocabulary owns encode AND decode</strong>: &quot;It put the value on the scalar, it can take it back. That's why scalar accumulators work.&quot;</li>
+<li><strong>The Reckoner learns boundaries</strong>: The vocabulary emits raw scalars. The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Reckoner Coalgebra&lt;/a&gt; learns where boundaries are via <code>observe</code>, <code>predict</code>, and <code>resolve</code> — no human-chosen thresholds.</li>
 </ol>
-<blockquote>"The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are." — T2-004</blockquote>
-<hr>
+<blockquote>
+<p>&quot;The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are.&quot; — T2-004</p>
+</blockquote>
+<hr />
 <h2>Related Concepts</h2>
 <ul>
-<li><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> — deterministic atom-to-vector registry</li>
-<li><a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> — mapping continuous values to bipolar vectors</li>
-<li><a class="wikilink" href="T0-006-walkable.html">Walkable</a> — zero-serialization encoding trait for Rust types</li>
-<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — the intermediate representation between vocabulary and vector</li>
-<li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — efficient streaming bundling across candles</li>
-<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the vector algebra: atom, bind, bundle, cosine</li>
-<li><a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> — the learning subsystem that observes thoughts over time</li>
-<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — the complete atom catalog organized by domain</li>
-<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — product/coproduct/protocol (orthogonal to vector algebra)</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; — deterministic atom-to-vector registry</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; — mapping continuous values to bipolar vectors</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; — zero-serialization encoding trait for Rust types</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; — the intermediate representation between vocabulary and vector</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt; — efficient streaming bundling across candles</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; — the vector algebra: atom, bind, bundle, cosine</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Reckoner Coalgebra&lt;/a&gt; — the learning subsystem that observes thoughts over time</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; — the complete atom catalog organized by domain</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; — product/coproduct/protocol (orthogonal to vector algebra)</li>
 </ul>
-<hr>
+<hr />
 <h2>Sources</h2>
 <ul>
 <li>T0-002 (Primitives) — atom, bind, bundle, cosine; Reckoner Coalgebra declaration</li>
@@ -298,4 +460,5 @@ if i is odd:  cos(position × freq)
 <li>T0-006 (Walkable) — structural type system and recursive tree walking</li>
 <li>T0-011 (ThoughtEncoder) — ThoughtAST enum, encoder evaluation, IncrementalBundle</li>
 <li>T2-004 (Vocabulary) — complete atom catalog, domain organization, encoding schemes</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

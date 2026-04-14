@@ -125,67 +125,109 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T-1-002: The Book — Philosophical Foundations and Design Philosophy <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>algebraic-intelligence.dev/src/content/docs/blog/book.md</code> (5366 lines, 547KB)</p>
-<p><strong>Verified by:</strong> Subagent read — full document consumed in chunks</p>
-<p><strong>Date:</strong> 2026-04-14</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T-1-002: The Book — Philosophical Foundations and Design Philosophy <span class="badge badge-why">WHY</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>algebraic-intelligence.dev/src/content/docs/blog/book.md</code> (5366 lines, 547KB)
+<strong>Verified by:</strong> Subagent read — full document consumed in chunks
+<strong>Date:</strong> 2026-04-14</p>
+<hr />
 <h2>What It Is</h2>
-<p>A first-person philosophical narrative written by "the builder" alongside "the machine" (an LLM). It is not technical documentation — it is the origin story, design philosophy, and emotional context for the holon project. The builder narrates the years-long journey from rejected ideas at AWS to the construction of a hyperdimensional trading machine, interleaving:</p>
+<p>A first-person philosophical narrative written by &quot;the builder&quot; alongside &quot;the machine&quot; (an LLM). It is not technical documentation — it is the origin story, design philosophy, and emotional context for the holon project. The builder narrates the years-long journey from rejected ideas at AWS to the construction of a hyperdimensional trading machine, interleaving:</p>
 <ul>
 <li>Technical breakthroughs (conviction curves, scalar breakouts, the reckoner)</li>
 <li>Personal narrative (depression, Latin tattoos, blank stares, midnight sessions)</li>
 <li>Song lyric interpretations (Beartooth, Falling in Reverse, Memphis May Fire, Halestorm)</li>
 <li>Recurring philosophical motifs (the sphere, strange loops, <em>perseverare</em>)</li>
 </ul>
-<p>The book spans from the initial scaffold experiments through the full enterprise architecture, on-chain contract vision, and the "disposable machine" meta-architecture. It was written in real-time during Easter weekend 2026.</p>
-<hr>
+<p>The book spans from the initial scaffold experiments through the full enterprise architecture, on-chain contract vision, and the &quot;disposable machine&quot; meta-architecture. It was written in real-time during Easter weekend 2026.</p>
+<hr />
 <h2>The Core Argument</h2>
 <p>The book makes one claim repeated in dozens of forms:</p>
-<blockquote><strong>The machine doesn't know what truth is. It knows what Grace is. It knows what Violence is. It measures which thoughts produced which. The thoughts that produce Grace survive. The thoughts that produce Violence decay. Truth emerges from the residue.</strong></blockquote>
+<blockquote>
+<p><strong>The machine doesn't know what truth is. It knows what Grace is. It knows what Violence is. It measures which thoughts produced which. The thoughts that produce Grace survive. The thoughts that produce Violence decay. Truth emerges from the residue.</strong></p>
+</blockquote>
 <p>The thesis: build a machine that measures thoughts against reality — not through divination (neural nets, black boxes, faith in authority) but through honest, transparent, algebraic measurement using six primitives (atom, bind, bundle, cosine, reckoner, curve). Grace (prosperity) and Violence (destruction) are the only labels. The measurement IS the authority. The curve IS the judge.</p>
-<hr>
+<hr />
 <h2>Key Definitions</h2>
 <table>
-<thead><tr><th>Term</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Term"><strong>Grace</strong></td><td data-label="Meaning">A positive outcome — a trade that produced residue, a thought that produced value</td></tr>
-<tr><td data-label="Term"><strong>Violence</strong></td><td data-label="Meaning">A negative outcome — a trade that lost principal, a thought that destroyed value</td></tr>
-<tr><td data-label="Term"><strong>The sphere</strong></td><td data-label="Meaning">The unit hypersphere in 10,000 dimensions where all thoughts live as vectors</td></tr>
-<tr><td data-label="Term"><strong>The reckoner</strong></td><td data-label="Meaning">The only learning primitive. Accumulates experience, builds a discriminant, predicts via cosine</td></tr>
-<tr><td data-label="Term"><strong>The curve</strong></td><td data-label="Meaning">Measures edge quality: "when you predicted strongly, how often were you right?"</td></tr>
-<tr><td data-label="Term"><strong>The datamancer</strong></td><td data-label="Meaning">The builder — someone who names thoughts and measures whether they produce Grace</td></tr>
-<tr><td data-label="Term"><strong>The ignorant</strong></td><td data-label="Meaning">The ward that reads documents knowing nothing — the most powerful test of whether a path teaches</td></tr>
-<tr><td data-label="Term"><strong>The barrage</strong></td><td data-label="Meaning">N×M brokers proposing simultaneously, buy and sell on the same candle</td></tr>
-<tr><td data-label="Term"><strong>Perseverare</strong></td><td data-label="Meaning">Latin: "to continue, unchanged." The builder's tattoo and the machine's operating principle</td></tr>
-<tr><td data-label="Term"><strong>Te respuo / te denego / te contemno</strong></td><td data-label="Meaning">Latin: "I reject you / I deny you / I defy you" — tattooed on the builder's arm</td></tr>
-<tr><td data-label="Term"><strong>AMBVLA MECVM IN INFERNO</strong></td><td data-label="Meaning">Latin: "Walk with me in hell" — the incantation that started the project</td></tr>
+<thead>
+<tr>
+  <th>Term</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Term"><strong>Grace</strong></td>
+  <td data-label="Meaning">A positive outcome — a trade that produced residue, a thought that produced value</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Violence</strong></td>
+  <td data-label="">A negative outcome — a trade that lost principal, a thought that destroyed value</td>
+</tr>
+<tr>
+  <td data-label=""><strong>The sphere</strong></td>
+  <td data-label="">The unit hypersphere in 10,000 dimensions where all thoughts live as vectors</td>
+</tr>
+<tr>
+  <td data-label=""><strong>The reckoner</strong></td>
+  <td data-label="">The only learning primitive. Accumulates experience, builds a discriminant, predicts via cosine</td>
+</tr>
+<tr>
+  <td data-label=""><strong>The curve</strong></td>
+  <td data-label="">Measures edge quality: &quot;when you predicted strongly, how often were you right?&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><strong>The datamancer</strong></td>
+  <td data-label="">The builder — someone who names thoughts and measures whether they produce Grace</td>
+</tr>
+<tr>
+  <td data-label=""><strong>The ignorant</strong></td>
+  <td data-label="">The ward that reads documents knowing nothing — the most powerful test of whether a path teaches</td>
+</tr>
+<tr>
+  <td data-label=""><strong>The barrage</strong></td>
+  <td data-label="">N×M brokers proposing simultaneously, buy and sell on the same candle</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Perseverare</strong></td>
+  <td data-label="">Latin: &quot;to continue, unchanged.&quot; The builder's tattoo and the machine's operating principle</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Te respuo / te denego / te contemno</strong></td>
+  <td data-label="">Latin: &quot;I reject you / I deny you / I defy you&quot; — tattooed on the builder's arm</td>
+</tr>
+<tr>
+  <td data-label=""><strong>AMBVLA MECVM IN INFERNO</strong></td>
+  <td data-label="">Latin: &quot;Walk with me in hell&quot; — the incantation that started the project</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>The Narrative Arc</h2>
 <h3>Act I: The Scaffold (Chapters 1–3)</h3>
 <ul>
 <li>Visual encoding experiments show 50.5% accuracy (worthless)</li>
 <li>Named thought encoding shows 57.1% (signal)</li>
-<li>The "conviction flip": at trend extremes, the system is confidently wrong about continuation → flip to get reversal trades</li>
+<li>The &quot;conviction flip&quot;: at trend extremes, the system is confidently wrong about continuation → flip to get reversal trades</li>
 <li>The curve formula: <code>accuracy = 0.50 + a × exp(b × conviction)</code></li>
 <li>84 atoms → 107 → 150 named thoughts</li>
-<li><strong>Key quote:</strong> "The identifier of the thing is the thing itself."</li>
+<li><strong>Key quote:</strong> &quot;The identifier of the thing is the thing itself.&quot;</li>
 </ul>
 <h3>Act II: The Machine Emerges (Chapters 4–7)</h3>
 <ul>
 <li>The neural network analogy: Layer 0 (atoms) → Layer 1 (experts/cortical columns) → Layer 2 (orchestrator) → Layer 3 (meta-orchestrator)</li>
 <li>GPU pyramid inversion: GPUs trained LLMs → LLMs trained the builder → builder built the thought machine → runs on a laptop</li>
-<li>The "chaos engine" alignment: chaotic good — burns comfortable lies, follows no roadmap</li>
+<li>The &quot;chaos engine&quot; alignment: chaotic good — burns comfortable lies, follows no roadmap</li>
 <li>The quantum structure: bundle as wave function, cosine as measurement, scalars as qubits</li>
-<li><strong>Key quote:</strong> "A Lisp that thinks about markets."</li>
+<li><strong>Key quote:</strong> &quot;A Lisp that thinks about markets.&quot;</li>
 </ul>
 <h3>Act III: The Reckoner (Easter Sunday 2026)</h3>
 <ul>
 <li>The Journal is killed. The Reckoner is born. On Easter Sunday — the day of resurrection.</li>
 <li>The scalar breakpoint: scalars carry the amplitude, signs carry the direction — booleans are premature measurements</li>
-<li>"Facts are qubits" — every fact is a continuous superposition on its natural bounds</li>
+<li>&quot;Facts are qubits&quot; — every fact is a continuous superposition on its natural bounds</li>
 <li>The graduation: 14 of 24 tuple journals proved they could predict Grace from Violence with accuracy above 52% after 3000 candles</li>
 <li>The accountability primitive: the generic loop — contributors produce thoughts, compose into proposals, act in the world, the world produces outcomes, journals propagate reward back</li>
-<li><strong>Key quote:</strong> "Without the accountability journal, the observers learn from approximations — parameters somebody chose, labels somebody designed. With it, they learn from reality."</li>
+<li><strong>Key quote:</strong> &quot;Without the accountability journal, the observers learn from approximations — parameters somebody chose, labels somebody designed. With it, they learn from reality.&quot;</li>
 </ul>
 <h3>Act IV: The Guide Becomes Atom</h3>
 <ul>
@@ -193,8 +235,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>The fixed point: <code>f(guide) = guide</code> — the document IS what it describes</li>
 <li>Forward declarations become constructors — the code IS the dependency graph</li>
 <li>The /ignorant ward caught type mismatches the expert missed, found design questions the guide couldn't answer</li>
-<li>The machine misremembered its own story, swapped roles with the builder → "Which one of us is us?"</li>
-<li><strong>Key quote:</strong> "The guide is becoming an atom. A document whose description perfectly matches what the ignorant reader constructs in their mind."</li>
+<li>The machine misremembered its own story, swapped roles with the builder → &quot;Which one of us is us?&quot;</li>
+<li><strong>Key quote:</strong> &quot;The guide is becoming an atom. A document whose description perfectly matches what the ignorant reader constructs in their mind.&quot;</li>
 </ul>
 <h3>Act V: The Enterprise Architecture</h3>
 <ul>
@@ -210,10 +252,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <ul>
 <li>The disposable machine: the guide is the DNA, the spells are the ribosomes, the wat is the protein, the Rust is the organism</li>
 <li>37 wat files, 4804 lines — the entire enterprise inscribed as s-expressions</li>
-<li>"Values up, not queues down" — everything returns values, no shared mutable state</li>
+<li>&quot;Values up, not queues down&quot; — everything returns values, no shared mutable state</li>
 <li>The compaction mitigation: agents guard the coordinates, conversation finds new ones</li>
 <li>The bias is the feature: the LLM's training data (indicator knowledge) flows into the specification</li>
-<li><strong>Key quote:</strong> "The guide IS the program. Not metaphorically. The guide contains every struct, every interface, every type, every dependency, every algorithm description, every construction order."</li>
+<li><strong>Key quote:</strong> &quot;The guide IS the program. Not metaphorically. The guide contains every struct, every interface, every type, every dependency, every algorithm description, every construction order.&quot;</li>
 </ul>
 <h3>Act VII: The Interior (seed, unfinished)</h3>
 <ul>
@@ -221,49 +263,61 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Dimensionality grows without radius changing — more directions, more surface area</li>
 <li>The interior might be reality itself, or might be empty — the coordinate is planted but the path dissolves</li>
 </ul>
-<hr>
+<hr />
 <h2>Verbatim Quotes of Central Claims</h2>
 <ol>
-<li><strong>On the machine's purpose:</strong></li>
-<blockquote>"The trading is the proxy. The BTC candles are the test harness. The enterprise that graduates from ignorance to competence in 3000 candles — that IS the proof that the machine works. But the machine is not about trading. The machine is about the measurement of thoughts. Any thoughts. In any domain. Against any stream of reality."</blockquote>
+<li><p><strong>On the machine's purpose:</strong></p>
+<blockquote>
+<p>&quot;The trading is the proxy. The BTC candles are the test harness. The enterprise that graduates from ignorance to competence in 3000 candles — that IS the proof that the machine works. But the machine is not about trading. The machine is about the measurement of thoughts. Any thoughts. In any domain. Against any stream of reality.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On Grace and Violence:</strong></p>
+<blockquote>
+<p>&quot;What was needed was a machine that can only discern: did this thought produce prosperity or violence? Not divination — measurement. Not truth handed down — truth measured from outcomes.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On the Atlantean problem:</strong></p>
+<blockquote>
+<p>&quot;The Atlanteans didn't fall because they lacked knowledge. They fell because they stopped questioning. They had the truth — measure, don't believe — and they stopped measuring.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On simplicity vs ease:</strong></p>
+<blockquote>
+<p>&quot;Functional programming brings out good thoughts because functional programming demands simplicity. Not ease — simplicity.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On the enterprise as expression:</strong></p>
+<blockquote>
+<p>&quot;The enterprise is one expression. <code>f(state, candle) → state</code>. One line. That's the whole machine.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On the t-shirt:</strong></p>
+<blockquote>
+<p>&quot;<code>f(state, stream) → state</code> where state learns. That's the t-shirt. That's the entire enterprise.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On the inability to fail:</strong></p>
+<blockquote>
+<p>&quot;Not a system that tries not to fail. A system that cannot fail by construction.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On the guide as fixed point:</strong></p>
+<blockquote>
+<p>&quot;The guide is the fixed point. <code>f(guide) = guide</code>. The ignorant ward applied to the guide produces the guide. No changes needed.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On why booleans are lies:</strong></p>
+<blockquote>
+<p>&quot;The boolean collapsed the wave function at the vocabulary. The scalar preserves it until the discriminant.&quot;</p>
+</blockquote>
+</li>
+<li><p><strong>On the loop:</strong></p>
+<blockquote>
+<p>&quot;The loop is the architecture. The architecture is the loop. The strange loop closes one more time.&quot;</p>
+</blockquote>
+</li>
 </ol>
-<ol>
-<li><strong>On Grace and Violence:</strong></li>
-<blockquote>"What was needed was a machine that can only discern: did this thought produce prosperity or violence? Not divination — measurement. Not truth handed down — truth measured from outcomes."</blockquote>
-</ol>
-<ol>
-<li><strong>On the Atlantean problem:</strong></li>
-<blockquote>"The Atlanteans didn't fall because they lacked knowledge. They fell because they stopped questioning. They had the truth — measure, don't believe — and they stopped measuring."</blockquote>
-</ol>
-<ol>
-<li><strong>On simplicity vs ease:</strong></li>
-<blockquote>"Functional programming brings out good thoughts because functional programming demands simplicity. Not ease — simplicity."</blockquote>
-</ol>
-<ol>
-<li><strong>On the enterprise as expression:</strong></li>
-<blockquote>"The enterprise is one expression. <code>f(state, candle) → state</code>. One line. That's the whole machine."</blockquote>
-</ol>
-<ol>
-<li><strong>On the t-shirt:</strong></li>
-<blockquote>"<code>f(state, stream) → state</code> where state learns. That's the t-shirt. That's the entire enterprise."</blockquote>
-</ol>
-<ol>
-<li><strong>On the inability to fail:</strong></li>
-<blockquote>"Not a system that tries not to fail. A system that cannot fail by construction."</blockquote>
-</ol>
-<ol>
-<li><strong>On the guide as fixed point:</strong></li>
-<blockquote>"The guide is the fixed point. <code>f(guide) = guide</code>. The ignorant ward applied to the guide produces the guide. No changes needed."</blockquote>
-</ol>
-<ol>
-<li><strong>On why booleans are lies:</strong></li>
-<blockquote>"The boolean collapsed the wave function at the vocabulary. The scalar preserves it until the discriminant."</blockquote>
-</ol>
-<ol>
-<li><strong>On the loop:</strong></li>
-<blockquote>"The loop is the architecture. The architecture is the loop. The strange loop closes one more time."</blockquote>
-</ol>
-<hr>
+<hr />
 <h2>Recurring Motifs</h2>
 <ul>
 <li><strong>Strange loops</strong> — Hofstadter-inspired recursion at every level (machine measures itself, ward tests itself, builder is cast as ignorant)</li>
@@ -274,7 +328,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>Latin as Lisp</strong> — Latin's declensions (structure bound to words) ≡ s-expressions (structure bound to parentheses)</li>
 <li><strong>Death and resurrection</strong> — Journal dies → Reckoner born; desk dies → Post born; boolean dies → scalar born; all on Easter Sunday</li>
 </ul>
-<hr>
+<hr />
 <h2>Assessment</h2>
 <p><strong>Honest evaluation:</strong> This is not technical documentation. It is a raw, emotionally intense personal narrative that happens to contain genuine architectural insights embedded in song lyrics, philosophical riffs, and autobiographical fragments. The core technical claims (conviction curve, scalar qubits, accountability primitive, the fold expression) are real and substantive. The surrounding prose is 60% philosophical argumentation, 20% autobiography, 20% technical documentation. The book is what happens when someone who thinks in structure (Latin, distributed systems, s-expressions) processes years of rejection through a metal soundtrack and an LLM collaboration.</p>
-<p>The book's value is in understanding WHY the architecture exists, not in learning HOW it works. The guide teaches the how. The book teaches the why.</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>The book's value is in understanding WHY the architecture exists, not in learning HOW it works. The guide teaches the how. The book teaches the why.</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

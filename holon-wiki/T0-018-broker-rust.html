@@ -125,77 +125,190 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-018: Broker (Rust) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>/root/projects/holon-workspace/holon-lab-trading/src/domain/broker.rs</code></p>
-<p><strong>Lines:</strong> 887 (489 production + 398 test)</p>
-<p><strong>Compiled from:</strong> <code>wat/broker.wat</code></p>
-<p><strong>Verdict:</strong> Accountable. Complete. Quoted below.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-018: Broker (Rust) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>/root/projects/holon-workspace/holon-lab-trading/src/domain/broker.rs</code><br />
+<strong>Lines:</strong> 887 (489 production + 398 test)<br />
+<strong>Compiled from:</strong> <code>wat/broker.wat</code><br />
+<strong>Verdict:</strong> Accountable. Complete. Quoted below.</p>
+<hr />
 <h2>1. Module Purpose (Lines 1–6)</h2>
-<pre><code>
-/// broker.rs — The accountability primitive. Binds one market observer + one
+<pre><code>/// broker.rs — The accountability primitive. Binds one market observer + one
 /// position observer. Compiled from wat/broker.wat.
 ///
 /// The broker IS the accountability unit. It owns paper trades, scalar
 /// accumulators, and a Grace/Violence reckoner. Values up, not effects down.
-</code></pre>
-<p><strong>What it is:</strong> The broker binds exactly one market observer to one position observer. It is the accountability unit. It owns paper trades, scalar accumulators for distances, and does dollar-P&L reckoning. All outputs flow upward as return values — no shared mutation during parallel phases.</p>
-<hr>
+
+<p><strong>What it is:</strong> The broker binds exactly one market observer to one position observer. It is the accountability unit. It owns paper trades, scalar accumulators for distances, and does dollar-P&amp;L reckoning. All outputs flow upward as return values — no shared mutation during parallel phases.</p>
+<hr />
 <h2>2. Imports (Lines 7–17)</h2>
 <table>
-<thead><tr><th>Import</th><th>From</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Import"><code>HashMap, VecDeque</code></td><td data-label="From"><code>std::collections</code></td><td data-label="Purpose">Runner histories, paper queue</td></tr>
-<tr><td data-label="Import"><code>ScalarEncoder</code></td><td data-label="From"><code>holon::kernel::scalar</code></td><td data-label="Purpose">Encoding scalar values for accumulator updates</td></tr>
-<tr><td data-label="Import"><code>Vector</code></td><td data-label="From"><code>holon::kernel::vector</code></td><td data-label="Purpose">High-dimensional thought vectors</td></tr>
-<tr><td data-label="Import"><code>Distances</code></td><td data-label="From"><code>crate::types::distances</code></td><td data-label="Purpose">Trail/stop distance pair</td></tr>
-<tr><td data-label="Import"><code>Direction, Outcome</code></td><td data-label="From"><code>crate::types::enums</code></td><td data-label="Purpose">Up/Down prediction, Grace/Violence outcome</td></tr>
-<tr><td data-label="Import"><code>simulation</code></td><td data-label="From"><code>crate::domain::simulation</code></td><td data-label="Purpose"><code>compute_optimal_distances</code> for runner resolution</td></tr>
-<tr><td data-label="Import"><code>Price</code></td><td data-label="From"><code>crate::types::newtypes</code></td><td data-label="Purpose">Newtype wrapper around f64</td></tr>
-<tr><td data-label="Import"><code>PaperEntry</code></td><td data-label="From"><code>crate::trades::paper_entry</code></td><td data-label="Purpose">Individual paper trade lifecycle</td></tr>
-<tr><td data-label="Import"><code>ScalarAccumulator</code></td><td data-label="From"><code>crate::learning::scalar_accumulator</code></td><td data-label="Purpose">Outcome-weighted scalar learning</td></tr>
+<thead>
+<tr>
+  <th>Import</th>
+  <th>From</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Import"><code>HashMap, VecDeque</code></td>
+  <td data-label="From"><code>std::collections</code></td>
+  <td data-label="Purpose">Runner histories, paper queue</td>
+</tr>
+<tr>
+  <td data-label=""><code>ScalarEncoder</code></td>
+  <td data-label=""><code>holon::kernel::scalar</code></td>
+  <td data-label="">Encoding scalar values for accumulator updates</td>
+</tr>
+<tr>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label=""><code>holon::kernel::vector</code></td>
+  <td data-label="">High-dimensional thought vectors</td>
+</tr>
+<tr>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label=""><code>crate::types::distances</code></td>
+  <td data-label="">Trail/stop distance pair</td>
+</tr>
+<tr>
+  <td data-label=""><code>Direction, Outcome</code></td>
+  <td data-label=""><code>crate::types::enums</code></td>
+  <td data-label="">Up/Down prediction, Grace/Violence outcome</td>
+</tr>
+<tr>
+  <td data-label=""><code>simulation</code></td>
+  <td data-label=""><code>crate::domain::simulation</code></td>
+  <td data-label=""><code>compute_optimal_distances</code> for runner resolution</td>
+</tr>
+<tr>
+  <td data-label=""><code>Price</code></td>
+  <td data-label=""><code>crate::types::newtypes</code></td>
+  <td data-label="">Newtype wrapper around f64</td>
+</tr>
+<tr>
+  <td data-label=""><code>PaperEntry</code></td>
+  <td data-label=""><code>crate::trades::paper_entry</code></td>
+  <td data-label="">Individual paper trade lifecycle</td>
+</tr>
+<tr>
+  <td data-label=""><code>ScalarAccumulator</code></td>
+  <td data-label=""><code>crate::learning::scalar_accumulator</code></td>
+  <td data-label="">Outcome-weighted scalar learning</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>3. Struct: <code>RunnerHistory</code> (Lines 19–26)</h2>
-<pre><code>
-pub struct RunnerHistory {
-    pub thoughts: Vec<Vector>,
-    pub distances: Vec<Distances>,
-    pub prices: Vec<f64>,
+<pre><code class="language-rust">pub struct RunnerHistory {
+    pub thoughts: Vec&lt;Vector&gt;,
+    pub distances: Vec&lt;Distances&gt;,
+    pub prices: Vec&lt;f64&gt;,
 }
 </code></pre>
 <p><strong>Purpose:</strong> Per-candle accumulated data for a runner paper. Created when a paper signals Grace (trail crossed). Stores three parallel arrays — the composed thought, the distances used, and the actual price — at each candle during the runner phase. Used at runner resolution for deferred batch training of the position observer.</p>
 <p><strong>Lifecycle:</strong> Created empty at signal time (line 343–347). Accumulated each tick while the runner is active (lines 351–357). Consumed at runner resolution via <code>compute_position_batch()</code> (line 374).</p>
-<hr>
+<hr />
 <h2>4. Struct: <code>Resolution</code> (Lines 28–98)</h2>
 <h3>Fields (15 total)</h3>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-<tr><td data-label="Field"><code>broker_slot_idx</code></td><td data-label="Type"><code>usize</code></td><td data-label="Description">Which broker produced this</td></tr>
-<tr><td data-label="Field"><code>composed_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Description">The composed thought (market + position) that was tested</td></tr>
-<tr><td data-label="Field"><code>market_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Description">Raw market thought (for market observer learning)</td></tr>
-<tr><td data-label="Field"><code>position_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Description">Position observer's own encoded facts (Proposal 026: position learns from this, not composed)</td></tr>
-<tr><td data-label="Field"><code>prediction</code></td><td data-label="Type"><code>Direction</code></td><td data-label="Description">What the market observer predicted (Up/Down)</td></tr>
-<tr><td data-label="Field"><code>outcome</code></td><td data-label="Type"><code>Outcome</code></td><td data-label="Description">Grace or Violence</td></tr>
-<tr><td data-label="Field"><code>amount</code></td><td data-label="Type"><code>f64</code></td><td data-label="Description">How much value — excursion for Grace, stop distance for Violence</td></tr>
-<tr><td data-label="Field"><code>optimal_distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Description">Hindsight optimal trail/stop distances</td></tr>
-<tr><td data-label="Field"><code>entry_price</code></td><td data-label="Type"><code>f64</code></td><td data-label="Description">Paper's entry price</td></tr>
-<tr><td data-label="Field"><code>extreme</code></td><td data-label="Type"><code>f64</code></td><td data-label="Description">Best price the paper achieved</td></tr>
-<tr><td data-label="Field"><code>excursion</code></td><td data-label="Type"><code>f64</code></td><td data-label="Description">The excursion value</td></tr>
-<tr><td data-label="Field"><code>trail_distance</code></td><td data-label="Type"><code>f64</code></td><td data-label="Description">Trail distance used by the paper</td></tr>
-<tr><td data-label="Field"><code>stop_distance</code></td><td data-label="Type"><code>f64</code></td><td data-label="Description">Stop distance used by the paper</td></tr>
-<tr><td data-label="Field"><code>duration</code></td><td data-label="Type"><code>usize</code></td><td data-label="Description">Paper age in candles</td></tr>
-<tr><td data-label="Field"><code>was_runner</code></td><td data-label="Type"><code>bool</code></td><td data-label="Description">Did the trail cross before resolution?</td></tr>
-<tr><td data-label="Field"><code>position_batch</code></td><td data-label="Type"><code>Vec<(Vector, Distances, Distances, f64)></code></td><td data-label="Description">Deferred batch training data. Empty for non-runners. Each entry: (thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight).</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>broker_slot_idx</code></td>
+  <td data-label="Type"><code>usize</code></td>
+  <td data-label="Description">Which broker produced this</td>
+</tr>
+<tr>
+  <td data-label=""><code>composed_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">The composed thought (market + position) that was tested</td>
+</tr>
+<tr>
+  <td data-label=""><code>market_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Raw market thought (for market observer learning)</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Position observer's own encoded facts (Proposal 026: position learns from this, not composed)</td>
+</tr>
+<tr>
+  <td data-label=""><code>prediction</code></td>
+  <td data-label=""><code>Direction</code></td>
+  <td data-label="">What the market observer predicted (Up/Down)</td>
+</tr>
+<tr>
+  <td data-label=""><code>outcome</code></td>
+  <td data-label=""><code>Outcome</code></td>
+  <td data-label="">Grace or Violence</td>
+</tr>
+<tr>
+  <td data-label=""><code>amount</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">How much value — excursion for Grace, stop distance for Violence</td>
+</tr>
+<tr>
+  <td data-label=""><code>optimal_distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label="">Hindsight optimal trail/stop distances</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_price</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Paper's entry price</td>
+</tr>
+<tr>
+  <td data-label=""><code>extreme</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Best price the paper achieved</td>
+</tr>
+<tr>
+  <td data-label=""><code>excursion</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">The excursion value</td>
+</tr>
+<tr>
+  <td data-label=""><code>trail_distance</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Trail distance used by the paper</td>
+</tr>
+<tr>
+  <td data-label=""><code>stop_distance</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Stop distance used by the paper</td>
+</tr>
+<tr>
+  <td data-label=""><code>duration</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Paper age in candles</td>
+</tr>
+<tr>
+  <td data-label=""><code>was_runner</code></td>
+  <td data-label=""><code>bool</code></td>
+  <td data-label="">Did the trail cross before resolution?</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_batch</code></td>
+  <td data-label=""><code>Vec&lt;(Vector, Distances, Distances, f64)&gt;</code></td>
+  <td data-label="">Deferred batch training data. Empty for non-runners. Each entry: (thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight).</td>
+</tr>
+</tbody>
 </table>
 <h3>Constructor: <code>Resolution::from_paper()</code> (Lines 67–98)</h3>
-<pre><code>
-fn from_paper(
-    paper: &PaperEntry,
+<pre><code class="language-rust">fn from_paper(
+    paper: &amp;PaperEntry,
     broker_slot_idx: usize,
     outcome: Outcome,
     optimal_distances: Distances,
     was_runner: bool,
-    position_batch: Vec<(Vector, Distances, Distances, f64)>,
-) -> Self
+    position_batch: Vec&lt;(Vector, Distances, Distances, f64)&gt;,
+) -&gt; Self
 </code></pre>
 <p>Single construction site for all 15 fields. The <code>amount</code> is derived from outcome:</p>
 <ul>
@@ -203,10 +316,9 @@ fn from_paper(
 <li><strong>Violence:</strong> <code>paper.distances.stop</code> (the stop distance that was hit)</li>
 </ul>
 <p>All other fields copied directly from the paper entry or passed through.</p>
-<hr>
+<hr />
 <h2>5. Struct: <code>PropagationFacts</code> (Lines 100–121)</h2>
-<pre><code>
-pub struct PropagationFacts {
+<pre><code class="language-rust">pub struct PropagationFacts {
     pub market_idx: usize,       // Which market observer should learn
     pub position_idx: usize,     // Which position observer should learn
     pub direction: Direction,    // For the market observer
@@ -218,58 +330,185 @@ pub struct PropagationFacts {
 }
 </code></pre>
 <p><strong>Purpose:</strong> The return value of <code>propagate()</code>. The post collects these from all brokers and routes them to the correct observers via mailbox channels. Values up — the broker does not talk to observers directly.</p>
-<hr>
+<hr />
 <h2>6. Struct: <code>Broker</code> (Lines 123–173)</h2>
 <h3>Fields (24 total)</h3>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-<tr><td data-label="Field"><code>observer_names</code></td><td data-label="Type"><code>Vec<String></code></td><td data-label="Default">constructor arg</td><td data-label="Description">Diagnostic identity for the ledger, e.g. <code>["momentum", "volatility"]</code></td></tr>
-<tr><td data-label="Field"><code>slot_idx</code></td><td data-label="Type"><code>usize</code></td><td data-label="Default">constructor arg</td><td data-label="Description">Position in the N×M grid. <strong>THE identity.</strong></td></tr>
-<tr><td data-label="Field"><code>position_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Default">constructor arg</td><td data-label="Description">M — needed to derive market-idx and position-idx from slot_idx</td></tr>
-<tr><td data-label="Field"><code>cumulative_grace</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">Cumulative grace value (weighted sum)</td></tr>
-<tr><td data-label="Field"><code>cumulative_violence</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">Cumulative violence value (weighted sum)</td></tr>
-<tr><td data-label="Field"><code>trade_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Default"><code>0</code></td><td data-label="Description">Total trade count</td></tr>
-<tr><td data-label="Field"><code>grace_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Default"><code>0</code></td><td data-label="Description">Count of Grace outcomes</td></tr>
-<tr><td data-label="Field"><code>violence_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Default"><code>0</code></td><td data-label="Description">Count of Violence outcomes</td></tr>
-<tr><td data-label="Field"><code>active_direction</code></td><td data-label="Type"><code>Option<Direction></code></td><td data-label="Default"><code>None</code></td><td data-label="Description">Current active direction. <code>None</code> = cold start</td></tr>
-<tr><td data-label="Field"><code>papers</code></td><td data-label="Type"><code>VecDeque<PaperEntry></code></td><td data-label="Default">empty</td><td data-label="Description">Capped paper trade queue</td></tr>
-<tr><td data-label="Field"><code>trail_accum</code></td><td data-label="Type"><code>ScalarAccumulator</code></td><td data-label="Default">constructor arg</td><td data-label="Description">Scalar accumulator for trail-distance</td></tr>
-<tr><td data-label="Field"><code>stop_accum</code></td><td data-label="Type"><code>ScalarAccumulator</code></td><td data-label="Default">constructor arg</td><td data-label="Description">Scalar accumulator for stop-distance</td></tr>
-<tr><td data-label="Field"><code>default_distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Default">constructor arg</td><td data-label="Description">Default trail/stop — tier 3 fallback in the cascade</td></tr>
-<tr><td data-label="Field"><code>avg_paper_duration</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">Running average paper duration (candles). Self-assessment vocab</td></tr>
-<tr><td data-label="Field"><code>avg_excursion</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">Running average excursion. Self-assessment vocab</td></tr>
-<tr><td data-label="Field"><code>last_trail</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">Last trail distance used. Self-assessment vocab</td></tr>
-<tr><td data-label="Field"><code>last_stop</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">Last stop distance used. Self-assessment vocab</td></tr>
-<tr><td data-label="Field"><code>resolution_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Default"><code>0</code></td><td data-label="Description">Count of resolved sides (for running average computation)</td></tr>
-<tr><td data-label="Field"><code>next_paper_id</code></td><td data-label="Type"><code>usize</code></td><td data-label="Default"><code>0</code></td><td data-label="Description">Monotonic counter for paper IDs</td></tr>
-<tr><td data-label="Field"><code>runner_histories</code></td><td data-label="Type"><code>HashMap<usize, RunnerHistory></code></td><td data-label="Default">empty</td><td data-label="Description">Per-runner accumulated history for deferred batch training. Keyed by <code>paper_id</code></td></tr>
-<tr><td data-label="Field"><code>avg_grace_net</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">EMA of net dollars per Grace paper (Proposal 035)</td></tr>
-<tr><td data-label="Field"><code>avg_violence_net</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description">EMA of net dollars per Violence paper (Proposal 035)</td></tr>
-<tr><td data-label="Field"><code>expected_value</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default"><code>0.0</code></td><td data-label="Description"><code>grace_rate × avg_grace_net + (1-grace_rate) × avg_violence_net</code></td></tr>
-<tr><td data-label="Field"><code>swap_fee</code></td><td data-label="Type"><code>f64</code></td><td data-label="Default">constructor arg</td><td data-label="Description">Venue fee per swap (fraction, e.g. 0.0010)</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>observer_names</code></td>
+  <td data-label="Type"><code>Vec&lt;String&gt;</code></td>
+  <td data-label="Default">constructor arg</td>
+  <td data-label="Description">Diagnostic identity for the ledger, e.g. <code>[&quot;momentum&quot;, &quot;volatility&quot;]</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>slot_idx</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">constructor arg</td>
+  <td data-label="">Position in the N×M grid. <strong>THE identity.</strong></td>
+</tr>
+<tr>
+  <td data-label=""><code>position_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">constructor arg</td>
+  <td data-label="">M — needed to derive market-idx and position-idx from slot_idx</td>
+</tr>
+<tr>
+  <td data-label=""><code>cumulative_grace</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">Cumulative grace value (weighted sum)</td>
+</tr>
+<tr>
+  <td data-label=""><code>cumulative_violence</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">Cumulative violence value (weighted sum)</td>
+</tr>
+<tr>
+  <td data-label=""><code>trade_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label=""><code>0</code></td>
+  <td data-label="">Total trade count</td>
+</tr>
+<tr>
+  <td data-label=""><code>grace_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label=""><code>0</code></td>
+  <td data-label="">Count of Grace outcomes</td>
+</tr>
+<tr>
+  <td data-label=""><code>violence_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label=""><code>0</code></td>
+  <td data-label="">Count of Violence outcomes</td>
+</tr>
+<tr>
+  <td data-label=""><code>active_direction</code></td>
+  <td data-label=""><code>Option&lt;Direction&gt;</code></td>
+  <td data-label=""><code>None</code></td>
+  <td data-label="">Current active direction. <code>None</code> = cold start</td>
+</tr>
+<tr>
+  <td data-label=""><code>papers</code></td>
+  <td data-label=""><code>VecDeque&lt;PaperEntry&gt;</code></td>
+  <td data-label="">empty</td>
+  <td data-label="">Capped paper trade queue</td>
+</tr>
+<tr>
+  <td data-label=""><code>trail_accum</code></td>
+  <td data-label=""><code>ScalarAccumulator</code></td>
+  <td data-label="">constructor arg</td>
+  <td data-label="">Scalar accumulator for trail-distance</td>
+</tr>
+<tr>
+  <td data-label=""><code>stop_accum</code></td>
+  <td data-label=""><code>ScalarAccumulator</code></td>
+  <td data-label="">constructor arg</td>
+  <td data-label="">Scalar accumulator for stop-distance</td>
+</tr>
+<tr>
+  <td data-label=""><code>default_distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label="">constructor arg</td>
+  <td data-label="">Default trail/stop — tier 3 fallback in the cascade</td>
+</tr>
+<tr>
+  <td data-label=""><code>avg_paper_duration</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">Running average paper duration (candles). Self-assessment vocab</td>
+</tr>
+<tr>
+  <td data-label=""><code>avg_excursion</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">Running average excursion. Self-assessment vocab</td>
+</tr>
+<tr>
+  <td data-label=""><code>last_trail</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">Last trail distance used. Self-assessment vocab</td>
+</tr>
+<tr>
+  <td data-label=""><code>last_stop</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">Last stop distance used. Self-assessment vocab</td>
+</tr>
+<tr>
+  <td data-label=""><code>resolution_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label=""><code>0</code></td>
+  <td data-label="">Count of resolved sides (for running average computation)</td>
+</tr>
+<tr>
+  <td data-label=""><code>next_paper_id</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label=""><code>0</code></td>
+  <td data-label="">Monotonic counter for paper IDs</td>
+</tr>
+<tr>
+  <td data-label=""><code>runner_histories</code></td>
+  <td data-label=""><code>HashMap&lt;usize, RunnerHistory&gt;</code></td>
+  <td data-label="">empty</td>
+  <td data-label="">Per-runner accumulated history for deferred batch training. Keyed by <code>paper_id</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>avg_grace_net</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">EMA of net dollars per Grace paper (Proposal 035)</td>
+</tr>
+<tr>
+  <td data-label=""><code>avg_violence_net</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label="">EMA of net dollars per Violence paper (Proposal 035)</td>
+</tr>
+<tr>
+  <td data-label=""><code>expected_value</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><code>0.0</code></td>
+  <td data-label=""><code>grace_rate × avg_grace_net + (1-grace_rate) × avg_violence_net</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>swap_fee</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">constructor arg</td>
+  <td data-label="">Venue fee per swap (fraction, e.g. 0.0010)</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>7. Methods</h2>
 <h3>7.1 <code>Broker::new()</code> — Constructor (Lines 178–214)</h3>
-<pre><code>
-pub fn new(
-    observer_names: Vec<String>,
+<pre><code class="language-rust">pub fn new(
+    observer_names: Vec&lt;String&gt;,
     slot_idx: usize,
     position_count: usize,
     trail_accum: ScalarAccumulator,
     stop_accum: ScalarAccumulator,
     default_distances: Distances,
     swap_fee: f64,
-) -> Self
+) -&gt; Self
 </code></pre>
-<p><strong>Contract:</strong> Asserts <code>position_count > 0</code> (divide-by-zero guard). All counters start at zero. No reckoner, no noise subspace — "Pure accounting + gate + log" (Proposal 035).</p>
-<hr>
+<p><strong>Contract:</strong> Asserts <code>position_count &gt; 0</code> (divide-by-zero guard). All counters start at zero. No reckoner, no noise subspace — &quot;Pure accounting + gate + log&quot; (Proposal 035).</p>
+<hr />
 <h3>7.2 <code>market_idx()</code> / <code>position_idx()</code> — Grid Derivation (Lines 217–224)</h3>
-<pre><code>
-pub fn market_idx(&self) -> usize {
+<pre><code class="language-rust">pub fn market_idx(&amp;self) -&gt; usize {
     self.slot_idx / self.position_count    // integer division
 }
-pub fn position_idx(&self) -> usize {
+pub fn position_idx(&amp;self) -&gt; usize {
     self.slot_idx % self.position_count
 }
 </code></pre>
@@ -279,39 +518,56 @@ pub fn position_idx(&self) -> usize {
 <li>Therefore: <code>market_idx = slot_idx / M</code>, <code>position_idx = slot_idx % M</code></li>
 </ul>
 <p><strong>Test confirmation (line 615–626):</strong> <code>slot_idx=5, position_count=3</code> → <code>market_idx=1, position_idx=2</code>.</p>
-<hr>
+<hr />
 <h3>7.3 <code>gate_open()</code> — The Gate (Lines 229–232)</h3>
-<pre><code>
-pub fn gate_open(&self) -> bool {
-    let cold_start = self.grace_count < 50 || self.violence_count < 50;
-    cold_start || self.expected_value > 0.0
+<pre><code class="language-rust">pub fn gate_open(&amp;self) -&gt; bool {
+    let cold_start = self.grace_count &lt; 50 || self.violence_count &lt; 50;
+    cold_start || self.expected_value &gt; 0.0
 }
 </code></pre>
 <p><strong>Two-phase gate:</strong></p>
 <ol>
 <li><strong>Cold start:</strong> If either outcome count is below 50, the gate is always open. The broker hasn't seen enough data to make a statistical judgment.</li>
-<li><strong>Warm:</strong> After ≥50 of both outcomes, the gate opens only when <code>expected_value > 0.0</code>. A broker with negative expected value is suppressed — it cannot propose funded trades.</li>
+<li><strong>Warm:</strong> After ≥50 of both outcomes, the gate opens only when <code>expected_value &gt; 0.0</code>. A broker with negative expected value is suppressed — it cannot propose funded trades.</li>
 </ol>
 <p><strong>Comment (line 228):</strong> <code>// rune:reap(scaffolding) — awaiting Phase 5 treasury.</code></p>
-<hr>
+<hr />
 <h3>7.4 <code>cascade_distances()</code> — The Distance Cascade (Lines 236–255)</h3>
-<pre><code>
-pub fn cascade_distances(&self, reckoner_answer: Option<Distances>, se: &ScalarEncoder) -> Distances
+<pre><code class="language-rust">pub fn cascade_distances(&amp;self, reckoner_answer: Option&lt;Distances&gt;, se: &amp;ScalarEncoder) -&gt; Distances
 </code></pre>
 <p><strong>Three-tier fallback:</strong></p>
 <table>
-<thead><tr><th>Tier</th><th>Source</th><th>Condition</th></tr></thead>
-<tr><td data-label="Tier">1</td><td data-label="Source"><code>reckoner_answer</code> (passed in)</td><td data-label="Condition"><code>Some(dists)</code> → return immediately</td></tr>
-<tr><td data-label="Tier">2</td><td data-label="Source">Scalar accumulators</td><td data-label="Condition">If <code>trail_accum.count > 0</code>, extract trail; same for stop. Bounds: <code>(0.001, 0.10)</code>.</td></tr>
-<tr><td data-label="Tier">3</td><td data-label="Source"><code>default_distances</code></td><td data-label="Condition">If accumulator has no observations, use the constructor-provided default</td></tr>
+<thead>
+<tr>
+  <th>Tier</th>
+  <th>Source</th>
+  <th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Tier">1</td>
+  <td data-label="Source"><code>reckoner_answer</code> (passed in)</td>
+  <td data-label="Condition"><code>Some(dists)</code> → return immediately</td>
+</tr>
+<tr>
+  <td data-label="">2</td>
+  <td data-label="">Scalar accumulators</td>
+  <td data-label="">If <code>trail_accum.count &gt; 0</code>, extract trail; same for stop. Bounds: <code>(0.001, 0.10)</code>.</td>
+</tr>
+<tr>
+  <td data-label="">3</td>
+  <td data-label=""><code>default_distances</code></td>
+  <td data-label="">If accumulator has no observations, use the constructor-provided default</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Key detail:</strong> The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned.</p>
 <p><strong>Accumulator extraction:</strong> <code>self.trail_accum.extract(100, (0.001, 0.10), se)</code> — 100 samples, clamped to [0.1%, 10%].</p>
-<hr>
+<hr />
 <h3>7.5 <code>register_paper()</code> — Paper Creation (Lines 260–282)</h3>
-<pre><code>
-pub fn register_paper(
-    &mut self,
+<pre><code class="language-rust">pub fn register_paper(
+    &amp;mut self,
     composed: Vector,
     market_thought: Vector,
     position_thought: Vector,
@@ -322,18 +578,16 @@ pub fn register_paper(
 )
 </code></pre>
 <p><strong>Called:</strong> Every candle, for every broker. Creates a new <code>PaperEntry</code> with a monotonic <code>paper_id</code>, pushes it onto the <code>papers</code> VecDeque. The paper records the composed thought (market+position), the raw market thought, and the position thought separately (Proposal 026 — position observer learns from its own thought).</p>
-<hr>
+<hr />
 <h3>7.6 <code>close_all_runners()</code> — Direction Flip Handler (Lines 286–315)</h3>
-<pre><code>
-pub fn close_all_runners(&mut self, _current_price: Price) -> Vec<Resolution>
+<pre><code class="language-rust">pub fn close_all_runners(&amp;mut self, _current_price: Price) -&gt; Vec&lt;Resolution&gt;
 </code></pre>
 <p><strong>Called when:</strong> The market observer's active direction flips (e.g., was predicting Up, now predicts Down).</p>
-<p><strong>Behavior:</strong> Iterates all papers. Force-resolves any that are <code>signaled && !resolved</code> (active runners) with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally). Computes optimal distances via <code>simulation::compute_optimal_distances()</code> on the paper's full price history. Computes the position batch from accumulated runner history if available.</p>
+<p><strong>Behavior:</strong> Iterates all papers. Force-resolves any that are <code>signaled &amp;&amp; !resolved</code> (active runners) with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally). Computes optimal distances via <code>simulation::compute_optimal_distances()</code> on the paper's full price history. Computes the position batch from accumulated runner history if available.</p>
 <p><strong>Note:</strong> The <code>_current_price</code> parameter is accepted but unused (prefixed with underscore). The resolution uses the paper's own tracked data.</p>
-<hr>
+<hr />
 <h3>7.7 <code>tick_papers()</code> — The Core Tick (Lines 320–406)</h3>
-<pre><code>
-pub fn tick_papers(&mut self, current_price: Price) -> (Vec<Resolution>, Vec<Resolution>)
+<pre><code class="language-rust">pub fn tick_papers(&amp;mut self, current_price: Price) -&gt; (Vec&lt;Resolution&gt;, Vec&lt;Resolution&gt;)
 </code></pre>
 <p><strong>Returns two vectors:</strong></p>
 <ol>
@@ -341,13 +595,12 @@ pub fn tick_papers(&mut self, current_price: Price) -> (Vec<Resolution>, Vec<Res
 <li><code>runner_resolutions</code> — for position observer + broker learning (runner finished)</li>
 </ol>
 <p><strong>Algorithm (per paper):</strong></p>
-<pre><code>
-1. Snapshot was_signaled, was_resolved
+<pre><code>1. Snapshot was_signaled, was_resolved
 2. Call paper.tick(current_price)
 3. IF just signaled (trail crossed for first time):
    - Emit Grace market_signal
    - Create empty RunnerHistory for this paper_id
-4. IF active runner (signaled && !resolved):
+4. IF active runner (signaled &amp;&amp; !resolved):
    - Accumulate composed_thought, distances, price into RunnerHistory
 5. IF just resolved:
    - IF !signaled: Emit Violence market_signal
@@ -364,200 +617,340 @@ pub fn tick_papers(&mut self, current_price: Price) -> (Vec<Resolution>, Vec<Res
 </code></pre>
 <p><strong>Resolution categories:</strong></p>
 <table>
-<thead><tr><th>Path</th><th>Signal</th><th>Resolution</th><th>Goes to</th><th>Position batch?</th></tr></thead>
-<tr><td data-label="Path">Stop fires before trail crosses</td><td data-label="Signal">—</td><td data-label="Resolution">Violence</td><td data-label="Goes to"><code>market_signals</code></td><td data-label="Position batch?">No</td></tr>
-<tr><td data-label="Path">Trail crosses (first time)</td><td data-label="Signal">Grace</td><td data-label="Resolution">—</td><td data-label="Goes to"><code>market_signals</code></td><td data-label="Position batch?">No (runner begins)</td></tr>
-<tr><td data-label="Path">Runner trail fires</td><td data-label="Signal">—</td><td data-label="Resolution">Grace</td><td data-label="Goes to"><code>runner_resolutions</code></td><td data-label="Position batch?">Yes</td></tr>
+<thead>
+<tr>
+  <th>Path</th>
+  <th>Signal</th>
+  <th>Resolution</th>
+  <th>Goes to</th>
+  <th>Position batch?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Path">Stop fires before trail crosses</td>
+  <td data-label="Signal">—</td>
+  <td data-label="Resolution">Violence</td>
+  <td data-label="Goes to"><code>market_signals</code></td>
+  <td data-label="Position batch?">No</td>
+</tr>
+<tr>
+  <td data-label="">Trail crosses (first time)</td>
+  <td data-label="">Grace</td>
+  <td data-label="">—</td>
+  <td data-label=""><code>market_signals</code></td>
+  <td data-label="">No (runner begins)</td>
+</tr>
+<tr>
+  <td data-label="">Runner trail fires</td>
+  <td data-label="">—</td>
+  <td data-label="">Grace</td>
+  <td data-label=""><code>runner_resolutions</code></td>
+  <td data-label="">Yes</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h3>7.8 <code>propagate()</code> — Learning Propagation (Lines 413–483)</h3>
-<pre><code>
-pub fn propagate(
-    &mut self,
-    thought: &Vector,
-    market_thought: &Vector,
-    position_thought: &Vector,
+<pre><code class="language-rust">pub fn propagate(
+    &amp;mut self,
+    thought: &amp;Vector,
+    market_thought: &amp;Vector,
+    position_thought: &amp;Vector,
     outcome: Outcome,
     weight: f64,
     direction: Direction,
-    optimal: &Distances,
-    scalar_encoder: &ScalarEncoder,
-) -> PropagationFacts
+    optimal: &amp;Distances,
+    scalar_encoder: &amp;ScalarEncoder,
+) -&gt; PropagationFacts
 </code></pre>
 <p><strong>Three responsibilities:</strong></p>
 <h4>Step 1 — Track Record (Lines 425–435)</h4>
-<pre><code>
-match outcome {
-    Outcome::Grace => { self.cumulative_grace += weight; self.grace_count += 1; }
-    Outcome::Violence => { self.cumulative_violence += weight; self.violence_count += 1; }
+<pre><code class="language-rust">match outcome {
+    Outcome::Grace =&gt; { self.cumulative_grace += weight; self.grace_count += 1; }
+    Outcome::Violence =&gt; { self.cumulative_violence += weight; self.violence_count += 1; }
 }
 self.trade_count += 1;
 </code></pre>
 <h4>Step 2 — Scalar Accumulators Learn (Lines 437–439)</h4>
-<pre><code>
-self.trail_accum.observe(optimal.trail, outcome, weight, scalar_encoder);
+<pre><code class="language-rust">self.trail_accum.observe(optimal.trail, outcome, weight, scalar_encoder);
 self.stop_accum.observe(optimal.stop, outcome, weight, scalar_encoder);
 </code></pre>
 <p>The accumulators observe the <strong>optimal</strong> (hindsight) distances, weighted by outcome. This teaches the accumulators what trail/stop would have been ideal.</p>
-<h4>Step 3 — Dollar P&L and EMA (Lines 441–470)</h4>
+<h4>Step 3 — Dollar P&amp;L and EMA (Lines 441–470)</h4>
 <p><strong>Reference capital:</strong> <code>10_000.0</code> (constant).</p>
-<p><strong>Grace P&L:</strong></p>
-<pre><code>
-residue_usd = weight × 10_000        // weight IS excursion for Grace
+<p><strong>Grace P&amp;L:</strong></p>
+<pre><code>residue_usd = weight × 10_000        // weight IS excursion for Grace
 entry_fee   = 10_000 × swap_fee
 exit_fee    = (10_000 + residue_usd) × swap_fee
 net         = residue_usd - entry_fee - exit_fee
 </code></pre>
-<p><strong>Violence P&L:</strong></p>
-<pre><code>
-loss_usd    = weight × 10_000        // weight IS stop_distance for Violence
+<p><strong>Violence P&amp;L:</strong></p>
+<pre><code>loss_usd    = weight × 10_000        // weight IS stop_distance for Violence
 entry_fee   = 10_000 × swap_fee
 exit_fee    = (10_000 - loss_usd) × swap_fee
 net         = -(loss_usd + entry_fee + exit_fee)
 </code></pre>
 <p><strong>EMA update:</strong></p>
-<pre><code>
-let alpha = 0.038; // half-life ~50 papers
+<pre><code class="language-rust">let alpha = 0.038; // half-life ~50 papers
 self.avg_grace_net   = (1 - alpha) × avg_grace_net   + alpha × net;  // for Grace
 self.avg_violence_net = (1 - alpha) × avg_violence_net + alpha × net;  // for Violence
 </code></pre>
 <p><strong>Expected value:</strong></p>
-<pre><code>
-let gr = grace_count / trade_count;
+<pre><code class="language-rust">let gr = grace_count / trade_count;
 self.expected_value = gr × avg_grace_net + (1 - gr) × avg_violence_net;
 </code></pre>
 <p><strong>Return:</strong> <code>PropagationFacts</code> containing which observers should learn and with what data.</p>
-<hr>
+<hr />
 <h3>7.9 <code>paper_count()</code> — Active Papers (Lines 486–488)</h3>
-<pre><code>
-pub fn paper_count(&self) -> usize {
+<pre><code class="language-rust">pub fn paper_count(&amp;self) -&gt; usize {
     self.papers.len()
 }
 </code></pre>
-<hr>
+<hr />
 <h2>8. Free Functions</h2>
 <h3>8.1 <code>approximate_optimal_distances()</code> (Lines 493–508)</h3>
-<pre><code>
-fn approximate_optimal_distances(entry: f64, extreme: f64, prediction: Direction) -> Distances
+<pre><code class="language-rust">fn approximate_optimal_distances(entry: f64, extreme: f64, prediction: Direction) -&gt; Distances
 </code></pre>
 <p><strong>Used for:</strong> Market signal resolutions (Grace signal, Violence stop). Quick approximation without full simulation.</p>
 <p><strong>Logic:</strong></p>
-<pre><code>
-excursion = (extreme - entry) / entry     for Up
+<pre><code>excursion = (extreme - entry) / entry     for Up
 excursion = (entry - extreme) / entry     for Down
 excursion = max(excursion, 0.001)         // floor at 0.1%
 trail     = (excursion × 0.5).clamp(0.001, 0.10)  // 50% of excursion, clamped
 stop      = 0.001                                  // bootstrap — always near-zero
 </code></pre>
-<p><strong>Comment (line 503–505):</strong> "Stop is learned independently — near-zero bootstrap. The simulation (compute_optimal_distances) teaches the real value. This approximation doesn't have enough information to derive stop."</p>
+<p><strong>Comment (line 503–505):</strong> &quot;Stop is learned independently — near-zero bootstrap. The simulation (compute_optimal_distances) teaches the real value. This approximation doesn't have enough information to derive stop.&quot;</p>
 <h3>8.2 <code>compute_position_batch()</code> (Lines 513–572)</h3>
-<pre><code>
-fn compute_position_batch(
-    history: &RunnerHistory,
+<pre><code class="language-rust">fn compute_position_batch(
+    history: &amp;RunnerHistory,
     prediction: Direction,
     swap_fee: f64,
-) -> Vec<(Vector, Distances, Distances, f64)>
+) -&gt; Vec&lt;(Vector, Distances, Distances, f64)&gt;
 </code></pre>
 <p><strong>Purpose:</strong> Deferred batch training data for the position observer from a completed runner's full candle-by-candle history.</p>
 <p><strong>Algorithm (O(n)):</strong></p>
 <ol>
-<li><strong>Compute optimal stop</strong> for the whole runner via <code>simulation::compute_optimal_distances(&history.prices, prediction, swap_fee)</code>. Stop is a property of the full trade, not per-candle.</li>
-</ol>
-<ol>
-<li><strong>Suffix extremum pass</strong> — O(n) backward scan:</li>
-</ol>
+<li><p><strong>Compute optimal stop</strong> for the whole runner via <code>simulation::compute_optimal_distances(&amp;history.prices, prediction, swap_fee)</code>. Stop is a property of the full trade, not per-candle.</p>
+</li>
+<li><p><strong>Suffix extremum pass</strong> — O(n) backward scan:</p>
 <ul>
 <li>For <code>Up</code>: <code>suffix_ext[i] = max(prices[i], suffix_ext[i+1])</code></li>
 <li>For <code>Down</code>: <code>suffix_ext[i] = min(prices[i], suffix_ext[i+1])</code></li>
 </ul>
-<ol>
-<li><strong>Per-candle optimal trail computation:</strong></li>
-<pre><code>
-   optimal_trail = (suffix_ext[k] - price_k) / price_k     for Up
-   optimal_trail = (price_k - suffix_ext[k]) / price_k     for Down
-   optimal_trail = clamp(optimal_trail, 0.001, 0.10)
+</li>
+<li><p><strong>Per-candle optimal trail computation:</strong></p>
+<pre><code>optimal_trail = (suffix_ext[k] - price_k) / price_k     for Up
+optimal_trail = (price_k - suffix_ext[k]) / price_k     for Down
+optimal_trail = clamp(optimal_trail, 0.001, 0.10)
 </code></pre>
-</ol>
-<ol>
-<li><strong>Sparse sampling — only when optimal changed meaningfully:</strong></li>
-<pre><code>
-   let changed = last_optimal_trail.is_nan()
-       || ((optimal_trail - last_optimal_trail).abs() / last_optimal_trail.max(0.001)) > 0.10;
+</li>
+<li><p><strong>Sparse sampling — only when optimal changed meaningfully:</strong></p>
+<pre><code class="language-rust">let changed = last_optimal_trail.is_nan()
+    || ((optimal_trail - last_optimal_trail).abs() / last_optimal_trail.max(0.001)) &gt; 0.10;
 </code></pre>
-<p>Only emit a training sample when the optimal trail changed by >10% relative. If the answer is the same candle over candle, there's nothing to learn.</p>
-</ol>
-<ol>
-<li><strong>Weight:</strong> <code>weight = optimal_trail</code> (the residue this optimal distance would capture).</li>
+<p>Only emit a training sample when the optimal trail changed by &gt;10% relative. If the answer is the same candle over candle, there's nothing to learn.</p>
+</li>
+<li><p><strong>Weight:</strong> <code>weight = optimal_trail</code> (the residue this optimal distance would capture).</p>
+</li>
 </ol>
 <p><strong>Batch entry:</strong> <code>(thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight)</code>.</p>
-<hr>
+<hr />
 <h2>9. Tests (Lines 574–887, 15 tests)</h2>
 <table>
-<thead><tr><th>Test</th><th>Lines</th><th>What it verifies</th></tr></thead>
-<tr><td data-label="Test"><code>test_broker_new</code></td><td data-label="Lines">601–612</td><td data-label="What it verifies">Constructor defaults: slot_idx=0, counts=0, EMAs=0.0</td></tr>
-<tr><td data-label="Test"><code>test_market_position_idx</code></td><td data-label="Lines">615–626</td><td data-label="What it verifies">Grid derivation: slot=5, M=3 → market=1, position=2</td></tr>
-<tr><td data-label="Test"><code>test_gate_open_cold_start</code></td><td data-label="Lines">629–633</td><td data-label="What it verifies">Gate open when counts < 50</td></tr>
-<tr><td data-label="Test"><code>test_gate_open_negative_ev</code></td><td data-label="Lines">636–644</td><td data-label="What it verifies">Gate closed after warm-up with negative EV</td></tr>
-<tr><td data-label="Test"><code>test_gate_open_positive_ev</code></td><td data-label="Lines">647–654</td><td data-label="What it verifies">Gate open after warm-up with positive EV</td></tr>
-<tr><td data-label="Test"><code>test_register_paper</code></td><td data-label="Lines">657–665</td><td data-label="What it verifies">Paper created, count increments to 1</td></tr>
-<tr><td data-label="Test"><code>test_tick_papers_no_resolution</code></td><td data-label="Lines">668–681</td><td data-label="What it verifies">Small price move → no resolution, paper survives</td></tr>
-<tr><td data-label="Test"><code>test_tick_papers_violence</code></td><td data-label="Lines">684–700</td><td data-label="What it verifies">Price drops below stop → Violence, paper removed</td></tr>
-<tr><td data-label="Test"><code>test_tick_papers_grace_then_runner_resolution</code></td><td data-label="Lines">703–726</td><td data-label="What it verifies">Two-phase: Grace signal (trail crossed), then runner resolves (trail fires)</td></tr>
-<tr><td data-label="Test"><code>test_propagate_updates_track_record</code></td><td data-label="Lines">729–753</td><td data-label="What it verifies">Grace propagate: cumulative_grace=1.0, trade_count=1, correct indices</td></tr>
-<tr><td data-label="Test"><code>test_propagate_violence_updates_violence</code></td><td data-label="Lines">756–778</td><td data-label="What it verifies">Violence propagate: cumulative_violence=2.5, grace stays 0</td></tr>
-<tr><td data-label="Test"><code>test_dollar_pnl_grace</code></td><td data-label="Lines">781–806</td><td data-label="What it verifies">Grace P&L: 5% excursion, swap_fee=0.001 → net ≈ 479.5, avg_grace_net ≈ 18.22</td></tr>
-<tr><td data-label="Test"><code>test_dollar_pnl_violence</code></td><td data-label="Lines">809–834</td><td data-label="What it verifies">Violence P&L: 3% stop, swap_fee=0.001 → net ≈ -319.7, avg_violence_net ≈ -12.15</td></tr>
-<tr><td data-label="Test"><code>test_ema_updates_correctly</code></td><td data-label="Lines">837–856</td><td data-label="What it verifies">Two consecutive Grace propagations: second avg_grace_net > first (EMA converging)</td></tr>
-<tr><td data-label="Test"><code>test_scalar_accums_named</code></td><td data-label="Lines">859–863</td><td data-label="What it verifies">Accumulator names: "trail-distance", "stop-distance"</td></tr>
-<tr><td data-label="Test"><code>test_approximate_optimal_distances_up</code></td><td data-label="Lines">866–871</td><td data-label="What it verifies">Up: entry=100, extreme=110 → trail=0.05, stop=0.001</td></tr>
-<tr><td data-label="Test"><code>test_approximate_optimal_distances_down</code></td><td data-label="Lines">874–879</td><td data-label="What it verifies">Down: entry=100, extreme=90 → trail=0.05, stop=0.001</td></tr>
-<tr><td data-label="Test"><code>test_approximate_optimal_distances_clamped</code></td><td data-label="Lines">882–886</td><td data-label="What it verifies">Zero excursion → trail=0.001, stop=0.001 (floors)</td></tr>
+<thead>
+<tr>
+  <th>Test</th>
+  <th>Lines</th>
+  <th>What it verifies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Test"><code>test_broker_new</code></td>
+  <td data-label="Lines">601–612</td>
+  <td data-label="What it verifies">Constructor defaults: slot_idx=0, counts=0, EMAs=0.0</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_market_position_idx</code></td>
+  <td data-label="">615–626</td>
+  <td data-label="">Grid derivation: slot=5, M=3 → market=1, position=2</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_gate_open_cold_start</code></td>
+  <td data-label="">629–633</td>
+  <td data-label="">Gate open when counts &lt; 50</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_gate_open_negative_ev</code></td>
+  <td data-label="">636–644</td>
+  <td data-label="">Gate closed after warm-up with negative EV</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_gate_open_positive_ev</code></td>
+  <td data-label="">647–654</td>
+  <td data-label="">Gate open after warm-up with positive EV</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_register_paper</code></td>
+  <td data-label="">657–665</td>
+  <td data-label="">Paper created, count increments to 1</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_papers_no_resolution</code></td>
+  <td data-label="">668–681</td>
+  <td data-label="">Small price move → no resolution, paper survives</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_papers_violence</code></td>
+  <td data-label="">684–700</td>
+  <td data-label="">Price drops below stop → Violence, paper removed</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_tick_papers_grace_then_runner_resolution</code></td>
+  <td data-label="">703–726</td>
+  <td data-label="">Two-phase: Grace signal (trail crossed), then runner resolves (trail fires)</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_propagate_updates_track_record</code></td>
+  <td data-label="">729–753</td>
+  <td data-label="">Grace propagate: cumulative_grace=1.0, trade_count=1, correct indices</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_propagate_violence_updates_violence</code></td>
+  <td data-label="">756–778</td>
+  <td data-label="">Violence propagate: cumulative_violence=2.5, grace stays 0</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_dollar_pnl_grace</code></td>
+  <td data-label="">781–806</td>
+  <td data-label="">Grace P&amp;L: 5% excursion, swap_fee=0.001 → net ≈ 479.5, avg_grace_net ≈ 18.22</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_dollar_pnl_violence</code></td>
+  <td data-label="">809–834</td>
+  <td data-label="">Violence P&amp;L: 3% stop, swap_fee=0.001 → net ≈ -319.7, avg_violence_net ≈ -12.15</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_ema_updates_correctly</code></td>
+  <td data-label="">837–856</td>
+  <td data-label="">Two consecutive Grace propagations: second avg_grace_net &gt; first (EMA converging)</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_scalar_accums_named</code></td>
+  <td data-label="">859–863</td>
+  <td data-label="">Accumulator names: &quot;trail-distance&quot;, &quot;stop-distance&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_approximate_optimal_distances_up</code></td>
+  <td data-label="">866–871</td>
+  <td data-label="">Up: entry=100, extreme=110 → trail=0.05, stop=0.001</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_approximate_optimal_distances_down</code></td>
+  <td data-label="">874–879</td>
+  <td data-label="">Down: entry=100, extreme=90 → trail=0.05, stop=0.001</td>
+</tr>
+<tr>
+  <td data-label=""><code>test_approximate_optimal_distances_clamped</code></td>
+  <td data-label="">882–886</td>
+  <td data-label="">Zero excursion → trail=0.001, stop=0.001 (floors)</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>10. Data Flow Summary</h2>
-<pre class="mermaid">
-flowchart TD
-    candle_arrives["Candle arrives"] --> register_paper["register_paper()\ncreates PaperEntry with thoughts + distances"]
-    register_paper -->|"next candle"| tick_papers["tick_papers()"]
-    tick_papers -->|"Paper signals Grace\ncreates RunnerHistory"| market_signals_grace["market_signals\n(Resolution)"]
-    tick_papers -->|"Paper hits stop"| market_signals_violence["market_signals\n(Resolution, Violence)"]
-    tick_papers -->|"Runner resolves\ncompute_position_batch() → deferred training data"| runner_resolutions["runner_resolutions\n(Resolution, Grace + position_batch)"]
-    market_signals_grace --> propagate
-    market_signals_violence --> propagate
-    runner_resolutions --> propagate
-    propagate["propagate()\ncalled by Post with Resolution data"] -->|"Updates cumulative_grace / cumulative_violence"| record["Track record"]
-    propagate -->|"Feeds trail_accum / stop_accum\nwith optimal distances"| accumulators["Scalar accumulators"]
-    propagate -->|"Computes dollar P&L\nupdates avg_grace_net / avg_violence_net EMAs"| ev["expected_value"]
-    propagate -->|"Recomputes"| ev_recomputed["expected_value"]
-    propagate -->|"Returns"| facts["PropagationFacts\nPost routes to observers"]
-    facts --> gate_open["gate_open()\nconsulted before proposals"]
-    gate_open -->|"Cold start (< 50 of either)"| always_open["always open"]
-    gate_open -->|"Warm (≥ 50 of both)"| ev_check["open iff expected_value > 0"]
+<pre class="mermaid">flowchart TD
+    candle_arrives[&quot;Candle arrives&quot;] --&gt; register_paper[&quot;register_paper()\ncreates PaperEntry with thoughts + distances&quot;]
+    register_paper --&gt;|&quot;next candle&quot;| tick_papers[&quot;tick_papers()&quot;]
+    tick_papers --&gt;|&quot;Paper signals Grace\ncreates RunnerHistory&quot;| market_signals_grace[&quot;market_signals\n(Resolution)&quot;]
+    tick_papers --&gt;|&quot;Paper hits stop&quot;| market_signals_violence[&quot;market_signals\n(Resolution, Violence)&quot;]
+    tick_papers --&gt;|&quot;Runner resolves\ncompute_position_batch() → deferred training data&quot;| runner_resolutions[&quot;runner_resolutions\n(Resolution, Grace + position_batch)&quot;]
+    market_signals_grace --&gt; propagate
+    market_signals_violence --&gt; propagate
+    runner_resolutions --&gt; propagate
+    propagate[&quot;propagate()\ncalled by Post with Resolution data&quot;] --&gt;|&quot;Updates cumulative_grace / cumulative_violence&quot;| record[&quot;Track record&quot;]
+    propagate --&gt;|&quot;Feeds trail_accum / stop_accum\nwith optimal distances&quot;| accumulators[&quot;Scalar accumulators&quot;]
+    propagate --&gt;|&quot;Computes dollar P&amp;L\nupdates avg_grace_net / avg_violence_net EMAs&quot;| ev[&quot;expected_value&quot;]
+    propagate --&gt;|&quot;Recomputes&quot;| ev_recomputed[&quot;expected_value&quot;]
+    propagate --&gt;|&quot;Returns&quot;| facts[&quot;PropagationFacts\nPost routes to observers&quot;]
+    facts --&gt; gate_open[&quot;gate_open()\nconsulted before proposals&quot;]
+    gate_open --&gt;|&quot;Cold start (&lt; 50 of either)&quot;| always_open[&quot;always open&quot;]
+    gate_open --&gt;|&quot;Warm (≥ 50 of both)&quot;| ev_check[&quot;open iff expected_value &gt; 0&quot;]
 </code></pre>
-<hr>
+<hr />
 <h2>11. Key Design Decisions (Quoted)</h2>
 <table>
-<thead><tr><th>Decision</th><th>Source</th><th>Quote</th></tr></thead>
-<tr><td data-label="Decision">Proposal 024</td><td data-label="Source">Line 112</td><td data-label="Quote">"market observer learns from the anomaly, not composed thought"</td></tr>
-<tr><td data-label="Decision">Proposal 026</td><td data-label="Source">Line 39</td><td data-label="Quote">"position learns from position_thought, not composed"</td></tr>
-<tr><td data-label="Decision">Proposal 035</td><td data-label="Source">Line 176</td><td data-label="Quote">"no reckoner, no noise subspace. Pure accounting + gate + log"</td></tr>
-<tr><td data-label="Decision">Proposal 035</td><td data-label="Source">Line 411</td><td data-label="Quote">"no reckoner. Pure accounting — dollar P&L, EMA, counts"</td></tr>
-<tr><td data-label="Decision">Proposal 051</td><td data-label="Source">CLAUDE.md</td><td data-label="Quote">"deleted the binary Grace/Violence reckoner — continuous reckoners only"</td></tr>
-<tr><td data-label="Decision">EMA alpha</td><td data-label="Source">Line 456</td><td data-label="Quote"><code>0.038</code> — "half-life ~50 papers"</td></tr>
-<tr><td data-label="Decision">Reference capital</td><td data-label="Source">Line 442</td><td data-label="Quote"><code>10_000.0</code> (constant)</td></tr>
-<tr><td data-label="Decision">Cold start threshold</td><td data-label="Source">Line 230</td><td data-label="Quote"><code>50</code> of either outcome</td></tr>
-<tr><td data-label="Decision">Stop bootstrap</td><td data-label="Source">Line 506</td><td data-label="Quote"><code>0.001</code> — "The simulation teaches the real value"</td></tr>
-<tr><td data-label="Decision">Sparse sampling threshold</td><td data-label="Source">Line 556</td><td data-label="Quote"><code>> 0.10</code> — 10% relative change before emitting batch sample</td></tr>
+<thead>
+<tr>
+  <th>Decision</th>
+  <th>Source</th>
+  <th>Quote</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Decision">Proposal 024</td>
+  <td data-label="Source">Line 112</td>
+  <td data-label="Quote">&quot;market observer learns from the anomaly, not composed thought&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Proposal 026</td>
+  <td data-label="">Line 39</td>
+  <td data-label="">&quot;position learns from position_thought, not composed&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Proposal 035</td>
+  <td data-label="">Line 176</td>
+  <td data-label="">&quot;no reckoner, no noise subspace. Pure accounting + gate + log&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Proposal 035</td>
+  <td data-label="">Line 411</td>
+  <td data-label="">&quot;no reckoner. Pure accounting — dollar P&amp;L, EMA, counts&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Proposal 051</td>
+  <td data-label="">CLAUDE.md</td>
+  <td data-label="">&quot;deleted the binary Grace/Violence reckoner — continuous reckoners only&quot;</td>
+</tr>
+<tr>
+  <td data-label="">EMA alpha</td>
+  <td data-label="">Line 456</td>
+  <td data-label=""><code>0.038</code> — &quot;half-life ~50 papers&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Reference capital</td>
+  <td data-label="">Line 442</td>
+  <td data-label=""><code>10_000.0</code> (constant)</td>
+</tr>
+<tr>
+  <td data-label="">Cold start threshold</td>
+  <td data-label="">Line 230</td>
+  <td data-label=""><code>50</code> of either outcome</td>
+</tr>
+<tr>
+  <td data-label="">Stop bootstrap</td>
+  <td data-label="">Line 506</td>
+  <td data-label=""><code>0.001</code> — &quot;The simulation teaches the real value&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Sparse sampling threshold</td>
+  <td data-label="">Line 556</td>
+  <td data-label=""><code>&gt; 0.10</code> — 10% relative change before emitting batch sample</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>12. Findings</h2>
 <ol>
 <li><strong>Complete.</strong> All 24 fields documented. All 9 methods (including 2 free functions) documented. Every code path traced.</li>
-<li><strong>No hidden mutation.</strong> <code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state. <code>tick_papers()</code> returns <code>Vec<Resolution></code> — the broker does not call propagate itself.</li>
+<li><strong>No hidden mutation.</strong> <code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state. <code>tick_papers()</code> returns <code>Vec&lt;Resolution&gt;</code> — the broker does not call propagate itself.</li>
 <li><strong>Runner history is correctly scoped.</strong> Created at Grace signal, accumulated per-candle, consumed and removed at runner resolution. The <code>HashMap</code> key is <code>paper_id</code>, preventing stale data.</li>
 <li><strong>The gate has two distinct modes</strong> with a clear boundary at 50 resolved trades of each outcome.</li>
 <li><strong>The distance cascade has exactly three tiers</strong> with clean fallback semantics.</li>
-<li><strong>P&L computation includes swap fees</strong> on both entry and exit, against a fixed $10,000 reference.</li>
+<li><strong>P&amp;L computation includes swap fees</strong> on both entry and exit, against a fixed $10,000 reference.</li>
 <li><strong><code>close_all_runners</code> accepts <code>_current_price</code> unused</strong> — all resolution data comes from the paper's own tracked price history.</li>
-<li><strong>15 tests</strong> cover construction, grid math, gate logic, paper lifecycle (no-resolution, violence, grace→runner), propagation accounting, dollar P&L (both directions), EMA convergence, accumulator naming, and optimal distance approximation (both directions + clamping). No test for <code>compute_position_batch</code> or <code>close_all_runners</code>.</li>
-</ol></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<li><strong>15 tests</strong> cover construction, grid math, gate logic, paper lifecycle (no-resolution, violence, grace→runner), propagation accounting, dollar P&amp;L (both directions), EMA convergence, accumulator naming, and optimal distance approximation (both directions + clamping). No test for <code>compute_position_batch</code> or <code>close_all_runners</code>.</li>
+</ol>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

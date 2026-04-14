@@ -125,26 +125,58 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-014 — ExitObserver (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/domain/position_observer.rs</code> (291 lines)</p>
-<p><strong>Context:</strong> None. Read only what the code says.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-014 — ExitObserver (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/domain/position_observer.rs</code> (291 lines)
+<strong>Context:</strong> None. Read only what the code says.</p>
+<hr />
 <h2>What It Is</h2>
-<p>A <code>PositionObserver</code>. The module docstring calls it "position observer" (not "exit observer"). The file-level comment says: "Estimates position distances. Learned. Two continuous reckoners (trail, stop). Compiled from wat/position-observer.wat."</p>
+<p>A <code>PositionObserver</code>. The module docstring calls it &quot;position observer&quot; (not &quot;exit observer&quot;). The file-level comment says: &quot;Estimates position distances. Learned. Two continuous reckoners (trail, stop). Compiled from wat/position-observer.wat.&quot;</p>
 <p>It has six fields. It is a struct, not a trait.</p>
-<hr>
+<hr />
 <h2>Fields</h2>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>What the comment says</th></tr></thead>
-<tr><td data-label="Field"><code>lens</code></td><td data-label="Type"><code>PositionLens</code></td><td data-label="What the comment says">"Which judgment vocabulary." Enum: <code>Core</code> (5 trade atoms: excursion, retracement, age, peak-age, signaled) or <code>Full</code> (13 trade atoms: all three voices plus phase context).</td></tr>
-<tr><td data-label="Field"><code>trail_reckoner</code></td><td data-label="Type"><code>Reckoner</code></td><td data-label="What the comment says">"Continuous reckoner -- trailing stop distance." Named <code>"trail-{lens}"</code>. Config: Continuous mode, 10 buckets.</td></tr>
-<tr><td data-label="Field"><code>stop_reckoner</code></td><td data-label="Type"><code>Reckoner</code></td><td data-label="What the comment says">"Continuous reckoner -- safety stop distance." Named <code>"stop-{lens}"</code>. Config: Continuous mode, 10 buckets.</td></tr>
-<tr><td data-label="Field"><code>default_distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="What the comment says">"The crutches (both), returned when empty." A simple <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free.</td></tr>
-<tr><td data-label="Field"><code>noise_subspace</code></td><td data-label="Type"><code>OnlineSubspace</code></td><td data-label="What the comment says">"Learns the background distribution for this exit lens. 8 principal components. The anomaly is what the subspace cannot explain." Initialized with <code>(dims, 8)</code>.</td></tr>
-<tr><td data-label="Field"><code>incremental</code></td><td data-label="Type"><code>IncrementalBundle</code></td><td data-label="What the comment says">"Incremental bundling for exit facts — optimization cache, not cognition." Running element-wise sums + last-facts cache for incremental encoding.</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>What the comment says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>lens</code></td>
+  <td data-label="Type"><code>PositionLens</code></td>
+  <td data-label="What the comment says">&quot;Which judgment vocabulary.&quot; Enum: <code>Core</code> (5 trade atoms: excursion, retracement, age, peak-age, signaled) or <code>Full</code> (13 trade atoms: all three voices plus phase context).</td>
+</tr>
+<tr>
+  <td data-label=""><code>trail_reckoner</code></td>
+  <td data-label=""><code>Reckoner</code></td>
+  <td data-label="">&quot;Continuous reckoner -- trailing stop distance.&quot; Named <code>&quot;trail-{lens}&quot;</code>. Config: Continuous mode, 10 buckets.</td>
+</tr>
+<tr>
+  <td data-label=""><code>stop_reckoner</code></td>
+  <td data-label=""><code>Reckoner</code></td>
+  <td data-label="">&quot;Continuous reckoner -- safety stop distance.&quot; Named <code>&quot;stop-{lens}&quot;</code>. Config: Continuous mode, 10 buckets.</td>
+</tr>
+<tr>
+  <td data-label=""><code>default_distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label="">&quot;The crutches (both), returned when empty.&quot; A simple <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free.</td>
+</tr>
+<tr>
+  <td data-label=""><code>noise_subspace</code></td>
+  <td data-label=""><code>OnlineSubspace</code></td>
+  <td data-label="">&quot;Learns the background distribution for this exit lens. 8 principal components. The anomaly is what the subspace cannot explain.&quot; Initialized with <code>(dims, 8)</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>incremental</code></td>
+  <td data-label=""><code>IncrementalBundle</code></td>
+  <td data-label="">&quot;Incremental bundling for exit facts — optimization cache, not cognition.&quot; Running element-wise sums + last-facts cache for incremental encoding.</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>How It Predicts Distances</h2>
-<p>One public prediction method: <code>reckoner_distances(position_thought: &Vector) -> Option<Distances></code>.</p>
+<p>One public prediction method: <code>reckoner_distances(position_thought: &amp;Vector) -&gt; Option&lt;Distances&gt;</code>.</p>
 <ol>
 <li>Check experience of both reckoners (trail and stop). If either has zero experience, return <code>None</code>.</li>
 <li>Query <code>trail_reckoner.query(position_thought)</code> → trail distance.</li>
@@ -154,23 +186,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>The broker owns the full cascade (reckoner → accumulator → default). This method is Tier 1 only — raw reckoner output, no fallback.</p>
 <p>A second method <code>recommended_distances</code> exists but is <code>#[cfg(test)]</code> only. It implements the full cascade: reckoner → broker accumulator → default_distances. Not used in production.</p>
 <p>Both methods query on <code>position_thought</code> only (Proposal 026). No composition with market thought at query time.</p>
-<hr>
+<hr />
 <h2>How It Learns</h2>
-<p>One learning method: <code>observe_distances(position_thought: &Vector, optimal: &Distances) -> (f64, f64, f64, f64, f64, f64)</code>.</p>
+<p>One learning method: <code>observe_distances(position_thought: &amp;Vector, optimal: &amp;Distances) -&gt; (f64, f64, f64, f64, f64, f64)</code>.</p>
 <ol>
 <li><strong>Pre-learning prediction:</strong> Query each reckoner for what it <em>would</em> predict given current state. If no experience, use default.</li>
+<li><strong>Error computation:</strong> <code>|predicted - optimal| / optimal.max(0.0001)</code> for both trail and stop. Normalized error. Read-only diagnostic — no feedback loop.</li>
 <li><strong>Learn:</strong> Call <code>trail_reckoner.observe_scalar(position_thought, optimal.trail, 1.0)</code> and <code>stop_reckoner.observe_scalar(position_thought, optimal.stop, 1.0)</code>. Weight is always 1.0 — each observation counts once. The value (optimal distance) goes to the bucket center; the thought goes to the prototype. Weight does NOT scale by magnitude.</li>
 <li><strong>Return:</strong> <code>(trail_error, stop_error, predicted_trail, predicted_stop, optimal_trail, optimal_stop)</code>.</li>
 </ol>
-<p>The "optimal" distances come from hindsight — simulation sweeps candidate values against actual price histories to determine what would have been ideal (defined in <code>simulation</code> module, not here).</p>
-<hr>
+<p>The &quot;optimal&quot; distances come from hindsight — simulation sweeps candidate values against actual price histories to determine what would have been ideal (defined in <code>simulation</code> module, not here).</p>
+<hr />
 <h2>Noise Subspace</h2>
-<p><code>strip_noise(thought: &Vector) -> Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as market_observer.</p>
-<hr>
+<p><code>strip_noise(thought: &amp;Vector) -&gt; Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as market_observer.</p>
+<hr />
 <h2>Discrepancy With Module Docstring</h2>
-<p>Lines 1–5 state: "Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating."</p>
+<p>Lines 1–5 state: &quot;Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating.&quot;</p>
 <p>The struct actually <strong>has</strong> a <code>noise_subspace</code> field (line 27–28) and a <code>strip_noise</code> method (line 165). The docstring contradicts the code.</p>
-<hr>
+<hr />
 <h2>Tests</h2>
 <p>7 tests in <code>#[cfg(test)] mod tests</code>:</p>
 <ul>
@@ -183,6 +216,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Noise subspace initialized and functional</li>
 </ul>
 <p>All use DIMS=4096, RECALIB=100, DEFAULT_TRAIL=0.02, DEFAULT_STOP=0.05.</p>
-<hr>
+<hr />
 <h2>Summary</h2>
-<p>PositionObserver predicts two continuous values (trailing stop distance, safety stop distance) from a position thought vector using two independent continuous Reckoners. It learns from hindsight-optimal distances with unit weight. It has a noise subspace despite its own docstring claiming it doesn't. The broker owns the production cascade; the observer only exposes raw reckoner queries.</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>PositionObserver predicts two continuous values (trailing stop distance, safety stop distance) from a position thought vector using two independent continuous Reckoners. It learns from hindsight-optimal distances with unit weight. It has a noise subspace despite its own docstring claiming it doesn't. The broker owns the production cascade; the observer only exposes raw reckoner queries.</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

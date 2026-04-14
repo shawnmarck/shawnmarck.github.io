@@ -126,75 +126,92 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Proposal System <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p>The <a class="wikilink" href="T1-001-wat-language.html">wat language</a> evolves through a formal proposal process. Each proposal describes a problem, proposes alternatives, and is independently reviewed by two designers — <strong>Brian Beckman</strong> (algebraic authority) and <strong>Rich Hickey</strong> (simplicity authority). A <strong>datamancer arbitrator</strong> synthesizes their reviews into a final resolution, sometimes overriding both. Eighteen proposals have been resolved to date (March–April 2026), shaping the language's <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a>, core algebra, and concurrency model.</p>
-<hr></div><div class="prose prose-invert max-w-none"><h2>Anatomy of a Proposal</h2>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; evolves through a formal proposal process. Each proposal describes a problem, proposes alternatives, and is independently reviewed by two designers — <strong>Brian Beckman</strong> (algebraic authority) and <strong>Rich Hickey</strong> (simplicity authority). A <strong>datamancer arbitrator</strong> synthesizes their reviews into a final resolution, sometimes overriding both. Eighteen proposals have been resolved to date (March–April 2026), shaping the language's &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;, core algebra, and concurrency model.</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>Anatomy of a Proposal</h2>
 <p>Every proposal is a <code>PROPOSAL.md</code> with seven required sections:</p>
 <ol>
 <li><strong>Scope</strong> — classified as <code>core</code>, <code>structural</code>, or following from a prior proposal.</li>
-<li><strong>The Current State</strong> — what exists today, with code examples from the enterprise codebase or the <a class="wikilink" href="T1-001-wat-language.html">wat language</a> runtime.</li>
+<li><strong>The Current State</strong> — what exists today, with code examples from the enterprise codebase or the &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; runtime.</li>
 <li><strong>The Problem</strong> — a concrete gap, often discovered by automated wards (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) or by tracing type violations between wat specs and the Rust implementation.</li>
 <li><strong>The Proposed Change</strong> — two to three alternatives with code examples.</li>
-<li><strong>The Algebraic Question</strong> — does this compose with the existing monoid (<a class="wikilink" href="pg-bind.html">bind</a>/<a class="wikilink" href="pg-bundle.html">bundle</a>)? Does it introduce new algebraic structure? Every proposal <em>must</em> address this.</li>
-<li><strong>The Simplicity Question</strong> — Hickey's test: "Is this simple or easy?" What is being complected? Could existing primitives solve it?</li>
+<li><strong>The Algebraic Question</strong> — does this compose with the existing monoid (&lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;/&lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt;)? Does it introduce new algebraic structure? Every proposal <em>must</em> address this.</li>
+<li><strong>The Simplicity Question</strong> — Hickey's test: &quot;Is this simple or easy?&quot; What is being complected? Could existing primitives solve it?</li>
 <li><strong>Questions for Designers</strong> — specific yes/no and tradeoff questions for the review panel.</li>
 </ol>
 <h2>The Review Panel</h2>
 <h3>Brian Beckman — Algebraic Authority</h3>
-<p>Frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. His recurring questions: <em>"Does this compose?"</em> and <em>"What categorical construction is this?"</em> He tends to see mathematical structure where Hickey sees convention.</p>
+<p>Frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. His recurring questions: <em>&quot;Does this compose?&quot;</em> and <em>&quot;What categorical construction is this?&quot;</em> He tends to see mathematical structure where Hickey sees convention.</p>
 <p><strong>Key positions:</strong></p>
 <ul>
 <li>Framed <code>fold</code> as the catamorphism (accepted as proposal 002).</li>
-<li>Framed protocols as "type classes — the third construction alongside struct (product) and enum (coproduct)" (014).</li>
+<li>Framed protocols as &quot;type classes — the third construction alongside struct (product) and enum (coproduct)&quot; (014).</li>
 <li>Argued journal operations are co-generators of a coalgebra and belong in core (004).</li>
 </ul>
+<p><strong>Overridden on:</strong> struct field types (007 — wanted mandatory types; untyped won) and <code>defservice</code> (04/003 — datamancer showed functions + &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;select&lt;/a&gt; suffice).</p>
 <h3>Rich Hickey — Simplicity Authority</h3>
-<p>Applies "simple made easy" — distinguishes <strong>simple</strong> (one concept, one job) from <strong>easy</strong> (familiar, convenient). Protects the six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> from growth. His recurring questions: <em>"Does this complect?"</em> and <em>"Could existing forms do this?"</em> He tends to reject new forms when discipline or data restructuring suffices.</p>
+<p>Applies &quot;simple made easy&quot; — distinguishes <strong>simple</strong> (one concept, one job) from <strong>easy</strong> (familiar, convenient). Protects the six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; from growth. His recurring questions: <em>&quot;Does this complect?&quot;</em> and <em>&quot;Could existing forms do this?&quot;</em> He tends to reject new forms when discipline or data restructuring suffices.</p>
 <p><strong>Key positions:</strong></p>
 <ul>
-<li>Rejected <code>defprocessor</code> flatly: <em>"The function shape IS the declaration"</em> (001).</li>
-<li>Won on untyped struct fields: <em>"Types are documentation, not enforcement"</em> (007).</li>
-<li>Won keyword-as-function access: <em>"Keywords read like English"</em> (007).</li>
+<li>Rejected <code>defprocessor</code> flatly: <em>&quot;The function shape IS the declaration&quot;</em> (001).</li>
+<li>Won on untyped struct fields: <em>&quot;Types are documentation, not enforcement&quot;</em> (007).</li>
+<li>Won keyword-as-function access: <em>&quot;Keywords read like English&quot;</em> (007).</li>
 </ul>
 <p><strong>Overridden on:</strong> journal operations in stdlib (004 — reversed after opacity argument), <code>nil</code> (013 — datamancer chose structural absence), and channels (003 — deleted as contradicting fold-based design).</p>
 <h3>The Datamancer — Arbitrator</h3>
 <p>Not a formal reviewer but a <strong>synthesizing role</strong> visible in resolutions. Appears when the two designers disagree or when neither option is right. The datamancer has overruled <em>both</em> designers:</p>
 <ul>
-<li><strong>Proposal 013</strong> — chose "structural absence" with the <code>?</code> field convention, rejecting both Clojure truthiness and Rust's nil separation.</li>
+<li><strong>Proposal 013</strong> — chose &quot;structural absence&quot; with the <code>?</code> field convention, rejecting both Clojure truthiness and Rust's nil separation.</li>
+<li><strong>Proposal 04/003</strong> — showed that &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;select&lt;/a&gt; + functions + <code>spawn</code> subsume <code>defprocess</code> and <code>defservice</code> entirely, retiring both forms.</li>
 </ul>
 <h2>Resolution</h2>
 <p>A <code>RESOLUTION.md</code> synthesizes the two reviews into one of four outcomes:</p>
 <table>
-<thead><tr><th>Verdict</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Verdict"><strong>ACCEPTED</strong></td><td data-label="Meaning">With specific form syntax, placement, and constraints.</td></tr>
-<tr><td data-label="Verdict"><strong>REJECTED</strong></td><td data-label="Meaning">With open questions forwarded to future proposals.</td></tr>
-<tr><td data-label="Verdict"><strong>ACCEPTED with tension</strong></td><td data-label="Meaning">Accepted, but a specific disagreement is deferred.</td></tr>
-<tr><td data-label="Verdict"><strong>SUPERSEDED</strong></td><td data-label="Meaning">The debate revealed a simpler answer (see 04/003).</td></tr>
+<thead>
+<tr>
+  <th>Verdict</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Verdict"><strong>ACCEPTED</strong></td>
+  <td data-label="Meaning">With specific form syntax, placement, and constraints.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>REJECTED</strong></td>
+  <td data-label="">With open questions forwarded to future proposals.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>ACCEPTED with tension</strong></td>
+  <td data-label="">Accepted, but a specific disagreement is deferred.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>SUPERSEDED</strong></td>
+  <td data-label="">The debate revealed a simpler answer (see 04/003).</td>
+</tr>
+</tbody>
 </table>
 <p>Resolution documents record who was overridden and why.</p>
 <h2>Design Principles (Emergent)</h2>
 <p>The proposal system has produced six stable principles:</p>
 <ol>
-<li><strong>Transparency to Rust.</strong> Form names match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax maps obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</li>
-</ol>
-<ol>
-<li><strong>Protect the algebra.</strong> The six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> and journal coalgebra are the foundation. Proposal 001 was rejected to prevent a seventh primitive. Only <code>fold</code> was added — as a control form, not a primitive.</li>
-</ol>
-<ol>
-<li><strong>Simple > easy.</strong> Convenience is rejected if it complects concerns. Variadic <code>update</code> (012) was accepted because it completes an existing form. <code>defprocessor</code> (001) was rejected because it packaged four concerns into one.</li>
-</ol>
-<ol>
-<li><strong>Types are documentation, not enforcement.</strong> Structs are untyped (007). Protocols check arity, not return types (014). <code>when</code> without else generates <code>Option<T></code> — the compiler infers; the specifier doesn't annotate (013).</li>
-</ol>
-<ol>
-<li><strong>Opacity creates boundaries.</strong> If a type is opaque, its interface operations are core (004). This rule determined that <code>observe</code>/<code>predict</code>/<code>decay</code> are core, not stdlib.</li>
-</ol>
-<ol>
-<li><strong>The four-layer model</strong> (003): <strong>Syntax</strong> (compiler builtins), <strong>Core</strong> (algebra), <strong>Stdlib</strong> (derived operations), <strong>Userland</strong> (domain code). Each layer has a boundary rule — stdlib cannot import from userland; core can only be extended by proposal.</li>
+<li><p><strong>Transparency to Rust.</strong> Form names match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax maps obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</p>
+</li>
+<li><p><strong>Protect the algebra.</strong> The six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; and journal coalgebra are the foundation. Proposal 001 was rejected to prevent a seventh primitive. Only <code>fold</code> was added — as a control form, not a primitive.</p>
+</li>
+<li><p><strong>Simple &gt; easy.</strong> Convenience is rejected if it complects concerns. Variadic <code>update</code> (012) was accepted because it completes an existing form. <code>defprocessor</code> (001) was rejected because it packaged four concerns into one.</p>
+</li>
+<li><p><strong>Types are documentation, not enforcement.</strong> Structs are untyped (007). Protocols check arity, not return types (014). <code>when</code> without else generates <code>Option&lt;T&gt;</code> — the compiler infers; the specifier doesn't annotate (013).</p>
+</li>
+<li><p><strong>Opacity creates boundaries.</strong> If a type is opaque, its interface operations are core (004). This rule determined that <code>observe</code>/<code>predict</code>/<code>decay</code> are core, not stdlib.</p>
+</li>
+<li><p><strong>The four-layer model</strong> (003): <strong>Syntax</strong> (compiler builtins), <strong>Core</strong> (algebra), <strong>Stdlib</strong> (derived operations), <strong>Userland</strong> (domain code). Each layer has a boundary rule — stdlib cannot import from userland; core can only be extended by proposal.</p>
+</li>
 </ol>
 <h2>Proposal Dependency Chain</h2>
 <p>The proposals form a clear dependency graph:</p>
-<pre><code>
-001 → 002   (rejected processor → accepted fold)
+<pre><code>001 → 002   (rejected processor → accepted fold)
 002 → 003   (fold accepted → channels deleted, layers defined)
 003 → 004   (layer tension → journal operations placement)
 004 → 005   (journal in core → compilation plan)
@@ -204,18 +221,39 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </code></pre>
 <h2>Status Summary</h2>
 <table>
-<thead><tr><th>Status</th><th>Count</th><th>Proposals</th></tr></thead>
-<tr><td data-label="Status"><strong>ACCEPTED</strong></td><td data-label="Count">16</td><td data-label="Proposals">002–015 (March), 04/001, 04/002, 04/003</td></tr>
-<tr><td data-label="Status"><strong>REJECTED</strong></td><td data-label="Count">1</td><td data-label="Proposals">001 (stream processor)</td></tr>
-<tr><td data-label="Status"><strong>SUPERSEDED</strong></td><td data-label="Count">1</td><td data-label="Proposals">04/003 (select — debate yielded simpler answer)</td></tr>
+<thead>
+<tr>
+  <th>Status</th>
+  <th>Count</th>
+  <th>Proposals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Status"><strong>ACCEPTED</strong></td>
+  <td data-label="Count">16</td>
+  <td data-label="Proposals">002–015 (March), 04/001, 04/002, 04/003</td>
+</tr>
+<tr>
+  <td data-label=""><strong>REJECTED</strong></td>
+  <td data-label="">1</td>
+  <td data-label="">001 (stream processor)</td>
+</tr>
+<tr>
+  <td data-label=""><strong>SUPERSEDED</strong></td>
+  <td data-label="">1</td>
+  <td data-label="">04/003 (select — debate yielded simpler answer)</td>
+</tr>
+</tbody>
 </table>
 <p>All 18 proposals have final resolutions.</p>
-<hr>
+<hr />
 <h2>Related Concepts</h2>
 <ul>
-<li><a class="wikilink" href="T1-001-wat-language.html">wat language</a> — the language these proposals shape</li>
-<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — added through proposals</li>
-<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — concurrency primitives (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from April proposals</li>
-<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the six foundational forms the system protects from proliferation</li>
-<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; — the language these proposals shape</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — added through proposals</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; — concurrency primitives (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from April proposals</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; — the six foundational forms the system protects from proliferation</li>
+<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

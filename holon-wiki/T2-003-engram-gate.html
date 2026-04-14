@@ -125,36 +125,54 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">EngramGate — gating observations by subspace alignment <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/engram-gate.wat</code> (44 lines)</p>
-<p><strong>Guide reference:</strong> <code>wat/GUIDE.md</code> lines 1668–1688</p>
-<p><strong>Tier:</strong> 2 — Quality gating utility</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">EngramGate — gating observations by subspace alignment <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/engram-gate.wat</code> (44 lines)
+<strong>Guide reference:</strong> <code>wat/GUIDE.md</code> lines 1668–1688
+<strong>Tier:</strong> 2 — Quality gating utility</p>
+<hr />
 <h2>What It IS</h2>
 <p>EngramGate is a shared utility for gating reckoner quality. After a recalibration period with good prediction accuracy, it snapshots the discriminant into a good-state subspace. The subspace accumulates knowledge of what good discriminants look like over time.</p>
-<blockquote>"Shared utility for gating reckoner quality. After recalibration with good accuracy, snapshot the discriminant into a good-state subspace. Used by both MarketObserver and Broker."</blockquote>
-<blockquote>— engram-gate.wat, lines 1–4</blockquote>
+<blockquote>
+<p>&quot;Shared utility for gating reckoner quality. After recalibration with good accuracy, snapshot the discriminant into a good-state subspace. Used by both MarketObserver and Broker.&quot;
+— engram-gate.wat, lines 1–4</p>
+</blockquote>
 <p>It depends on: <code>Outcome</code> enum, <code>Reckoner</code>, and <code>OnlineSubspace</code>. The fields live on MarketObserver and Broker structs; the function lives in <code>engram-gate.wat</code>.</p>
-<blockquote>"the fields live on those structs, the function lives in <code>engram-gate.wat</code>."</blockquote>
-<blockquote>— GUIDE.md, lines 1673–1674</blockquote>
-<hr>
+<blockquote>
+<p>&quot;the fields live on those structs, the function lives in <code>engram-gate.wat</code>.&quot;
+— GUIDE.md, lines 1673–1674</p>
+</blockquote>
+<hr />
 <h2>Struct: <code>engram-gate-state</code></h2>
-<pre><code>
-(struct engram-gate-state
+<pre><code class="language-scheme">(struct engram-gate-state
   [recalib-wins : usize]
   [recalib-total : usize]
   [last-recalib-count : usize])
 </code></pre>
 <p>Lines 10–13. Three fields, all <code>usize</code>:</p>
 <table>
-<thead><tr><th>Field</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>recalib-wins</code></td><td data-label="Purpose">Count of correct predictions since last recalibration boundary</td></tr>
-<tr><td data-label="Field"><code>recalib-total</code></td><td data-label="Purpose">Total predictions since last recalibration boundary</td></tr>
-<tr><td data-label="Field"><code>last-recalib-count</code></td><td data-label="Purpose">The reckoner's <code>recalib-count</code> at the time of the last boundary check</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>recalib-wins</code></td>
+  <td data-label="Purpose">Count of correct predictions since last recalibration boundary</td>
+</tr>
+<tr>
+  <td data-label=""><code>recalib-total</code></td>
+  <td data-label="">Total predictions since last recalibration boundary</td>
+</tr>
+<tr>
+  <td data-label=""><code>last-recalib-count</code></td>
+  <td data-label="">The reckoner's <code>recalib-count</code> at the time of the last boundary check</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Core Function: <code>check-engram-gate</code></h2>
-<pre><code>
-(define (check-engram-gate [reckoner : Reckoner]
+<pre><code class="language-scheme">(define (check-engram-gate [reckoner : Reckoner]
                            [good-state-subspace : Subspace]
                            [gate-state : EngramGateState]
                            [recalib-interval : usize]
@@ -165,29 +183,28 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>Lines 17–44. Five parameters, returns updated <code>EngramGateState</code>.</p>
 <h3>Algorithm</h3>
 <p>The function is called after each resolved prediction. It operates in two branches:</p>
-<p><strong>Branch 1 — Recalibration boundary crossed</strong> (line 30):</p>
-<p>When the reckoner's current <code>recalib-count</code> exceeds <code>last-recalib-count</code> in the gate state, a recalibration period has ended.</p>
+<p><strong>Branch 1 — Recalibration boundary crossed</strong> (line 30):
+When the reckoner's current <code>recalib-count</code> exceeds <code>last-recalib-count</code> in the gate state, a recalibration period has ended.</p>
 <ol>
 <li>Compute accuracy: <code>wins / total</code> (or 0.0 if total is 0) — lines 32–34.</li>
-<li>If accuracy ≥ threshold:</li>
-</ol>
-<ul>
+<li>If accuracy ≥ threshold:<ul>
 <li>For each label in the reckoner, get the discriminant via <code>(discriminant reckoner label)</code>.</li>
 <li>If a discriminant exists (<code>when-let</code>), update the good-state subspace with it — lines 37–40.</li>
 </ul>
-<ol>
+</li>
 <li>Reset counters to <code>(engram-gate-state 0 0 current-recalib)</code> — line 42.</li>
 </ol>
-<p><strong>Branch 2 — Same recalibration period</strong> (line 44):</p>
-<p>No boundary crossed. Return gate-state unchanged. The wins/total will have been incremented by the caller before this call (the function tracks cumulative counts, but only evaluates at boundaries).</p>
-<blockquote>"Tracks wins/total since last recalibration. When recalib-count advances and accuracy exceeds the threshold, snapshots the discriminant into the good-state subspace."</blockquote>
-<blockquote>— GUIDE.md, lines 1685–1687</blockquote>
+<p><strong>Branch 2 — Same recalibration period</strong> (line 44):
+No boundary crossed. Return gate-state unchanged. The wins/total will have been incremented by the caller before this call (the function tracks cumulative counts, but only evaluates at boundaries).</p>
+<blockquote>
+<p>&quot;Tracks wins/total since last recalibration. When recalib-count advances and accuracy exceeds the threshold, snapshots the discriminant into the good-state subspace.&quot;
+— GUIDE.md, lines 1685–1687</p>
+</blockquote>
 <h3>Parameters Not Used in the Source</h3>
 <p>The <code>recalib-interval</code> parameter is declared in the function signature (line 20) but does not appear in the function body. The boundary detection uses <code>recalib-count</code> from the reckoner directly rather than computing from an interval. This may be intentional (the reckoner itself manages recalibration timing) or an unused parameter.</p>
-<hr>
+<hr />
 <h2>Data Flow</h2>
-<pre><code>
-resolved prediction
+<pre><code>resolved prediction
   → caller increments gate-state.recalib-wins and recalib-total
   → caller calls check-engram-gate(...)
   → if boundary crossed AND accuracy ≥ threshold:
@@ -195,4 +212,5 @@ resolved prediction
       → reset counters
   → return updated gate-state
 </code></pre>
-<p>The good-state subspace accumulates discriminant vectors over time. A subspace that has seen many good discriminants provides a reference for evaluating future discriminant quality — hence "gating" by subspace alignment.</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>The good-state subspace accumulates discriminant vectors over time. A subspace that has seen many good discriminants provides a reference for evaluating future discriminant quality — hence &quot;gating&quot; by subspace alignment.</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

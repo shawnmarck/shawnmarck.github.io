@@ -125,31 +125,74 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T3 — Treasury (wat spec) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines)</p>
-<p><strong>Ward:</strong> ignorant — knows nothing, reads as a stranger.</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T3 — Treasury (wat spec) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines)
+<strong>Ward:</strong> ignorant — knows nothing, reads as a stranger.</p>
+<hr />
 <h2>Struct: <code>treasury</code></h2>
 <p>8 fields:</p>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>denomination</code></td><td data-label="Type"><code>Asset</code></td><td data-label="Purpose">What "value" means (e.g. USD)</td></tr>
-<tr><td data-label="Field"><code>available</code></td><td data-label="Type"><code>Map<Asset, f64></code></td><td data-label="Purpose">Capital free to deploy</td></tr>
-<tr><td data-label="Field"><code>reserved</code></td><td data-label="Type"><code>Map<Asset, f64></code></td><td data-label="Purpose">Capital locked by active trades</td></tr>
-<tr><td data-label="Field"><code>proposals</code></td><td data-label="Type"><code>Vec<Proposal></code></td><td data-label="Purpose">Proposals received each candle; cleared after funding</td></tr>
-<tr><td data-label="Field"><code>trades</code></td><td data-label="Type"><code>Map<TradeId, Trade></code></td><td data-label="Purpose">Active trades — funded proposals become trades</td></tr>
-<tr><td data-label="Field"><code>trade-origins</code></td><td data-label="Type"><code>Map<TradeId, TradeOrigin></code></td><td data-label="Purpose">Stashes origin for propagation at settlement</td></tr>
-<tr><td data-label="Field"><code>swap-fee</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose">Per-swap venue cost as fraction</td></tr>
-<tr><td data-label="Field"><code>slippage</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose">Per-swap slippage estimate</td></tr>
-<tr><td data-label="Field"><code>next-trade-id</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Monotonic counter</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>denomination</code></td>
+  <td data-label="Type"><code>Asset</code></td>
+  <td data-label="Purpose">What &quot;value&quot; means (e.g. USD)</td>
+</tr>
+<tr>
+  <td data-label=""><code>available</code></td>
+  <td data-label=""><code>Map&lt;Asset, f64&gt;</code></td>
+  <td data-label="">Capital free to deploy</td>
+</tr>
+<tr>
+  <td data-label=""><code>reserved</code></td>
+  <td data-label=""><code>Map&lt;Asset, f64&gt;</code></td>
+  <td data-label="">Capital locked by active trades</td>
+</tr>
+<tr>
+  <td data-label=""><code>proposals</code></td>
+  <td data-label=""><code>Vec&lt;Proposal&gt;</code></td>
+  <td data-label="">Proposals received each candle; cleared after funding</td>
+</tr>
+<tr>
+  <td data-label=""><code>trades</code></td>
+  <td data-label=""><code>Map&lt;TradeId, Trade&gt;</code></td>
+  <td data-label="">Active trades — funded proposals become trades</td>
+</tr>
+<tr>
+  <td data-label=""><code>trade-origins</code></td>
+  <td data-label=""><code>Map&lt;TradeId, TradeOrigin&gt;</code></td>
+  <td data-label="">Stashes origin for propagation at settlement</td>
+</tr>
+<tr>
+  <td data-label=""><code>swap-fee</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Per-swap venue cost as fraction</td>
+</tr>
+<tr>
+  <td data-label=""><code>slippage</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Per-swap slippage estimate</td>
+</tr>
+<tr>
+  <td data-label=""><code>next-trade-id</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Monotonic counter</td>
+</tr>
+</tbody>
 </table>
 <p><strong>Dependencies:</strong> enums, newtypes, distances, proposal, trade, trade-origin, settlement, log-entry.</p>
-<hr>
+<hr />
 <h2>Constructor</h2>
-<pre><code>
-(make-treasury denomination initial-balances swap-fee slippage) → Treasury
+<pre><code>(make-treasury denomination initial-balances swap-fee slippage) → Treasury
 </code></pre>
 <p>Initializes all maps empty, proposals empty, next-trade-id to 0.</p>
-<hr>
+<hr />
 <h2>Methods (7)</h2>
 <h3>1. <code>submit-proposal</code> (line 55)</h3>
 <p>Pushes a proposal onto the treasury's proposal barrage.</p>
@@ -162,8 +205,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>Evaluates all proposals, sorted by edge (descending). Funds those that pass two gates; rejects the rest. Drains proposals after processing.</p>
 <p><strong>Funding gates (checked per proposal):</strong></p>
 <ol>
-<li><strong>Edge gate:</strong> <code>edge < venue-cost-rate</code> → rejected ("edge below venue cost")</li>
-<li><strong>Capital gate:</strong> <code>available-capital <= 0.0</code> → rejected ("insufficient capital")</li>
+<li><strong>Edge gate:</strong> <code>edge &lt; venue-cost-rate</code> → rejected (&quot;edge below venue cost&quot;)</li>
+<li><strong>Capital gate:</strong> <code>available-capital &lt;= 0.0</code> → rejected (&quot;insufficient capital&quot;)</li>
 </ol>
 <p><strong>Venue cost rate:</strong> <code>2.0 × (swap-fee + slippage)</code> — the round-trip cost (open + close).</p>
 <p><strong>Funding math:</strong></p>
@@ -177,10 +220,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li>Trade stored in <code>trades</code> map, origin stored in <code>trade-origins</code> map</li>
 <li>Proposals vector drained (set to empty list) after processing</li>
 </ul>
-<p><strong>Returns:</strong> <code>Vec<LogEntry></code> — one per proposal (funded or rejected).</p>
+<p><strong>Returns:</strong> <code>Vec&lt;LogEntry&gt;</code> — one per proposal (funded or rejected).</p>
 <h3>3. <code>settle-triggered</code> (line 133) — Settlement logic</h3>
 <p>Checks all active trades against their stop-levels using current prices.</p>
-<p><strong>Input:</strong> treasury, <code>Map<(Asset, Asset), f64></code> (current prices)</p>
+<p><strong>Input:</strong> treasury, <code>Map&lt;(Asset, Asset), f64&gt;</code> (current prices)</p>
 <p><strong>Two trigger paths:</strong></p>
 <p><strong>Path A — Safety stop fires</strong> (line 146):</p>
 <ul>
@@ -195,49 +238,48 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <ul>
 <li>Condition: trade is <code>:active</code> or <code>:runner</code>, price crosses trail-stop in the adverse direction</li>
 <li>Buy: <code>price ≤ trail-stop</code>; Sell: <code>price ≥ trail-stop</code></li>
-<li>Exit value: <code>amount × (price / entry-price) × (1.0 - venue-cost-per-swap)</code> — proportional P&L minus cost</li>
-<li>Outcome: <code>:grace</code> if exit-value > amount (profit), <code>:violence</code> otherwise (loss)</li>
+<li>Exit value: <code>amount × (price / entry-price) × (1.0 - venue-cost-per-swap)</code> — proportional P&amp;L minus cost</li>
+<li>Outcome: <code>:grace</code> if exit-value &gt; amount (profit), <code>:violence</code> otherwise (loss)</li>
 <li>Residue: <code>exit-value - amount</code> (positive = profit, negative = loss)</li>
 <li>Capital: <code>min(exit-value, amount)</code> returns to <code>available</code>; full <code>amount</code> removed from <code>reserved</code></li>
 <li>Phase: <code>:settled-grace</code> or <code>:settled-violence</code> depending on outcome</li>
 </ul>
 <p><strong>Both paths:</strong> trade and origin removed from their maps.</p>
-<p><strong>Returns:</strong> <code>(Vec<TreasurySettlement>, Vec<LogEntry>)</code> — parallel lists.</p>
+<p><strong>Returns:</strong> <code>(Vec&lt;TreasurySettlement&gt;, Vec&lt;LogEntry&gt;)</code> — parallel lists.</p>
 <h3>4. <code>update-trade-stops</code> (line 212)</h3>
 <p>Replaces stop-levels on a specific trade. Also handles the <strong>runner transition</strong>:</p>
 <ul>
 <li>If trade is <code>:active</code> and the new trail-stop would recover principal (trail-stop past entry-price), phase transitions to <code>:runner</code>.</li>
-<li>Buy: <code>trail-stop > entry-price</code>; Sell: <code>trail-stop < entry-price</code>.</li>
+<li>Buy: <code>trail-stop &gt; entry-price</code>; Sell: <code>trail-stop &lt; entry-price</code>.</li>
 </ul>
 <h3>5. <code>available-capital</code> (line 230)</h3>
 <p>Simple accessor: returns the available balance for an asset, defaulting to <code>0.0</code>.</p>
 <h3>6. <code>deposit</code> (line 236)</h3>
 <p>Adds amount to available capital for an asset.</p>
 <h3>7. <code>total-equity</code> (line 244)</h3>
-<p>Sums all available and reserved balances across all assets. Returns raw sum (does not convert to denomination — the comment says "converted to denomination" but the code just sums f64 values directly).</p>
+<p>Sums all available and reserved balances across all assets. Returns raw sum (does not convert to denomination — the comment says &quot;converted to denomination&quot; but the code just sums f64 values directly).</p>
 <h3>8. <code>trades-for-post</code> (line 252)</h3>
 <p>Returns all active/runner trades belonging to a given post-idx.</p>
-<hr>
+<hr />
 <h2>Bounded Loss — How It Works</h2>
 <p>The spec declares bounded loss through a capital reservation model:</p>
 <ol>
-<li><strong>At funding:</strong> Capital is moved from <code>available</code> to <code>reserved</code>. The amount reserved equals the trade's principal (<code>trade-amount</code>). The reserve-amount includes a buffer for venue costs, but only the principal is actually moved.</li>
+<li><p><strong>At funding:</strong> Capital is moved from <code>available</code> to <code>reserved</code>. The amount reserved equals the trade's principal (<code>trade-amount</code>). The reserve-amount includes a buffer for venue costs, but only the principal is actually moved.</p>
+</li>
+<li><p><strong>At settlement (safety stop):</strong> The maximum loss is <code>amount × venue-cost-per-swap</code> — the cost of one swap (exit only). The rest of the principal (<code>amount × (1 - venue-cost-per-swap)</code>) returns to available. This is the <strong>hard bound</strong>: the system cannot lose more than one venue-cost fraction of the trade principal.</p>
+</li>
+<li><p><strong>At settlement (trailing stop):</strong> The trade's P&amp;L is proportional to price movement. If the trade wins, profit returns as available capital. If the trade loses beyond venue cost on exit, the loss is bounded by the same formula as the safety stop case.</p>
+</li>
+<li><p><strong>The bound is structural, not policy.</strong> The reserve map is the accounting enforcement: capital in <code>reserved</code> cannot be deployed. It only returns (to <code>available</code>) through settlement. No double-spending is possible because proposals are drained after funding.</p>
+</li>
 </ol>
-<ol>
-<li><strong>At settlement (safety stop):</strong> The maximum loss is <code>amount × venue-cost-per-swap</code> — the cost of one swap (exit only). The rest of the principal (<code>amount × (1 - venue-cost-per-swap)</code>) returns to available. This is the <strong>hard bound</strong>: the system cannot lose more than one venue-cost fraction of the trade principal.</li>
-</ol>
-<ol>
-<li><strong>At settlement (trailing stop):</strong> The trade's P&L is proportional to price movement. If the trade wins, profit returns as available capital. If the trade loses beyond venue cost on exit, the loss is bounded by the same formula as the safety stop case.</li>
-</ol>
-<ol>
-<li><strong>The bound is structural, not policy.</strong> The reserve map is the accounting enforcement: capital in <code>reserved</code> cannot be deployed. It only returns (to <code>available</code>) through settlement. No double-spending is possible because proposals are drained after funding.</li>
-</ol>
-<hr>
+<hr />
 <h2>Observations (stranger's eye)</h2>
 <ul>
-<li><code>total-equity</code> comment says "converted to denomination" but the code sums raw f64 values without conversion. If multiple assets exist, this is a bug or an incomplete spec.</li>
+<li><code>total-equity</code> comment says &quot;converted to denomination&quot; but the code sums raw f64 values without conversion. If multiple assets exist, this is a bug or an incomplete spec.</li>
 <li><code>fund-proposals</code> sorts by edge descending and greedily funds top-to-bottom. First proposal to deplete an asset's capital blocks subsequent proposals for that asset.</li>
 <li>The runner transition is checked inside <code>update-trade-stops</code>, which is called from outside the treasury (by the post's tick step 3c).</li>
-<li>Entry price is set to <code>0.0</code> at funding time; the comment says "set by the enterprise from current price." This means the enterprise must update the trade's entry-price between funding and the first tick. If it doesn't, stop-level computation in <code>settle-triggered</code> would divide by zero (<code>price / entry-price</code>).</li>
+<li>Entry price is set to <code>0.0</code> at funding time; the comment says &quot;set by the enterprise from current price.&quot; This means the enterprise must update the trade's entry-price between funding and the first tick. If it doesn't, stop-level computation in <code>settle-triggered</code> would divide by zero (<code>price / entry-price</code>).</li>
 <li>Trade origins are stored purely for propagation at settlement time — composed-thought and prediction are extracted and embedded in the settlement.</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

@@ -125,153 +125,214 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">The wat Language — forms, evaluation, and structural types <span class="badge badge-describe">DESCRIBE</span></h1><div class="prose prose-invert max-w-none"><p><strong>Verified leaf: T1-001</strong></p>
-<p><strong>Sources:</strong> <code>wat/LANGUAGE.md</code> (341 lines), <code>wat/core/structural.wat</code> (115 lines)</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">The wat Language — forms, evaluation, and structural types <span class="badge badge-describe">DESCRIBE</span></h1><div class="prose prose-invert max-w-none"><p><strong>Verified leaf: T1-001</strong>
+<strong>Sources:</strong> <code>wat/LANGUAGE.md</code> (341 lines), <code>wat/core/structural.wat</code> (115 lines)</p>
+<hr />
 <h2>What wat is</h2>
-<p>Wat is "an s-expression language for algebraic cognition." It is not a general-purpose language, not Turing complete, and not interpreted at runtime — it "specifies Rust implementations." It is "Lisp with a purpose: algebraic cognition from named thoughts."</p>
+<p>Wat is &quot;an s-expression language for algebraic cognition.&quot; It is not a general-purpose language, not Turing complete, and not interpreted at runtime — it &quot;specifies Rust implementations.&quot; It is &quot;Lisp with a purpose: algebraic cognition from named thoughts.&quot;</p>
 <ul>
-<li>"A specification language for Holon programs."</li>
-<li>"A shared language between human intuition and machine implementation."</li>
-<li>"The intermediate representation between thought and execution."</li>
+<li>&quot;A specification language for Holon programs.&quot;</li>
+<li>&quot;A shared language between human intuition and machine implementation.&quot;</li>
+<li>&quot;The intermediate representation between thought and execution.&quot;</li>
 </ul>
 <h2>Grammar</h2>
 <p>EBNF grammar from <code>LANGUAGE.md</code> lines 7–16:</p>
-<pre><code>
-program    = form*
+<pre><code>program    = form*
 form       = atom | number | string | list | typed-param | comment
-atom       = letter (letter | digit | '-' | '?' | '!' | '>')*
+atom       = letter (letter | digit | '-' | '?' | '!' | '&gt;')*
 number     = digit+ ('.' digit+)? 
-string     = '"' char* '"'
+string     = '&quot;' char* '&quot;'
 list       = '(' form* ')'
 typed-param = '[' atom ':' atom ']'
 comment    = ';' char* newline
 </code></pre>
 <p>A <code>form</code> is the fundamental unit: an atom, number, string, list, typed parameter, or comment.</p>
 <h2>Type annotations (optional)</h2>
-<p>"Parseable but not enforced." The source says: "The annotations are metadata on a free algebra — they name which carrier set a variable lives in."</p>
+<p>&quot;Parseable but not enforced.&quot; The source says: &quot;The annotations are metadata on a free algebra — they name which carrier set a variable lives in.&quot;</p>
 <p>Two forms:</p>
 <ul>
 <li>Typed parameter: <code>[name : Type]</code></li>
 <li>Return type: <code>: Type</code> after the parameter list</li>
 </ul>
-<p>"Tooling may extract annotations when present. The language never demands them." "Types are documentation, not enforcement. The algebra doesn't type-check — the curve validates."</p>
+<p>&quot;Tooling may extract annotations when present. The language never demands them.&quot; &quot;Types are documentation, not enforcement. The algebra doesn't type-check — the curve validates.&quot;</p>
 <h2>Host language forms</h2>
-<p>Wat "inherits standard forms from the host" Lisp. These are enumerated in the source and include:</p>
+<p>Wat &quot;inherits standard forms from the host&quot; Lisp. These are enumerated in the source and include:</p>
 <p><strong>Arithmetic:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>abs</code>, <code>sqrt</code>, <code>mod</code>, <code>max</code>, <code>min</code>, <code>round</code>, <code>clamp</code>, <code>exp</code>, <code>ln</code>, <code>signum</code>, <code>f64-infinity</code>, <code>f64-neg-infinity</code></p>
-<p><strong>Comparison:</strong> <code>=</code>, <code>!=</code>, <code>></code>, <code><</code>, <code>>=</code>, <code><=</code></p>
+<p><strong>Comparison:</strong> <code>=</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code></p>
 <p><strong>Logical:</strong> <code>and</code>, <code>or</code>, <code>not</code>, <code>true</code>, <code>false</code></p>
 <p><strong>Sequencing:</strong> <code>begin</code></p>
 <p><strong>Iteration:</strong> <code>for-each</code>, <code>map</code>, <code>filter</code>, <code>filter-map</code>, <code>fold</code>, <code>fold-left</code>, <code>count</code>, <code>pmap</code>, <code>pfor-each</code></p>
-<p>The source specifies that <code>pmap</code> and <code>pfor-each</code> are parallel variants: "Semantically identical — same results, same order. The parallelism is a permission, not a directive." Constraints:</p>
+<p>The source specifies that <code>pmap</code> and <code>pfor-each</code> are parallel variants: &quot;Semantically identical — same results, same order. The parallelism is a permission, not a directive.&quot; Constraints:</p>
 <ul>
-<li><code>pmap</code>: "the mapped function must be pure (no set!, push!, inc!). Ward-enforced at compile time."</li>
-<li><code>pfor-each</code>: "each element's mutations must be disjoint."</li>
-<li>"No pfold: a fold is inherently sequential." The pattern is <code>(fold f init (pmap g xs))</code>.</li>
+<li><code>pmap</code>: &quot;the mapped function must be pure (no set!, push!, inc!). Ward-enforced at compile time.&quot;</li>
+<li><code>pfor-each</code>: &quot;each element's mutations must be disjoint.&quot;</li>
+<li>&quot;No pfold: a fold is inherently sequential.&quot; The pattern is <code>(fold f init (pmap g xs))</code>.</li>
 </ul>
 <p><strong>Collections:</strong> <code>list</code>, <code>cons</code>, <code>len</code>, <code>length</code>, <code>nth</code>, <code>first</code>, <code>second</code>, <code>rest</code>, <code>last</code>, <code>last-n</code>, <code>take</code>, <code>append</code>, <code>take-last</code>, <code>empty?</code>, <code>reverse</code>, <code>sort</code>, <code>sort-by</code>, <code>flatten</code>, <code>range</code>, <code>unzip</code>, <code>zeros</code>, <code>member?</code>, <code>some?</code>, <code>quantile</code>, <code>apply</code></p>
-<p>Note on <code>zeros</code>: "nullary: zero vector at dims; <code>(zeros n)</code>: zero-filled array of size n"</p>
-<p><strong>Maps:</strong> <code>map-of</code>, <code>get</code>, <code>assoc</code>, <code>keys</code>, <code>dissoc</code>. <code>map-of</code> takes flat key-value pairs. <code>assoc</code> is variadic with sequential semantics — "later entries see earlier changes."</p>
+<p>Note on <code>zeros</code>: &quot;nullary: zero vector at dims; <code>(zeros n)</code>: zero-filled array of size n&quot;</p>
+<p><strong>Maps:</strong> <code>map-of</code>, <code>get</code>, <code>assoc</code>, <code>keys</code>, <code>dissoc</code>. <code>map-of</code> takes flat key-value pairs. <code>assoc</code> is variadic with sequential semantics — &quot;later entries see earlier changes.&quot;</p>
 <p><strong>Queues:</strong> <code>deque</code>, <code>push-back</code>, <code>pop-front</code></p>
 <p><strong>Strings:</strong> <code>format</code>, <code>substring</code></p>
 <p><strong>Control:</strong> <code>let</code> (with destructuring), <code>let*</code>, <code>define</code>, <code>if</code>, <code>when</code>, <code>when-let</code>, <code>cond</code> (with <code>else</code> catch-all), <code>match</code>, <code>lambda</code></p>
-<p><strong>Quote:</strong> <code>'(...)</code> or <code>(quote ...)</code>. The source emphasizes: "The s-expression IS the tree." "Recursive structure is natural." "No special type needed. The parentheses ARE the tree."</p>
-<p><strong>Optionals:</strong> <code>(Some value)</code>, <code>None</code> — maps to Rust's <code>Option<T></code>.</p>
-<p><strong>Mutation:</strong> <code>set!</code> (single and indexed forms), <code>push!</code>, <code>pop!</code>, <code>inc!</code> — these "map to &mut self" in Rust.</p>
+<p><strong>Quote:</strong> <code>'(...)</code> or <code>(quote ...)</code>. The source emphasizes: &quot;The s-expression IS the tree.&quot; &quot;Recursive structure is natural.&quot; &quot;No special type needed. The parentheses ARE the tree.&quot;</p>
+<p><strong>Optionals:</strong> <code>(Some value)</code>, <code>None</code> — maps to Rust's <code>Option&lt;T&gt;</code>.</p>
+<p><strong>Mutation:</strong> <code>set!</code> (single and indexed forms), <code>push!</code>, <code>pop!</code>, <code>inc!</code> — these &quot;map to &amp;mut self&quot; in Rust.</p>
 <p><strong>Pipes:</strong> <code>make-pipe</code>, <code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code></p>
 <p><strong>Fan-out:</strong> <code>make-topic</code></p>
 <p><strong>Threads:</strong> <code>spawn</code>, <code>join</code></p>
 <h2>Concurrency model: pipes, topics, threads</h2>
 <h3>Pipes</h3>
-<p>"Pipes are CSP (communicating sequential processes)."</p>
-<p><code>make-pipe</code> takes <code>:capacity</code> (a number or <code>:unbounded</code>) and <code>:carries</code> (a type declaration). Returns a <code>(tx, rx)</code> pair. "Destructure at creation."</p>
+<p>&quot;Pipes are CSP (communicating sequential processes).&quot;</p>
+<p><code>make-pipe</code> takes <code>:capacity</code> (a number or <code>:unbounded</code>) and <code>:carries</code> (a type declaration). Returns a <code>(tx, rx)</code> pair. &quot;Destructure at creation.&quot;</p>
 <ul>
 <li><code>send</code>: blocking write.</li>
 <li><code>recv</code>: blocking read → value.</li>
 <li><code>try-recv</code>: non-blocking → <code>(Some value)</code> or <code>None</code>.</li>
-<li><code>select</code>: multiplexes N rx ends → <code>(Some (idx value))</code> or <code>:closed</code>. "Parks when idle — zero CPU."</li>
+<li><code>select</code>: multiplexes N rx ends → <code>(Some (idx value))</code> or <code>:closed</code>. &quot;Parks when idle — zero CPU.&quot;</li>
 </ul>
 <h3>Topics</h3>
-<p><code>make-topic</code> wires 1→N fan-out over existing pipes. "A topic is a write-only value." The source states: "The caller's send IS the fan-out — synchronous, no thread, no queue." Maps to a Rust struct holding <code>Vec<Sender<T>></code> with a for loop.</p>
+<p><code>make-topic</code> wires 1→N fan-out over existing pipes. &quot;A topic is a write-only value.&quot; The source states: &quot;The caller's send IS the fan-out — synchronous, no thread, no queue.&quot; Maps to a Rust struct holding <code>Vec&lt;Sender&lt;T&gt;&gt;</code> with a for loop.</p>
 <h3>Threads</h3>
 <ul>
-<li><code>spawn</code>: "run a function on a thread" → Handle. "A process is a function."</li>
-<li><code>join</code>: "block until all handles in a list complete" → list of return values. "Always takes a list. Always returns a list."</li>
+<li><code>spawn</code>: &quot;run a function on a thread&quot; → Handle. &quot;A process is a function.&quot;</li>
+<li><code>join</code>: &quot;block until all handles in a list complete&quot; → list of return values. &quot;Always takes a list. Always returns a list.&quot;</li>
 </ul>
 <h3>Design principle</h3>
-<p>"No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions." Everything is regular functions using the seven forms listed above.</p>
+<p>&quot;No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions.&quot; Everything is regular functions using the seven forms listed above.</p>
 <h2>Core forms (corelib)</h2>
-<p>The source describes "Two algebras and one structural form. The algebras transform values. The structural form carries them."</p>
+<p>The source describes &quot;Two algebras and one structural form. The algebras transform values. The structural form carries them.&quot;</p>
 <h3>The free algebra (vector operations)</h3>
 <ul>
-<li><code>(atom "name")</code> → Vector — "Naming"</li>
-<li><code>(bind role filler)</code> → Vector — "Composition" — "two things become one relationship"</li>
-<li><code>(bundle fact1 fact2 ...)</code> → Vector — "Composition" — "many facts become one thought"</li>
-<li><code>(cosine thought discriminant)</code> → Float — "Measurement" — returns value in [-1.0, +1.0]</li>
+<li><code>(atom &quot;name&quot;)</code> → Vector — &quot;Naming&quot;</li>
+<li><code>(bind role filler)</code> → Vector — &quot;Composition&quot; — &quot;two things become one relationship&quot;</li>
+<li><code>(bundle fact1 fact2 ...)</code> → Vector — &quot;Composition&quot; — &quot;many facts become one thought&quot;</li>
+<li><code>(cosine thought discriminant)</code> → Float — &quot;Measurement&quot; — returns value in [-1.0, +1.0]</li>
 </ul>
 <h3>The reckoner coalgebra (learning)</h3>
 <p>Constructor: <code>Reckoner::new(name, dims, recalib_interval, config)</code> in holon-rs. Config is <code>ReckConfig</code>: either <code>Discrete(labels)</code> or <code>Continuous(default_value)</code>.</p>
 <table>
-<thead><tr><th>Form</th><th>Returns</th><th>Description</th></tr></thead>
-<tr><td data-label="Form"><code>(reckoner name dims recalib-interval config)</code></td><td data-label="Returns">Reckoner</td><td data-label="Description">Constructor</td></tr>
-<tr><td data-label="Form"><code>(observe reckoner thought observation weight)</code></td><td data-label="Returns"><code>()</code></td><td data-label="Description">Feed labeled observation</td></tr>
-<tr><td data-label="Form"><code>(predict reckoner thought)</code></td><td data-label="Returns">Prediction</td><td data-label="Description">Discrete: scores + conviction. Continuous: value + experience</td></tr>
-<tr><td data-label="Form"><code>(decay reckoner rate)</code></td><td data-label="Returns"><code>()</code></td><td data-label="Description">Decay learned state</td></tr>
-<tr><td data-label="Form"><code>(experience reckoner)</code></td><td data-label="Returns">f64</td><td data-label="Description">"how much has this reckoner learned? 0.0 = ignorant."</td></tr>
+<thead>
+<tr>
+  <th>Form</th>
+  <th>Returns</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Form"><code>(reckoner name dims recalib-interval config)</code></td>
+  <td data-label="Returns">Reckoner</td>
+  <td data-label="Description">Constructor</td>
+</tr>
+<tr>
+  <td data-label=""><code>(observe reckoner thought observation weight)</code></td>
+  <td data-label=""><code>()</code></td>
+  <td data-label="">Feed labeled observation</td>
+</tr>
+<tr>
+  <td data-label=""><code>(predict reckoner thought)</code></td>
+  <td data-label="">Prediction</td>
+  <td data-label="">Discrete: scores + conviction. Continuous: value + experience</td>
+</tr>
+<tr>
+  <td data-label=""><code>(decay reckoner rate)</code></td>
+  <td data-label=""><code>()</code></td>
+  <td data-label="">Decay learned state</td>
+</tr>
+<tr>
+  <td data-label=""><code>(experience reckoner)</code></td>
+  <td data-label="">f64</td>
+  <td data-label="">&quot;how much has this reckoner learned? 0.0 = ignorant.&quot;</td>
+</tr>
+</tbody>
 </table>
 <p>Introspection:</p>
 <table>
-<thead><tr><th>Form</th><th>Returns</th></tr></thead>
-<tr><td data-label="Form"><code>(recalib-count reckoner)</code></td><td data-label="Returns">Integer — prototype rebuild count</td></tr>
-<tr><td data-label="Form"><code>(discriminant reckoner label)</code></td><td data-label="Returns">Vector or None</td></tr>
-<tr><td data-label="Form"><code>(labels reckoner)</code></td><td data-label="Returns">[Label] — in registration order</td></tr>
-<tr><td data-label="Form"><code>(label-count reckoner label)</code></td><td data-label="Returns">Integer</td></tr>
+<thead>
+<tr>
+  <th>Form</th>
+  <th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Form"><code>(recalib-count reckoner)</code></td>
+  <td data-label="Returns">Integer — prototype rebuild count</td>
+</tr>
+<tr>
+  <td data-label=""><code>(discriminant reckoner label)</code></td>
+  <td data-label="">Vector or None</td>
+</tr>
+<tr>
+  <td data-label=""><code>(labels reckoner)</code></td>
+  <td data-label="">[Label] — in registration order</td>
+</tr>
+<tr>
+  <td data-label=""><code>(label-count reckoner label)</code></td>
+  <td data-label="">Integer</td>
+</tr>
+</tbody>
 </table>
 <p>Curve (self-evaluation, methods on the reckoner):</p>
 <table>
-<thead><tr><th>Form</th><th>Returns</th></tr></thead>
-<tr><td data-label="Form"><code>(resolve reckoner conviction correct?)</code></td><td data-label="Returns"><code>()</code></td></tr>
-<tr><td data-label="Form"><code>(edge-at reckoner conviction)</code></td><td data-label="Returns">f64 — "how accurate at this conviction level?"</td></tr>
-<tr><td data-label="Form"><code>(proven? reckoner min-samples)</code></td><td data-label="Returns">bool — "enough data to trust the curve?"</td></tr>
+<thead>
+<tr>
+  <th>Form</th>
+  <th>Returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Form"><code>(resolve reckoner conviction correct?)</code></td>
+  <td data-label="Returns"><code>()</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(edge-at reckoner conviction)</code></td>
+  <td data-label="">f64 — &quot;how accurate at this conviction level?&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>(proven? reckoner min-samples)</code></td>
+  <td data-label="">bool — &quot;enough data to trust the curve?&quot;</td>
+</tr>
+</tbody>
 </table>
 <h3>Structural forms</h3>
-<p>From <code>structural.wat</code>: "The ambient category's three constructions: Product (struct), Coproduct (enum), Type class (defprotocol)."</p>
-<p>The source states these are "orthogonal to the vector algebra and journal coalgebra." "A struct cannot be bound, bundled, or cosined." "Protocols never enter the algebra."</p>
+<p>From <code>structural.wat</code>: &quot;The ambient category's three constructions: Product (struct), Coproduct (enum), Type class (defprotocol).&quot;</p>
+<p>The source states these are &quot;orthogonal to the vector algebra and journal coalgebra.&quot; &quot;A struct cannot be bound, bundled, or cosined.&quot; &quot;Protocols never enter the algebra.&quot;</p>
 <h4>Struct (product type)</h4>
 <p><code>(struct name field1 field2 ...)</code></p>
 <ul>
-<li>"Untyped: the wat struct names the shape, the Rust struct names the types."</li>
-<li>"Opaque: no destructuring, no pattern matching on fields. Projections only."</li>
-<li>"A field name ending in ? is optional" — maps to <code>Option<T></code> in Rust, initialized to <code>None</code>.</li>
-<li>Constructors follow the <code>make-<name></code> convention: <code>(make-broker ...)</code>.</li>
+<li>&quot;Untyped: the wat struct names the shape, the Rust struct names the types.&quot;</li>
+<li>&quot;Opaque: no destructuring, no pattern matching on fields. Projections only.&quot;</li>
+<li>&quot;A field name ending in ? is optional&quot; — maps to <code>Option&lt;T&gt;</code> in Rust, initialized to <code>None</code>.</li>
+<li>Constructors follow the <code>make-&lt;name&gt;</code> convention: <code>(make-broker ...)</code>.</li>
 </ul>
-<p>Field access: <code>(:field record)</code> → value — "keyword as function."</p>
-<p>Functional update: <code>(update record :field1 value1 ...)</code> → record. "Variadic, parallel semantics — all field expressions evaluate against the ORIGINAL record."</p>
+<p>Field access: <code>(:field record)</code> → value — &quot;keyword as function.&quot;</p>
+<p>Functional update: <code>(update record :field1 value1 ...)</code> → record. &quot;Variadic, parallel semantics — all field expressions evaluate against the ORIGINAL record.&quot;</p>
 <h4>Enum (coproduct / sum type)</h4>
 <p><code>(enum name variant1 variant2 ...)</code></p>
 <ul>
-<li>"Exactly one of several alternatives."</li>
-<li>"Simple variants are keywords. Tagged variants carry data."</li>
-<li><code>match</code> must be exhaustive — "missing an arm on a closed set is a spec violation."</li>
-<li>"Wildcard _ is forbidden on closed enums — it defeats exhaustiveness."</li>
+<li>&quot;Exactly one of several alternatives.&quot;</li>
+<li>&quot;Simple variants are keywords. Tagged variants carry data.&quot;</li>
+<li><code>match</code> must be exhaustive — &quot;missing an arm on a closed set is a spec violation.&quot;</li>
+<li>&quot;Wildcard _ is forbidden on closed enums — it defeats exhaustiveness.&quot;</li>
 </ul>
 <h4>Newtype</h4>
-<p><code>(newtype name inner-type)</code> — "A newtype is about MEANING, not structure." "Maps to Rust's tuple struct: struct TradeId(usize)."</p>
+<p><code>(newtype name inner-type)</code> — &quot;A newtype is about MEANING, not structure.&quot; &quot;Maps to Rust's tuple struct: struct TradeId(usize).&quot;</p>
 <h4>Protocol (type class)</h4>
-<p><code>(defprotocol name (fn-name [params] "docstring"))</code> — "Check-only — no dispatch machinery."</p>
-<p><code>(satisfies struct-name protocol-name :fn1 impl1 :fn2 impl2 ...)</code> — "Maps ALL protocol functions — exhaustive, explicit."</p>
+<p><code>(defprotocol name (fn-name [params] &quot;docstring&quot;))</code> — &quot;Check-only — no dispatch machinery.&quot;</p>
+<p><code>(satisfies struct-name protocol-name :fn1 impl1 :fn2 impl2 ...)</code> — &quot;Maps ALL protocol functions — exhaustive, explicit.&quot;</p>
 <p>The source specifies:</p>
 <ul>
-<li>"One satisfies per (struct, protocol) pair. Duplicate = error."</li>
-<li>"No convention-based inference. The mapping IS the spec."</li>
-<li>"The forge checks: does impl-fn exist? Correct arity?"</li>
+<li>&quot;One satisfies per (struct, protocol) pair. Duplicate = error.&quot;</li>
+<li>&quot;No convention-based inference. The mapping IS the spec.&quot;</li>
+<li>&quot;The forge checks: does impl-fn exist? Correct arity?&quot;</li>
 <li>Maps to Rust trait and <code>impl Trait for Struct</code>.</li>
 </ul>
 <h2>Module system</h2>
 <p><code>(require module-name)</code> — for corelib, stdlib, and domain vocabularies.</p>
 <h2>File layout</h2>
-<pre><code>
-core/
+<pre><code>core/
   primitives.wat      — the four algebra generators + reckoner coalgebra
   structural.wat      — struct, enum, newtype, defprotocol
 std/
@@ -280,4 +341,5 @@ std/
   memory.wat          — OnlineSubspace (CCIPCA anomaly detection)
   statistics.wat      — statistical functions
   fields.wat          — field access utilities (RETIRED)
-</code></pre></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</code></pre>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

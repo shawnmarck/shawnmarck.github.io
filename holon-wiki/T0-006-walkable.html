@@ -127,47 +127,111 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-006 · Walkable — the AST traversal trait and thought expression tree <span class="badge badge-how">HOW</span></h1><div class="prose prose-invert max-w-none"><h2>What it IS</h2>
 <p>Walkable is the trait that enables <strong>zero-serialization encoding</strong>: any Rust type implementing <code>Walkable</code> can be directly converted into high-dimensional vectors without passing through JSON or EDN. It defines a structural type system (<code>WalkType</code>) that the encoder recursively walks to produce role-filler bindings, which are then bundled into a single vector.</p>
-<p>Source: <code>holon-rs/src/kernel/walkable.rs</code> (1002 lines)</p>
-<p>Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <code>encode_walkable</code> recursive traversal.</p>
-<blockquote>"This module provides the Walkable trait that allows encoding in-memory data structures directly without JSON/EDN serialization."</blockquote>
+<p>Source: <code>holon-rs/src/kernel/walkable.rs</code> (1002 lines)
+Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <code>encode_walkable</code> recursive traversal.</p>
+<blockquote>
+<p>&quot;This module provides the Walkable trait that allows encoding in-memory data structures directly without JSON/EDN serialization.&quot;</p>
+</blockquote>
 <h2>The structural type system — <code>WalkType</code></h2>
 <p>There are five structural types:</p>
 <table>
-<thead><tr><th>WalkType</th><th>Shape</th><th>Encoder semantics</th></tr></thead>
-<tr><td data-label="WalkType"><code>Scalar</code></td><td data-label="Shape">Single atomic value</td><td data-label="Encoder semantics">Looked up via <code>VectorManager</code> or special numeric encoding</td></tr>
-<tr><td data-label="WalkType"><code>Map</code></td><td data-label="Shape">Key-value pairs (ordered list of <code>(String, WalkableValue)</code>)</td><td data-label="Encoder semantics"><strong>Role-filler binding</strong>: each field's key (role) is bound to its value's vector (filler), then all bindings are bundled</td></tr>
-<tr><td data-label="WalkType"><code>List</code></td><td data-label="Shape">Ordered sequence</td><td data-label="Encoder semantics">Position-encoded: each element bound to its positional path <code>[0]</code>, <code>[1]</code>, … then bundled</td></tr>
-<tr><td data-label="WalkType"><code>Set</code></td><td data-label="Shape">Unordered unique items</td><td data-label="Encoder semantics">Items bundled directly, then bound with a <code>"set_indicator"</code> role vector</td></tr>
-<tr><td data-label="WalkType"><code>Spread</code></td><td data-label="Shape">Ordered sequence with fan-out</td><td data-label="Encoder semantics">Each element fans out into its own independent leaf binding with its own indexed path. Used when per-element attribution matters.</td></tr>
+<thead>
+<tr>
+  <th>WalkType</th>
+  <th>Shape</th>
+  <th>Encoder semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="WalkType"><code>Scalar</code></td>
+  <td data-label="Shape">Single atomic value</td>
+  <td data-label="Encoder semantics">Looked up via <code>VectorManager</code> or special numeric encoding</td>
+</tr>
+<tr>
+  <td data-label=""><code>Map</code></td>
+  <td data-label="">Key-value pairs (ordered list of <code>(String, WalkableValue)</code>)</td>
+  <td data-label=""><strong>Role-filler binding</strong>: each field's key (role) is bound to its value's vector (filler), then all bindings are bundled</td>
+</tr>
+<tr>
+  <td data-label=""><code>List</code></td>
+  <td data-label="">Ordered sequence</td>
+  <td data-label="">Position-encoded: each element bound to its positional path <code>[0]</code>, <code>[1]</code>, … then bundled</td>
+</tr>
+<tr>
+  <td data-label=""><code>Set</code></td>
+  <td data-label="">Unordered unique items</td>
+  <td data-label="">Items bundled directly, then bound with a <code>&quot;set_indicator&quot;</code> role vector</td>
+</tr>
+<tr>
+  <td data-label=""><code>Spread</code></td>
+  <td data-label="">Ordered sequence with fan-out</td>
+  <td data-label="">Each element fans out into its own independent leaf binding with its own indexed path. Used when per-element attribution matters.</td>
+</tr>
+</tbody>
 </table>
-<blockquote>"<code>List</code> and <code>Set</code> are <strong>composed</strong>: items are encoded and bundled into a single vector. <code>Spread</code> is <strong>fanned out</strong>: each element becomes an independent leaf binding with its own indexed path (e.g., <code>field.[0]</code>, <code>field.[1]</code>). The Walkable implementation chooses which semantics to use per field."</blockquote>
+<blockquote>
+<p>&quot;<code>List</code> and <code>Set</code> are <strong>composed</strong>: items are encoded and bundled into a single vector. <code>Spread</code> is <strong>fanned out</strong>: each element becomes an independent leaf binding with its own indexed path (e.g., <code>field.[0]</code>, <code>field.[1]</code>). The Walkable implementation chooses which semantics to use per field.&quot;</p>
+</blockquote>
 <h2><code>WalkableValue</code> — the AST node enum</h2>
 <p><code>WalkableValue</code> is the owned enum that represents the tree. It is the recursive data structure the encoder traverses:</p>
-<pre><code>
-pub enum WalkableValue {
+<pre><code class="language-rust">pub enum WalkableValue {
     Scalar(ScalarValue),
-    Map(Vec<(String, WalkableValue)>),
-    List(Vec<WalkableValue>),
-    Set(Vec<WalkableValue>),
-    Spread(Vec<WalkableValue>),
+    Map(Vec&lt;(String, WalkableValue)&gt;),
+    List(Vec&lt;WalkableValue&gt;),
+    Set(Vec&lt;WalkableValue&gt;),
+    Spread(Vec&lt;WalkableValue&gt;),
 }
 </code></pre>
 <p>Each variant is recursive (except <code>Scalar</code> which is a leaf). This is the <strong>thought expression tree</strong>: structured data decomposed into a form the encoder can recursively walk.</p>
 <h2>Scalar types — <code>ScalarValue</code></h2>
 <p>The leaf nodes of the tree. Eight variants:</p>
 <table>
-<thead><tr><th>Variant</th><th>Encoding path</th></tr></thead>
-<tr><td data-label="Variant"><code>String(String)</code></td><td data-label="Encoding path">Atom lookup via <code>to_atom()</code> → <code>VectorManager.get_vector()</code></td></tr>
-<tr><td data-label="Variant"><code>Int(i64)</code></td><td data-label="Encoding path">Atom lookup: <code>i64.to_string()</code></td></tr>
-<tr><td data-label="Variant"><code>Float(f64)</code></td><td data-label="Encoding path">Atom lookup: <code>f64.to_string()</code></td></tr>
-<tr><td data-label="Variant"><code>Bool(bool)</code></td><td data-label="Encoding path">Atom lookup: <code>"true"</code> / <code>"false"</code></td></tr>
-<tr><td data-label="Variant"><code>Null</code></td><td data-label="Encoding path">Atom lookup: <code>"null"</code></td></tr>
-<tr><td data-label="Variant"><code>LogFloat { value, scale }</code></td><td data-label="Encoding path">Log10(value) → positional encoding. Equal ratios = equal similarity drops.</td></tr>
-<tr><td data-label="Variant"><code>LinearFloat { value, scale }</code></td><td data-label="Encoding path">Direct positional encoding. Equal differences = equal similarity drops.</td></tr>
-<tr><td data-label="Variant"><code>TimeFloat { value, resolution }</code></td><td data-label="Encoding path">Circular (hour-of-day, day-of-week, month) + positional. Temporally close events produce similar vectors.</td></tr>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Encoding path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>String(String)</code></td>
+  <td data-label="Encoding path">Atom lookup via <code>to_atom()</code> → <code>VectorManager.get_vector()</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Int(i64)</code></td>
+  <td data-label="">Atom lookup: <code>i64.to_string()</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Float(f64)</code></td>
+  <td data-label="">Atom lookup: <code>f64.to_string()</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Bool(bool)</code></td>
+  <td data-label="">Atom lookup: <code>&quot;true&quot;</code> / <code>&quot;false&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Null</code></td>
+  <td data-label="">Atom lookup: <code>&quot;null&quot;</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>LogFloat { value, scale }</code></td>
+  <td data-label="">Log10(value) → positional encoding. Equal ratios = equal similarity drops.</td>
+</tr>
+<tr>
+  <td data-label=""><code>LinearFloat { value, scale }</code></td>
+  <td data-label="">Direct positional encoding. Equal differences = equal similarity drops.</td>
+</tr>
+<tr>
+  <td data-label=""><code>TimeFloat { value, resolution }</code></td>
+  <td data-label="">Circular (hour-of-day, day-of-week, month) + positional. Temporally close events produce similar vectors.</td>
+</tr>
+</tbody>
 </table>
-<blockquote>"Numeric scalars don't use atom encoding — handled specially by encoder."</blockquote>
-<p>The three numeric scalars (<code>LogFloat</code>, <code>LinearFloat</code>, <code>TimeFloat</code>) are flagged by <code>is_numeric_scalar()</code> and routed to special encoder methods instead of atom lookup. Their <code>to_atom()</code> methods produce prefixed strings (<code>"$log:…"</code>, <code>"$linear:…"</code>, <code>"$time:…"</code>) but these are informational only — the encoder dispatches on the variant, not on the atom string.</p>
+<blockquote>
+<p>&quot;Numeric scalars don't use atom encoding — handled specially by encoder.&quot;</p>
+</blockquote>
+<p>The three numeric scalars (<code>LogFloat</code>, <code>LinearFloat</code>, <code>TimeFloat</code>) are flagged by <code>is_numeric_scalar()</code> and routed to special encoder methods instead of atom lookup. Their <code>to_atom()</code> methods produce prefixed strings (<code>&quot;$log:…&quot;</code>, <code>&quot;$linear:…&quot;</code>, <code>&quot;$time:…&quot;</code>) but these are informational only — the encoder dispatches on the variant, not on the atom string.</p>
 <h3>Default scales and resolutions</h3>
 <ul>
 <li><code>ScalarValue::log(value)</code> — scale defaults to <code>1000.0</code></li>
@@ -177,66 +241,85 @@ pub enum WalkableValue {
 <h3><code>TimeResolution</code></h3>
 <p>Controls positional granularity for time encoding:</p>
 <table>
-<thead><tr><th>Variant</th><th>Positional unit</th></tr></thead>
-<tr><td data-label="Variant"><code>Second</code></td><td data-label="Positional unit"><code>timestamp</code></td></tr>
-<tr><td data-label="Variant"><code>Minute</code></td><td data-label="Positional unit"><code>timestamp / 60.0</code></td></tr>
-<tr><td data-label="Variant"><code>Hour</code> (default)</td><td data-label="Positional unit"><code>timestamp / 3600.0</code></td></tr>
-<tr><td data-label="Variant"><code>Day</code></td><td data-label="Positional unit"><code>timestamp / 86400.0</code></td></tr>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Positional unit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>Second</code></td>
+  <td data-label="Positional unit"><code>timestamp</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Minute</code></td>
+  <td data-label=""><code>timestamp / 60.0</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Hour</code> (default)</td>
+  <td data-label=""><code>timestamp / 3600.0</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Day</code></td>
+  <td data-label=""><code>timestamp / 86400.0</code></td>
+</tr>
+</tbody>
 </table>
 <h2>The <code>Walkable</code> trait</h2>
-<pre><code>
-pub trait Walkable {
-    fn walk_type(&self) -> WalkType;
-    fn walk_scalar(&self) -> ScalarValue { panic!(…) }
-    fn walk_map_items(&self) -> Vec<(&str, WalkableValue)> { panic!(…) }
-    fn walk_list_items(&self) -> Vec<WalkableValue> { panic!(…) }
-    fn walk_set_items(&self) -> Vec<WalkableValue> { panic!(…) }
-    fn walk_spread_items(&self) -> Vec<WalkableValue> { panic!(…) }
-    fn to_walkable_value(&self) -> WalkableValue { … }
+<pre><code class="language-rust">pub trait Walkable {
+    fn walk_type(&amp;self) -&gt; WalkType;
+    fn walk_scalar(&amp;self) -&gt; ScalarValue { panic!(…) }
+    fn walk_map_items(&amp;self) -&gt; Vec&lt;(&amp;str, WalkableValue)&gt; { panic!(…) }
+    fn walk_list_items(&amp;self) -&gt; Vec&lt;WalkableValue&gt; { panic!(…) }
+    fn walk_set_items(&amp;self) -&gt; Vec&lt;WalkableValue&gt; { panic!(…) }
+    fn walk_spread_items(&amp;self) -&gt; Vec&lt;WalkableValue&gt; { panic!(…) }
+    fn to_walkable_value(&amp;self) -&gt; WalkableValue { … }
     // Zero-allocation fast path:
-    fn walk_scalar_ref(&self) -> ScalarRef<'_> { … }
-    fn walk_map_visitor(&self, &mut dyn FnMut(&str, WalkableRef<'_>)) { … }
-    fn walk_list_visitor(&self, &mut dyn FnMut(WalkableRef<'_>)) { … }
-    fn walk_set_visitor(&self, &mut dyn FnMut(WalkableRef<'_>)) { … }
-    fn has_fast_visitor(&self) -> bool { false }
+    fn walk_scalar_ref(&amp;self) -&gt; ScalarRef&lt;'_&gt; { … }
+    fn walk_map_visitor(&amp;self, &amp;mut dyn FnMut(&amp;str, WalkableRef&lt;'_&gt;)) { … }
+    fn walk_list_visitor(&amp;self, &amp;mut dyn FnMut(WalkableRef&lt;'_&gt;)) { … }
+    fn walk_set_visitor(&amp;self, &amp;mut dyn FnMut(WalkableRef&lt;'_&gt;)) { … }
+    fn has_fast_visitor(&amp;self) -&gt; bool { false }
 }
 </code></pre>
 <p><strong>Dispatch rule</strong>: implement <code>walk_type()</code> to declare your structural type, then implement the corresponding accessor. Calling the wrong accessor panics with a diagnostic message.</p>
-<blockquote>"Based on <code>walk_type()</code>, implement the corresponding method: <code>WalkType::Scalar</code> → <code>walk_scalar()</code>, <code>WalkType::Map</code> → <code>walk_map_items()</code>, <code>WalkType::List</code> → <code>walk_list_items()</code>, <code>WalkType::Set</code> → <code>walk_set_items()</code>."</blockquote>
+<blockquote>
+<p>&quot;Based on <code>walk_type()</code>, implement the corresponding method: <code>WalkType::Scalar</code> → <code>walk_scalar()</code>, <code>WalkType::Map</code> → <code>walk_map_items()</code>, <code>WalkType::List</code> → <code>walk_list_items()</code>, <code>WalkType::Set</code> → <code>walk_set_items()</code>.&quot;</p>
+</blockquote>
 <h3>Two encoding paths</h3>
 <ol>
-<li><strong>Owned path</strong>: <code>walk_map_items()</code> etc. return <code>Vec<WalkableValue></code> — allocates, but simpler to implement.</li>
-<li><strong>Zero-allocation visitor path</strong>: <code>walk_map_visitor()</code> etc. call a closure with <code>WalkableRef<'_></code> — borrows data, avoids cloning strings. The encoder checks <code>has_fast_visitor()</code> and uses this path when available.</li>
+<li><strong>Owned path</strong>: <code>walk_map_items()</code> etc. return <code>Vec&lt;WalkableValue&gt;</code> — allocates, but simpler to implement.</li>
+<li><strong>Zero-allocation visitor path</strong>: <code>walk_map_visitor()</code> etc. call a closure with <code>WalkableRef&lt;'_&gt;</code> — borrows data, avoids cloning strings. The encoder checks <code>has_fast_visitor()</code> and uses this path when available.</li>
 </ol>
 <h2><code>WalkableRef</code> — the borrowed counterpart</h2>
-<pre><code>
-pub enum WalkableRef<'a> {
-    Scalar(ScalarRef<'a>),   // zero-allocation for flat scalars
+<pre><code class="language-rust">pub enum WalkableRef&lt;'a&gt; {
+    Scalar(ScalarRef&lt;'a&gt;),   // zero-allocation for flat scalars
     Nested(WalkableValue),    // owned allocation for nested structures
 }
 </code></pre>
-<p><code>ScalarRef<'a></code> mirrors <code>ScalarValue</code> but borrows strings (<code>&'a str</code> instead of <code>String</code>). Constructor helpers: <code>WalkableRef::string(s)</code>, <code>WalkableRef::int(i)</code>, <code>WalkableRef::float(f)</code>, <code>WalkableRef::bool(b)</code>, <code>WalkableRef::null()</code>, <code>WalkableRef::time(value)</code>, <code>WalkableRef::nested(value)</code>.</p>
+<p><code>ScalarRef&lt;'a&gt;</code> mirrors <code>ScalarValue</code> but borrows strings (<code>&amp;'a str</code> instead of <code>String</code>). Constructor helpers: <code>WalkableRef::string(s)</code>, <code>WalkableRef::int(i)</code>, <code>WalkableRef::float(f)</code>, <code>WalkableRef::bool(b)</code>, <code>WalkableRef::null()</code>, <code>WalkableRef::time(value)</code>, <code>WalkableRef::nested(value)</code>.</p>
 <h2>How <code>encode()</code> recursively walks the tree</h2>
-<p>The encoder's <code>encode_walkable<W: Walkable>(walkable)</code> calls <code>encode_walkable_recursive(walkable, None)</code>, which dispatches on <code>walkable.walk_type()</code>:</p>
+<p>The encoder's <code>encode_walkable&lt;W: Walkable&gt;(walkable)</code> calls <code>encode_walkable_recursive(walkable, None)</code>, which dispatches on <code>walkable.walk_type()</code>:</p>
 <h3>Map encoding (<code>WalkType::Map</code>)</h3>
-<pre><code>
-encode_walkable_map(walkable, prefix):
+<pre><code>encode_walkable_map(walkable, prefix):
   if has_fast_visitor() → encode_walkable_map_fast (visitor-based)
   else → walk_map_items() → for each (key, value):
-    key_path = make_path(prefix, key)       // e.g. "name" or "parent.name"
+    key_path = make_path(prefix, key)       // e.g. &quot;name&quot; or &quot;parent.name&quot;
     role_vec  = encode_atom(key_path)       // VectorManager lookup
     filler_vec = encode_walkable_value_recursive(value, Some(key_path))
     bound = bind(role_vec, filler_vec)      // element-wise multiply
     push bound
   bundle(all bounds)                        // element-wise sign (majority)
 </code></pre>
-<blockquote>"The key insight is <strong>role-filler binding</strong>: we bind each value (filler) with its key (role) before bundling."</blockquote>
+<blockquote>
+<p>&quot;The key insight is <strong>role-filler binding</strong>: we bind each value (filler) with its key (role) before bundling.&quot;</p>
+</blockquote>
 <h3>List/Spread encoding (<code>WalkType::List</code> or <code>WalkType::Spread</code>)</h3>
 <p>Both use identical encoding logic:</p>
-<pre><code>
-encode_walkable_list(walkable, prefix):
+<pre><code>encode_walkable_list(walkable, prefix):
   walk_list_items() → for each (i, item):
-    pos_prefix = make_path(prefix, "[i]")   // e.g. "items.[0]"
+    pos_prefix = make_path(prefix, &quot;[i]&quot;)   // e.g. &quot;items.[0]&quot;
     item_vec  = encode_walkable_value_recursive(item, Some(pos_prefix))
     pos_vec   = encode_atom(pos_prefix)
     bound = bind(pos_vec, item_vec)
@@ -245,9 +328,8 @@ encode_walkable_list(walkable, prefix):
 </code></pre>
 <p>The difference between List and Spread is <strong>not</strong> in the encoding but in the striped/fan-out path (see below).</p>
 <h3>Set encoding (<code>WalkType::Set</code>)</h3>
-<pre><code>
-encode_walkable_set(walkable, prefix):
-  set_indicator = encode_atom("set_indicator")
+<pre><code>encode_walkable_set(walkable, prefix):
+  set_indicator = encode_atom(&quot;set_indicator&quot;)
   walk_set_items() → for each item:
     item_vec = encode_walkable_value_recursive(item, prefix)
     push item_vec
@@ -258,18 +340,40 @@ encode_walkable_set(walkable, prefix):
 <h3>Recursive <code>WalkableValue</code> encoding</h3>
 <p>The <code>encode_walkable_value_recursive</code> method handles the full tree for nested values:</p>
 <table>
-<thead><tr><th>WalkableValue variant</th><th>Behavior</th></tr></thead>
-<tr><td data-label="WalkableValue variant"><code>Scalar(s)</code></td><td data-label="Behavior"><code>encode_scalar_value(s, prefix)</code> — atom lookup or numeric encoding</td></tr>
-<tr><td data-label="WalkableValue variant"><code>Map(items)</code></td><td data-label="Behavior">Role-filler bind each entry, then bundle (same as above)</td></tr>
-<tr><td data-label="WalkableValue variant"><code>List(items)</code></td><td data-label="Behavior">Position-encode each element, then bundle</td></tr>
-<tr><td data-label="WalkableValue variant"><code>Set(items)</code></td><td data-label="Behavior">Bundle items, then bind with <code>set_indicator</code></td></tr>
-<tr><td data-label="WalkableValue variant"><code>Spread(items)</code></td><td data-label="Behavior">Position-encode each element, then bundle (identical to List)</td></tr>
+<thead>
+<tr>
+  <th>WalkableValue variant</th>
+  <th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="WalkableValue variant"><code>Scalar(s)</code></td>
+  <td data-label="Behavior"><code>encode_scalar_value(s, prefix)</code> — atom lookup or numeric encoding</td>
+</tr>
+<tr>
+  <td data-label=""><code>Map(items)</code></td>
+  <td data-label="">Role-filler bind each entry, then bundle (same as above)</td>
+</tr>
+<tr>
+  <td data-label=""><code>List(items)</code></td>
+  <td data-label="">Position-encode each element, then bundle</td>
+</tr>
+<tr>
+  <td data-label=""><code>Set(items)</code></td>
+  <td data-label="">Bundle items, then bind with <code>set_indicator</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>Spread(items)</code></td>
+  <td data-label="">Position-encode each element, then bundle (identical to List)</td>
+</tr>
+</tbody>
 </table>
 <h3>Empty container encoding</h3>
 <ul>
-<li>Empty Map → <code>encode_atom(make_path(prefix, "{}"))</code></li>
-<li>Empty List → <code>encode_atom(make_path(prefix, "[]"))</code></li>
-<li>Empty Set → <code>encode_atom(make_path(prefix, "#{}"))</code></li>
+<li>Empty Map → <code>encode_atom(make_path(prefix, &quot;{}&quot;))</code></li>
+<li>Empty List → <code>encode_atom(make_path(prefix, &quot;[]&quot;))</code></li>
+<li>Empty Set → <code>encode_atom(make_path(prefix, &quot;#{}&quot;))</code></li>
 </ul>
 <h2>Striped encoding and the difference between List and Spread</h2>
 <p>In the hierarchical encode path (<code>encode_walkable</code>), List and Spread are encoded identically. The difference appears in the <strong>striped</strong> path (<code>encode_walkable_striped</code>):</p>
@@ -278,33 +382,78 @@ encode_walkable_set(walkable, prefix):
 <li><strong>List</strong>: Produces a <strong>single</strong> leaf binding — the positionally-encoded bundle is one role-filler pair assigned to one stripe.</li>
 <li><strong>Spread</strong>: Each element becomes an <strong>independent</strong> leaf binding at its own indexed path (<code>field.[0]</code>, <code>field.[1]</code>, …), each independently hashed to a stripe.</li>
 </ul>
-<blockquote>"<code>Spread</code> fans out — each element becomes an independent leaf binding with its own indexed path."</blockquote>
-<blockquote>"Use when per-element attribution or rule crafting is needed."</blockquote>
+<blockquote>
+<p>&quot;<code>Spread</code> fans out — each element becomes an independent leaf binding with its own indexed path.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Use when per-element attribution or rule crafting is needed.&quot;</p>
+</blockquote>
 <h2>Built-in Walkable implementations</h2>
 <p>The file provides <code>Walkable</code> impls for:</p>
 <ul>
-<li><strong>Scalars</strong>: <code>String</code>, <code>&str</code>, <code>i64</code>, <code>i32</code>, <code>u32</code>, <code>u64</code>, <code>usize</code>, <code>f64</code>, <code>f32</code>, <code>bool</code></li>
-<li><strong>Containers</strong>: <code>Vec<T></code>, <code>[T]</code>, <code>HashMap<String, V></code>, <code>HashMap<&str, V></code>, <code>HashSet<T></code>, <code>BTreeSet<T></code>, <code>Option<T></code></li>
+<li><strong>Scalars</strong>: <code>String</code>, <code>&amp;str</code>, <code>i64</code>, <code>i32</code>, <code>u32</code>, <code>u64</code>, <code>usize</code>, <code>f64</code>, <code>f32</code>, <code>bool</code></li>
+<li><strong>Containers</strong>: <code>Vec&lt;T&gt;</code>, <code>[T]</code>, <code>HashMap&lt;String, V&gt;</code>, <code>HashMap&lt;&amp;str, V&gt;</code>, <code>HashSet&lt;T&gt;</code>, <code>BTreeSet&lt;T&gt;</code>, <code>Option&lt;T&gt;</code></li>
 <li><strong>Self-referential</strong>: <code>WalkableValue</code> itself</li>
 <li><strong>JSON bridge</strong>: <code>serde_json::Value</code> — Null/Bool/Number/String → Scalar, Array → List, Object → Map</li>
 </ul>
 <h2>Structural forms in wat (orthogonal context)</h2>
 <p>The <code>wat/core/structural.wat</code> file defines three structural forms orthogonal to the vector algebra:</p>
-<blockquote>"A struct cannot be bound, bundled, or cosined. It holds things that can. An enum variant is an identity, not a geometric object. A protocol is a contract, not a computation."</blockquote>
+<blockquote>
+<p>&quot;A struct cannot be bound, bundled, or cosined. It holds things that can. An enum variant is an identity, not a geometric object. A protocol is a contract, not a computation.&quot;</p>
+</blockquote>
 <table>
-<thead><tr><th>Form</th><th>wat syntax</th><th>Rust target</th></tr></thead>
-<tr><td data-label="Form">Product (struct)</td><td data-label="wat syntax"><code>(struct name field1 field2 …)</code></td><td data-label="Rust target">Rust struct with named fields. Projection via <code>(:field record)</code>. Functional update via <code>(update record :f1 v1 …)</code>.</td></tr>
-<tr><td data-label="Form">Coproduct (enum)</td><td data-label="wat syntax"><code>(enum name variant1 variant2 …)</code></td><td data-label="Rust target">Rust enum. Exhaustive <code>match</code> required; wildcard <code>_</code> forbidden on closed enums.</td></tr>
-<tr><td data-label="Form">Type class (defprotocol)</td><td data-label="wat syntax"><code>(defprotocol name (fn-name [params] …))</code></td><td data-label="Rust target">Rust trait. Satisfiability via <code>(satisfies struct-name protocol-name :fn1 impl1 …)</code>.</td></tr>
+<thead>
+<tr>
+  <th>Form</th>
+  <th>wat syntax</th>
+  <th>Rust target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Form">Product (struct)</td>
+  <td data-label="wat syntax"><code>(struct name field1 field2 …)</code></td>
+  <td data-label="Rust target">Rust struct with named fields. Projection via <code>(:field record)</code>. Functional update via <code>(update record :f1 v1 …)</code>.</td>
+</tr>
+<tr>
+  <td data-label="">Coproduct (enum)</td>
+  <td data-label=""><code>(enum name variant1 variant2 …)</code></td>
+  <td data-label="">Rust enum. Exhaustive <code>match</code> required; wildcard <code>_</code> forbidden on closed enums.</td>
+</tr>
+<tr>
+  <td data-label="">Type class (defprotocol)</td>
+  <td data-label=""><code>(defprotocol name (fn-name [params] …))</code></td>
+  <td data-label="">Rust trait. Satisfiability via <code>(satisfies struct-name protocol-name :fn1 impl1 …)</code>.</td>
+</tr>
+</tbody>
 </table>
 <p>These forms organize programs but do not enter the vector algebra. A Walkable impl bridges between a struct and the encoder, but the struct itself is not a vector object.</p>
 <h2>Source quotes</h2>
-<blockquote>"Zero-cost abstraction: Trait dispatch is compile-time where possible."</blockquote>
-<blockquote>"Ergonomic: Native Rust types work automatically."</blockquote>
-<blockquote>"Extensible: Users can implement for their own types."</blockquote>
-<blockquote>"Independent items sharing a namespace. Each element gets its own indexed path and leaf binding (fan-out). Use when per-element attribution matters." — WalkType::Spread</blockquote>
-<blockquote>"Log-scale encoding: equal ratios = equal similarity drops. Use for: packet rates, file sizes, frequencies, byte counts." — ScalarValue::LogFloat</blockquote>
-<blockquote>"Linear positional encoding: equal differences = equal similarity drops. Use for: temperatures, positions, timestamps." — ScalarValue::LinearFloat</blockquote>
-<blockquote>"Time-aware encoding: circular (hour-of-day, day-of-week, month) + positional. Temporally close events produce similar vectors; periodic structure preserved." — ScalarValue::TimeFloat</blockquote>
-<blockquote>"Unordered unique items (like HashSet)" — WalkType::Set</blockquote>
-<blockquote>"These forms are orthogonal to the vector algebra and journal coalgebra." — structural.wat</blockquote></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<blockquote>
+<p>&quot;Zero-cost abstraction: Trait dispatch is compile-time where possible.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Ergonomic: Native Rust types work automatically.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Extensible: Users can implement for their own types.&quot;</p>
+</blockquote>
+<blockquote>
+<p>&quot;Independent items sharing a namespace. Each element gets its own indexed path and leaf binding (fan-out). Use when per-element attribution matters.&quot; — WalkType::Spread</p>
+</blockquote>
+<blockquote>
+<p>&quot;Log-scale encoding: equal ratios = equal similarity drops. Use for: packet rates, file sizes, frequencies, byte counts.&quot; — ScalarValue::LogFloat</p>
+</blockquote>
+<blockquote>
+<p>&quot;Linear positional encoding: equal differences = equal similarity drops. Use for: temperatures, positions, timestamps.&quot; — ScalarValue::LinearFloat</p>
+</blockquote>
+<blockquote>
+<p>&quot;Time-aware encoding: circular (hour-of-day, day-of-week, month) + positional. Temporally close events produce similar vectors; periodic structure preserved.&quot; — ScalarValue::TimeFloat</p>
+</blockquote>
+<blockquote>
+<p>&quot;Unordered unique items (like HashSet)&quot; — WalkType::Set</p>
+</blockquote>
+<blockquote>
+<p>&quot;These forms are orthogonal to the vector algebra and journal coalgebra.&quot; — structural.wat</p>
+</blockquote>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

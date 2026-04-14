@@ -125,89 +125,229 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">The wat Standard Library — built-in operations <span class="badge badge-describe">DESCRIBE</span></h1><div class="prose prose-invert max-w-none"><p><strong>Verified leaf: T1-002</strong></p>
-<p><strong>Sources:</strong> <code>wat/std/vectors.wat</code> (44 lines), <code>wat/std/memory.wat</code> (28 lines), <code>wat/std/scalars.wat</code> (15 lines), <code>wat/std/fields.wat</code> (11 lines), <code>wat/std/statistics.wat</code> (41 lines)</p>
-<hr>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">The wat Standard Library — built-in operations <span class="badge badge-describe">DESCRIBE</span></h1><div class="prose prose-invert max-w-none"><p><strong>Verified leaf: T1-002</strong>
+<strong>Sources:</strong> <code>wat/std/vectors.wat</code> (44 lines), <code>wat/std/memory.wat</code> (28 lines), <code>wat/std/scalars.wat</code> (15 lines), <code>wat/std/fields.wat</code> (11 lines), <code>wat/std/statistics.wat</code> (41 lines)</p>
+<hr />
 <h2>Overview</h2>
-<p>The standard library provides "derived forms built from the corelib." These are convenience operations, not core algebra primitives. The source categorizes them as "stdlib atoms" required via <code>(require common)</code>.</p>
-<hr>
+<p>The standard library provides &quot;derived forms built from the corelib.&quot; These are convenience operations, not core algebra primitives. The source categorizes them as &quot;stdlib atoms&quot; required via <code>(require common)</code>.</p>
+<hr />
 <h2>std/scalars — scalar encoding into vector space</h2>
-<p><em>"Maps continuous values into the algebra."</em></p>
+<p><em>&quot;Maps continuous values into the algebra.&quot;</em></p>
 <p>Three encoding functions, each mapping a continuous value to a Vector:</p>
 <table>
-<thead><tr><th>Function</th><th>Signature</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Function"><code>encode-log</code></td><td data-label="Signature"><code>(encode-log value) → Vector</code></td><td data-label="Purpose">"Equal ratios = equal similarity." Use for orders of magnitude (ATR, volume, prices).</td></tr>
-<tr><td data-label="Function"><code>encode-linear</code></td><td data-label="Signature"><code>(encode-linear value scale) → Vector</code></td><td data-label="Purpose">"Proportional mapping in [0, scale]." Use for fractions, ratios, [0,1] values.</td></tr>
-<tr><td data-label="Function"><code>encode-circular</code></td><td data-label="Signature"><code>(encode-circular value period) → Vector</code></td><td data-label="Purpose">"Endpoint wraps to start." Use for time-of-day, day-of-week, angles.</td></tr>
+<thead>
+<tr>
+  <th>Function</th>
+  <th>Signature</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Function"><code>encode-log</code></td>
+  <td data-label="Signature"><code>(encode-log value) → Vector</code></td>
+  <td data-label="Purpose">&quot;Equal ratios = equal similarity.&quot; Use for orders of magnitude (ATR, volume, prices).</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode-linear</code></td>
+  <td data-label=""><code>(encode-linear value scale) → Vector</code></td>
+  <td data-label="">&quot;Proportional mapping in [0, scale].&quot; Use for fractions, ratios, [0,1] values.</td>
+</tr>
+<tr>
+  <td data-label=""><code>encode-circular</code></td>
+  <td data-label=""><code>(encode-circular value period) → Vector</code></td>
+  <td data-label="">&quot;Endpoint wraps to start.&quot; Use for time-of-day, day-of-week, angles.</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>std/vectors — derived vector operations</h2>
-<p><em>"All derivable from the four algebra primitives (atom, bind, bundle, cosine). Stdlib convenience, not core."</em></p>
+<p><em>&quot;All derivable from the four algebra primitives (atom, bind, bundle, cosine). Stdlib convenience, not core.&quot;</em></p>
 <h3>Transformation operations</h3>
 <table>
-<thead><tr><th>Function</th><th>Signature</th><th>Description</th></tr></thead>
-<tr><td data-label="Function"><code>permute</code></td><td data-label="Signature"><code>(permute vector shift) → Vector</code></td><td data-label="Description">"Shift vector elements — orthogonal encoding of ordered alternatives." <code>(permute A 0) = A</code>. <code>(permute A 1)</code> is quasi-orthogonal to A.</td></tr>
-<tr><td data-label="Function"><code>difference</code></td><td data-label="Signature"><code>(difference before after) → Vector</code></td><td data-label="Description">"Structural change between two states." "What's new in after that wasn't in before."</td></tr>
-<tr><td data-label="Function"><code>negate</code></td><td data-label="Signature"><code>(negate superposition component) → Vector</code></td><td data-label="Description">"Remove a component from a superposition."</td></tr>
-<tr><td data-label="Function"><code>amplify</code></td><td data-label="Signature"><code>(amplify superposition component strength) → Vector</code></td><td data-label="Description">"Boost component presence in a superposition."</td></tr>
+<thead>
+<tr>
+  <th>Function</th>
+  <th>Signature</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Function"><code>permute</code></td>
+  <td data-label="Signature"><code>(permute vector shift) → Vector</code></td>
+  <td data-label="Description">&quot;Shift vector elements — orthogonal encoding of ordered alternatives.&quot; <code>(permute A 0) = A</code>. <code>(permute A 1)</code> is quasi-orthogonal to A.</td>
+</tr>
+<tr>
+  <td data-label=""><code>difference</code></td>
+  <td data-label=""><code>(difference before after) → Vector</code></td>
+  <td data-label="">&quot;Structural change between two states.&quot; &quot;What's new in after that wasn't in before.&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>negate</code></td>
+  <td data-label=""><code>(negate superposition component) → Vector</code></td>
+  <td data-label="">&quot;Remove a component from a superposition.&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>amplify</code></td>
+  <td data-label=""><code>(amplify superposition component strength) → Vector</code></td>
+  <td data-label="">&quot;Boost component presence in a superposition.&quot;</td>
+</tr>
+</tbody>
 </table>
 <h3>Pattern operations</h3>
 <table>
-<thead><tr><th>Function</th><th>Signature</th><th>Description</th></tr></thead>
-<tr><td data-label="Function"><code>prototype</code></td><td data-label="Signature"><code>(prototype vectors threshold) → Vector</code></td><td data-label="Description">"Extract consensus from examples."</td></tr>
-<tr><td data-label="Function"><code>cleanup</code></td><td data-label="Signature"><code>(cleanup noisy codebook) → Vector</code></td><td data-label="Description">"Snap noisy observation to nearest known pattern."</td></tr>
-<tr><td data-label="Function"><code>attend</code></td><td data-label="Signature"><code>(attend query memory strength mode) → Vector</code></td><td data-label="Description">"Soft attention over memory." Mode: <code>:hard</code> or <code>:soft</code>.</td></tr>
+<thead>
+<tr>
+  <th>Function</th>
+  <th>Signature</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Function"><code>prototype</code></td>
+  <td data-label="Signature"><code>(prototype vectors threshold) → Vector</code></td>
+  <td data-label="Description">&quot;Extract consensus from examples.&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>cleanup</code></td>
+  <td data-label=""><code>(cleanup noisy codebook) → Vector</code></td>
+  <td data-label="">&quot;Snap noisy observation to nearest known pattern.&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>attend</code></td>
+  <td data-label=""><code>(attend query memory strength mode) → Vector</code></td>
+  <td data-label="">&quot;Soft attention over memory.&quot; Mode: <code>:hard</code> or <code>:soft</code>.</td>
+</tr>
+</tbody>
 </table>
 <h3>Geometric operations</h3>
-<table>
-<thead><tr><th>Function</th><th>Signature</th><th>Description</th></tr></thead>
-<tr><td data-label="Function"><code>coherence</code></td><td data-label="Signature"><code>(coherence vectors) → Float</code></td><td data-label="Description">"Mean pairwise similarity of a vector set."</td></tr>
-<tr><td data-label="Function"><code>l2-norm</code></td><td data-label="Signature"><code>(l2-norm vector) → Float</code></td><td data-label="Description">"Magnitude of a vector. sqrt(sum(x_i^2))."</td></tr>
-<tr><td data-label="Function"><code>l2-normalize</code></td><td data-label="Signature"><code>(l2-normalize vector) → Vector</code></td><td data-label="Description">"Project onto the unit sphere. vector /</td><td data-label=""></td><td data-label="">vector</td><td data-label=""></td><td data-label="">." Returns D-dimensional unit vector.</td></tr>
-<tr><td data-label="Function"><code>zeros</code></td><td data-label="Signature"><code>(zeros) → Vector</code></td><td data-label="Description">"Zero vector at the current dimensionality."</td></tr>
-<tr><td data-label="Function"><code>blend</code></td><td data-label="Signature"><code>(blend a b ratio) → Vector</code></td><td data-label="Description">"Weighted interpolation between two vectors." <code>ratio=0.0 → a</code>, <code>ratio=1.0 → b</code>, <code>ratio=0.5 → midpoint</code>.</td></tr>
-</table>
+<p>| Function | Signature | Description |
+|----------|-----------|-------------|
+| <code>coherence</code> | <code>(coherence vectors) → Float</code> | &quot;Mean pairwise similarity of a vector set.&quot; |
+| <code>l2-norm</code> | <code>(l2-norm vector) → Float</code> | &quot;Magnitude of a vector. sqrt(sum(x_i^2)).&quot; |
+| <code>l2-normalize</code> | <code>(l2-normalize vector) → Vector</code> | &quot;Project onto the unit sphere. vector / ||vector||.&quot; Returns D-dimensional unit vector. |
+| <code>zeros</code> | <code>(zeros) → Vector</code> | &quot;Zero vector at the current dimensionality.&quot; |
+| <code>blend</code> | <code>(blend a b ratio) → Vector</code> | &quot;Weighted interpolation between two vectors.&quot; <code>ratio=0.0 → a</code>, <code>ratio=1.0 → b</code>, <code>ratio=0.5 → midpoint</code>. |</p>
 <p>Note: <code>LANGUAGE.md</code> also lists <code>zeros</code> as a host language collection form with two behaviors — nullary (zero vector at dims) and <code>(zeros n)</code> (zero-filled array of size n). The stdlib form is the nullary vector-space version.</p>
-<hr>
+<hr />
 <h2>std/memory — learning beyond the journal</h2>
-<p><em>"The journal (core) is Template 1: prediction via discriminant. These are Template 2: reaction via learned manifold."</em></p>
-<p>Implementation: "CCIPCA: incremental PCA without storing the full dataset."</p>
+<p><em>&quot;The journal (core) is Template 1: prediction via discriminant. These are Template 2: reaction via learned manifold.&quot;</em></p>
+<p>Implementation: &quot;CCIPCA: incremental PCA without storing the full dataset.&quot;</p>
 <h3>Constructor</h3>
 <table>
-<thead><tr><th>Function</th><th>Signature</th><th>Description</th></tr></thead>
-<tr><td data-label="Function"><code>online-subspace</code></td><td data-label="Signature"><code>(online-subspace dims n-components) → Subspace</code></td><td data-label="Description">"Learns what 'normal' looks like from a stream."</td></tr>
+<thead>
+<tr>
+  <th>Function</th>
+  <th>Signature</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Function"><code>online-subspace</code></td>
+  <td data-label="Signature"><code>(online-subspace dims n-components) → Subspace</code></td>
+  <td data-label="Description">&quot;Learns what 'normal' looks like from a stream.&quot;</td>
+</tr>
+</tbody>
 </table>
 <h3>Operations</h3>
 <table>
-<thead><tr><th>Function</th><th>Signature</th><th>Description</th></tr></thead>
-<tr><td data-label="Function"><code>update</code></td><td data-label="Signature"><code>(update subspace vector)</code></td><td data-label="Description">"Feed an observation to the subspace."</td></tr>
-<tr><td data-label="Function"><code>sample-count</code></td><td data-label="Signature"><code>(sample-count subspace) → Integer</code></td><td data-label="Description">"How many observations has the subspace seen?"</td></tr>
-<tr><td data-label="Function"><code>project</code></td><td data-label="Signature"><code>(project subspace vector) → Vector</code></td><td data-label="Description">"Project vector onto the learned manifold (reconstruction)." "Returns D-dimensional vector: the part the subspace CAN explain."</td></tr>
-<tr><td data-label="Function"><code>anomalous-component</code></td><td data-label="Signature"><code>(anomalous-component subspace vector) → Vector</code></td><td data-label="Description">"The part the subspace CANNOT explain: vector minus reconstruction." "Returns D-dimensional vector (same dimension as input)."</td></tr>
-<tr><td data-label="Function"><code>residual</code></td><td data-label="Signature"><code>(residual subspace vector) → Float</code></td><td data-label="Description">"How far is this observation from the learned manifold?"</td></tr>
-<tr><td data-label="Function"><code>threshold</code></td><td data-label="Signature"><code>(threshold subspace) → Float</code></td><td data-label="Description">"Self-calibrating anomaly threshold."</td></tr>
+<thead>
+<tr>
+  <th>Function</th>
+  <th>Signature</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Function"><code>update</code></td>
+  <td data-label="Signature"><code>(update subspace vector)</code></td>
+  <td data-label="Description">&quot;Feed an observation to the subspace.&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>sample-count</code></td>
+  <td data-label=""><code>(sample-count subspace) → Integer</code></td>
+  <td data-label="">&quot;How many observations has the subspace seen?&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>project</code></td>
+  <td data-label=""><code>(project subspace vector) → Vector</code></td>
+  <td data-label="">&quot;Project vector onto the learned manifold (reconstruction).&quot; &quot;Returns D-dimensional vector: the part the subspace CAN explain.&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>anomalous-component</code></td>
+  <td data-label=""><code>(anomalous-component subspace vector) → Vector</code></td>
+  <td data-label="">&quot;The part the subspace CANNOT explain: vector minus reconstruction.&quot; &quot;Returns D-dimensional vector (same dimension as input).&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>residual</code></td>
+  <td data-label=""><code>(residual subspace vector) → Float</code></td>
+  <td data-label="">&quot;How far is this observation from the learned manifold?&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><code>threshold</code></td>
+  <td data-label=""><code>(threshold subspace) → Float</code></td>
+  <td data-label="">&quot;Self-calibrating anomaly threshold.&quot;</td>
+</tr>
+</tbody>
 </table>
 <p>Note: <code>LANGUAGE.md</code> lists the constructor as <code>(online-subspace dims k)</code> while <code>memory.wat</code> specifies <code>(online-subspace dims n-components)</code>. The stdlib source uses <code>n-components</code>.</p>
-<hr>
+<hr />
 <h2>std/statistics — numeric helpers for the pre-algebra layer</h2>
-<p><em>"Pure arithmetic over lists. These produce Floats that feed encode-linear or fact/scalar. They do not touch the vector algebra."</em></p>
-<p><em>"Tempered: multi-moment computation shares a single pass where possible."</em></p>
+<p><em>&quot;Pure arithmetic over lists. These produce Floats that feed encode-linear or fact/scalar. They do not touch the vector algebra.&quot;</em></p>
+<p><em>&quot;Tempered: multi-moment computation shares a single pass where possible.&quot;</em></p>
 <p>All functions accept a list <code>xs</code> and return a Float (except <code>moments</code> which returns a list of three Floats).</p>
 <table>
-<thead><tr><th>Function</th><th>Signature</th><th>Description</th></tr></thead>
-<tr><td data-label="Function"><code>mean</code></td><td data-label="Signature"><code>(mean xs) → Float</code></td><td data-label="Description">Returns 0.0 for empty list. Otherwise <code>fold + 0.0 xs / len xs</code>.</td></tr>
-<tr><td data-label="Function"><code>variance</code></td><td data-label="Signature"><code>(variance xs) → Float</code></td><td data-label="Description">"Population variance. One pass for mean, one pass for deviations." Returns 0.0 for empty list.</td></tr>
-<tr><td data-label="Function"><code>stddev</code></td><td data-label="Signature"><code>(stddev xs) → Float</code></td><td data-label="Description"><code>(sqrt (variance xs))</code>.</td></tr>
-<tr><td data-label="Function"><code>moments</code></td><td data-label="Signature"><code>(moments xs) → (Float Float Float)</code></td><td data-label="Description">"Compute mean, variance, and stddev in two passes (not four)." Returns <code>(mean, variance, stddev)</code> as a list. Returns <code>(0.0 0.0 0.0)</code> for empty list.</td></tr>
-<tr><td data-label="Function"><code>skewness</code></td><td data-label="Signature"><code>(skewness xs) → Float</code></td><td data-label="Description">"Population skewness. Uses moments to avoid redundant passes." Returns 0.0 when stddev ≤ 0.0.</td></tr>
+<thead>
+<tr>
+  <th>Function</th>
+  <th>Signature</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Function"><code>mean</code></td>
+  <td data-label="Signature"><code>(mean xs) → Float</code></td>
+  <td data-label="Description">Returns 0.0 for empty list. Otherwise <code>fold + 0.0 xs / len xs</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>variance</code></td>
+  <td data-label=""><code>(variance xs) → Float</code></td>
+  <td data-label="">&quot;Population variance. One pass for mean, one pass for deviations.&quot; Returns 0.0 for empty list.</td>
+</tr>
+<tr>
+  <td data-label=""><code>stddev</code></td>
+  <td data-label=""><code>(stddev xs) → Float</code></td>
+  <td data-label=""><code>(sqrt (variance xs))</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>moments</code></td>
+  <td data-label=""><code>(moments xs) → (Float Float Float)</code></td>
+  <td data-label="">&quot;Compute mean, variance, and stddev in two passes (not four).&quot; Returns <code>(mean, variance, stddev)</code> as a list. Returns <code>(0.0 0.0 0.0)</code> for empty list.</td>
+</tr>
+<tr>
+  <td data-label=""><code>skewness</code></td>
+  <td data-label=""><code>(skewness xs) → Float</code></td>
+  <td data-label="">&quot;Population skewness. Uses moments to avoid redundant passes.&quot; Returns 0.0 when stddev ≤ 0.0.</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>std/fields — RETIRED</h2>
 <p>This module is entirely retired. The file states:</p>
-<blockquote>"(field struct-name field-name computation) has been retired. See proposal 014 (protocols). defprotocol + satisfies subsume it."</blockquote>
-<p>The rationale: "Indicators aren't properties of candles — they're independent fold steps with their own state. The protocol declares the interface. The struct holds the state. The step function advances it."</p>
-<blockquote>"This file is kept for historical reference. Do not use (field ...)."</blockquote>
-<hr>
+<blockquote>
+<p>&quot;(field struct-name field-name computation) has been retired. See proposal 014 (protocols). defprotocol + satisfies subsume it.&quot;</p>
+</blockquote>
+<p>The rationale: &quot;Indicators aren't properties of candles — they're independent fold steps with their own state. The protocol declares the interface. The struct holds the state. The step function advances it.&quot;</p>
+<blockquote>
+<p>&quot;This file is kept for historical reference. Do not use (field ...).&quot;</p>
+</blockquote>
+<hr />
 <h2>What the stdlib is not</h2>
-<p>The stdlib does not define new algebra primitives. Every operation in <code>vectors.wat</code> is described as "derivable from the four algebra primitives." The statistics module operates on plain lists of numbers, not vectors. Memory adds a second learning template (manifold learning) complementary to the reckoner's discriminant-based prediction.</p>
-<p>The <code>fields.wat</code> module documents a retired feature — it defines no active operations.</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+<p>The stdlib does not define new algebra primitives. Every operation in <code>vectors.wat</code> is described as &quot;derivable from the four algebra primitives.&quot; The statistics module operates on plain lists of numbers, not vectors. Memory adds a second learning template (manifold learning) complementary to the reckoner's discriminant-based prediction.</p>
+<p>The <code>fields.wat</code> module documents a retired feature — it defines no active operations.</p>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>

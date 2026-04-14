@@ -126,32 +126,58 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Paper Trade — hypothetical accountability without execution <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
-<p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by <a class="wikilink" href="pg-broker.html">Broker</a> instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is "hypothetical accountability."</p>
-<hr></div><div class="prose prose-invert max-w-none"><h2>Lifecycle</h2>
-<pre class="mermaid">
-flowchart TD
-    created["Created\n(register_paper)"] -->|"price moves against prediction\nhits fixed stop"| violence["Violence\n(resolved, never signaled)"]
-    created -->|"price moves in predicted direction\nfar enough to cross trail threshold"| runner["signaled = true\nnow a Runner"]
-    runner -->|"price reverses\ncrosses trailing stop"| grace["resolved\n(Grace — was signaled)"]
-    runner -->|"price continues favorably"| ratchet["extreme/trail ratchet\nkeeps running"]
-    created -->|"price never moves enough\nin either direction"| open["stays open indefinitely"]
-</code></pre>
+<p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&amp;L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is &quot;hypothetical accountability.&quot;</p>
+<hr />
+</div><div class="prose prose-invert max-w-none"><h2>Lifecycle</h2>
+<pre class="mermaid">flowchart TD
+    created[&quot;Created\n(register_paper)&quot;] --&gt;|&quot;price moves against prediction\nhits fixed stop&quot;| violence[&quot;Violence\n(resolved, never signaled)&quot;]
+    created --&gt;|&quot;price moves in predicted direction\nfar enough to cross trail threshold&quot;| runner[&quot;signaled = true\nnow a Runner&quot;]
+    runner --&gt;|&quot;price reverses\ncrosses trailing stop&quot;| grace[&quot;resolved\n(Grace — was signaled)&quot;]
+    runner --&gt;|&quot;price continues favorably&quot;| ratchet[&quot;extreme/trail ratchet\nkeeps running&quot;]
+    created --&gt;|&quot;price never moves enough\nin either direction&quot;| open[&quot;stays open indefinitely&quot;]
+
 <p>Each paper is created at the candle's entry price. On every subsequent candle, <code>tick(current_price)</code> is called. The paper is removed once resolved.</p>
-<blockquote>Source: T0-015 § Lifecycle Summary; T0-018 § 7.7</blockquote>
-<hr>
+<blockquote>
+<p>Source: T0-015 § Lifecycle Summary; T0-018 § 7.7</p>
+</blockquote>
+<hr />
 <h2>Resolution Classifications</h2>
 <table>
-<thead><tr><th>Outcome</th><th>Condition</th><th>Meaning</th></tr></thead>
-<tr><td data-label="Outcome"><strong>Grace</strong></td><td data-label="Condition"><code>signaled == true</code> — trail crossed at some point</td><td data-label="Meaning">Market confirmed the prediction.</td></tr>
-<tr><td data-label="Outcome"><strong>Violence</strong></td><td data-label="Condition"><code>resolved && !signaled</code> — stop fired before trail ever crossed</td><td data-label="Meaning">Prediction was wrong.</td></tr>
-<tr><td data-label="Outcome"><strong>Runner</strong></td><td data-label="Condition"><code>signaled && !resolved</code> — trail crossed, still running</td><td data-label="Meaning">Not yet resolved.</td></tr>
+<thead>
+<tr>
+  <th>Outcome</th>
+  <th>Condition</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Outcome"><strong>Grace</strong></td>
+  <td data-label="Condition"><code>signaled == true</code> — trail crossed at some point</td>
+  <td data-label="Meaning">Market confirmed the prediction.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Violence</strong></td>
+  <td data-label=""><code>resolved &amp;&amp; !signaled</code> — stop fired before trail ever crossed</td>
+  <td data-label="">Prediction was wrong.</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Runner</strong></td>
+  <td data-label=""><code>signaled &amp;&amp; !resolved</code> — trail crossed, still running</td>
+  <td data-label="">Not yet resolved.</td>
+</tr>
+</tbody>
 </table>
 <p>These are mutually exclusive in any given state. An unsignaled, unresolved paper matches none of the three.</p>
-<blockquote>Source: T0-015 § Resolution Classifications</blockquote>
+<blockquote>
+<p>Source: T0-015 § Resolution Classifications</p>
+</blockquote>
 <h3>Stop priority</h3>
 <p>Violence is checked <em>before</em> Grace on each tick. If both triggers would fire simultaneously, Violence wins — a price that hits the stop and the trail-cross threshold on the same tick is classified as Violence, not Grace.</p>
-<blockquote>Source: T0-015 § tick — "Key ordering"</blockquote>
-<hr>
+<blockquote>
+<p>Source: T0-015 § tick — &quot;Key ordering&quot;</p>
+</blockquote>
+<hr />
 <h2>Triggers</h2>
 <h3>Trail (Grace)</h3>
 <p>A trailing stop that follows the best price in the predicted direction:</p>
@@ -166,94 +192,231 @@ flowchart TD
 <li><strong>Up predictions:</strong> <code>entry - entry × stop_distance</code> (below entry).</li>
 <li><strong>Down predictions:</strong> <code>entry + entry × stop_distance</code> (above entry).</li>
 </ul>
-<hr>
+<hr />
 <h2>PaperEntry Fields</h2>
 <table>
-<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
-<tr><td data-label="Field"><code>paper_id</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Unique ID assigned by the <a class="wikilink" href="pg-broker.html">Broker</a>.</td></tr>
-<tr><td data-label="Field"><code>composed_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Composed thought (market + position) at entry.</td></tr>
-<tr><td data-label="Field"><code>market_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Raw market thought (for market observer learning at resolution).</td></tr>
-<tr><td data-label="Field"><code>position_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Position observer's own encoded facts (Proposal 026).</td></tr>
-<tr><td data-label="Field"><code>prediction</code></td><td data-label="Type"><code>Direction</code></td><td data-label="Purpose"><code>Up</code> or <code>Down</code>.</td></tr>
-<tr><td data-label="Field"><code>entry_price</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Price at creation.</td></tr>
-<tr><td data-label="Field"><code>distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Purpose"><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td></tr>
-<tr><td data-label="Field"><code>extreme</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose">Best price in predicted direction seen so far.</td></tr>
-<tr><td data-label="Field"><code>trail_level</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Current trailing stop level.</td></tr>
-<tr><td data-label="Field"><code>stop_level</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Fixed stop loss.</td></tr>
-<tr><td data-label="Field"><code>signaled</code></td><td data-label="Type"><code>bool</code></td><td data-label="Purpose">Has the trail trigger crossed?</td></tr>
-<tr><td data-label="Field"><code>resolved</code></td><td data-label="Type"><code>bool</code></td><td data-label="Purpose">Has any trigger fired?</td></tr>
-<tr><td data-label="Field"><code>age</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Tick count survived.</td></tr>
-<tr><td data-label="Field"><code>entry_candle</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Candle number at creation.</td></tr>
-<tr><td data-label="Field"><code>price_history</code></td><td data-label="Type"><code>Vec<f64></code></td><td data-label="Purpose">Every tick's price, starting with entry.</td></tr>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>paper_id</code></td>
+  <td data-label="Type"><code>usize</code></td>
+  <td data-label="Purpose">Unique ID assigned by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;.</td>
+</tr>
+<tr>
+  <td data-label=""><code>composed_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Composed thought (market + position) at entry.</td>
+</tr>
+<tr>
+  <td data-label=""><code>market_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Raw market thought (for market observer learning at resolution).</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_thought</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Position observer's own encoded facts (Proposal 026).</td>
+</tr>
+<tr>
+  <td data-label=""><code>prediction</code></td>
+  <td data-label=""><code>Direction</code></td>
+  <td data-label=""><code>Up</code> or <code>Down</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_price</code></td>
+  <td data-label=""><code>Price</code></td>
+  <td data-label="">Price at creation.</td>
+</tr>
+<tr>
+  <td data-label=""><code>distances</code></td>
+  <td data-label=""><code>Distances</code></td>
+  <td data-label=""><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td>
+</tr>
+<tr>
+  <td data-label=""><code>extreme</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Best price in predicted direction seen so far.</td>
+</tr>
+<tr>
+  <td data-label=""><code>trail_level</code></td>
+  <td data-label=""><code>Price</code></td>
+  <td data-label="">Current trailing stop level.</td>
+</tr>
+<tr>
+  <td data-label=""><code>stop_level</code></td>
+  <td data-label=""><code>Price</code></td>
+  <td data-label="">Fixed stop loss.</td>
+</tr>
+<tr>
+  <td data-label=""><code>signaled</code></td>
+  <td data-label=""><code>bool</code></td>
+  <td data-label="">Has the trail trigger crossed?</td>
+</tr>
+<tr>
+  <td data-label=""><code>resolved</code></td>
+  <td data-label=""><code>bool</code></td>
+  <td data-label="">Has any trigger fired?</td>
+</tr>
+<tr>
+  <td data-label=""><code>age</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Tick count survived.</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_candle</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Candle number at creation.</td>
+</tr>
+<tr>
+  <td data-label=""><code>price_history</code></td>
+  <td data-label=""><code>Vec&lt;f64&gt;</code></td>
+  <td data-label="">Every tick's price, starting with entry.</td>
+</tr>
+</tbody>
 </table>
-<blockquote>Source: T0-015 § Fields</blockquote>
-<hr>
+<blockquote>
+<p>Source: T0-015 § Fields</p>
+</blockquote>
+<hr />
 <h2>Excursion</h2>
 <p><code>excursion()</code> measures how far price moved in the predicted direction, as a fraction of entry:</p>
 <ul>
 <li>Up: <code>(extreme - entry) / entry</code></li>
 <li>Down: <code>(entry - extreme) / entry</code></li>
 </ul>
-<p>Always ≥ 0. Zero at creation. Used as the "amount" in Grace resolutions — the realized gain fraction.</p>
-<blockquote>Source: T0-015 § excursion()</blockquote>
-<hr>
+<p>Always ≥ 0. Zero at creation. Used as the &quot;amount&quot; in Grace resolutions — the realized gain fraction.</p>
+<blockquote>
+<p>Source: T0-015 § excursion()</p>
+</blockquote>
+<hr />
 <h2>Broker Integration</h2>
 <h3>Creation</h3>
-<p>The <a class="wikilink" href="pg-broker.html">Broker</a> creates a paper every candle via <code>register_paper()</code>, which assigns a monotonic <code>paper_id</code> and pushes the paper onto a <code>VecDeque</code>. Three separate thoughts are recorded: composed, market, and position (Proposal 026 — position observer learns from its own thought, not composed).</p>
-<blockquote>Source: T0-018 § 7.5</blockquote>
+<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; creates a paper every candle via <code>register_paper()</code>, which assigns a monotonic <code>paper_id</code> and pushes the paper onto a <code>VecDeque</code>. Three separate thoughts are recorded: composed, market, and position (Proposal 026 — position observer learns from its own thought, not composed).</p>
+<blockquote>
+<p>Source: T0-018 § 7.5</p>
+</blockquote>
 <h3>Ticking</h3>
 <p><code>tick_papers()</code> returns two vectors:</p>
 <ol>
 <li><strong><code>market_signals</code></strong> — Grace signals and Violence stops, for market observer learning.</li>
 <li><strong><code>runner_resolutions</code></strong> — completed runners with position batch data, for position observer + broker learning.</li>
 </ol>
-<p>When a paper first signals Grace (trail crosses), a <a class="wikilink" href="pg-broker.html">RunnerHistory</a> is created and the broker begins accumulating per-candle thoughts, distances, and prices. When the runner resolves, <code>compute_position_batch()</code> produces deferred batch training data using a suffix-extremum pass and sparse sampling (only when optimal trail changed by >10% relative).</p>
-<blockquote>Source: T0-018 § 7.7</blockquote>
+<p>When a paper first signals Grace (trail crosses), a &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;RunnerHistory&lt;/a&gt; is created and the broker begins accumulating per-candle thoughts, distances, and prices. When the runner resolves, <code>compute_position_batch()</code> produces deferred batch training data using a suffix-extremum pass and sparse sampling (only when optimal trail changed by &gt;10% relative).</p>
+<blockquote>
+<p>Source: T0-018 § 7.7</p>
+</blockquote>
 <h3>Direction Flip</h3>
 <p>When the market observer's active direction flips, <code>close_all_runners()</code> force-resolves all active runners as Grace. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally).</p>
-<blockquote>Source: T0-018 § 7.6</blockquote>
-<hr>
+<blockquote>
+<p>Source: T0-018 § 7.6</p>
+</blockquote>
+<hr />
 <h2>From Resolution to Learning</h2>
 <p>Resolutions flow through <code>propagate()</code>, which performs three actions:</p>
 <ol>
 <li><strong>Track record</strong> — updates cumulative grace/violence and counts.</li>
 <li><strong>Scalar accumulator learning</strong> — accumulators observe the <em>optimal</em> (hindsight) distances, weighted by outcome, teaching what trail/stop would have been ideal.</li>
-<li><strong>Dollar P&L + EMA</strong> — against a fixed $10,000 reference capital with swap fees on entry and exit. Grace P&L uses excursion as the gain fraction; Violence P&L uses stop distance as the loss fraction. EMA alpha = 0.038 (half-life ~50 papers). Produces <code>expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net</code>.</li>
+<li><strong>Dollar P&amp;L + EMA</strong> — against a fixed $10,000 reference capital with swap fees on entry and exit. Grace P&amp;L uses excursion as the gain fraction; Violence P&amp;L uses stop distance as the loss fraction. EMA alpha = 0.038 (half-life ~50 papers). Produces <code>expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net</code>.</li>
 </ol>
-<blockquote>Source: T0-018 § 7.8</blockquote>
-<hr>
+<blockquote>
+<p>Source: T0-018 § 7.8</p>
+</blockquote>
+<hr />
 <h2>The Gate</h2>
 <p>Paper trade outcomes power the broker's gate via <code>gate_open()</code>:</p>
 <ul>
-<li><strong>Cold start</strong> (< 50 of either outcome): gate always open — not enough data.</li>
-<li><strong>Warm</strong> (≥ 50 of both): gate open only when <code>expected_value > 0.0</code>.</li>
+<li><strong>Cold start</strong> (&lt; 50 of either outcome): gate always open — not enough data.</li>
+<li><strong>Warm</strong> (≥ 50 of both): gate open only when <code>expected_value &gt; 0.0</code>.</li>
 </ul>
 <p>A broker with negative expected value is suppressed — it cannot propose funded trades.</p>
-<blockquote>Source: T0-018 § 7.3</blockquote>
-<hr>
+<blockquote>
+<p>Source: T0-018 § 7.3</p>
+</blockquote>
+<hr />
 <h2>Distance Cascade</h2>
 <p>Trail and stop distances come from a three-tier fallback:</p>
 <table>
-<thead><tr><th>Tier</th><th>Source</th><th>Condition</th></tr></thead>
-<tr><td data-label="Tier">1</td><td data-label="Source">Reckoner answer (position observer)</td><td data-label="Condition"><code>Some(dists)</code> → return immediately</td></tr>
-<tr><td data-label="Tier">2</td><td data-label="Source"><a class="wikilink" href="T0-007-accumulator.html">ScalarAccumulator</a> extraction</td><td data-label="Condition">If accumulator has observations. Clamped to [0.1%, 10%].</td></tr>
-<tr><td data-label="Tier">3</td><td data-label="Source">Default distances</td><td data-label="Condition">Constructor-provided fallback.</td></tr>
+<thead>
+<tr>
+  <th>Tier</th>
+  <th>Source</th>
+  <th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Tier">1</td>
+  <td data-label="Source">Reckoner answer (position observer)</td>
+  <td data-label="Condition"><code>Some(dists)</code> → return immediately</td>
+</tr>
+<tr>
+  <td data-label="">2</td>
+  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;ScalarAccumulator&lt;/a&gt; extraction</td>
+  <td data-label="">If accumulator has observations. Clamped to [0.1%, 10%].</td>
+</tr>
+<tr>
+  <td data-label="">3</td>
+  <td data-label="">Default distances</td>
+  <td data-label="">Constructor-provided fallback.</td>
+</tr>
+</tbody>
 </table>
-<blockquote>Source: T0-018 § 7.4</blockquote>
-<hr>
+<blockquote>
+<p>Source: T0-018 § 7.4</p>
+</blockquote>
+<hr />
 <h2>Design Principles</h2>
 <table>
-<thead><tr><th>Principle</th><th>Source</th><th>Quote</th></tr></thead>
-<tr><td data-label="Principle">No real execution</td><td data-label="Source">T0-015 § What is a PaperEntry</td><td data-label="Quote">"It does not execute."</td></tr>
-<tr><td data-label="Principle">Values up, not effects down</td><td data-label="Source">T0-018 § Module Purpose</td><td data-label="Quote">"All outputs flow upward as return values — no shared mutation."</td></tr>
-<tr><td data-label="Principle">Broker doesn't touch observers</td><td data-label="Source">T0-018 § Finding 2</td><td data-label="Quote">"<code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state."</td></tr>
-<tr><td data-label="Principle">Market learns anomaly, not composed</td><td data-label="Source">T0-018 § Key Design Decisions</td><td data-label="Quote">Proposal 024: "market observer learns from the anomaly, not composed thought"</td></tr>
-<tr><td data-label="Principle">Position learns its own thought</td><td data-label="Source">T0-018 § Key Design Decisions</td><td data-label="Quote">Proposal 026: "position learns from position_thought, not composed"</td></tr>
-<tr><td data-label="Principle">Pure accounting</td><td data-label="Source">T0-018 § Key Design Decisions</td><td data-label="Quote">Proposal 035: "no reckoner, no noise subspace. Pure accounting + gate + log"</td></tr>
+<thead>
+<tr>
+  <th>Principle</th>
+  <th>Source</th>
+  <th>Quote</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Principle">No real execution</td>
+  <td data-label="Source">T0-015 § What is a PaperEntry</td>
+  <td data-label="Quote">&quot;It does not execute.&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Values up, not effects down</td>
+  <td data-label="">T0-018 § Module Purpose</td>
+  <td data-label="">&quot;All outputs flow upward as return values — no shared mutation.&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Broker doesn't touch observers</td>
+  <td data-label="">T0-018 § Finding 2</td>
+  <td data-label="">&quot;<code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state.&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Market learns anomaly, not composed</td>
+  <td data-label="">T0-018 § Key Design Decisions</td>
+  <td data-label="">Proposal 024: &quot;market observer learns from the anomaly, not composed thought&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Position learns its own thought</td>
+  <td data-label="">T0-018 § Key Design Decisions</td>
+  <td data-label="">Proposal 026: &quot;position learns from position_thought, not composed&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Pure accounting</td>
+  <td data-label="">T0-018 § Key Design Decisions</td>
+  <td data-label="">Proposal 035: &quot;no reckoner, no noise subspace. Pure accounting + gate + log&quot;</td>
+</tr>
+</tbody>
 </table>
-<hr>
+<hr />
 <h2>Sources</h2>
 <ul>
 <li>T0-015: <code>PaperEntry</code> verification — <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines, 12 tests)</li>
 <li>T0-018: <code>Broker</code> verification — <code>holon-lab-trading/src/domain/broker.rs</code> (887 lines, 15 tests)</li>
-</ul></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
+</ul>
+</div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
