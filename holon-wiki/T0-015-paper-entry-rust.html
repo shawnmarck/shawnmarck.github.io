@@ -475,6 +475,6 @@
     </main>
   </div>
   <script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script>
-  <script>document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)});</script>
+  <script type="module">document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(el=>{if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)});</script>
 </body>
 </html>
