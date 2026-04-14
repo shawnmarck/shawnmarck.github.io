@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Encoder Service — the distributed caching layer for thought encoding — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Disposable Machine — Holon Wiki</title><style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
 #sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
@@ -85,7 +85,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
 <div class="tier">Enterprise Spec</div>
 <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
-<a href="T2-002-encoder-service.html" active>Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
 <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
 <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
 <a href="T2-005-lens.html">T2-005 — Lens</a>
@@ -99,7 +99,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="pg-chain-types.html">Chain Types</a>
 <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
 <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
-<a href="pg-disposable-machine.html">Disposable Machine</a>
+<a href="pg-disposable-machine.html" active>Disposable Machine</a>
 <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
 <a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
 <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
@@ -131,109 +131,74 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Encoder Service — the distributed caching layer for thought encoding <span class="badge badge-what">WHAT</span></h1><h1>Encoder Service — the distributed caching layer for thought encoding</h1>
-<p><strong>Source:</strong> <code>wat/encoder-service.wat</code> (142 lines)</p>
-<p><strong>Guide reference:</strong> No dedicated GUIDE section found; implied by GUIDE.md lines 1439–1446 (LruCache on ThoughtEncoder)</p>
-<p><strong>Tier:</strong> 2 — Encoding infrastructure</p>
-<hr>
-<h2>What It IS</h2>
-<p>The EncoderService is a single-threaded pipe loop that owns the LRU composition cache, serving multiple concurrent callers without any mutex. Each caller gets its own <code>EncoderHandle</code> (a set of three pipes). The encoder thread iterates all handles once per loop, draining installs and servicing lookups.</p>
-<blockquote>"ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache."</blockquote>
-<blockquote>— encoder-service.wat, lines 1–7</blockquote>
-<p>It depends on <code>thought-encoder</code> (for the <code>ThoughtAST</code> type) and <code>primitives</code> (for <code>Vector</code>).</p>
-<hr>
-<h2>EncoderHandle — A Caller's Pipe Set</h2>
-<pre><code>
-(struct encoder-handle
-  [lookup  : Sender<ThoughtAST>]          ; bounded 1
-  [answer  : Receiver<Option<Vector>>]    ; bounded 1
-  [install : Sender<(ThoughtAST, Vector)>]) ; unbounded, fire and forget
-</code></pre>
-<p>Lines 22–25. Three pipes per caller:</p>
+<div id="content"><h1>Disposable Machine <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<hr></div><h1>Disposable Machine</h1>
+<h2>The DNA/Phenotype Split</h2>
+<p>The architecture enforces a strict separation between <strong>what the system is</strong> and <strong>what it currently looks like</strong>:</p>
 <table>
-<tr><th>Pipe</th><th>Capacity</th><th>Direction</th><th>Purpose</th></tr>
-<tr><td><code>lookup</code> (Sender)</td><td>bounded 1</td><td>caller → service</td><td>Send a ThoughtAST for cache lookup</td></tr>
-<tr><td><code>answer</code> (Receiver)</td><td>bounded 1</td><td>service → caller</td><td>Receive <code>Some(Vector)</code> (hit) or <code>None</code> (miss)</td></tr>
-<tr><td><code>install</code> (Sender)</td><td>unbounded</td><td>caller → service</td><td>Fire-and-forget insertion of computed (AST, Vector) pair</td></tr>
+<tr><th>Layer</th><th>Role</th><th>Mutability</th></tr>
+<tr><td>T-1-004-lab-guide (GUIDE.md)</td><td>Specification — declares every struct, enum, dependency, and data flow</td><td>Changes only when the <em>thesis</em> changes</td></tr>
+<tr><td>wat files</td><td>Intermediate representation — Scheme-like s-expressions that implement what the guide declares</td><td>Regenerated from guide changes</td></tr>
+<tr><td>Rust implementation</td><td>Phenotype — compiles and runs, but carries no permanent authority</td><td>Disposable. Grown, run, discarded.</td></tr>
 </table>
-<h3><code>encoder-get</code> (lines 28–31)</h3>
-<p>Blocking lookup. Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option<Vector></code>.</p>
-<h3><code>encoder-set</code> (lines 34–36)</h3>
-<p>Fire and forget. Sends <code>(AST, Vector)</code> pair on <code>install</code>. Non-blocking, unbounded.</p>
+<p>The chain of derivation is one-directional: <strong>Guide → wat → Rust</strong>. The Rust never feeds back into the guide. When layers diverge, the guide is right — by declaration.</p>
+<p>This is stated explicitly: <em>"Each section declares its dependencies. The order of sections IS the build order."</em> The guide is not documentation <em>about</em> the code. The guide is the code's reason to exist.</p>
 <hr>
-<h2>EncoderService Struct</h2>
+<h2>Why Disposable?</h2>
+<h3>Legacy is Rot</h3>
+<p>Most software systems accumulate cruft: dead code paths, workaround patches, architectural compromises that made sense once but don't anymore. Each one is a hidden coupling — change one thing, break another you forgot existed. The trading organism avoids this by refusing to accumulate.</p>
+<h3>The Machine is a Function</h3>
 <pre><code>
-(struct encoder-service
-  [handle     : JoinHandle<()>]
-  [hits       : Arc<AtomicUsize>]         ; cache hit counter
-  [misses     : Arc<AtomicUsize>]         ; cache miss counter
-  [cache-size : Arc<AtomicUsize>])        ; current cache occupancy
+f(state, candle) → state
 </code></pre>
-<p>Lines 43–47. The service does <strong>not</strong> hold sender copies — the handles ARE the senders.</p>
-<blockquote>"Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits."</blockquote>
-<blockquote>— lines 39–41</blockquote>
-<p>Three <code>Arc<AtomicUsize></code> counters provide lock-free read access to hit/miss/cache-size stats from any thread.</p>
-<hr>
-<h2>Spawn: <code>encoder-service-spawn</code></h2>
-<pre><code>
-(define (encoder-service-spawn [n-callers : usize] [cache-capacity : usize])
-  : (EncoderService, Vec<EncoderHandle>)
-  ...)
-</code></pre>
-<p>Lines 51–122. Creates the service and N handles.</p>
-<h3>Pipe Setup (lines 56–68)</h3>
-<p>For each of <code>n-callers</code>, creates three pipe pairs:</p>
+<p>One tick of the clock. All 11 sub-circuits compose into this single pure function. A pure function has no hidden state, no legacy paths, no accumulated decisions that can't be traced from the specification. If you can write down <code>f</code>, you can rebuild <code>f</code>.</p>
+<h3>The Organism Metaphor</h3>
+<p>The guide describes the system as a <em>"machine that measures thoughts against reality."</em> An organism doesn't patch itself incrementally — it grows from genetic instructions. When a cell dies, a new one differentiates from the same DNA. The trading organism works the same way:</p>
 <ul>
-<li><code>lookup</code>: bounded 1, carries <code>ThoughtAST</code></li>
-<li><code>answer</code>: bounded 1, carries <code>Option<Vector></code></li>
-<li><code>install</code>: unbounded, carries <code>(ThoughtAST, Vector)</code></li>
-</ul>
-<p>Sends the <code>Sender</code> halves into the handle; the <code>Receiver</code> halves are collected for the service thread.</p>
-<h3>Service Thread Loop (lines 78–119)</h3>
-<p>The spawned thread runs an infinite loop with three phases per iteration:</p>
-<p><strong>Pass 1 — Drain installs</strong> (lines 85–90):</p>
-<p>Iterates all install receivers. Drains each one completely (inner <code>loop</code> with <code>try-recv</code>). Each <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates <code>cache-size</code> atomic.</p>
-<blockquote>"Pass 1: drain ALL install pipes. Put into cache."</blockquote>
-<blockquote>— line 84</blockquote>
-<p><strong>Pass 2 — Service lookups</strong> (lines 93–106):</p>
-<p>Iterates all lookup receivers. For each: tries to receive an AST. On success: looks up cache, increments <code>hits</code> or <code>misses</code> atomic accordingly, sends result back on the corresponding answer pipe. On disconnect: marks that handle as closed.</p>
-<blockquote>"Pass 2: service ALL pending lookup pipes."</blockquote>
-<blockquote>— line 93</blockquote>
-<p><strong>Shutdown check</strong> (lines 109–110):</p>
-<p>If all handles are disconnected, the loop breaks and the thread exits.</p>
-<blockquote>"Shutdown: all get pipes closed"</blockquote>
-<blockquote>— line 108</blockquote>
-<p><strong>Idle blocking</strong> (lines 116–118):</p>
-<p>Uses <code>select</code> over all open <code>get</code> and <code>set</code> pipes. Blocks until any channel has data. Zero CPU when idle.</p>
-<blockquote>"Block until ANY channel has data. Zero CPU when idle."</blockquote>
-<blockquote>— lines 112–113</blockquote>
-<hr>
-<h2>Protocol Summary</h2>
-<p>The comment block (lines 9–12) specifies the full protocol:</p>
-<pre><code>
-Caller: write AST to lookup pipe -> block on answer pipe -> receive Some/None
-Caller: if None, compute locally, write (AST, Vector) to install pipe (fire and forget)
-Encoder: one pass per iteration — drain installs, service lookups, select, repeat.
-</code></pre>
-<p>This implements the "values up" principle: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
-<hr>
-<h2>Shutdown: <code>encoder-service-shutdown</code></h2>
-<pre><code>
-(define (encoder-service-shutdown [svc : EncoderService]) : ()
-  (join (:handle svc)))
-</code></pre>
-<p>Lines 129–131. Requires that all handles have already been dropped (callers gone). Joins the thread handle.</p>
-<blockquote>"The cascade must have already closed all handles."</blockquote>
-<blockquote>— line 125</blockquote>
-<hr>
-<h2>Accessors</h2>
-<p>Three lock-free read functions (lines 135–142):</p>
-<ul>
-<li><code>hit-count</code> → loads <code>Arc<AtomicUsize></code> for hits</li>
-<li><code>miss-count</code> → loads <code>Arc<AtomicUsize></code> for misses</li>
-<li><code>cache-len</code> → loads <code>Arc<AtomicUsize></code> for current cache occupancy</li>
+<li><strong>DNA</strong> = the GUIDE.md (specification)</li>
+<li><strong>Differentiation</strong> = compilation from wat to Rust</li>
+<li><strong>Phenotype</strong> = the running binary</li>
+<li><strong>Death and regrowth</strong> = discard the Rust, regrow from the guide</li>
 </ul>
 <hr>
-<h2>Relationship to ThoughtEncoder</h2>
-<p>The ThoughtEncoder (thought-encoder.wat) declares its <code>compositions</code> field as <code>"optimistic cache (LRU moved to EncoderService)"</code>. This service IS that LRU cache. The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads.</p>
-<p>The GUIDE (line 1440) declares the compositions field as <code>LruCache<ThoughtAST, Vector></code> and explains the eventual-consistency model (lines 1441–1446): <em>"miss on candle N, hit on N+1"</em>. The EncoderService implements this: callers install computed values via fire-and-forget pipes, and the service drains installs on its next loop iteration before servicing any new lookups.</p></div></body></html>
+<h2>How It Works in Practice</h2>
+<h3>Construction Order Is Specification Order</h3>
+<p>The guide's struct hierarchy (lines 282–299 of the GUIDE) isn't a reference — it's the <strong>build sequence</strong>. Each struct declares what it depends on. You construct them in that order. There is no other source of truth for "what depends on what."</p>
+<h3>The Five Primitives</h3>
+<p>Everything is built from five holon-rs primitives: <strong>atom</strong>, <strong>bind</strong>, <strong>bundle</strong>, <strong>cosine</strong>, <strong>reckoner</strong>. One learning mechanism (<a class="wikilink" href="pg-reckoner.html">Reckoner</a>). One accountability surface (<a class="wikilink" href="pg-curve.html">Curve</a>). The entire organism — market perception, prediction, distance estimation, trade management, learning — differentiates from these five primitives as described in the guide.</p>
+<h3>No Bootstrap, No Migration</h3>
+<p>The system <strong>starts ignorant</strong>. Every <a class="wikilink" href="pg-reckoner.html">Reckoner</a> begins with zero experience. Papers fill the reckoners, experience grows, the <a class="wikilink" href="pg-treasury.html">Treasury</a> starts listening. There is no migration path from an old version. There is no serialized state to load. You build from the guide, you run, you learn from scratch. The learning <em>is</em> the state — and learning is always acquired fresh.</p>
+<h3>Discard and Regrow</h3>
+<p>When you need to change the system:</p>
+<ol>
+<li><strong>Update the wat files</strong> — regenerate the s-expression implementations from the changed guide</li>
+<li><strong>Rebuild Rust</strong> — compile the new phenotype</li>
+<li><strong>Run</strong> — the organism starts ignorant and learns again</li>
+</ol>
+<p>No diff against old code. No migration scripts. No "what did we change last time." The guide is the single source of truth, and the implementation is always a fresh expression of it.</p>
+<hr>
+<h2>The Circuit as Phenotype Map</h2>
+<p>Together they form a complete specification:</p>
+<ul>
+<li><strong>GUIDE</strong> = semantic specification (what each component <em>means</em>, what it <em>depends on</em>)</li>
+<li><strong>CIRCUIT</strong> = structural specification (how signals flow, what the topology <em>looks like</em>)</li>
+<li><strong>Rust</strong> = executable phenotype (the running machine — disposable)</li>
+</ul>
+<hr>
+<h2>Implications</h2>
+<table>
+<tr><th>Principle</th><th>Consequence</th></tr>
+<tr><td>The guide is authoritative</td><td>Implementation bugs are resolved by checking against the guide, not by checking git history</td></tr>
+<tr><td>No accumulated legacy</td><td>Refactoring means regrowing, not patching</td></tr>
+<tr><td>Learning is acquired, not loaded</td><td>The organism's intelligence is <em>earned</em> each run — no pretrained weights, no snapshots to migrate</td></tr>
+<tr><td>Spec-first development</td><td>You cannot implement what the guide doesn't declare. If it's not in the guide, it doesn't exist.</td></tr>
+<tr><td>Directional derivation</td><td>Guide → wat → Rust. Never Rust → guide. The phenotype does not rewrite its DNA.</td></tr>
+</table>
+<hr>
+<h2>Related Concepts</h2>
+<ul>
+<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the sole learning primitive, accumulates experience from scratch each run</li>
+<li><a class="wikilink" href="pg-curve.html">Curve</a> — self-evaluation surface, built from lived experience</li>
+<li>Values Up, Not Queues Down — the data-flow principle that keeps the phenotype clean</li>
+<li>No Zones, Only Scalars — emit raw measurements, never accumulate premature abstractions</li>
+</ul></div></body></html>

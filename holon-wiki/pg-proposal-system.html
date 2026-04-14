@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Encoder Service — the distributed caching layer for thought encoding — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Proposal System — Holon Wiki</title><style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
 #sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
@@ -85,7 +85,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
 <div class="tier">Enterprise Spec</div>
 <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
-<a href="T2-002-encoder-service.html" active>Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
 <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
 <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
 <a href="T2-005-lens.html">T2-005 — Lens</a>
@@ -110,7 +110,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="pg-panel-of-experts.html">Panel of Experts</a>
 <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
 <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
-<a href="pg-proposal-system.html">Proposal System</a>
+<a href="pg-proposal-system.html" active>Proposal System</a>
 <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
 <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
 <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
@@ -131,109 +131,98 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Encoder Service — the distributed caching layer for thought encoding <span class="badge badge-what">WHAT</span></h1><h1>Encoder Service — the distributed caching layer for thought encoding</h1>
-<p><strong>Source:</strong> <code>wat/encoder-service.wat</code> (142 lines)</p>
-<p><strong>Guide reference:</strong> No dedicated GUIDE section found; implied by GUIDE.md lines 1439–1446 (LruCache on ThoughtEncoder)</p>
-<p><strong>Tier:</strong> 2 — Encoding infrastructure</p>
-<hr>
-<h2>What It IS</h2>
-<p>The EncoderService is a single-threaded pipe loop that owns the LRU composition cache, serving multiple concurrent callers without any mutex. Each caller gets its own <code>EncoderHandle</code> (a set of three pipes). The encoder thread iterates all handles once per loop, draining installs and servicing lookups.</p>
-<blockquote>"ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache."</blockquote>
-<blockquote>— encoder-service.wat, lines 1–7</blockquote>
-<p>It depends on <code>thought-encoder</code> (for the <code>ThoughtAST</code> type) and <code>primitives</code> (for <code>Vector</code>).</p>
-<hr>
-<h2>EncoderHandle — A Caller's Pipe Set</h2>
-<pre><code>
-(struct encoder-handle
-  [lookup  : Sender<ThoughtAST>]          ; bounded 1
-  [answer  : Receiver<Option<Vector>>]    ; bounded 1
-  [install : Sender<(ThoughtAST, Vector)>]) ; unbounded, fire and forget
-</code></pre>
-<p>Lines 22–25. Three pipes per caller:</p>
+<div id="content"><h1>Proposal System <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<p>The <a class="wikilink" href="T1-001-wat-language.html">wat language</a> evolves through a formal proposal process. Each proposal describes a problem, proposes alternatives, and is independently reviewed by two designers — <strong>Brian Beckman</strong> (algebraic authority) and <strong>Rich Hickey</strong> (simplicity authority). A <strong>datamancer arbitrator</strong> synthesizes their reviews into a final resolution, sometimes overriding both. Eighteen proposals have been resolved to date (March–April 2026), shaping the language's <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a>, core algebra, and concurrency model.</p>
+<hr></div><h1>Proposal System</h1>
+<h2>Anatomy of a Proposal</h2>
+<p>Every proposal is a <code>PROPOSAL.md</code> with seven required sections:</p>
+<ol>
+<li><strong>Scope</strong> — classified as <code>core</code>, <code>structural</code>, or following from a prior proposal.</li>
+<li><strong>The Current State</strong> — what exists today, with code examples from the enterprise codebase or the <a class="wikilink" href="T1-001-wat-language.html">wat language</a> runtime.</li>
+<li><strong>The Problem</strong> — a concrete gap, often discovered by automated wards (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) or by tracing type violations between wat specs and the Rust implementation.</li>
+<li><strong>The Proposed Change</strong> — two to three alternatives with code examples.</li>
+<li><strong>The Algebraic Question</strong> — does this compose with the existing monoid (<a class="wikilink" href="pg-bind.html">bind</a>/<a class="wikilink" href="pg-bundle.html">bundle</a>)? Does it introduce new algebraic structure? Every proposal <em>must</em> address this.</li>
+<li><strong>The Simplicity Question</strong> — Hickey's test: "Is this simple or easy?" What is being complected? Could existing primitives solve it?</li>
+<li><strong>Questions for Designers</strong> — specific yes/no and tradeoff questions for the review panel.</li>
+</ol>
+<h2>The Review Panel</h2>
+<h3>Brian Beckman — Algebraic Authority</h3>
+<p>Frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. His recurring questions: <em>"Does this compose?"</em> and <em>"What categorical construction is this?"</em> He tends to see mathematical structure where Hickey sees convention.</p>
+<p><strong>Key positions:</strong></p>
+<ul>
+<li>Framed <code>fold</code> as the catamorphism (accepted as proposal 002).</li>
+<li>Framed protocols as "type classes — the third construction alongside struct (product) and enum (coproduct)" (014).</li>
+<li>Argued journal operations are co-generators of a coalgebra and belong in core (004).</li>
+</ul>
+<h3>Rich Hickey — Simplicity Authority</h3>
+<p>Applies "simple made easy" — distinguishes <strong>simple</strong> (one concept, one job) from <strong>easy</strong> (familiar, convenient). Protects the six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> from growth. His recurring questions: <em>"Does this complect?"</em> and <em>"Could existing forms do this?"</em> He tends to reject new forms when discipline or data restructuring suffices.</p>
+<p><strong>Key positions:</strong></p>
+<ul>
+<li>Rejected <code>defprocessor</code> flatly: <em>"The function shape IS the declaration"</em> (001).</li>
+<li>Won on untyped struct fields: <em>"Types are documentation, not enforcement"</em> (007).</li>
+<li>Won keyword-as-function access: <em>"Keywords read like English"</em> (007).</li>
+</ul>
+<p><strong>Overridden on:</strong> journal operations in stdlib (004 — reversed after opacity argument), <code>nil</code> (013 — datamancer chose structural absence), and channels (003 — deleted as contradicting fold-based design).</p>
+<h3>The Datamancer — Arbitrator</h3>
+<p>Not a formal reviewer but a <strong>synthesizing role</strong> visible in resolutions. Appears when the two designers disagree or when neither option is right. The datamancer has overruled <em>both</em> designers:</p>
+<ul>
+<li><strong>Proposal 013</strong> — chose "structural absence" with the <code>?</code> field convention, rejecting both Clojure truthiness and Rust's nil separation.</li>
+</ul>
+<h2>Resolution</h2>
+<p>A <code>RESOLUTION.md</code> synthesizes the two reviews into one of four outcomes:</p>
 <table>
-<tr><th>Pipe</th><th>Capacity</th><th>Direction</th><th>Purpose</th></tr>
-<tr><td><code>lookup</code> (Sender)</td><td>bounded 1</td><td>caller → service</td><td>Send a ThoughtAST for cache lookup</td></tr>
-<tr><td><code>answer</code> (Receiver)</td><td>bounded 1</td><td>service → caller</td><td>Receive <code>Some(Vector)</code> (hit) or <code>None</code> (miss)</td></tr>
-<tr><td><code>install</code> (Sender)</td><td>unbounded</td><td>caller → service</td><td>Fire-and-forget insertion of computed (AST, Vector) pair</td></tr>
+<tr><th>Verdict</th><th>Meaning</th></tr>
+<tr><td><strong>ACCEPTED</strong></td><td>With specific form syntax, placement, and constraints.</td></tr>
+<tr><td><strong>REJECTED</strong></td><td>With open questions forwarded to future proposals.</td></tr>
+<tr><td><strong>ACCEPTED with tension</strong></td><td>Accepted, but a specific disagreement is deferred.</td></tr>
+<tr><td><strong>SUPERSEDED</strong></td><td>The debate revealed a simpler answer (see 04/003).</td></tr>
 </table>
-<h3><code>encoder-get</code> (lines 28–31)</h3>
-<p>Blocking lookup. Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option<Vector></code>.</p>
-<h3><code>encoder-set</code> (lines 34–36)</h3>
-<p>Fire and forget. Sends <code>(AST, Vector)</code> pair on <code>install</code>. Non-blocking, unbounded.</p>
-<hr>
-<h2>EncoderService Struct</h2>
+<p>Resolution documents record who was overridden and why.</p>
+<h2>Design Principles (Emergent)</h2>
+<p>The proposal system has produced six stable principles:</p>
+<ol>
+<li><strong>Transparency to Rust.</strong> Form names match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax maps obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</li>
+</ol>
+<ol>
+<li><strong>Protect the algebra.</strong> The six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> and journal coalgebra are the foundation. Proposal 001 was rejected to prevent a seventh primitive. Only <code>fold</code> was added — as a control form, not a primitive.</li>
+</ol>
+<ol>
+<li><strong>Simple > easy.</strong> Convenience is rejected if it complects concerns. Variadic <code>update</code> (012) was accepted because it completes an existing form. <code>defprocessor</code> (001) was rejected because it packaged four concerns into one.</li>
+</ol>
+<ol>
+<li><strong>Types are documentation, not enforcement.</strong> Structs are untyped (007). Protocols check arity, not return types (014). <code>when</code> without else generates <code>Option<T></code> — the compiler infers; the specifier doesn't annotate (013).</li>
+</ol>
+<ol>
+<li><strong>Opacity creates boundaries.</strong> If a type is opaque, its interface operations are core (004). This rule determined that <code>observe</code>/<code>predict</code>/<code>decay</code> are core, not stdlib.</li>
+</ol>
+<ol>
+<li><strong>The four-layer model</strong> (003): <strong>Syntax</strong> (compiler builtins), <strong>Core</strong> (algebra), <strong>Stdlib</strong> (derived operations), <strong>Userland</strong> (domain code). Each layer has a boundary rule — stdlib cannot import from userland; core can only be extended by proposal.</li>
+</ol>
+<h2>Proposal Dependency Chain</h2>
+<p>The proposals form a clear dependency graph:</p>
 <pre><code>
-(struct encoder-service
-  [handle     : JoinHandle<()>]
-  [hits       : Arc<AtomicUsize>]         ; cache hit counter
-  [misses     : Arc<AtomicUsize>]         ; cache miss counter
-  [cache-size : Arc<AtomicUsize>])        ; current cache occupancy
+001 → 002   (rejected processor → accepted fold)
+002 → 003   (fold accepted → channels deleted, layers defined)
+003 → 004   (layer tension → journal operations placement)
+004 → 005   (journal in core → compilation plan)
+006 → 007   (aggregate types accepted → struct syntax resolved)
+014 → 015   (protocols accepted → satisfaction mechanics)
+04/002 → 04/003  (pipes accepted → select → superseded by simpler answer)
 </code></pre>
-<p>Lines 43–47. The service does <strong>not</strong> hold sender copies — the handles ARE the senders.</p>
-<blockquote>"Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits."</blockquote>
-<blockquote>— lines 39–41</blockquote>
-<p>Three <code>Arc<AtomicUsize></code> counters provide lock-free read access to hit/miss/cache-size stats from any thread.</p>
+<h2>Status Summary</h2>
+<table>
+<tr><th>Status</th><th>Count</th><th>Proposals</th></tr>
+<tr><td><strong>ACCEPTED</strong></td><td>16</td><td>002–015 (March), 04/001, 04/002, 04/003</td></tr>
+<tr><td><strong>REJECTED</strong></td><td>1</td><td>001 (stream processor)</td></tr>
+<tr><td><strong>SUPERSEDED</strong></td><td>1</td><td>04/003 (select — debate yielded simpler answer)</td></tr>
+</table>
+<p>All 18 proposals have final resolutions.</p>
 <hr>
-<h2>Spawn: <code>encoder-service-spawn</code></h2>
-<pre><code>
-(define (encoder-service-spawn [n-callers : usize] [cache-capacity : usize])
-  : (EncoderService, Vec<EncoderHandle>)
-  ...)
-</code></pre>
-<p>Lines 51–122. Creates the service and N handles.</p>
-<h3>Pipe Setup (lines 56–68)</h3>
-<p>For each of <code>n-callers</code>, creates three pipe pairs:</p>
+<h2>Related Concepts</h2>
 <ul>
-<li><code>lookup</code>: bounded 1, carries <code>ThoughtAST</code></li>
-<li><code>answer</code>: bounded 1, carries <code>Option<Vector></code></li>
-<li><code>install</code>: unbounded, carries <code>(ThoughtAST, Vector)</code></li>
-</ul>
-<p>Sends the <code>Sender</code> halves into the handle; the <code>Receiver</code> halves are collected for the service thread.</p>
-<h3>Service Thread Loop (lines 78–119)</h3>
-<p>The spawned thread runs an infinite loop with three phases per iteration:</p>
-<p><strong>Pass 1 — Drain installs</strong> (lines 85–90):</p>
-<p>Iterates all install receivers. Drains each one completely (inner <code>loop</code> with <code>try-recv</code>). Each <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates <code>cache-size</code> atomic.</p>
-<blockquote>"Pass 1: drain ALL install pipes. Put into cache."</blockquote>
-<blockquote>— line 84</blockquote>
-<p><strong>Pass 2 — Service lookups</strong> (lines 93–106):</p>
-<p>Iterates all lookup receivers. For each: tries to receive an AST. On success: looks up cache, increments <code>hits</code> or <code>misses</code> atomic accordingly, sends result back on the corresponding answer pipe. On disconnect: marks that handle as closed.</p>
-<blockquote>"Pass 2: service ALL pending lookup pipes."</blockquote>
-<blockquote>— line 93</blockquote>
-<p><strong>Shutdown check</strong> (lines 109–110):</p>
-<p>If all handles are disconnected, the loop breaks and the thread exits.</p>
-<blockquote>"Shutdown: all get pipes closed"</blockquote>
-<blockquote>— line 108</blockquote>
-<p><strong>Idle blocking</strong> (lines 116–118):</p>
-<p>Uses <code>select</code> over all open <code>get</code> and <code>set</code> pipes. Blocks until any channel has data. Zero CPU when idle.</p>
-<blockquote>"Block until ANY channel has data. Zero CPU when idle."</blockquote>
-<blockquote>— lines 112–113</blockquote>
-<hr>
-<h2>Protocol Summary</h2>
-<p>The comment block (lines 9–12) specifies the full protocol:</p>
-<pre><code>
-Caller: write AST to lookup pipe -> block on answer pipe -> receive Some/None
-Caller: if None, compute locally, write (AST, Vector) to install pipe (fire and forget)
-Encoder: one pass per iteration — drain installs, service lookups, select, repeat.
-</code></pre>
-<p>This implements the "values up" principle: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
-<hr>
-<h2>Shutdown: <code>encoder-service-shutdown</code></h2>
-<pre><code>
-(define (encoder-service-shutdown [svc : EncoderService]) : ()
-  (join (:handle svc)))
-</code></pre>
-<p>Lines 129–131. Requires that all handles have already been dropped (callers gone). Joins the thread handle.</p>
-<blockquote>"The cascade must have already closed all handles."</blockquote>
-<blockquote>— line 125</blockquote>
-<hr>
-<h2>Accessors</h2>
-<p>Three lock-free read functions (lines 135–142):</p>
-<ul>
-<li><code>hit-count</code> → loads <code>Arc<AtomicUsize></code> for hits</li>
-<li><code>miss-count</code> → loads <code>Arc<AtomicUsize></code> for misses</li>
-<li><code>cache-len</code> → loads <code>Arc<AtomicUsize></code> for current cache occupancy</li>
-</ul>
-<hr>
-<h2>Relationship to ThoughtEncoder</h2>
-<p>The ThoughtEncoder (thought-encoder.wat) declares its <code>compositions</code> field as <code>"optimistic cache (LRU moved to EncoderService)"</code>. This service IS that LRU cache. The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads.</p>
-<p>The GUIDE (line 1440) declares the compositions field as <code>LruCache<ThoughtAST, Vector></code> and explains the eventual-consistency model (lines 1441–1446): <em>"miss on candle N, hit on N+1"</em>. The EncoderService implements this: callers install computed values via fire-and-forget pipes, and the service drains installs on its next loop iteration before servicing any new lookups.</p></div></body></html>
+<li><a class="wikilink" href="T1-001-wat-language.html">wat language</a> — the language these proposals shape</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — added through proposals</li>
+<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — concurrency primitives (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from April proposals</li>
+<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the six foundational forms the system protects from proliferation</li>
+<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
+</ul></div></body></html>

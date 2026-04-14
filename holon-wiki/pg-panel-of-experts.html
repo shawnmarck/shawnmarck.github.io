@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T-1-005 — Lab Circuit (CIRCUIT.md) — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Panel of Experts — Holon Wiki</title><style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
 #sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
@@ -56,7 +56,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
 <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
 <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
-<a href="T-1-005-lab-circuit.html" active>T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+<a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
 <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
 <div class="tier">Substrate</div>
 <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
@@ -107,7 +107,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
 <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
 <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
-<a href="pg-panel-of-experts.html">Panel of Experts</a>
+<a href="pg-panel-of-experts.html" active>Panel of Experts</a>
 <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
 <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
 <a href="pg-proposal-system.html">Proposal System</a>
@@ -131,121 +131,117 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T-1-005 — Lab Circuit (CIRCUIT.md) <span class="badge badge-why">WHY</span></h1><h1>T-1-005 — Lab Circuit (CIRCUIT.md)</h1>
-<blockquote><strong>TL;DR:</strong> CIRCUIT.md is the architectural wiring diagram for the holon-lab-trading system. It defines 11 sub-circuits (each rendered as a Mermaid graph) that together form a complete trading machine: raw candles enter, thoughts are encoded, predictions are made, proposals are funded as trades, outcomes propagate back as learning, and stops breathe every candle. The core equation is <code>f(state, candle) → state</code> — one tick of the clock.</blockquote>
-<hr>
-<h2>Source</h2>
-<p><code>wat/CIRCUIT.md</code> — 456 lines, ~19KB. Renders natively on GitHub via Mermaid.</p>
-<hr>
-<h2>Overview</h2>
-<p>The document describes the machine as <strong>signal flow diagrams for humans</strong>. Each circuit is a Mermaid <code>graph TD</code> (top-down) definition. Signals flow down (candle → thought → proposal); outcomes flow back up (settlement → propagation → observers). The entire system is a loop.</p>
-<hr>
-<h2>The 11 Sub-Circuits</h2>
-<h3>1. The Full Enterprise (top-level)</h3>
-<p>The master diagram. One <strong>Post</strong> per asset pair. Data flows:</p>
+<div id="content"><h1>Panel of Experts <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+<hr></div><h1>Panel of Experts</h1>
+<h2>The Two Reviewers</h2>
+<h3>Brian Beckman — Algebraic Rigor</h3>
+<p><strong>Philosophy:</strong> Every language form should have a clear algebraic identity. If you can't name the categorical construction, you don't understand what you're adding.</p>
+<p>Beckman frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. He sees mathematical structure where Hickey sees convention.</p>
+<p><strong>Core questions:</strong></p>
 <ul>
-<li><strong>RawCandle → IndicatorBank → Candle</strong> (enriched with 100+ indicators)</li>
-<li><strong>Candle → MarketObserver ×N</strong> (predicts direction — Up/Down)</li>
-<li><strong>Candle → ExitObserver ×M</strong> (predicts distances — trail, stop)</li>
-<li><strong>MarketObservers + ExitObservers → Broker ×N×M</strong> (composes predictions, produces proposals)</li>
-<li><strong>Brokers → Treasury → Enterprise</strong> (proposals funded, outcomes computed)</li>
-<li><strong>Enterprise → Posts</strong> (propagation back down — learning signals)</li>
+<li><em>Does this compose?</em> — with <a class="wikilink" href="pg-bind.html">bind</a>/<a class="wikilink" href="pg-bundle.html">bundle</a>, with fold, with existing <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></li>
+<li><em>What categorical construction is this?</em> — product? coproduct? coalgebra? type class?</li>
+<li><em>Does it introduce new algebraic structure?</em> — if yes, is that structure justified?</li>
 </ul>
-<p>Key architectural constraint: dashed arrows denote <strong>tool usage</strong> (Vocabulary, ThoughtEncoder), not data flow. Observers call these tools; they are not upstream producers.</p>
-<h3>2. The Encoding Circuit</h3>
-<p><strong>RawCandle in, Vector out.</strong> Two layers of laziness:</p>
+<p><strong>Pattern of judgment:</strong></p>
 <ul>
-<li><strong>IncrementalBundle</strong> — diffs against last candle's facts; unchanged facts incur zero work (their sum contribution persists)</li>
-<li><strong>Composition cache</strong> — avoids recomputing unchanged sub-trees at the encode step</li>
+<li>Tends to <strong>accept</strong> proposals that reveal hidden algebraic structure (e.g., protocols as type classes — the "third construction" alongside struct/product and enum/coproduct, proposal 014).</li>
+<li>Tends to <strong>push</strong> proposals toward core when they involve opaque types (journal operations as co-generators of a coalgebra, proposal 004).</li>
+<li>Tends to <strong>prefer explicit types</strong> as a way of making structure visible and composable.</li>
 </ul>
-<p>The result is a <strong>thought vector</strong>, bit-identical to a full (non-incremental) bundle.</p>
-<h3>3. The Learning Circuit</h3>
-<p>The feedback loop. A <a class="wikilink" href="pg-reckoner.html">Reckoner</a> accumulates observations. Grace (correct prediction) strengthens the discriminant; Violence (incorrect) weakens it. The loop is the learning — every tick sharpens the next prediction.</p>
-<h3>4. The Paper Circuit</h3>
-<p>The fast learning stream. Every candle, every broker, no real capital. Papers play <strong>both sides</strong> (buy and sell) simultaneously. When a side's trailing stop fires, the paper resolves. Direction determined by which side fired first. Papers are how the machine learns before it trades.</p>
-<h3>5. The Funding Circuit</h3>
-<p>The capital lifecycle. States:</p>
+<p><strong>Notable positions:</strong></p>
 <ul>
-<li><code>available → reserved</code> (proposal funded)</li>
-<li><code>:active</code> (trade live)</li>
-<li><code>:runner</code> (trail passes break-even — no swap, same trail, zero effective risk)</li>
-<li><code>:settled-grace</code> (trail fires, exit > principal — residue is permanent gain)</li>
-<li><code>:settled-violence</code> (safety-stop fires OR trail fires with exit ≤ principal — loss bounded by reservation)</li>
+<li>Proposed <code>fold</code> as the catamorphism — the universal pattern for reducing structure (001 review, accepted as 002).</li>
+<li>Framed protocols as type classes completing the categorical trinity with struct (product) and enum (coproduct) (014).</li>
+<li>Argued journal operations (<code>observe</code>, <code>predict</code>, <code>decay</code>) are co-generators of a coalgebra and belong in Core (004 — won).</li>
+<li>Wanted mandatory types on struct fields (007 — lost to Hickey).</li>
 </ul>
-<p>Exactly <strong>two swaps</strong> per trade lifecycle (entry + exit). Runner transition is <strong>not</strong> a swap.</p>
-<h3>6. The Breathing Stops Circuit</h3>
-<p><strong>Step 3c of the four-step loop.</strong> Every candle, stops adapt. Reuses the market-thoughts-cache from step 2 — no fresh encoding. The exit observer's reckoner predicts optimal distances for the current market context. Distances convert to price levels. The trailing stop moves. The trade breathes. This is described as <strong>the value extraction mechanism</strong> — continuous adaptation, not set-and-forget.</p>
-<h3>7. The Cascade Circuit</h3>
-<p>Three levels of distance knowledge, from specific to general:</p>
+<p><strong>When overridden:</strong> On struct field types (007) and <code>defservice</code> (04/003). In both cases, the simplicity argument prevailed: types as documentation rather than enforcement, and functions + <code>select</code> subsuming a dedicated service form.</p>
+<h3>Rich Hickey — Simplicity / Anti-Complecting</h3>
+<p><strong>Philosophy:</strong> Distinguish <strong>simple</strong> (one concept, one job, interleaving nothing) from <strong>easy</strong> (familiar, convenient, available to hand). Build simple; don't add what discipline or data restructuring already solve.</p>
+<p>Hickey applies the "simple made easy" framework from his Clojure design work. He protects the six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> from proliferation and guards against forms that bundle multiple concerns into one interface.</p>
+<p><strong>Core questions:</strong></p>
+<ul>
+<li><em>Does this complect?</em> — does it weave together things that should be separate?</li>
+<li><em>Could existing forms do this?</em> — is a new form truly necessary, or can functions + data suffice?</li>
+<li><em>Is this simple or easy?</em> — convenience is not a justification if it entangles concerns.</li>
+</ul>
+<p><strong>Pattern of judgment:</strong></p>
+<ul>
+<li>Tends to <strong>reject</strong> new forms when discipline, data restructuring, or function composition could achieve the same result.</li>
+<li>Tends to <strong>win</strong> arguments about leaving things untyped or unconstrained.</li>
+<li>Tends to <strong>resist</strong> additions to the core layer, preferring stdlib or userland solutions.</li>
+</ul>
+<p><strong>Notable positions:</strong></p>
+<ul>
+<li>Rejected <code>defprocessor</code> flatly: <em>“The function shape <code>(state, event) → state</code> IS the declaration”</em> (001 — won, proposal rejected).</li>
+<li>Won untyped struct fields: <em>“Types are documentation, not enforcement”</em> (007).</li>
+<li>Won keyword-as-function access: <em>“Keywords read like English”</em> (007).</li>
+</ul>
+<p><strong>When overridden:</strong> On journal operations (004 — the opacity argument convinced the arbitrator they're core), <code>nil</code>/boolean handling (013 — datamancer chose structural absence), and channels (003 — deleted as contradicting fold-based design).</p>
+<hr>
+<h2>How Reviews Work</h2>
+<h3>Independent verdicts</h3>
+<p>Each reviewer writes a separate <code>review-beckman.md</code> and <code>review-hickey.md</code>. Reviews are <strong>not rubber stamps</strong>. The two reviewers have:</p>
+<ul>
+<li>Reversed proposals (001 — Beckman accepted, Hickey rejected; Hickey's rejection won).</li>
+<li>Overruled each other (007 — Hickey won on types; 004 — Beckman won on journal placement).</li>
+<li>Both been overruled by the datamancer (013, 04/003).</li>
+</ul>
+<p>Each verdict is one of:</p>
+<ul>
+<li><strong>ACCEPTED</strong> — the proposal should proceed as written</li>
+<li><strong>CONDITIONAL</strong> — accepted with specific modifications or constraints</li>
+<li><strong>REJECTED</strong> — with reasoning and often suggestions for alternative approaches</li>
+</ul>
+<h3>The characteristic tension</h3>
+<p>The Beckman-Hickey tension is productive and by design:</p>
+<table>
+<tr><th>Dimension</th><th>Beckman</th><th>Hickey</th></tr>
+<tr><td><strong>Instinct</strong></td><td><em>What's the structure?</em></td><td><em>What's the simplest thing that works?</em></td></tr>
+<tr><td><strong>Growth bias</strong></td><td>Add form if algebraic identity is clear</td><td>Don't add if functions + data suffice</td></tr>
+<tr><td><strong>Type stance</strong></td><td>Types make structure visible and composable</td><td>Types are documentation, not enforcement</td></tr>
+<tr><td><strong>Core expansion</strong></td><td>Justified by opaque types and coalgebra</td><td>Resist unless necessity is proved</td></tr>
+<tr><td><strong>New forms</strong></td><td>Welcome if they complete a categorical pattern</td><td>Reject if they package multiple concerns</td></tr>
+</table>
+<hr>
+<h2>Resolution: How Disagreements Are Settled</h2>
+<h3>The Datamancer</h3>
+<p>When the two reviewers disagree, a <strong>datamancer</strong> arbitrator synthesizes the final <code>RESOLUTION.md</code>. This role is not a third voter or tiebreaker — it's a <em>designer</em> who looks at the problem space itself and sometimes finds that neither reviewer's position is right.</p>
+<p>The datamancer has produced three kinds of resolution:</p>
 <ol>
-<li><strong>Reckoner (K=10 bucketed)</strong> — contextual: "for THIS thought, what distance?" Cosine against K prototypes, soft-weight top-3, interpolate. O(K×D).</li>
-<li><strong>ScalarAccumulator (global)</strong> — if reckoner inexperienced: "what does Grace prefer for this pair overall?"</li>
-<li><strong>Default crutch</strong> — if accumulator empty: the hardcoded default from construction.</li>
+<li><strong>Side with one reviewer</strong> — the simpler or more structural argument wins. Example: proposal 001, Hickey's rejection of <code>defprocessor</code> was upheld.</li>
 </ol>
-<h3>8. The Propagation Circuit</h3>
-<p>The signal that teaches. TreasurySettlement → Enterprise computes direction + optimal distances → post-propagate → broker fans out learning signals to:</p>
-<ul>
-<li>Broker's own reckoner (Grace/Violence)</li>
-<li>MarketObserver (Direction)</li>
-<li>ExitObserver (optimal Distances)</li>
-<li>ScalarAccumulators (values)</li>
-</ul>
-<p>Weighted — large Grace teaches harder than marginal Grace. Everyone learns from one resolution.</p>
-<h3>9. The Binary Circuit</h3>
-<p>The outer loop. 30+ threads:</p>
-<ul>
-<li>6 observer threads (bounded 1 in/out, unbounded learn)</li>
-<li>24 broker threads (bounded 1 in/out, unbounded learn)</li>
-<li>1 EncoderService thread (LRU cache, select loop)</li>
-<li>1 LogService thread (SQLite, batch commits)</li>
-</ul>
-<p>Per-candle fold: Step 1 (settle+propagate) → Step 2 (tick+collect) → Step 3 (paper resolutions + exit learning) → Step 3c (trigger updates) → Step 4 (fund proposals, diagnostics). Shutdown: drop send ends → threads exit recv loops → join returns state.</p>
-<h3>10. The Moment Circuit</h3>
-<p><strong>Decoupling prediction from learning.</strong> Two independent timelines:</p>
-<ul>
-<li><strong>The Moment</strong> (every candle, constant time) — encode, predict (one cosine), set stops, register paper, tick papers, queue resolutions for learning</li>
-<li><strong>The Past</strong> (separate schedule, deferred) — drain learn queue, update reckoners, discriminant converges</li>
-</ul>
-<p>The reckoner is a CRDT. The discriminant is a commutative monoid. Order of observation doesn't change the destination. Warmup is synchronous for the first N candles, then async.</p>
-<h3>11. The Pipe Circuit</h3>
-<p>CSP (communicating sequential processes). Concrete layout:</p>
-<ul>
-<li>Main thread = heartbeat (drives the fold)</li>
-<li>Solid arrows = data flow via <code>bounded(1)</code> channels (lockstep, no locks/mutexes)</li>
-<li>Dashed arrows = learning signals via <code>unbounded</code> channels (fire-and-forget, CRDT convergence)</li>
-<li>Each consumer drains at most <code>MAX_DRAIN=5</code> learn signals per candle</li>
-<li>Log service batches 100 rows per commit</li>
-</ul>
-<hr>
-<h2>Key Architectural Principles</h2>
+<ol>
+<li><strong>Synthesize a third option</strong> — the debate reveals a path neither reviewer proposed. Example: proposal 013, the datamancer chose "structural absence" (the <code>?</code> field convention, <code>when</code> not executing produces no value) over both Beckman's Rust-style nil and Hickey's Clojure-style truthiness.</li>
+</ol>
+<h3>Resolution outcomes</h3>
 <table>
-<tr><th>Principle</th><th>Meaning</th></tr>
-<tr><td>Values up, not queues down</td><td>Side-effects returned as values, never queued via parameters</td></tr>
-<tr><td>Bounded(1) IS the synchronization</td><td>No mutexes, no shared state — channel capacity enforces lockstep</td></tr>
-<tr><td>The binary does not think</td><td>It drives the fold and writes what happened</td></tr>
-<tr><td>One encoding path</td><td>Encoding at prediction and resolution are identical</td></tr>
-<tr><td>The moment acts, the past teaches</td><td>Prediction and learning are decoupled, both converge</td></tr>
+<tr><th>Verdict</th><th>Meaning</th></tr>
+<tr><td><strong>ACCEPTED</strong></td><td>With specific form syntax, placement, and constraints</td></tr>
+<tr><td><strong>REJECTED</strong></td><td>With open questions forwarded to future proposals</td></tr>
+<tr><td><strong>ACCEPTED with tension</strong></td><td>Accepted, but a specific disagreement is recorded and deferred</td></tr>
+<tr><td><strong>SUPERSEDED</strong></td><td>The debate itself revealed a simpler answer</td></tr>
 </table>
+<p>Every resolution documents <strong>who was overridden and why</strong>. This creates an audit trail of design reasoning — not just what was decided, but <em>whose argument was stronger and why</em>.</p>
 <hr>
-<h2>Component Summary (from Circuit 1 legend)</h2>
+<h2>Historical Record</h2>
+<p>Across 18 resolved proposals (March–April 2026):</p>
 <table>
-<tr><th>Component</th><th>Role</th></tr>
-<tr><td>IndicatorBank</td><td>Streaming state → enriched Candle (100+ indicators)</td></tr>
-<tr><td><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a></td><td>Pure functions → Vec\<ThoughtAST\></td></tr>
-<tr><td><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a></td><td>ASTs → Vectors (with LRU cache)</td></tr>
-<tr><td><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a></td><td>Optimization cache for diff-based encoding</td></tr>
-<tr><td><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a></td><td>Single thread, LRU cache, N client pipes</td></tr>
-<tr><td><a class="wikilink" href="pg-market-observer.html">MarketObserver</a> ×N</td><td>Predicts direction (Up/Down) from thought</td></tr>
-<tr><td>ExitObserver ×M</td><td>Predicts distances (trail, stop) from composed thought</td></tr>
-<tr><td><a class="wikilink" href="pg-broker.html">Broker</a> ×N×M</td><td>Composes market + exit predictions, owns papers, proposes trades</td></tr>
-<tr><td><a class="wikilink" href="pg-four-step-loop.html">Post</a></td><td>Per-asset-pair unit, routes the four-step loop</td></tr>
-<tr><td><a class="wikilink" href="pg-treasury.html">Treasury</a></td><td>Capital management (available ↔ reserved)</td></tr>
-<tr><td>Enterprise</td><td>Coordination plane, routes candles and propagation</td></tr>
+<tr><th>Reviewer</th><th>Verdicts accepted</th><th>Times overridden</th></tr>
+<tr><td><strong>Beckman</strong></td><td>fold (002), journal→core (004), protocols (014), compilation plan (005)</td><td>struct types (007), defservice (04/003)</td></tr>
+<tr><td><strong>Hickey</strong></td><td>defprocessor rejected (001), untyped structs (007), keyword access (007), fold-as-caller (002 partial)</td><td>journal→core (004), nil (013), channels (003)</td></tr>
+<tr><td><strong>Datamancer</strong></td><td>Structural absence (013), select+functions over defprocess/defservice (04/003)</td><td>—</td></tr>
 </table>
+<p>Both reviewers have been overturned roughly equally. The datamancer has intervened only twice, but both interventions shaped fundamental design decisions.</p>
 <hr>
-<h2>Notes</h2>
+<h2>Related Concepts</h2>
 <ul>
-<li>The document uses "ExitObserver" throughout; per the project's CLAUDE.md, this was renamed to "Position Observer" in Proposal 050, but CIRCUIT.md has not been updated to reflect this rename.</li>
-<li>The "misses" pattern (cache misses returned as values, inserted between candles) is consistent throughout all circuits.</li>
-<li>All circuits compose into one equation: <code>f(state, candle) → state</code>.</li>
+<li><a class="wikilink" href="pg-proposal-system.html">Proposal System</a> — the formal process that invokes this panel</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">wat language</a> — the language being designed</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — forms shaped by panel review</li>
+<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — concurrency forms (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from the April proposals</li>
+<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the six foundational forms both reviewers protect from proliferation</li>
+<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
+<li><a class="wikilink" href="pg-wards.html">Wards</a> — automated tools (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) that surface problems proposals must address</li>
 </ul></div></body></html>
