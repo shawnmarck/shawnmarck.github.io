@@ -31,13 +31,15 @@ tailwind.config = {
 #sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
 #sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
 #sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+#sidebar.open::after{content:'';position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:-1}
 .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
 .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
 #sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
 #sidebar.open::after{content:'';position:fixed;top:0;left:260px;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:-1}
-@media(max-width:480px){#sidebar #holon-search,#sidebar div:has(> #holon-search){display:none}
+@media(max-width:480px){
 .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
 .prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
 .prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
@@ -47,10 +49,9 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});</script>
 <script src="holon-search.js"></script>
 </head><body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex"><button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button><div class="md:ml-[260px] flex-1 min-w-0">
-<input id="mobile-search" class="block md:hidden w-full py-3 pl-14 pr-4 mb-4 border border-[rgba(255,255,255,0.08)] rounded bg-surface text-[#d0d6e0] text-base font-sans outline-none box-border appearance-none" type="text" placeholder="Search the graph..." autocomplete="off" />
-<div id="mobile-results" class="hidden fixed top-28 left-2 right-2 bg-surface-overlay border border-[rgba(255,255,255,0.08)] rounded max-h-[60vh] overflow-y-auto z-[55] shadow-2xl md:hidden"></div>
 <nav id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
 <h2 class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</h2>
+<div class="px-6 py-4"><input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="holon-results" class="search-results"></div></div>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -123,11 +124,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav>
-<div class="relative hidden md:block">
-<input id="holon-search" class="w-[calc(100%-3rem)] mx-6 mb-4 py-2 px-4 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-[13px] font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
-<div id="holon-results" class="search-results"></div>
-</div><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-014 — ExitObserver (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/domain/position_observer.rs</code> (291 lines)</p>
+</nav><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T0-014 — ExitObserver (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/domain/position_observer.rs</code> (291 lines)</p>
 <p><strong>Context:</strong> None. Read only what the code says.</p>
 <hr>
 <h2>What It Is</h2>
@@ -187,4 +184,4 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>All use DIMS=4096, RECALIB=100, DEFAULT_TRAIL=0.02, DEFAULT_STOP=0.05.</p>
 <hr>
 <h2>Summary</h2>
-<p>PositionObserver predicts two continuous values (trailing stop distance, safety stop distance) from a position thought vector using two independent continuous Reckoners. It learns from hindsight-optimal distances with unit weight. It has a noise subspace despite its own docstring claiming it doesn't. The broker owns the production cascade; the observer only exposes raw reckoner queries.</p></div></main></div><script>!function(){var s=document.getElementById('sidebar');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search'),mr=document.getElementById('mobile-results');if(ms&&mr){ms.addEventListener('input',function(){var q=ms.value.trim();if(q.length<2){mr.style.display='none';mr.innerHTML='';return}if(window.holonSearch&&holonSearch.load&&holonSearch.search){holonSearch.load().then(function(idx){if(!idx)return;var res=holonSearch.search(q);mr.style.display='block';if(!res.length){mr.innerHTML='<div class="search-empty">No results</div>';return}mr.innerHTML=res.map(function(r){var related=r.related.length?'<div class="search-related">'+r.related.map(function(rel){return'<a href="'+rel.file+'" class="search-rel-link" onclick="event.stopPropagation()">'+rel.title+'</a>'}).join(' → ')+'</div>':'';return'<a href="'+r.file+'" class="search-result"><div class="search-title">'+r.title+' <span class="search-score">'+r.score+'</span></div><div class="search-meta">tier '+r.tier+'</div>'+related+'</a>'}).join('')})}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')});document.addEventListener('click',function(e){if(!ms.contains(e.target)&&!mr.contains(e.target)){mr.style.display='none'}})}}}();</script></body></html>
+<p>PositionObserver predicts two continuous values (trailing stop distance, safety stop distance) from a position thought vector using two independent continuous Reckoners. It learns from hindsight-optimal distances with unit weight. It has a noise subspace despite its own docstring claiming it doesn't. The broker owns the production cascade; the observer only exposes raw reckoner queries.</p></div></main></div><script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body></html>
