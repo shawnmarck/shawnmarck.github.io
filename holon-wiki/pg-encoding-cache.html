@@ -36,6 +36,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+<script src="pagefind/pagefind-ui.js"></script>
+<link rel="stylesheet" href="pagefind/pagefind-ui.css">
 </head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
@@ -65,6 +67,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
 <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
 <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
 <div class="tier">Enterprise Spec</div>
 <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
 <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
@@ -101,7 +104,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><div id="content"><h1>Encoding Cache — the distributed LRU encoding service <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+</nav>
+
+<div id="pagefind-search" style="padding:8px 12px 12px"></div>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    new PagefindUI({ element: "#pagefind-search", showSubResults: true,
+        autofocus: false, placeholder: "Search the wiki..." });
+});
+</script>
+<div id="content"><h1>Encoding Cache — the distributed LRU encoding service <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>The <strong>Encoding Cache</strong> (<a class="wikilink" href="pg-encoding-cache.html">EncoderService</a>) is a single-threaded pipe loop that owns the persistent LRU composition cache for <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a>→<a class="wikilink" href="T0-001-vector.html">Vector</a> mappings. It serves N concurrent callers without any mutex — each caller gets its own three-pipe <code>EncoderHandle</code>, and the service thread iterates all handles once per loop iteration. Callers compute vectors locally on cache misses and fire-and-forget install them back. The cache is purely a store — it never computes, only stores and retrieves. Three <code>Arc<AtomicUsize></code> counters (hits, misses, cache-size) provide lock-free observability. Shutdown is automatic when all handles drop.</p>
 <hr></div><h1>Encoding Cache — the distributed LRU encoding service</h1>
 <h2>What the encoding cache IS</h2>

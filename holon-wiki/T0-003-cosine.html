@@ -36,6 +36,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+<script src="pagefind/pagefind-ui.js"></script>
+<link rel="stylesheet" href="pagefind/pagefind-ui.css">
 </head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
@@ -65,6 +67,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
 <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
 <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
 <div class="tier">Enterprise Spec</div>
 <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
 <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
@@ -101,7 +104,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
-</nav><div id="content"><h1>T0-003: Cosine Similarity — the only measurement in holon-rs <span class="badge badge-how">HOW</span></h1><h1>T0-003: Cosine Similarity — the only measurement in holon-rs</h1>
+</nav>
+
+<div id="pagefind-search" style="padding:8px 12px 12px"></div>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    new PagefindUI({ element: "#pagefind-search", showSubResults: true,
+        autofocus: false, placeholder: "Search the wiki..." });
+});
+</script>
+<div id="content"><h1>T0-003: Cosine Similarity — the only measurement in holon-rs <span class="badge badge-how">HOW</span></h1><h1>T0-003: Cosine Similarity — the only measurement in holon-rs</h1>
 <blockquote><strong>Status:</strong> Verified from source</blockquote>
 <blockquote><strong>Sources:</strong> <code>holon-rs/src/kernel/similarity.rs</code> (581 lines), <code>wat/core/primitives.wat</code> (lines 1–26)</blockquote>
 <hr>
