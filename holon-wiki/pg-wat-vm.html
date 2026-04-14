@@ -18,6 +18,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
 #content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
 #content pre code{background:none;padding:0}
+#content .mermaid{background:#161b22;padding:20px;border-radius:6px;margin:16px 0;text-align:center}
 #content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
 #content table{border-collapse:collapse;margin:16px 0;width:100%}
 #content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
@@ -33,7 +34,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
 #banner p{color:#8b949e;font-size:14px}
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
-</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+</style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+</head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -103,11 +106,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <p><strong>Composite wiki page.</strong> Sources: T0-017 (wat-vm + chain types), T0-016 (services/messaging), T1-001 (wat language).</p>
 <hr>
 <h2>Architecture overview</h2>
-<pre><code>
-Main thread ── candles ──→ N market observers ── fan-out ──→ M position observers ──→ N×M brokers
-                                    ↑ learn signals         ↑ learn signals              │
-                                    └───────────────────────┘────────────────────────────┘
-                                            Trade updates ──→ position observers
+<pre class="mermaid">
+flowchart LR
+    main_thread["Main thread"] -->|"candles"| market_obs["N market observers"]
+    market_obs -->|"fan-out"| position_obs["M position observers"]
+    position_obs -->|"chain"| brokers["N×M brokers"]
+    brokers -.->|"learn signals"| market_obs
+    brokers -.->|"learn signals + Trade updates"| position_obs
 </code></pre>
 <ul>
 <li><strong>N market observers</strong> encode candles into vectors, detect anomalies, predict direction.</li>

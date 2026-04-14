@@ -18,6 +18,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
 #content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
 #content pre code{background:none;padding:0}
+#content .mermaid{background:#161b22;padding:20px;border-radius:6px;margin:16px 0;text-align:center}
 #content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
 #content table{border-collapse:collapse;margin:16px 0;width:100%}
 #content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
@@ -33,7 +34,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
 #banner p{color:#8b949e;font-size:14px}
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
-</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+</style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+</head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -102,23 +105,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by <a class="wikilink" href="pg-broker.html">Broker</a> instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is "hypothetical accountability."</p>
 <hr></div><h1>Paper Trade — hypothetical accountability without execution</h1>
 <h2>Lifecycle</h2>
-<pre><code>
-Created (register_paper)
-  │
-  ├─ price moves against prediction, hits fixed stop
-  │    → Violence (resolved, never signaled)
-  │
-  ├─ price moves in predicted direction far enough to cross trail threshold
-  │    → signaled = true, now a Runner
-  │       │
-  │       ├─ price reverses, crosses trailing stop
-  │       │    → resolved (Grace — was signaled)
-  │       │
-  │       └─ price continues favorably
-  │            → extreme/trail ratchet, keeps running
-  │
-  └─ price never moves enough in either direction
-       → stays open indefinitely
+<pre class="mermaid">
+flowchart TD
+    created["Created\n(register_paper)"] -->|"price moves against prediction\nhits fixed stop"| violence["Violence\n(resolved, never signaled)"]
+    created -->|"price moves in predicted direction\nfar enough to cross trail threshold"| runner["signaled = true\nnow a Runner"]
+    runner -->|"price reverses\ncrosses trailing stop"| grace["resolved\n(Grace — was signaled)"]
+    runner -->|"price continues favorably"| ratchet["extreme/trail ratchet\nkeeps running"]
+    created -->|"price never moves enough\nin either direction"| open["stays open indefinitely"]
 </code></pre>
 <p>Each paper is created at the candle's entry price. On every subsequent candle, <code>tick(current_price)</code> is called. The paper is removed once resolved.</p>
 <blockquote>Source: T0-015 § Lifecycle Summary; T0-018 § 7.7</blockquote>

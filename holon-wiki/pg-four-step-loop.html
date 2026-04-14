@@ -18,6 +18,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
 #content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
 #content pre code{background:none;padding:0}
+#content .mermaid{background:#161b22;padding:20px;border-radius:6px;margin:16px 0;text-align:center}
 #content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
 #content table{border-collapse:collapse;margin:16px 0;width:100%}
 #content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
@@ -33,7 +34,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
 #banner p{color:#8b949e;font-size:14px}
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
-</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+</style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+</head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -139,16 +142,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <tr><td>Trailing stop crossed</td><td><strong>Grace</strong></td><td>Prediction confirmed — price moved in the predicted direction beyond the trail threshold</td></tr>
 <tr><td>Fixed stop hit</td><td><strong>Violence</strong></td><td>Prediction wrong — price moved against beyond the stop threshold</td></tr>
 </table>
-<pre><code>
-Created
-  │
-  ├─ Stop fires → Violence (resolved, never signaled)
-  │
-  ├─ Trail crosses → signaled = true, becomes a Runner
-  │     ├─ Trailing stop fires → resolved = true (Grace)
-  │     └─ Price continues favorably → keeps running
-  │
-  └─ Neither fires → stays open
+<pre class="mermaid">
+flowchart TD
+    created["Created"] -->|"Stop fires"| violence["Violence\n(resolved, never signaled)"]
+    created -->|"Trail crosses"| runner["signaled = true\nbecomes a Runner"]
+    runner -->|"Trailing stop fires"| grace["resolved = true\n(Grace)"]
+    runner -->|"Price continues favorably"| running["keeps running"]
+    created -->|"Neither fires"| open["stays open"]
 </code></pre>
 <h3>Runner History</h3>
 <hr>
@@ -187,30 +187,23 @@ Created
 </ul>
 <hr>
 <h2>End-to-End Data Flow</h2>
-<pre><code>
-Candle arrives
-    │
-    ▼
-[1] Observe — encode thoughts (market + position lenses)
-    │
-    ▼
-[2] Predict — direction (MarketObserver) + distances (PositionObserver → Broker cascade)
-    │
-    ▼
-[3] Execute — register_paper() → PaperEntry with thoughts + distances
-    │
-    ▼ (next candle)
-    tick_papers()
-    ├── Grace signal  → market_signals     (MarketObserver learns)
-    ├── Violence stop → market_signals     (MarketObserver learns)
-    └── Runner done   → runner_resolutions (PositionObserver + Broker learn)
-    │
-    ▼
-[4] Learn — propagate()
-    ├── Track record updated
-    ├── Scalar accumulators fed optimal distances
-    ├── Dollar P&L → EMA → expected_value → gate
-    └── PropagationFacts returned → Post routes to observers
+<pre class="mermaid">
+flowchart TD
+    candle["Candle arrives"] --> observe["[1] Observe\nencode thoughts\n(market + position lenses)"]
+    observe --> predict["[2] Predict\ndirection (MarketObserver)\n+ distances (PositionObserver → Broker cascade)"]
+    predict --> execute["[3] Execute\nregister_paper() → PaperEntry\nwith thoughts + distances"]
+    execute -->|"next candle"| tick["tick_papers()"]
+    tick -->|"Grace signal"| ms1["market_signals\n(MarketObserver learns)"]
+    tick -->|"Violence stop"| ms2["market_signals\n(MarketObserver learns)"]
+    tick -->|"Runner done"| rr["runner_resolutions\n(PositionObserver + Broker learn)"]
+    ms1 --> learn
+    ms2 --> learn
+    rr --> learn
+    learn["[4] Learn — propagate()"]
+    learn -->|"Track record updated"| tr["Track record"]
+    learn -->|"Scalar accumulators fed optimal distances"| sa["Scalar accumulators"]
+    learn -->|"Dollar P&L → EMA → expected_value → gate"| ev["Gate"]
+    learn -->|"PropagationFacts returned → Post routes to observers"| pf["Observers learn"]
 </code></pre>
 <hr>
 <h2>Architectural Invariants</h2>

@@ -18,6 +18,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
 #content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
 #content pre code{background:none;padding:0}
+#content .mermaid{background:#161b22;padding:20px;border-radius:6px;margin:16px 0;text-align:center}
 #content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
 #content table{border-collapse:collapse;margin:16px 0;width:100%}
 #content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
@@ -33,7 +34,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
 #banner p{color:#8b949e;font-size:14px}
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
-</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+</style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+</head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -130,24 +133,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <p><strong>Per-stream count:</strong> N × M = 6 × 2 = 12 brokers.</p>
 <hr>
 <h2>Data Flow Through the Grid</h2>
-<pre><code>
-Main thread
-  │ send ObsInput
-  ▼
-Market Observer i (thread) ── encode → predict ── send MarketChain
-  │                                          │
-  │                                    topic fan-out
-  │                                          │
-  │                    ┌─────────────────────┼─────────────────────┐
-  ▼                    ▼                     ▼                     ▼
-Position Observer 0   Position Observer 1   ...   Position Observer M
-  │ send MarketPositionChain
-  ▼
-Broker [i, ei] (thread)
-  │ on trade resolve:
-  │   send ObsLearn → market observer i's mailbox
-  │   send PositionLearn → position observer ei's mailbox
-  │   send TradeUpdate → position observer ei's trade mailbox
+<pre class="mermaid">
+flowchart TD
+    main["Main thread\nsend ObsInput"] --> mkt_obs["Market Observer i\n(thread)\nencode → predict"]
+    mkt_obs -->|"Topic fan-out\nsend MarketChain"| pos0["Position Observer 0"]
+    mkt_obs --> pos1["Position Observer 1"]
+    mkt_obs --> posM["Position Observer M"]
+    pos0 -->|"send MarketPositionChain"| broker["Broker [i, ei]\n(thread)"]
+    pos1 --> broker
+    posM --> broker
+    broker -.->|"ObsLearn → market observer i's mailbox"| mkt_obs
+    broker -.->|"PositionLearn → position observer ei's mailbox"| posM
+    broker -.->|"TradeUpdate → position observer ei's trade mailbox"| posM
 </code></pre>
 <p><em>(T0-017, §"Data flow through the grid")</em></p>
 <p>Each arrow is a <a class="wikilink" href="pg-services.html">Queue</a>. The fan-out from market to position observers uses <a class="wikilink" href="pg-services.html">Topic</a> (1→N). The learn-signal aggregation from multiple brokers back to one observer uses <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1).</p>

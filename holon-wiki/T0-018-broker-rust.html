@@ -18,6 +18,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
 #content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
 #content pre code{background:none;padding:0}
+#content .mermaid{background:#161b22;padding:20px;border-radius:6px;margin:16px 0;text-align:center}
 #content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
 #content table{border-collapse:collapse;margin:16px 0;width:100%}
 #content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
@@ -33,7 +34,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
 #banner p{color:#8b949e;font-size:14px}
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
-</style></head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+</style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+</head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -489,32 +492,24 @@ fn compute_position_batch(
 </table>
 <hr>
 <h2>10. Data Flow Summary</h2>
-<pre><code>
-Candle arrives
-    │
-    ▼
-register_paper() ─── creates PaperEntry with thoughts + distances
-    │
-    ▼ (next candle)
-tick_papers()
-    ├── Paper signals Grace  ──► market_signals (Resolution)
-    │   └── creates RunnerHistory, starts accumulation
-    ├── Paper hits stop       ──► market_signals (Resolution, Violence)
-    └── Runner resolves       ──► runner_resolutions (Resolution, Grace + position_batch)
-         └── compute_position_batch() → deferred training data
-    │
-    ▼
-propagate() (called by Post with Resolution data)
-    ├── Updates cumulative_grace / cumulative_violence
-    ├── Feeds trail_accum / stop_accum with optimal distances
-    ├── Computes dollar P&L, updates avg_grace_net / avg_violence_net EMAs
-    ├── Recomputes expected_value
-    └── Returns PropagationFacts → Post routes to observers
-    │
-    ▼
-gate_open() (consulted before proposals)
-    ├── Cold start (< 50 of either) → always open
-    └── Warm (≥ 50 of both) → open iff expected_value > 0
+<pre class="mermaid">
+flowchart TD
+    candle_arrives["Candle arrives"] --> register_paper["register_paper()\ncreates PaperEntry with thoughts + distances"]
+    register_paper -->|"next candle"| tick_papers["tick_papers()"]
+    tick_papers -->|"Paper signals Grace\ncreates RunnerHistory"| market_signals_grace["market_signals\n(Resolution)"]
+    tick_papers -->|"Paper hits stop"| market_signals_violence["market_signals\n(Resolution, Violence)"]
+    tick_papers -->|"Runner resolves\ncompute_position_batch() → deferred training data"| runner_resolutions["runner_resolutions\n(Resolution, Grace + position_batch)"]
+    market_signals_grace --> propagate
+    market_signals_violence --> propagate
+    runner_resolutions --> propagate
+    propagate["propagate()\ncalled by Post with Resolution data"] -->|"Updates cumulative_grace / cumulative_violence"| record["Track record"]
+    propagate -->|"Feeds trail_accum / stop_accum\nwith optimal distances"| accumulators["Scalar accumulators"]
+    propagate -->|"Computes dollar P&L\nupdates avg_grace_net / avg_violence_net EMAs"| ev["expected_value"]
+    propagate -->|"Recomputes"| ev_recomputed["expected_value"]
+    propagate -->|"Returns"| facts["PropagationFacts\nPost routes to observers"]
+    facts --> gate_open["gate_open()\nconsulted before proposals"]
+    gate_open -->|"Cold start (< 50 of either)"| always_open["always open"]
+    gate_open -->|"Warm (≥ 50 of both)"| ev_check["open iff expected_value > 0"]
 </code></pre>
 <hr>
 <h2>11. Key Design Decisions (Quoted)</h2>
