@@ -26,6 +26,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 #content a.wikilink{color:#58a6ff;text-decoration:none}
 #content a.wikilink:hover{text-decoration:underline}
 #content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.search-results{display:none;position:absolute;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:256px;margin-left:0}
+.search-results::-webkit-scrollbar{width:4px}
+.search-results::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
+.search-result{display:block;padding:8px 12px;color:#c9d1d9;text-decoration:none;border-bottom:1px solid #21262d;cursor:pointer}
+.search-result:hover,.search-result.active{background:#1c2128}
+.search-title{font-size:13px;font-weight:600;color:#f0f6fc}
+.search-score{font-size:11px;color:#484f58;font-weight:normal;margin-left:6px}
+.search-meta{font-size:11px;color:#484f58;margin-top:2px}
+.search-related{font-size:11px;color:#8b949e;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.search-rel-link{color:#58a6ff;text-decoration:none;padding:1px 6px;border:1px solid #30363d;border-radius:3px}
+.search-rel-link:hover{background:#30363d}
+.search-empty{padding:12px;color:#484f58;font-size:13px;text-align:center}
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
 .badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
 .badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
@@ -36,8 +48,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 @media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
-<script src="pagefind/pagefind-ui.js"></script>
-<link rel="stylesheet" href="pagefind/pagefind-ui.css">
+<script src="holon-search.js"></script>
 </head><body><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
@@ -106,13 +117,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav>
 
-<div id="pagefind-search" style="padding:8px 12px 12px"></div>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    new PagefindUI({ element: "#pagefind-search", showSubResults: true,
-        autofocus: false, placeholder: "Search the wiki..." });
-});
-</script>
+<div style="padding:8px 12px 4px">
+<input id="holon-search" type="text" placeholder="Search the graph..." 
+  style="width:100%;padding:6px 10px;border:1px solid #30363d;border-radius:6px;
+  background:#0d1117;color:#c9d1d9;font-size:13px;outline:none;box-sizing:border-box"
+  autocomplete="off" />
+</div>
+<div id="holon-results" class="search-results"></div>
 <div id="content"><h1>T0-007: Accumulator <span class="badge badge-how">HOW</span></h1><h1>T0-007: Accumulator</h1>
 <p><strong>Weighted vector accumulation used by the Reckoner.</strong></p>
 <p>Source: <code>holon-rs/src/kernel/accumulator.rs</code> (243 lines of production code)</p>
