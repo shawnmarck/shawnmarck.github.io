@@ -52,7 +52,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 .prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
 .tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});</script>
+<script>mermaid.initialize({theme:"dark",flowchart:{useMaxWidth:false,ranker:"longest-path",curve:"basis",padding:20,nodeSpacing:50,rankSpacing:80},themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});</script>
 <script src="holon-search.js"></script>
 
 </head>
@@ -154,11 +154,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <div class="mermaid">
 flowchart TD
     subgraph T0Narrative["T0 Narrative"]
+        direction TB
         primers["The Primers"]
         book["The Book"]
         story["The Story"]
     end
     subgraph T1Substrate["T1 Substrate"]
+        direction TB
         vector["Vector"]
         primitives["Primitives (atom, bind, bundle)"]
         cosine["Cosine Similarity"]
@@ -171,11 +173,13 @@ flowchart TD
         subspace["Subspace"]
     end
     subgraph T2Language["T2 Language"]
+        direction TB
         wat_language["wat Language"]
         wat_stdlib["wat Standard Library"]
         wat_proposals["wat Proposals"]
     end
     subgraph T3EnterpriseLeaves["T3 Enterprise Leaves"]
+        direction TB
         thought_encoder_rust["ThoughtEncoder (Rust)"]
         lens_rust["Lens (Rust)"]
         market_observer_rust["MarketObserver (Rust)"]
@@ -203,6 +207,7 @@ flowchart TD
         order["ORDER.md"]
     end
     subgraph T4Composites["T4 Composites"]
+        direction TB
         pg_thought_system["thought-system"]
         pg_atom["atom"]
         pg_bind["bind"]
@@ -235,6 +240,7 @@ flowchart TD
         pg_panel_of_experts["panel-of-experts"]
     end
     subgraph T5SystemComposites["T5 System Composites"]
+        direction TB
         pg_panel_of_experts["pg-panel-of-experts"]
         006_lab_order["006-lab-order"]
         pg_proposal_system["pg-proposal-system"]
