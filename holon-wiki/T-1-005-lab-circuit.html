@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T0-009: Engram — Observation Storage and Retrieval — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T-1-005 — Lab Circuit (CIRCUIT.md) — Holon Wiki</title><style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
 #sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
@@ -56,7 +56,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
 <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
 <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
-<a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+<a href="T-1-005-lab-circuit.html" active>T-1-005 — Lab Circuit (CIRCUIT.md)</a>
 <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
 <div class="tier">Substrate</div>
 <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
@@ -67,7 +67,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
 <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
 <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
-<a href="T0-009-engram.html" active>T0-009: Engram — Observation Storage and Retrieval</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
 <div class="tier">Language</div>
 <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
 <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
@@ -128,65 +128,121 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
   autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T0-009: Engram — Observation Storage and Retrieval <span class="badge badge-how">HOW</span></h1><h1>T0-009: Engram — Observation Storage and Retrieval</h1>
-<h2>What It IS</h2>
-<p>An <code>Engram</code> is "a named, serializable snapshot of a trained <code>OnlineSubspace</code>." It records what a learned pattern "looks like" at the moment of training and is <strong>immutable once created</strong>.</p>
-<p>An <code>EngramLibrary</code> is a <code>HashMap</code>-backed collection of named engrams that provides three matching strategies against probes:</p>
-<ol>
-<li><strong>Two-tier matching</strong> (<code>match_vec</code>): eigenvalue pre-filter → full residual scoring</li>
-<li><strong>Spectrum matching</strong> (<code>match_spectrum</code>): cosine similarity on eigenvalue signatures</li>
-<li><strong>Alignment matching</strong> (<code>match_alignment</code>): directional alignment between subspaces via principal angles</li>
-</ol>
-<h2>How It Works</h2>
-<h3>Engram Creation</h3>
-<p>When <code>EngramLibrary::add()</code> mints an engram from a trained <code>OnlineSubspace</code>, it:</p>
-<ol>
-<li>Extracts the subspace's eigenvalue vector.</li>
-<li><strong>L2-normalizes</strong> it to produce an <code>eigenvalue_signature</code> — "so that engrams of different sizes can be compared on a level playing field." (Normalization guard: if <code>eig_norm ≤ 1e-10</code>, the raw eigenvalues are used as-is.)</li>
-<li>Calls <code>subspace.snapshot()</code> to capture the full <code>SubspaceSnapshot</code> (mean, component matrix, n, threshold state).</li>
-<li>Stores optional <code>surprise_profile</code> (per-feature surprise scores) and arbitrary <code>metadata</code> (JSON).</li>
-</ol>
-<h3>Subspace Cache</h3>
-<p>Engrams do <strong>not</strong> serialize a live <code>OnlineSubspace</code>. The field <code>subspace_cache</code> is <code>#[serde(skip)]</code>. When <code>engram.subspace()</code> is called, it lazily reconstructs the <code>OnlineSubspace</code> from the stored snapshot via <code>OnlineSubspace::from_snapshot()</code>.</p>
-<h3>Two-Tier Matching (<code>match_vec</code>)</h3>
-<p>Takes a raw <code>&[f64]</code> probe, <code>top_k</code>, and <code>prefilter_k</code>:</p>
-<ol>
-<li><strong>Eigenvalue pre-filter</strong> (O(k·n)): ranks engrams by eigenvalue energy (sum of squared signature values), takes the top <code>prefilter_k</code> candidates. Skipped entirely if <code>len(engrams) ≤ prefilter_k</code>.</li>
-<li><strong>Full residual</strong> (O(k·dim)): scores candidates by computing <code>engram.residual(x)</code> on each — the residual norm after projecting the probe onto the engram's learned manifold. Returns <code>Vec<(name, residual)></code> sorted ascending (lower = better fit).</li>
-</ol>
-<h3>Spectrum Matching (<code>match_spectrum</code>)</h3>
-<p>Takes an eigenvalue slice and <code>top_k</code>. Computes cosine similarity between the probe's eigenvalue spectrum and each engram's stored L2-normalized <code>eigenvalue_signature</code>. "Use for rough pre-screening." Returns sorted descending (higher = better).</p>
-<h3>Alignment Matching (<code>match_alignment</code>)</h3>
-<p>Takes a probe <code>OnlineSubspace</code> and <code>top_k</code>. Calls <code>subspace_alignment(engram.subspace(), 0)</code> for each engram — measuring whether variance lives in the same part of the vector space. Returns <code>Vec<(name, alignment_score)></code> sorted descending; "alignment is in [0, 1]: 1.0 = same directions, 0.0 = orthogonal."</p>
-<h3>Persistence</h3>
-<p><code>EngramLibrary</code> implements JSON round-trip via <code>save()</code> / <code>load()</code>. The test <code>test_serialization_round_trip</code> confirms that match results are bitwise identical after save→load.</p>
-<h2>Key Properties</h2>
-<table>
-<tr><th>Property</th><th>Detail</th></tr>
-<tr><td>Immutability</td><td>Engrams are immutable after minting; only <code>metadata_mut()</code> allows mutation of metadata</td></tr>
-<tr><td>Eigenvalue normalization</td><td>L2-normalized signature for cross-size comparison</td></tr>
-<tr><td>Lazy reconstruction</td><td><code>OnlineSubspace</code> rebuilt on first access, not serialized</td></tr>
-<tr><td>Default parameters</td><td><code>OnlineSubspace::new(dim, k)</code> defaults: <code>amnesia=2.0, ema_alpha=0.01, sigma_mult=3.5, reorth_interval=500</code></td></tr>
-<tr><td>Serialization</td><td><code>serde</code> derive on <code>Engram</code> and <code>EngramLibrary</code>; JSON file I/O</td></tr>
-</table>
-<h2>Source Quotes</h2>
-<blockquote>"An engram represents a learned pattern ('what normal looks like' for a given class of input)."</blockquote>
-<blockquote>— module-level doc, line 3–4</blockquote>
-<blockquote>"Engrams are immutable once created — they record what a specific pattern 'looks like' at the moment of training."</blockquote>
-<blockquote>— <code>Engram</code> struct doc, line 49–50</blockquote>
-<blockquote>"The eigenvalue signature is L2-normalised so that engrams of different sizes can be compared on a level playing field."</blockquote>
-<blockquote>— <code>add()</code> doc, line 159–160</blockquote>
-<blockquote>"Matching uses a two-tier strategy to avoid scoring every engram against every probe: 1. Eigenvalue pre-filter (O(k·n)): rank engrams by eigenvalue energy. 2. Full residual (O(k·dim)): score top-prefilter_k candidates."</blockquote>
-<blockquote>— <code>EngramLibrary</code> struct doc, line 136–140</blockquote>
-<blockquote>"Lower residual = better fit (vector is more 'in-distribution' for the pattern this engram represents)."</blockquote>
-<blockquote>— <code>residual()</code> doc, line 122–123</blockquote>
-<h2>Test Coverage</h2>
+<div id="content"><h1>T-1-005 — Lab Circuit (CIRCUIT.md) <span class="badge badge-why">WHY</span></h1><h1>T-1-005 — Lab Circuit (CIRCUIT.md)</h1>
+<blockquote><strong>TL;DR:</strong> CIRCUIT.md is the architectural wiring diagram for the holon-lab-trading system. It defines 11 sub-circuits (each rendered as a Mermaid graph) that together form a complete trading machine: raw candles enter, thoughts are encoded, predictions are made, proposals are funded as trades, outcomes propagate back as learning, and stops breathe every candle. The core equation is <code>f(state, candle) → state</code> — one tick of the clock.</blockquote>
+<hr>
+<h2>Source</h2>
+<p><code>wat/CIRCUIT.md</code> — 456 lines, ~19KB. Renders natively on GitHub via Mermaid.</p>
+<hr>
+<h2>Overview</h2>
+<p>The document describes the machine as <strong>signal flow diagrams for humans</strong>. Each circuit is a Mermaid <code>graph TD</code> (top-down) definition. Signals flow down (candle → thought → proposal); outcomes flow back up (settlement → propagation → observers). The entire system is a loop.</p>
+<hr>
+<h2>The 11 Sub-Circuits</h2>
+<h3>1. The Full Enterprise (top-level)</h3>
+<p>The master diagram. One <strong>Post</strong> per asset pair. Data flows:</p>
 <ul>
-<li><code>test_add_and_match</code>: probes from distribution A match engram A first</li>
-<li><code>test_remove_and_names</code>: add/remove/contains/len/names</li>
-<li><code>test_contains_and_empty</code>: empty state management</li>
-<li><code>test_serialization_round_trip</code>: JSON save→load preserves match results to <code>1e-10</code></li>
-<li><code>test_match_alignment</code>: even-distribution probe aligns best with even engram</li>
-<li><code>test_match_alignment_empty_library</code>: returns empty for empty library</li>
-<li><code>test_match_spectrum</code>: returns both engrams, sorted descending by similarity</li>
+<li><strong>RawCandle → IndicatorBank → Candle</strong> (enriched with 100+ indicators)</li>
+<li><strong>Candle → MarketObserver ×N</strong> (predicts direction — Up/Down)</li>
+<li><strong>Candle → ExitObserver ×M</strong> (predicts distances — trail, stop)</li>
+<li><strong>MarketObservers + ExitObservers → Broker ×N×M</strong> (composes predictions, produces proposals)</li>
+<li><strong>Brokers → Treasury → Enterprise</strong> (proposals funded, outcomes computed)</li>
+<li><strong>Enterprise → Posts</strong> (propagation back down — learning signals)</li>
+</ul>
+<p>Key architectural constraint: dashed arrows denote <strong>tool usage</strong> (Vocabulary, ThoughtEncoder), not data flow. Observers call these tools; they are not upstream producers.</p>
+<h3>2. The Encoding Circuit</h3>
+<p><strong>RawCandle in, Vector out.</strong> Two layers of laziness:</p>
+<ul>
+<li><strong>IncrementalBundle</strong> — diffs against last candle's facts; unchanged facts incur zero work (their sum contribution persists)</li>
+<li><strong>Composition cache</strong> — avoids recomputing unchanged sub-trees at the encode step</li>
+</ul>
+<p>The result is a <strong>thought vector</strong>, bit-identical to a full (non-incremental) bundle.</p>
+<h3>3. The Learning Circuit</h3>
+<p>The feedback loop. A <a class="wikilink" href="pg-reckoner.html">Reckoner</a> accumulates observations. Grace (correct prediction) strengthens the discriminant; Violence (incorrect) weakens it. The loop is the learning — every tick sharpens the next prediction.</p>
+<h3>4. The Paper Circuit</h3>
+<p>The fast learning stream. Every candle, every broker, no real capital. Papers play <strong>both sides</strong> (buy and sell) simultaneously. When a side's trailing stop fires, the paper resolves. Direction determined by which side fired first. Papers are how the machine learns before it trades.</p>
+<h3>5. The Funding Circuit</h3>
+<p>The capital lifecycle. States:</p>
+<ul>
+<li><code>available → reserved</code> (proposal funded)</li>
+<li><code>:active</code> (trade live)</li>
+<li><code>:runner</code> (trail passes break-even — no swap, same trail, zero effective risk)</li>
+<li><code>:settled-grace</code> (trail fires, exit > principal — residue is permanent gain)</li>
+<li><code>:settled-violence</code> (safety-stop fires OR trail fires with exit ≤ principal — loss bounded by reservation)</li>
+</ul>
+<p>Exactly <strong>two swaps</strong> per trade lifecycle (entry + exit). Runner transition is <strong>not</strong> a swap.</p>
+<h3>6. The Breathing Stops Circuit</h3>
+<p><strong>Step 3c of the four-step loop.</strong> Every candle, stops adapt. Reuses the market-thoughts-cache from step 2 — no fresh encoding. The exit observer's reckoner predicts optimal distances for the current market context. Distances convert to price levels. The trailing stop moves. The trade breathes. This is described as <strong>the value extraction mechanism</strong> — continuous adaptation, not set-and-forget.</p>
+<h3>7. The Cascade Circuit</h3>
+<p>Three levels of distance knowledge, from specific to general:</p>
+<ol>
+<li><strong>Reckoner (K=10 bucketed)</strong> — contextual: "for THIS thought, what distance?" Cosine against K prototypes, soft-weight top-3, interpolate. O(K×D).</li>
+<li><strong>ScalarAccumulator (global)</strong> — if reckoner inexperienced: "what does Grace prefer for this pair overall?"</li>
+<li><strong>Default crutch</strong> — if accumulator empty: the hardcoded default from construction.</li>
+</ol>
+<h3>8. The Propagation Circuit</h3>
+<p>The signal that teaches. TreasurySettlement → Enterprise computes direction + optimal distances → post-propagate → broker fans out learning signals to:</p>
+<ul>
+<li>Broker's own reckoner (Grace/Violence)</li>
+<li>MarketObserver (Direction)</li>
+<li>ExitObserver (optimal Distances)</li>
+<li>ScalarAccumulators (values)</li>
+</ul>
+<p>Weighted — large Grace teaches harder than marginal Grace. Everyone learns from one resolution.</p>
+<h3>9. The Binary Circuit</h3>
+<p>The outer loop. 30+ threads:</p>
+<ul>
+<li>6 observer threads (bounded 1 in/out, unbounded learn)</li>
+<li>24 broker threads (bounded 1 in/out, unbounded learn)</li>
+<li>1 EncoderService thread (LRU cache, select loop)</li>
+<li>1 LogService thread (SQLite, batch commits)</li>
+</ul>
+<p>Per-candle fold: Step 1 (settle+propagate) → Step 2 (tick+collect) → Step 3 (paper resolutions + exit learning) → Step 3c (trigger updates) → Step 4 (fund proposals, diagnostics). Shutdown: drop send ends → threads exit recv loops → join returns state.</p>
+<h3>10. The Moment Circuit</h3>
+<p><strong>Decoupling prediction from learning.</strong> Two independent timelines:</p>
+<ul>
+<li><strong>The Moment</strong> (every candle, constant time) — encode, predict (one cosine), set stops, register paper, tick papers, queue resolutions for learning</li>
+<li><strong>The Past</strong> (separate schedule, deferred) — drain learn queue, update reckoners, discriminant converges</li>
+</ul>
+<p>The reckoner is a CRDT. The discriminant is a commutative monoid. Order of observation doesn't change the destination. Warmup is synchronous for the first N candles, then async.</p>
+<h3>11. The Pipe Circuit</h3>
+<p>CSP (communicating sequential processes). Concrete layout:</p>
+<ul>
+<li>Main thread = heartbeat (drives the fold)</li>
+<li>Solid arrows = data flow via <code>bounded(1)</code> channels (lockstep, no locks/mutexes)</li>
+<li>Dashed arrows = learning signals via <code>unbounded</code> channels (fire-and-forget, CRDT convergence)</li>
+<li>Each consumer drains at most <code>MAX_DRAIN=5</code> learn signals per candle</li>
+<li>Log service batches 100 rows per commit</li>
+</ul>
+<hr>
+<h2>Key Architectural Principles</h2>
+<table>
+<tr><th>Principle</th><th>Meaning</th></tr>
+<tr><td>Values up, not queues down</td><td>Side-effects returned as values, never queued via parameters</td></tr>
+<tr><td>Bounded(1) IS the synchronization</td><td>No mutexes, no shared state — channel capacity enforces lockstep</td></tr>
+<tr><td>The binary does not think</td><td>It drives the fold and writes what happened</td></tr>
+<tr><td>One encoding path</td><td>Encoding at prediction and resolution are identical</td></tr>
+<tr><td>The moment acts, the past teaches</td><td>Prediction and learning are decoupled, both converge</td></tr>
+</table>
+<hr>
+<h2>Component Summary (from Circuit 1 legend)</h2>
+<table>
+<tr><th>Component</th><th>Role</th></tr>
+<tr><td>IndicatorBank</td><td>Streaming state → enriched Candle (100+ indicators)</td></tr>
+<tr><td><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a></td><td>Pure functions → Vec\<ThoughtAST\></td></tr>
+<tr><td><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a></td><td>ASTs → Vectors (with LRU cache)</td></tr>
+<tr><td><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a></td><td>Optimization cache for diff-based encoding</td></tr>
+<tr><td><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a></td><td>Single thread, LRU cache, N client pipes</td></tr>
+<tr><td><a class="wikilink" href="pg-market-observer.html">MarketObserver</a> ×N</td><td>Predicts direction (Up/Down) from thought</td></tr>
+<tr><td>ExitObserver ×M</td><td>Predicts distances (trail, stop) from composed thought</td></tr>
+<tr><td><a class="wikilink" href="pg-broker.html">Broker</a> ×N×M</td><td>Composes market + exit predictions, owns papers, proposes trades</td></tr>
+<tr><td><a class="wikilink" href="pg-four-step-loop.html">Post</a></td><td>Per-asset-pair unit, routes the four-step loop</td></tr>
+<tr><td><a class="wikilink" href="pg-treasury.html">Treasury</a></td><td>Capital management (available ↔ reserved)</td></tr>
+<tr><td>Enterprise</td><td>Coordination plane, routes candles and propagation</td></tr>
+</table>
+<hr>
+<h2>Notes</h2>
+<ul>
+<li>The document uses "ExitObserver" throughout; per the project's CLAUDE.md, this was renamed to "Position Observer" in Proposal 050, but CIRCUIT.md has not been updated to reflect this rename.</li>
+<li>The "misses" pattern (cache misses returned as values, inserted between candles) is consistent throughout all circuits.</li>
+<li>All circuits compose into one equation: <code>f(state, candle) → state</code>.</li>
 </ul></div></body></html>

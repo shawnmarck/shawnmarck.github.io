@@ -1,0 +1,253 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T1-003: wat Proposals System — Holon Wiki</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
+#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
+#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
+#sidebar a:hover{color:#c9d1d9;background:#1c2128}
+#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
+#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
+#content{margin-left:280px;padding:40px 60px;max-width:900px}
+#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
+#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
+#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
+#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
+#content p{margin:12px 0}
+#content ul,#content ol{margin:12px 0 12px 24px}
+#content li{margin:4px 0}
+#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
+#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+#content pre code{background:none;padding:0}
+#content .mermaid{background:#161b22;padding:20px;border-radius:6px;margin:16px 0;text-align:center}
+#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
+#content table{border-collapse:collapse;margin:16px 0;width:100%}
+#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+#content th{background:#161b22;color:#c9d1d9}
+#content a.wikilink{color:#58a6ff;text-decoration:none}
+#content a.wikilink:hover{text-decoration:underline}
+#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
+.search-results{display:none;position:absolute;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:256px;margin-left:0}
+.search-results::-webkit-scrollbar{width:4px}
+.search-results::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
+.search-result{display:block;padding:8px 12px;color:#c9d1d9;text-decoration:none;border-bottom:1px solid #21262d;cursor:pointer}
+.search-result:hover,.search-result.active{background:#1c2128}
+.search-title{font-size:13px;font-weight:600;color:#f0f6fc}
+.search-score{font-size:11px;color:#484f58;font-weight:normal;margin-left:6px}
+.search-meta{font-size:11px;color:#484f58;margin-top:2px}
+.search-related{font-size:11px;color:#8b949e;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.search-rel-link{color:#58a6ff;text-decoration:none;padding:1px 6px;border:1px solid #30363d;border-radius:3px}
+.search-rel-link:hover{background:#30363d}
+.search-empty{padding:12px;color:#484f58;font-size:13px;text-align:center}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
+.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
+.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
+.badge-explain{background:#2b1f3b;color:#c4b5fd}
+#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
+#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
+#banner p{color:#8b949e;font-size:14px}
+@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+</style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+<script src="holon-search.js"></script>
+</head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+<a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+<a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<a href="T1-003-wat-proposals.html" active>T1-003: wat Proposals System</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav>
+
+<div style="padding:8px 12px 4px">
+<input id="holon-search" type="text" placeholder="Search the graph..." 
+  style="width:100%;padding:6px 10px;border:1px solid #30363d;border-radius:6px;
+  background:#0d1117;color:#c9d1d9;font-size:13px;outline:none;box-sizing:border-box"
+  autocomplete="off" />
+</div>
+<div id="holon-results" class="search-results"></div>
+<div id="content"><h1>T1-003: wat Proposals System <span class="badge badge-describe">DESCRIBE</span></h1><h1>T1-003: wat Proposals System</h1>
+<p><strong>Verified:</strong> 2026-04-14</p>
+<p><strong>Source:</strong> <code>/root/projects/holon-workspace/wat/docs/proposals/</code></p>
+<p><strong>Correction:</strong> The system contains <strong>18 proposals</strong> (15 in 2026/03, 3 in 2026/04), not 31 as stated in the task. Each proposal has exactly 4 files: <code>PROPOSAL.md</code>, <code>RESOLUTION.md</code>, <code>review-beckman.md</code>, <code>review-hickey.md</code> — 72 files total.</p>
+<hr>
+<h2>1. The Proposal Process</h2>
+<h3>How a proposal is created</h3>
+<p>A proposal follows a fixed structure in its <code>PROPOSAL.md</code>:</p>
+<ol>
+<li><strong>Scope</strong> — classified as <code>core</code>, <code>structural</code>, or follows from a prior proposal</li>
+<li><strong>The Current State</strong> — what exists today, with code examples from the enterprise codebase or the wat runtime</li>
+<li><strong>The Problem</strong> — concrete gap, often discovered by automated "wards" (gaze, forge, sever, scry, reap) or by tracing type violations between wat specs and Rust implementation</li>
+<li><strong>The Proposed Change</strong> — options with code examples, usually 2-3 alternatives</li>
+<li><strong>The Algebraic Question</strong> — does this compose with the existing monoid (bind/bundle)? Does it introduce new algebraic structure? Every proposal must address this.</li>
+<li><strong>The Simplicity Question</strong> — Hickey's test: "Is this simple or easy?" What is being complected? Could existing primitives solve it?</li>
+<li><strong>Questions for Designers</strong> — specific yes/no and tradeoff questions for the review panel</li>
+</ol>
+<h3>How proposals are reviewed</h3>
+<p>Each proposal is reviewed independently by two designers: <strong>Brian Beckman</strong> and <strong>Rich Hickey</strong>. Reviews are written as separate markdown files (<code>review-beckman.md</code>, <code>review-hickey.md</code>). Each review states a <strong>verdict</strong>:</p>
+<ul>
+<li><strong>ACCEPTED</strong> — as proposed</li>
+<li><strong>CONDITIONAL</strong> — accepted with specific conditions</li>
+<li><strong>REJECTED</strong> — with reasoning</li>
+</ul>
+<p>The reviews are <strong>not rubber stamps</strong>. They have reversed proposals (001), overruled each other, and been overruled by a "datamancer" role that synthesizes final decisions (see 013, 003/003).</p>
+<h3>How proposals are resolved</h3>
+<p>The <code>RESOLUTION.md</code> synthesizes the two reviews into a final decision:</p>
+<ul>
+<li><strong>ACCEPTED</strong> — with specific form syntax, placement, and constraints</li>
+<li><strong>REJECTED</strong> — with open questions forwarded to future proposals</li>
+<li><strong>ACCEPTED with tension</strong> — accepted but a specific disagreement is deferred</li>
+<li><strong>SUPERSEDED</strong> — the debate revealed a simpler answer (see 04/003)</li>
+</ul>
+<p>Resolution often involves <strong>overriding</strong> one designer. The resolution document records who was overridden and why. Beckman tends toward categorical framing (product/coproduct/co-algebra). Hickey tends toward simplicity and "don't add what functions already provide."</p>
+<hr>
+<h2>2. The Panel System</h2>
+<h3>Brian Beckman</h3>
+<ul>
+<li><strong>Role:</strong> Algebraic authority. Frames proposals in category theory — monoids, coalgebras, functors, catamorphisms, universal constructions.</li>
+<li><strong>Pattern:</strong> Asks "does this compose?" and "what categorical construction is this?" Tends to see structure where Hickey sees convention.</li>
+<li><strong>Key moves:</strong> Proposed <code>fold</code> as the catamorphism (001 review, accepted as 002). Framed protocols as "type classes — the third construction alongside struct (product) and enum (coproduct)" (014). Argued journal operations are co-generators of a coalgebra and belong in core (004).</li>
+<li><strong>Overridden:</strong> On struct field types (007 — wanted mandatory types, Hickey's untyped won). On <code>defservice</code> (04/003 — the datamancer showed functions + select suffice).</li>
+</ul>
+<h3>Rich Hickey</h3>
+<ul>
+<li><strong>Role:</strong> Simplicity authority. Applies "simple made easy" — distinguishes simple (one concept, one job) from easy (familiar, convenient). Protects the six primitives from growth.</li>
+<li><strong>Pattern:</strong> Asks "does this complect?" and "could existing forms do this?" Tends to reject new forms when discipline or data restructuring suffices.</li>
+<li><strong>Key moves:</strong> Rejected <code>defprocessor</code> flatly — "the function shape IS the declaration" (001). Won on untyped struct fields — "types are documentation, not enforcement" (007). Won keyword-as-function access — "keywords read like English" (007). Argued <code>fold</code> is a caller concern, not a callee declaration (002 — partially reversed when <code>fold</code> was accepted as control form).</li>
+<li><strong>Overridden:</strong> On journal operations in stdlib (004 — reversed after opacity argument). On <code>nil</code> (013 — datamancer chose structural absence, no nil value). On channels (003 — channels deleted as contradicting fold-based design).</li>
+</ul>
+<h3>The Datamancer</h3>
+<p>Not a formal reviewer but an <strong>arbitrating role</strong> visible in resolutions. Appears when the two designers disagree or when neither option is right. Overruled both designers on boolean/nil (013 — chose "structural absence" with <code>?</code> field convention, neither Clojure truthiness nor Rust separation). Overruled both on <code>defservice</code> (04/003 — showed that <code>select</code> + functions + <code>spawn</code> subsume <code>defprocess</code> and <code>defservice</code> entirely).</p>
+<hr>
+<h2>3. Key Design Decisions Across Proposals</h2>
+<h3>Principles that emerge</h3>
+<ol>
+<li><strong>Transparency to Rust.</strong> Wat compiles to Rust. Form names should match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax should map obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</li>
+</ol>
+<ol>
+<li><strong>Simple > easy.</strong> Every proposal asks "is this simple or easy?" Convenience is rejected if it complected concerns. Variadic <code>update</code> (012) accepted because it completes an existing form. <code>defprocessor</code> (001) rejected because it packaged four concerns into one form.</li>
+</ol>
+<ol>
+<li><strong>Types are documentation, not enforcement.</strong> Structs are untyped (007). Protocols check arity, not return types (014). <code>when</code> without else generates <code>Option<T></code> — the compiler infers, the specifier doesn't annotate (013).</li>
+</ol>
+<ol>
+<li><strong>Opacity creates boundaries.</strong> If a type is opaque, its interface operations are core (004). This rule determined that <code>observe</code>/<code>predict</code>/<code>decay</code> are core, not stdlib.</li>
+</ol>
+<ol>
+<li><strong>The four-layer model</strong> (003): Syntax (compiler builtins), Core (algebra), Stdlib (derived operations), Userland (domain code). Each layer has a boundary rule — stdlib cannot import from userland, core can only be extended by proposal.</li>
+</ol>
+<h3>Forms added to the language</h3>
+<table>
+<tr><th>Form</th><th>Proposal</th><th>Layer</th><th>Notes</th></tr>
+<tr><td><code>fold</code></td><td>002</td><td>Syntax (control)</td><td>Catamorphism. Caller declares reduction.</td></tr>
+<tr><td><code>struct</code></td><td>007</td><td><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td>Product types. Rust's word. Untyped. Named construction.</td></tr>
+<tr><td><code>(:field record)</code></td><td>007</td><td><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td>Keyword-as-function projection.</td></tr>
+<tr><td><code>(update record :field value)</code></td><td>006, 012</td><td><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td>Functional update. Variadic (parallel semantics) from 012.</td></tr>
+<tr><td><code>enum</code></td><td>010</td><td><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td>Sum types. Simple + tagged variants. Keywords as variants.</td></tr>
+<tr><td><code>defprotocol</code></td><td>014</td><td><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td>Check-only. No dispatch. Maps to Rust trait.</td></tr>
+<tr><td><code>satisfies</code></td><td>014, 015</td><td><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td><td>Explicit, exhaustive mapping. One per (struct, protocol).</td></tr>
+<tr><td><code>(field struct name expr)</code></td><td>011</td><td>Stdlib (<code>std/fields.wat</code>)</td><td>Derived field declarations. DAG dependencies.</td></tr>
+<tr><td><code>pmap</code>, <code>pfor-each</code></td><td>04/001</td><td>Syntax (iteration)</td><td>Parallel map/for-each. Permission, not directive.</td></tr>
+<tr><td><code>defpipe</code></td><td>04/002</td><td>Syntax (concurrency)</td><td>Typed pipe declarations. Bounded/unbounded capacity.</td></tr>
+<tr><td><code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>spawn</code></td><td>04/002, 04/003</td><td>Syntax (concurrency)</td><td>Pipe verbs. <code>select</code> absorbs <code>select-ready</code>.</td></tr>
+</table>
+<h3>Forms rejected or retired</h3>
+<ul>
+<li><code>defprocessor</code> — rejected (001). The function shape <code>(state, event) → state</code> IS the declaration.</li>
+<li><code>std/channels.wat</code> — deleted (003). Contradicted fold-based design.</li>
+<li><code>(field ...)</code> from proposal 011 — partially superseded by protocols (014 resolution says protocols subsume derived fields). However, 011 was accepted before 014, so <code>field</code> lives in <code>std/fields.wat</code> with uncertain long-term status.</li>
+<li><code>defprocess</code>, <code>defservice</code> — withdrawn (04/003). Functions + <code>select</code> + <code>spawn</code> suffice.</li>
+<li><code>nil</code> — rejected (013). Absence is structural (<code>when</code> not executing), not a value.</li>
+</ul>
+<hr>
+<h2>4. Scope: Proposed vs Resolved</h2>
+<h3>By status</h3>
+<table>
+<tr><th>Status</th><th>Count</th><th>Proposals</th></tr>
+<tr><td><strong>ACCEPTED</strong></td><td>16</td><td>002-015 (March), 04/001, 04/002, 04/003</td></tr>
+<tr><td><strong>REJECTED</strong></td><td>1</td><td>001 (stream processor)</td></tr>
+<tr><td><strong>SUPERSEDED</strong></td><td>1</td><td>04/003 (select form — debate yielded simpler answer: <code>select</code> + functions)</td></tr>
+</table>
+<p>All 18 proposals have resolutions. None are in DRAFT or PROPOSED status at the file level (though 004 and 005 PROPOSAL.md headers say "DRAFT," their RESOLUTION.md files show acceptance).</p>
+<h3>By scope area</h3>
+<p><strong>Language structure (4):</strong> 001 (stream processor — rejected), 002 (fold — accepted), 003 (language layers — accepted), 005 (compilation plan — accepted)</p>
+<p><strong>Core algebra (2):</strong> 004 (journal operations — core vs stdlib — accepted), 008 (honest gate — type boundary fix — accepted)</p>
+<p><strong><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> (7):</strong> 006 (aggregate types/defrecord — accepted), 007 (struct syntax — accepted), 010 (enum/sum types — accepted), 011 (derived fields — accepted), 012 (multi-field update — accepted), 013 (boolean/nil — accepted), 014 (protocols — accepted)</p>
+<p><strong>Protocol mechanics (1):</strong> 015 (protocol satisfaction — accepted)</p>
+<p><strong>Stdlib (1):</strong> 009 (fact constructors + statistics — accepted)</p>
+<p><strong>Concurrency (3):</strong> 04/001 (parallel map — accepted), 04/002 (pipes — accepted), 04/003 (select — superseded/simplified)</p>
+<h3>Temporal pattern</h3>
+<p>The March 2026 proposals (001-015) built the language foundation: fold, layers, core boundaries, all of the <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a>, and the stdlib seeds. The April 2026 proposals (04/001-003) extended into concurrency — parallelism, pipes, and service patterns. The April proposals show the system maturing: the datamancer overruled both designers on 04/003, finding that the simplest answer (functions + select) was more powerful than either proposed option.</p>
+<h3>Dependency chain</h3>
+<p>The proposals form a clear dependency graph:</p>
+<ul>
+<li>001 → 002 (rejected processor → accepted fold)</li>
+<li>002 → 003 (fold accepted → channels deleted, layers defined)</li>
+<li>003 → 004 (layer tension → journal operations placement)</li>
+<li>004 → 005 (journal in core → compilation plan)</li>
+<li>006 → 007 (aggregate types accepted → struct syntax resolved)</li>
+<li>014 → 015 (protocols accepted → satisfaction mechanics)</li>
+<li>04/002 → 04/003 (pipes accepted → select form → superseded by simpler answer)</li>
+</ul></div></body></html>
