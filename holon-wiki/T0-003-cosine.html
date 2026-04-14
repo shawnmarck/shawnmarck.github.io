@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -224,7 +227,7 @@
 <strong>Sources:</strong> <code>holon-rs/src/kernel/similarity.rs</code> (581 lines), <code>wat/core/primitives.wat</code> (lines 1–26)</p>
 </blockquote>
 <hr />
-<h2>What it IS</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What it IS</h2>
 <p>Cosine similarity is the singular measurement primitive in the holon system. The WAT spec declares it plainly:</p>
 <blockquote>
 <p>&quot;Measure similarity between two thoughts. The only measurement. One number.&quot;<br />
@@ -236,13 +239,13 @@
 </blockquote>
 <p>Cosine similarity measures the angle between two vectors, independent of their magnitudes.</p>
 <hr />
-<h2>How it works</h2>
-<h3>Core definition</h3>
+<h2 id="how-it-works"><a class="heading-anchor" href="#how-it-works" aria-hidden="true">#</a>How it works</h2>
+<h3 id="core-definition"><a class="heading-anchor" href="#core-definition" aria-hidden="true">#</a>Core definition</h3>
 <p>The module doc comment gives the formula:</p>
 <blockquote>
 <p><code>cosine(a, b) = dot(a, b) / (||a|| * ||b||)</code></p>
 </blockquote>
-<h3>Non-SIMD path (default)</h3>
+<h3 id="non-simd-path-default"><a class="heading-anchor" href="#non-simd-path-default" aria-hidden="true">#</a>Non-SIMD path (default)</h3>
 <p>When the <code>simd</code> feature is not enabled, <code>Similarity::cosine</code> computes:</p>
 <ol>
 <li><p><strong>Dot product</strong> via <code>dot_raw</code>: iterates over paired i8 elements, casts to i64, multiplies, sums.</p>
@@ -259,7 +262,7 @@
 <li><p><strong>Division</strong> with zero-guard: if either norm &lt; 1e-10, returns 0.0. Otherwise returns <code>dot / (norm_a * norm_b)</code>.</p>
 </li>
 </ol>
-<h3>SIMD path (<code>simd</code> feature)</h3>
+<h3 id="simd-path-simd-feature"><a class="heading-anchor" href="#simd-path-simd-feature" aria-hidden="true">#</a>SIMD path (<code>simd</code> feature)</h3>
 <p>When compiled with the <code>simd</code> feature, cosine uses <code>simsimd::SpatialSimilarity</code>:</p>
 <pre><code class="language-rust">let dot_ab = i8::dot(a.data(), b.data()).unwrap_or(0.0);
 let dot_aa = i8::dot(a.data(), a.data()).unwrap_or(0.0);
@@ -267,16 +270,16 @@ let dot_bb = i8::dot(b.data(), b.data()).unwrap_or(0.0);
 let norm_product = (dot_aa * dot_bb).sqrt();
 </code></pre>
 <p>The module header claims this gives &quot;up to 200x faster similarity computations on supported hardware.&quot;</p>
-<h3>f64 variant</h3>
+<h3 id="f64-variant"><a class="heading-anchor" href="#f64-variant" aria-hidden="true">#</a>f64 variant</h3>
 <p>A separate <code>cosine_f64(a: &amp;[f64], b: &amp;[f64])</code> exists in <code>primitives.rs</code> for when vectors are already in float space. Same formula, different operand type.</p>
 <hr />
-<h2>Data types involved</h2>
+<h2 id="data-types-involved"><a class="heading-anchor" href="#data-types-involved" aria-hidden="true">#</a>Data types involved</h2>
 <p>Cosine similarity operates on <code>Vector</code>, which the code defines as:</p>
 <blockquote>
 <p>&quot;A high-dimensional vector with bipolar elements {-1, 0, 1}. Internally stored as i8 for memory efficiency.&quot;</p>
 </blockquote>
 <hr />
-<h2>Return value semantics</h2>
+<h2 id="return-value-semantics"><a class="heading-anchor" href="#return-value-semantics" aria-hidden="true">#</a>Return value semantics</h2>
 <p>The source doc comment on <code>Similarity::cosine</code> states:</p>
 <blockquote>
 <p>&quot;Returns a value in [-1, 1] where:</p>
@@ -288,7 +291,7 @@ let norm_product = (dot_aa * dot_bb).sqrt();
 </blockquote>
 <p>Tests confirm: identical vectors yield 1.0, negated vectors yield -1.0.</p>
 <hr />
-<h2>All cosine variants</h2>
+<h2 id="all-cosine-variants"><a class="heading-anchor" href="#all-cosine-variants" aria-hidden="true">#</a>All cosine variants</h2>
 <table>
 <thead>
 <tr>
@@ -317,7 +320,7 @@ let norm_product = (dot_aa * dot_bb).sqrt();
 </table>
 <p><code>weighted_cosine</code> multiplies each dimension's value by its weight before computing the standard formula. The source describes it as: &quot;Applies <code>weights</code> element-wise before computing cosine similarity.&quot;</p>
 <hr />
-<h2>Statistical significance transform</h2>
+<h2 id="statistical-significance-transform"><a class="heading-anchor" href="#statistical-significance-transform" aria-hidden="true">#</a>Statistical significance transform</h2>
 <p>The module provides a z-score conversion:</p>
 <blockquote>
 <p>&quot;In high dimensions, random bipolar vectors are nearly orthogonal with cosine similarity ≈ N(0, 1/√d). This converts a raw similarity into a z-score.&quot;</p>
@@ -330,7 +333,7 @@ let norm_product = (dot_aa * dot_bb).sqrt();
 <li><code>|z| &gt; 5.0</code>: essentially certain</li>
 </ul>
 <hr />
-<h2>Cosine is NOT the only metric in the implementation</h2>
+<h2 id="cosine-is-not-the-only-metric-in-the-implementation"><a class="heading-anchor" href="#cosine-is-not-the-only-metric-in-the-implementation" aria-hidden="true">#</a>Cosine is NOT the only metric in the implementation</h2>
 <p>Despite the WAT spec calling it &quot;the only measurement,&quot; the Rust implementation provides a full <code>Metric</code> enum with 8 members dispatched through <code>Similarity::compute</code>:</p>
 <ul>
 <li><strong>Cosine</strong> — &quot;most common, scale-invariant&quot;</li>
@@ -345,7 +348,7 @@ let norm_product = (dot_aa * dot_bb).sqrt();
 <p>Additionally: <code>weighted_euclidean</code>, <code>minkowski</code>, and <code>minkowski_distance</code> are implemented but not in the <code>Metric</code> enum.</p>
 <p>The WAT spec's &quot;only measurement&quot; statement refers to the <em>conceptual</em> primitive — cosine is the canonical measurement in the algebraic specification. The Rust implementation exposes more metrics for practical flexibility.</p>
 <hr />
-<h2>Source quotes</h2>
+<h2 id="source-quotes"><a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a>Source quotes</h2>
 <p>| Quote | Location |
 |-------|----------|
 | &quot;Cosine similarity (most common, scale-invariant)&quot; | <code>similarity.rs</code> line 11 |

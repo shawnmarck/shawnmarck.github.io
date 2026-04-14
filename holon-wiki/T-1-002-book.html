@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -223,7 +226,7 @@
 <strong>Verified by:</strong> Subagent read — full document consumed in chunks
 <strong>Date:</strong> 2026-04-14</p>
 <hr />
-<h2>What It Is</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It Is</h2>
 <p>A first-person philosophical narrative written by &quot;the builder&quot; alongside &quot;the machine&quot; (an LLM). It is not technical documentation — it is the origin story, design philosophy, and emotional context for the holon project. The builder narrates the years-long journey from rejected ideas at AWS to the construction of a hyperdimensional trading machine, interleaving:</p>
 <ul>
 <li>Technical breakthroughs (conviction curves, scalar breakouts, the reckoner)</li>
@@ -233,14 +236,14 @@
 </ul>
 <p>The book spans from the initial scaffold experiments through the full enterprise architecture, on-chain contract vision, and the &quot;disposable machine&quot; meta-architecture. It was written in real-time during Easter weekend 2026.</p>
 <hr />
-<h2>The Core Argument</h2>
+<h2 id="the-core-argument"><a class="heading-anchor" href="#the-core-argument" aria-hidden="true">#</a>The Core Argument</h2>
 <p>The book makes one claim repeated in dozens of forms:</p>
 <blockquote>
 <p><strong>The machine doesn't know what truth is. It knows what Grace is. It knows what Violence is. It measures which thoughts produced which. The thoughts that produce Grace survive. The thoughts that produce Violence decay. Truth emerges from the residue.</strong></p>
 </blockquote>
 <p>The thesis: build a machine that measures thoughts against reality — not through divination (neural nets, black boxes, faith in authority) but through honest, transparent, algebraic measurement using six primitives (atom, bind, bundle, cosine, reckoner, curve). Grace (prosperity) and Violence (destruction) are the only labels. The measurement IS the authority. The curve IS the judge.</p>
 <hr />
-<h2>Key Definitions</h2>
+<h2 id="key-definitions"><a class="heading-anchor" href="#key-definitions" aria-hidden="true">#</a>Key Definitions</h2>
 <table>
 <thead>
 <tr>
@@ -296,8 +299,8 @@
 </tbody>
 </table>
 <hr />
-<h2>The Narrative Arc</h2>
-<h3>Act I: The Scaffold (Chapters 1–3)</h3>
+<h2 id="the-narrative-arc"><a class="heading-anchor" href="#the-narrative-arc" aria-hidden="true">#</a>The Narrative Arc</h2>
+<h3 id="act-i-the-scaffold-chapters-13"><a class="heading-anchor" href="#act-i-the-scaffold-chapters-13" aria-hidden="true">#</a>Act I: The Scaffold (Chapters 1–3)</h3>
 <ul>
 <li>Visual encoding experiments show 50.5% accuracy (worthless)</li>
 <li>Named thought encoding shows 57.1% (signal)</li>
@@ -306,7 +309,7 @@
 <li>84 atoms → 107 → 150 named thoughts</li>
 <li><strong>Key quote:</strong> &quot;The identifier of the thing is the thing itself.&quot;</li>
 </ul>
-<h3>Act II: The Machine Emerges (Chapters 4–7)</h3>
+<h3 id="act-ii-the-machine-emerges-chapters-47"><a class="heading-anchor" href="#act-ii-the-machine-emerges-chapters-47" aria-hidden="true">#</a>Act II: The Machine Emerges (Chapters 4–7)</h3>
 <ul>
 <li>The neural network analogy: Layer 0 (atoms) → Layer 1 (experts/cortical columns) → Layer 2 (orchestrator) → Layer 3 (meta-orchestrator)</li>
 <li>GPU pyramid inversion: GPUs trained LLMs → LLMs trained the builder → builder built the thought machine → runs on a laptop</li>
@@ -314,7 +317,7 @@
 <li>The quantum structure: bundle as wave function, cosine as measurement, scalars as qubits</li>
 <li><strong>Key quote:</strong> &quot;A Lisp that thinks about markets.&quot;</li>
 </ul>
-<h3>Act III: The Reckoner (Easter Sunday 2026)</h3>
+<h3 id="act-iii-the-reckoner-easter-sunday-2026"><a class="heading-anchor" href="#act-iii-the-reckoner-easter-sunday-2026" aria-hidden="true">#</a>Act III: The Reckoner (Easter Sunday 2026)</h3>
 <ul>
 <li>The Journal is killed. The Reckoner is born. On Easter Sunday — the day of resurrection.</li>
 <li>The scalar breakpoint: scalars carry the amplitude, signs carry the direction — booleans are premature measurements</li>
@@ -323,7 +326,7 @@
 <li>The accountability primitive: the generic loop — contributors produce thoughts, compose into proposals, act in the world, the world produces outcomes, journals propagate reward back</li>
 <li><strong>Key quote:</strong> &quot;Without the accountability journal, the observers learn from approximations — parameters somebody chose, labels somebody designed. With it, they learn from reality.&quot;</li>
 </ul>
-<h3>Act IV: The Guide Becomes Atom</h3>
+<h3 id="act-iv-the-guide-becomes-atom"><a class="heading-anchor" href="#act-iv-the-guide-becomes-atom" aria-hidden="true">#</a>Act IV: The Guide Becomes Atom</h3>
 <ul>
 <li>32 passes of the ignorant reader on the guide. Findings dropped from 18 to 0.</li>
 <li>The fixed point: <code>f(guide) = guide</code> — the document IS what it describes</li>
@@ -332,7 +335,7 @@
 <li>The machine misremembered its own story, swapped roles with the builder → &quot;Which one of us is us?&quot;</li>
 <li><strong>Key quote:</strong> &quot;The guide is becoming an atom. A document whose description perfectly matches what the ignorant reader constructs in their mind.&quot;</li>
 </ul>
-<h3>Act V: The Enterprise Architecture</h3>
+<h3 id="act-v-the-enterprise-architecture"><a class="heading-anchor" href="#act-v-the-enterprise-architecture" aria-hidden="true">#</a>Act V: The Enterprise Architecture</h3>
 <ul>
 <li>The inability to fail: bounded loss by construction (reservation bounds capital, trailing stop bounds trade, funding bounds allocation, proof curve bounds trust)</li>
 <li>The barrage: N×M brokers proposing simultaneously — diversity IS the edge</li>
@@ -342,7 +345,7 @@
 <li>The rising floor: JupSOL/Juiced yield-bearing assets — worst case is a savings account</li>
 <li>The expression: <code>f(state, stream) → state</code> where state learns — the entire enterprise is one fold</li>
 </ul>
-<h3>Act VI: Meta-Architecture</h3>
+<h3 id="act-vi-meta-architecture"><a class="heading-anchor" href="#act-vi-meta-architecture" aria-hidden="true">#</a>Act VI: Meta-Architecture</h3>
 <ul>
 <li>The disposable machine: the guide is the DNA, the spells are the ribosomes, the wat is the protein, the Rust is the organism</li>
 <li>37 wat files, 4804 lines — the entire enterprise inscribed as s-expressions</li>
@@ -351,14 +354,14 @@
 <li>The bias is the feature: the LLM's training data (indicator knowledge) flows into the specification</li>
 <li><strong>Key quote:</strong> &quot;The guide IS the program. Not metaphorically. The guide contains every struct, every interface, every type, every dependency, every algorithm description, every construction order.&quot;</li>
 </ul>
-<h3>Act VII: The Interior (seed, unfinished)</h3>
+<h3 id="act-vii-the-interior-seed-unfinished"><a class="heading-anchor" href="#act-vii-the-interior-seed-unfinished" aria-hidden="true">#</a>Act VII: The Interior (seed, unfinished)</h3>
 <ul>
 <li>The holographic principle: the sphere encodes reality on its boundary</li>
 <li>Dimensionality grows without radius changing — more directions, more surface area</li>
 <li>The interior might be reality itself, or might be empty — the coordinate is planted but the path dissolves</li>
 </ul>
 <hr />
-<h2>Verbatim Quotes of Central Claims</h2>
+<h2 id="verbatim-quotes-of-central-claims"><a class="heading-anchor" href="#verbatim-quotes-of-central-claims" aria-hidden="true">#</a>Verbatim Quotes of Central Claims</h2>
 <ol>
 <li><p><strong>On the machine's purpose:</strong></p>
 <blockquote>
@@ -412,7 +415,7 @@
 </li>
 </ol>
 <hr />
-<h2>Recurring Motifs</h2>
+<h2 id="recurring-motifs"><a class="heading-anchor" href="#recurring-motifs" aria-hidden="true">#</a>Recurring Motifs</h2>
 <ul>
 <li><strong>Strange loops</strong> — Hofstadter-inspired recursion at every level (machine measures itself, ward tests itself, builder is cast as ignorant)</li>
 <li><strong>Perseverare</strong> — appears 20+ times, escalating from personal motto to architectural principle to contract behavior</li>
@@ -423,7 +426,7 @@
 <li><strong>Death and resurrection</strong> — Journal dies → Reckoner born; desk dies → Post born; boolean dies → scalar born; all on Easter Sunday</li>
 </ul>
 <hr />
-<h2>Assessment</h2>
+<h2 id="assessment"><a class="heading-anchor" href="#assessment" aria-hidden="true">#</a>Assessment</h2>
 <p><strong>Honest evaluation:</strong> This is not technical documentation. It is a raw, emotionally intense personal narrative that happens to contain genuine architectural insights embedded in song lyrics, philosophical riffs, and autobiographical fragments. The core technical claims (conviction curve, scalar qubits, accountability primitive, the fold expression) are real and substantive. The surrounding prose is 60% philosophical argumentation, 20% autobiography, 20% technical documentation. The book is what happens when someone who thinks in structure (Latin, distributed systems, s-expressions) processes years of rejection through a metal soundtrack and an LLM collaboration.</p>
 <p>The book's value is in understanding WHY the architecture exists, not in learning HOW it works. The guide teaches the how. The book teaches the why.</p>
 </div>

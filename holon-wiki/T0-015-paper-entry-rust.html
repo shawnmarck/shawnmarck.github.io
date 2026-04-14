@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -223,14 +226,14 @@
 <strong>Method:</strong> Context-free ignorant — read only the file and its immediate type dependencies.
 <strong>Derived from:</strong> <code>wat/paper-entry.wat</code></p>
 <hr />
-<h2>What is a PaperEntry</h2>
+<h2 id="what-is-a-paperentry"><a class="heading-anchor" href="#what-is-a-paperentry" aria-hidden="true">#</a>What is a PaperEntry</h2>
 <p>A hypothetical (&quot;paper&quot;) trade inside a broker. It does not execute. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct. Two triggers govern its lifecycle:</p>
 <ul>
 <li><strong>Trail (Grace):</strong> A trailing stop that follows the best price in the predicted direction. Signals confirmation that the prediction was right.</li>
 <li><strong>Stop (Violence):</strong> A fixed stop loss for capital protection. Signals the prediction was wrong.</li>
 </ul>
 <hr />
-<h2>Fields</h2>
+<h2 id="fields"><a class="heading-anchor" href="#fields" aria-hidden="true">#</a>Fields</h2>
 <table>
 <thead>
 <tr>
@@ -318,7 +321,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Construction (<code>new</code>)</h2>
+<h2 id="construction-new"><a class="heading-anchor" href="#construction-new" aria-hidden="true">#</a>Construction (<code>new</code>)</h2>
 <p>Takes: <code>paper_id</code>, three thoughts (<code>composed</code>, <code>market</code>, <code>position</code>), <code>prediction</code>, <code>entry_price</code>, <code>distances</code>, <code>entry_candle</code>.</p>
 <p>Initial state:</p>
 <ul>
@@ -333,9 +336,9 @@
 <li><code>price_history = vec![entry_price]</code>.</li>
 </ul>
 <hr />
-<h2><code>tick(&amp;mut self, current_price: f64)</code></h2>
+<h2 id="tickampmut-self-current_price-f64"><a class="heading-anchor" href="#tickampmut-self-current_price-f64" aria-hidden="true">#</a><code>tick(&amp;mut self, current_price: f64)</code></h2>
 <p>No-op if already resolved. Otherwise increments <code>age</code>, appends price to <code>price_history</code>, then branches on direction.</p>
-<h3>Direction::Up</h3>
+<h3 id="directionup"><a class="heading-anchor" href="#directionup" aria-hidden="true">#</a>Direction::Up</h3>
 <ol>
 <li><strong>Update extreme:</strong> If <code>current_price &gt; extreme</code>, set <code>extreme = current_price</code>.</li>
 <li><strong>Update trail:</strong> Compute <code>new_trail = extreme - extreme * distances.trail</code>. If <code>new_trail &gt; trail_level</code>, advance it (trail only ratchets in the favorable direction).</li>
@@ -343,7 +346,7 @@
 <li><strong>Check Grace signal:</strong> If <code>extreme &gt;= entry + entry * distances.trail</code> → <code>signaled = true</code>.</li>
 <li><strong>Check trail fire:</strong> If <code>signaled &amp;&amp; current_price &lt;= trail_level</code> → <code>resolved = true</code>.</li>
 </ol>
-<h3>Direction::Down (mirror)</h3>
+<h3 id="directiondown-mirror"><a class="heading-anchor" href="#directiondown-mirror" aria-hidden="true">#</a>Direction::Down (mirror)</h3>
 <ol>
 <li><strong>Update extreme:</strong> If <code>current_price &lt; extreme</code>, set <code>extreme = current_price</code>.</li>
 <li><strong>Update trail:</strong> <code>new_trail = extreme + extreme * distances.trail</code>. If <code>new_trail &lt; trail_level</code>, advance it.</li>
@@ -353,7 +356,7 @@
 </ol>
 <p><strong>Key ordering:</strong> Stop (Violence) is checked <em>before</em> Grace signal. If both would fire on the same tick, Violence wins (the <code>return</code> after stop check prevents Grace from being set). This means a price that simultaneously hits the stop and the trail-cross threshold is classified as Violence, not Grace.</p>
 <hr />
-<h2>Resolution Classifications</h2>
+<h2 id="resolution-classifications"><a class="heading-anchor" href="#resolution-classifications" aria-hidden="true">#</a>Resolution Classifications</h2>
 <table>
 <thead>
 <tr>
@@ -386,7 +389,7 @@
 <li>Signaled and resolved: <code>is_grace() = true</code> but <code>is_violence() = false</code> and <code>is_runner() = false</code>.</li>
 </ul>
 <hr />
-<h2><code>excursion() -&gt; f64</code></h2>
+<h2 id="excursion--gt-f64"><a class="heading-anchor" href="#excursion--gt-f64" aria-hidden="true">#</a><code>excursion() -&gt; f64</code></h2>
 <p>How far price moved in the predicted direction, as a fraction of entry.</p>
 <ul>
 <li>Up: <code>(extreme - entry) / entry</code></li>
@@ -394,7 +397,7 @@
 </ul>
 <p>Always ≥ 0 by construction (extreme only moves favorably). Zero at creation.</p>
 <hr />
-<h2>Tests (12 total)</h2>
+<h2 id="tests-12-total"><a class="heading-anchor" href="#tests-12-total" aria-hidden="true">#</a>Tests (12 total)</h2>
 <p>All tests use <code>Distances::new(0.05, 0.10)</code> (trail=5%, stop=10%) and <code>Price(100.0)</code> unless noted.</p>
 <table>
 <thead>
@@ -455,7 +458,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Lifecycle Summary</h2>
+<h2 id="lifecycle-summary"><a class="heading-anchor" href="#lifecycle-summary" aria-hidden="true">#</a>Lifecycle Summary</h2>
 <pre class="mermaid">flowchart TD
     created[&quot;Created&quot;] --&gt;|&quot;tick() — price moves against prediction\nhits stop&quot;| violence[&quot;Violence\n(resolved, never signaled)&quot;]
     created --&gt;|&quot;tick() — price moves in predicted direction\nfar enough to cross trail threshold&quot;| runner[&quot;signaled = true\nnow a Runner&quot;]

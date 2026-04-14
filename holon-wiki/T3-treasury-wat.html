@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -222,7 +225,7 @@
       <div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines)
 <strong>Ward:</strong> ignorant — knows nothing, reads as a stranger.</p>
 <hr />
-<h2>Struct: <code>treasury</code></h2>
+<h2 id="struct-treasury"><a class="heading-anchor" href="#struct-treasury" aria-hidden="true">#</a>Struct: <code>treasury</code></h2>
 <p>8 fields:</p>
 <table>
 <thead>
@@ -282,20 +285,20 @@
 </table>
 <p><strong>Dependencies:</strong> enums, newtypes, distances, proposal, trade, trade-origin, settlement, log-entry.</p>
 <hr />
-<h2>Constructor</h2>
+<h2 id="constructor"><a class="heading-anchor" href="#constructor" aria-hidden="true">#</a>Constructor</h2>
 <pre><code>(make-treasury denomination initial-balances swap-fee slippage) → Treasury
 </code></pre>
 <p>Initializes all maps empty, proposals empty, next-trade-id to 0.</p>
 <hr />
-<h2>Methods (7)</h2>
-<h3>1. <code>submit-proposal</code> (line 55)</h3>
+<h2 id="methods-7"><a class="heading-anchor" href="#methods-7" aria-hidden="true">#</a>Methods (7)</h2>
+<h3 id="1-submit-proposal-line-55"><a class="heading-anchor" href="#1-submit-proposal-line-55" aria-hidden="true">#</a>1. <code>submit-proposal</code> (line 55)</h3>
 <p>Pushes a proposal onto the treasury's proposal barrage.</p>
 <ul>
 <li>Input: treasury, proposal</li>
 <li>Output: <code>()</code></li>
 <li>Side-effect: mutates <code>proposals</code> vector</li>
 </ul>
-<h3>2. <code>fund-proposals</code> (line 63) — Core funding logic</h3>
+<h3 id="2-fund-proposals-line-63-core-funding-logic"><a class="heading-anchor" href="#2-fund-proposals-line-63-core-funding-logic" aria-hidden="true">#</a>2. <code>fund-proposals</code> (line 63) — Core funding logic</h3>
 <p>Evaluates all proposals, sorted by edge (descending). Funds those that pass two gates; rejects the rest. Drains proposals after processing.</p>
 <p><strong>Funding gates (checked per proposal):</strong></p>
 <ol>
@@ -315,7 +318,7 @@
 <li>Proposals vector drained (set to empty list) after processing</li>
 </ul>
 <p><strong>Returns:</strong> <code>Vec&lt;LogEntry&gt;</code> — one per proposal (funded or rejected).</p>
-<h3>3. <code>settle-triggered</code> (line 133) — Settlement logic</h3>
+<h3 id="3-settle-triggered-line-133-settlement-logic"><a class="heading-anchor" href="#3-settle-triggered-line-133-settlement-logic" aria-hidden="true">#</a>3. <code>settle-triggered</code> (line 133) — Settlement logic</h3>
 <p>Checks all active trades against their stop-levels using current prices.</p>
 <p><strong>Input:</strong> treasury, <code>Map&lt;(Asset, Asset), f64&gt;</code> (current prices)</p>
 <p><strong>Two trigger paths:</strong></p>
@@ -340,22 +343,22 @@
 </ul>
 <p><strong>Both paths:</strong> trade and origin removed from their maps.</p>
 <p><strong>Returns:</strong> <code>(Vec&lt;TreasurySettlement&gt;, Vec&lt;LogEntry&gt;)</code> — parallel lists.</p>
-<h3>4. <code>update-trade-stops</code> (line 212)</h3>
+<h3 id="4-update-trade-stops-line-212"><a class="heading-anchor" href="#4-update-trade-stops-line-212" aria-hidden="true">#</a>4. <code>update-trade-stops</code> (line 212)</h3>
 <p>Replaces stop-levels on a specific trade. Also handles the <strong>runner transition</strong>:</p>
 <ul>
 <li>If trade is <code>:active</code> and the new trail-stop would recover principal (trail-stop past entry-price), phase transitions to <code>:runner</code>.</li>
 <li>Buy: <code>trail-stop &gt; entry-price</code>; Sell: <code>trail-stop &lt; entry-price</code>.</li>
 </ul>
-<h3>5. <code>available-capital</code> (line 230)</h3>
+<h3 id="5-available-capital-line-230"><a class="heading-anchor" href="#5-available-capital-line-230" aria-hidden="true">#</a>5. <code>available-capital</code> (line 230)</h3>
 <p>Simple accessor: returns the available balance for an asset, defaulting to <code>0.0</code>.</p>
-<h3>6. <code>deposit</code> (line 236)</h3>
+<h3 id="6-deposit-line-236"><a class="heading-anchor" href="#6-deposit-line-236" aria-hidden="true">#</a>6. <code>deposit</code> (line 236)</h3>
 <p>Adds amount to available capital for an asset.</p>
-<h3>7. <code>total-equity</code> (line 244)</h3>
+<h3 id="7-total-equity-line-244"><a class="heading-anchor" href="#7-total-equity-line-244" aria-hidden="true">#</a>7. <code>total-equity</code> (line 244)</h3>
 <p>Sums all available and reserved balances across all assets. Returns raw sum (does not convert to denomination — the comment says &quot;converted to denomination&quot; but the code just sums f64 values directly).</p>
-<h3>8. <code>trades-for-post</code> (line 252)</h3>
+<h3 id="8-trades-for-post-line-252"><a class="heading-anchor" href="#8-trades-for-post-line-252" aria-hidden="true">#</a>8. <code>trades-for-post</code> (line 252)</h3>
 <p>Returns all active/runner trades belonging to a given post-idx.</p>
 <hr />
-<h2>Bounded Loss — How It Works</h2>
+<h2 id="bounded-loss-how-it-works"><a class="heading-anchor" href="#bounded-loss-how-it-works" aria-hidden="true">#</a>Bounded Loss — How It Works</h2>
 <p>The spec declares bounded loss through a capital reservation model:</p>
 <ol>
 <li><p><strong>At funding:</strong> Capital is moved from <code>available</code> to <code>reserved</code>. The amount reserved equals the trade's principal (<code>trade-amount</code>). The reserve-amount includes a buffer for venue costs, but only the principal is actually moved.</p>
@@ -368,7 +371,7 @@
 </li>
 </ol>
 <hr />
-<h2>Observations (stranger's eye)</h2>
+<h2 id="observations-strangers-eye"><a class="heading-anchor" href="#observations-strangers-eye" aria-hidden="true">#</a>Observations (stranger's eye)</h2>
 <ul>
 <li><code>total-equity</code> comment says &quot;converted to denomination&quot; but the code sums raw f64 values without conversion. If multiple assets exist, this is a bug or an incomplete spec.</li>
 <li><code>fund-proposals</code> sorts by edge descending and greedily funds top-to-bottom. First proposal to deplete an asset's capital blocks subsequent proposals for that asset.</li>

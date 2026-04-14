@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,9 +222,9 @@
         T2-005 — Lens <span class="badge badge-what">WHAT</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2>The vocabulary subset selector.</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="the-vocabulary-subset-selector"><a class="heading-anchor" href="#the-vocabulary-subset-selector" aria-hidden="true">#</a>The vocabulary subset selector.</h2>
 <hr />
-<h2>Overview</h2>
+<h2 id="overview"><a class="heading-anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
 <p>From <code>src/domain/lens.rs</code> (line 1–4):</p>
 <blockquote>
 <p>&quot;Lens wiring. Maps MarketLens/PositionLens to vocabulary facts. Extracted from orchestration/post.rs. These are the live functions that the wat-vm programs call to wire vocab modules to observer lenses.&quot;</p>
@@ -230,13 +233,13 @@
 <blockquote>
 <p>&quot;Proposals 041+042: three schools (Dow, Pring, Wyckoff), 11 lenses.&quot;</p>
 </blockquote>
-<h3>Divergence: GUIDE vs Rust</h3>
+<h3 id="divergence-guide-vs-rust"><a class="heading-anchor" href="#divergence-guide-vs-rust" aria-hidden="true">#</a>Divergence: GUIDE vs Rust</h3>
 <p>The GUIDE (lines 1260–1266) describes a <strong>flat</strong> MarketLens with 6 variants: <code>:momentum</code>, <code>:structure</code>, <code>:volume</code>, <code>:narrative</code>, <code>:regime</code>, <code>:generalist</code>. The actual Rust has <strong>replaced</strong> this with 11 variants organized into 3 named schools (Dow, Pring, Wyckoff). This is a complete restructuring, not a minor update.</p>
 <p>The GUIDE also describes exit lenses (<code>:volatility</code>, <code>:structure</code>, <code>:timing</code>, <code>:generalist</code>) that map to wat vocab modules. The Rust has <strong>two</strong> position lenses (<code>Core</code>, <code>Full</code>) that map to completely different Rust-only vocab modules (exit regime, exit time, phase).</p>
 <hr />
-<h2>MarketLens — 11 Variants in 3 Schools</h2>
+<h2 id="marketlens-11-variants-in-3-schools"><a class="heading-anchor" href="#marketlens-11-variants-in-3-schools" aria-hidden="true">#</a>MarketLens — 11 Variants in 3 Schools</h2>
 <p>Source: <code>src/types/enums.rs</code> lines 58–93.</p>
-<h3>Enum Definition</h3>
+<h3 id="enum-definition"><a class="heading-anchor" href="#enum-definition" aria-hidden="true">#</a>Enum Definition</h3>
 <pre><code class="language-rust">/// Market observer lens — which vocabulary modules an observer attends to.
 /// Proposals 041+042: three schools (Dow, Pring, Wyckoff), 11 lenses total.
 pub enum MarketLens {
@@ -256,7 +259,7 @@ pub enum MarketLens {
     WyckoffPosition,
 }
 </code></pre>
-<h3>Display Names</h3>
+<h3 id="display-names"><a class="heading-anchor" href="#display-names" aria-hidden="true">#</a>Display Names</h3>
 <table>
 <thead>
 <tr>
@@ -313,15 +316,15 @@ pub enum MarketLens {
 </table>
 <p>Traits: <code>Clone</code>, <code>Copy</code>, <code>Debug</code>, <code>PartialEq</code>, <code>Eq</code>, <code>Hash</code>.</p>
 <hr />
-<h2>Market Lens Wiring — Exact Module Mapping</h2>
+<h2 id="market-lens-wiring-exact-module-mapping"><a class="heading-anchor" href="#market-lens-wiring-exact-module-mapping" aria-hidden="true">#</a>Market Lens Wiring — Exact Module Mapping</h2>
 <p>Source: <code>src/domain/lens.rs</code> function <code>market_lens_facts</code> (lines 42–165).</p>
 <p>From line 43–44:</p>
 <blockquote>
 <p>&quot;Shared: time facts (all lenses get these)&quot;</p>
 </blockquote>
 <p>Every market lens includes <code>encode_time_facts(candle)</code> — the 5 shared/time atoms (minute, hour, day-of-week, day-of-month, month-of-year).</p>
-<h3>Dow School</h3>
-<h4><code>DowTrend</code></h4>
+<h3 id="dow-school"><a class="heading-anchor" href="#dow-school" aria-hidden="true">#</a>Dow School</h3>
+<h4 id="dowtrend"><a class="heading-anchor" href="#dowtrend" aria-hidden="true">#</a><code>DowTrend</code></h4>
 <p>From lens.rs lines 48–57:</p>
 <pre><code class="language-rust">MarketLens::DowTrend =&gt; {
     // close-sma20/50/200, adx, di-spread, macd-hist, atr-ratio
@@ -371,7 +374,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 28 atoms</strong></p>
-<h4><code>DowVolume</code></h4>
+<h4 id="dowvolume"><a class="heading-anchor" href="#dowvolume" aria-hidden="true">#</a><code>DowVolume</code></h4>
 <p>From lens.rs lines 58–65:</p>
 <pre><code class="language-rust">MarketLens::DowVolume =&gt; {
     // volume-ratio, obv-slope, buying-pressure, selling-pressure, body-ratio
@@ -414,7 +417,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 25 atoms</strong></p>
-<h4><code>DowCycle</code></h4>
+<h4 id="dowcycle"><a class="heading-anchor" href="#dowcycle" aria-hidden="true">#</a><code>DowCycle</code></h4>
 <p>From lens.rs lines 66–77:</p>
 <pre><code class="language-rust">MarketLens::DowCycle =&gt; {
     // rsi, cci, mfi, williams-r, roc-1/3/6/12
@@ -471,7 +474,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 39 atoms</strong></p>
-<h4><code>DowGeneralist</code></h4>
+<h4 id="dowgeneralist"><a class="heading-anchor" href="#dowgeneralist" aria-hidden="true">#</a><code>DowGeneralist</code></h4>
 <p>From lens.rs lines 78–88:</p>
 <pre><code class="language-rust">MarketLens::DowGeneralist =&gt; {
     // All Dow atoms: union of DowTrend + DowVolume + DowCycle modules
@@ -533,8 +536,8 @@ pub enum MarketLens {
 </table>
 <p><strong>Total: 56 atoms</strong> (union of all Dow school modules)</p>
 <hr />
-<h3>Pring School</h3>
-<h4><code>PringImpulse</code></h4>
+<h3 id="pring-school"><a class="heading-anchor" href="#pring-school" aria-hidden="true">#</a>Pring School</h3>
+<h4 id="pringimpulse"><a class="heading-anchor" href="#pringimpulse" aria-hidden="true">#</a><code>PringImpulse</code></h4>
 <p>From lens.rs lines 91–98:</p>
 <pre><code class="language-rust">MarketLens::PringImpulse =&gt; {
     // roc-1, roc-6, roc-12 (also rsi, cci, mfi, williams-r, roc-3)
@@ -572,7 +575,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 22 atoms</strong></p>
-<h4><code>PringConfirmation</code></h4>
+<h4 id="pringconfirmation"><a class="heading-anchor" href="#pringconfirmation" aria-hidden="true">#</a><code>PringConfirmation</code></h4>
 <p>From lens.rs lines 99–108:</p>
 <pre><code class="language-rust">MarketLens::PringConfirmation =&gt; {
     // obv-slope, volume-ratio (also buying/selling-pressure, body-ratio, vwap-distance)
@@ -616,7 +619,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 25–28 atoms</strong> (divergence conditional)</p>
-<h4><code>PringRegime</code></h4>
+<h4 id="pringregime"><a class="heading-anchor" href="#pringregime" aria-hidden="true">#</a><code>PringRegime</code></h4>
 <p>From lens.rs lines 109–116:</p>
 <pre><code class="language-rust">MarketLens::PringRegime =&gt; {
     // kama-er, choppiness (also aroon-up/down, dfa-alpha, ...)
@@ -654,7 +657,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 22 atoms</strong></p>
-<h4><code>PringGeneralist</code></h4>
+<h4 id="pringgeneralist"><a class="heading-anchor" href="#pringgeneralist" aria-hidden="true">#</a><code>PringGeneralist</code></h4>
 <p>From lens.rs lines 117–127:</p>
 <pre><code class="language-rust">MarketLens::PringGeneralist =&gt; {
     // All Pring atoms: union of PringImpulse + PringConfirmation + PringRegime
@@ -716,8 +719,8 @@ pub enum MarketLens {
 </table>
 <p><strong>Total: 48–51 atoms</strong></p>
 <hr />
-<h3>Wyckoff School</h3>
-<h4><code>WyckoffEffort</code></h4>
+<h3 id="wyckoff-school"><a class="heading-anchor" href="#wyckoff-school" aria-hidden="true">#</a>Wyckoff School</h3>
+<h4 id="wyckoffeffort"><a class="heading-anchor" href="#wyckoffeffort" aria-hidden="true">#</a><code>WyckoffEffort</code></h4>
 <p>From lens.rs lines 130–139:</p>
 <pre><code class="language-rust">MarketLens::WyckoffEffort =&gt; {
     // volume-ratio, obv-slope, buying-pressure, selling-pressure, body-ratio
@@ -761,7 +764,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 34 atoms</strong></p>
-<h4><code>WyckoffPersistence</code></h4>
+<h4 id="wyckoffpersistence"><a class="heading-anchor" href="#wyckoffpersistence" aria-hidden="true">#</a><code>WyckoffPersistence</code></h4>
 <p>From lens.rs lines 140–149:</p>
 <pre><code class="language-rust">MarketLens::WyckoffPersistence =&gt; {
     // adx, hurst, autocorrelation
@@ -805,7 +808,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <p><strong>Total: 30 atoms</strong></p>
-<h4><code>WyckoffPosition</code></h4>
+<h4 id="wyckoffposition"><a class="heading-anchor" href="#wyckoffposition" aria-hidden="true">#</a><code>WyckoffPosition</code></h4>
 <p>From lens.rs lines 150–161:</p>
 <pre><code class="language-rust">MarketLens::WyckoffPosition =&gt; {
     // close-sma20, close-sma50, close-sma200 (also di-spread, macd-hist, atr-ratio)
@@ -856,10 +859,10 @@ pub enum MarketLens {
 </table>
 <p><strong>Total: 35–38 atoms</strong></p>
 <hr />
-<h3>⚠️ No Wyckoff Generalist</h3>
+<h3 id="-no-wyckoff-generalist"><a class="heading-anchor" href="#-no-wyckoff-generalist" aria-hidden="true">#</a>⚠️ No Wyckoff Generalist</h3>
 <p>There is no <code>WyckoffGeneralist</code> variant. The Wyckoff school has 3 specialist lenses but no generalist. This contrasts with Dow (which has DowGeneralist) and Pring (which has PringGeneralist).</p>
 <hr />
-<h2>Market Modules Used vs Available</h2>
+<h2 id="market-modules-used-vs-available"><a class="heading-anchor" href="#market-modules-used-vs-available" aria-hidden="true">#</a>Market Modules Used vs Available</h2>
 <table>
 <thead>
 <tr>
@@ -942,7 +945,7 @@ pub enum MarketLens {
 </tbody>
 </table>
 <hr />
-<h2>PositionLens — 2 Variants</h2>
+<h2 id="positionlens-2-variants"><a class="heading-anchor" href="#positionlens-2-variants" aria-hidden="true">#</a>PositionLens — 2 Variants</h2>
 <p>Source: <code>src/types/enums.rs</code> lines 95–103:</p>
 <pre><code class="language-rust">/// Position observer lens — which trade-state vocabulary a position observer uses.
 /// Proposal 040: two lenses based on trade atoms, not market data.
@@ -953,7 +956,7 @@ pub enum PositionLens {
     Full,
 }
 </code></pre>
-<h3>Wiring</h3>
+<h3 id="wiring"><a class="heading-anchor" href="#wiring" aria-hidden="true">#</a>Wiring</h3>
 <p>Source: <code>src/domain/lens.rs</code> function <code>position_lens_facts</code> (lines 171–189).</p>
 <p>From lines 169–170:</p>
 <blockquote>
@@ -961,7 +964,7 @@ pub enum PositionLens {
 &quot;Full: rich — regime + time + phase series. 13 trade atoms downstream.&quot;</p>
 </blockquote>
 <p>Note: The &quot;5 trade atoms&quot; and &quot;13 trade atoms&quot; arrive <strong>through the trade pipe</strong>, not through this vocab function. The vocab function produces only the regime/time/phase atoms. Trade atoms are injected separately by the broker.</p>
-<h4><code>PositionLens::Core</code></h4>
+<h4 id="positionlenscore"><a class="heading-anchor" href="#positionlenscore" aria-hidden="true">#</a><code>PositionLens::Core</code></h4>
 <pre><code class="language-rust">PositionLens::Core =&gt; {
     let mut facts = encode_exit_regime_facts(candle, scales);
     facts.extend(encode_exit_time_facts(candle));
@@ -987,7 +990,7 @@ pub enum PositionLens {
 </tbody>
 </table>
 <p><strong>Vocab atoms: 10. Plus 5 trade atoms downstream.</strong></p>
-<h4><code>PositionLens::Full</code></h4>
+<h4 id="positionlensfull"><a class="heading-anchor" href="#positionlensfull" aria-hidden="true">#</a><code>PositionLens::Full</code></h4>
 <pre><code class="language-rust">PositionLens::Full =&gt; {
     let mut facts = encode_exit_regime_facts(candle, scales);
     facts.extend(encode_exit_time_facts(candle));
@@ -1028,7 +1031,7 @@ pub enum PositionLens {
 </tbody>
 </table>
 <p><strong>Vocab atoms: 12–15. Plus 13 trade atoms downstream.</strong></p>
-<h3>Test Assertions</h3>
+<h3 id="test-assertions"><a class="heading-anchor" href="#test-assertions" aria-hidden="true">#</a>Test Assertions</h3>
 <p>From lens.rs lines 250–255:</p>
 <pre><code class="language-rust">// Core: regime(8) + time(2) = 10.
 // Full: regime(8) + time(2) + phase-label(1) + phase-duration(1) + phase-series(1) = 13.
@@ -1038,7 +1041,7 @@ assert_eq!(core_facts.len(), 10); // regime(8) + time(2)
 assert_eq!(full_facts.len(), 13); // regime(8) + time(2) + phase(3)
 </code></pre>
 <hr />
-<h2>Summary</h2>
+<h2 id="summary"><a class="heading-anchor" href="#summary" aria-hidden="true">#</a>Summary</h2>
 <table>
 <thead>
 <tr>

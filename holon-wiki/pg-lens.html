@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,7 +222,7 @@
         Lens — the vocabulary subset selector. <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>A <strong>lens</strong> selects which &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; modules fire for a given &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;observer&lt;/a&gt;. The system has two lens types:</p>
 <table>
 <thead>
@@ -251,7 +254,7 @@
 </div>
       
       <div class="prose prose-invert max-w-none"><hr />
-<h2>Overview</h2>
+<h2 id="overview"><a class="heading-anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
 <blockquote>
 <p>&quot;Lens wiring. Maps MarketLens/PositionLens to vocabulary facts. Extracted from orchestration/post.rs. These are the live functions that the wat-vm programs call to wire vocab modules to observer lenses.&quot;
 — <code>src/domain/lens.rs</code> lines 1–4</p>
@@ -262,9 +265,9 @@
 </blockquote>
 <p>Lenses are the mechanism by which different observers in the same system attend to different subsets of the &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt;. Rather than every observer seeing all ~100 available atoms, each lens wires only the relevant modules — controlling information flow and enabling school-specific reasoning.</p>
 <hr />
-<h2>MarketLens — 11 Variants in 3 Schools</h2>
+<h2 id="marketlens-11-variants-in-3-schools"><a class="heading-anchor" href="#marketlens-11-variants-in-3-schools" aria-hidden="true">#</a>MarketLens — 11 Variants in 3 Schools</h2>
 <p>Source: <code>src/types/enums.rs</code> lines 58–93. Traits: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code>.</p>
-<h3>School Structure</h3>
+<h3 id="school-structure"><a class="heading-anchor" href="#school-structure" aria-hidden="true">#</a>School Structure</h3>
 <pre class="mermaid">flowchart TD
     dow[&quot;Dow School (4)&quot;] --&gt; dow_trend[&quot;DowTrend&quot;]
     dow --&gt; dow_volume[&quot;DowVolume&quot;]
@@ -281,13 +284,13 @@
     wyckoff --&gt; wyckoff_pos[&quot;WyckoffPosition\n(no generalist)&quot;]
 
 <p>Each school has three specialist lenses plus a generalist — except <strong>Wyckoff has no generalist</strong>.</p>
-<h3>Generalist Property</h3>
+<h3 id="generalist-property"><a class="heading-anchor" href="#generalist-property" aria-hidden="true">#</a>Generalist Property</h3>
 <blockquote>
 <p>Each <code>*Generalist</code> is the union of its school's three specialist lenses (superset of modules).
 — T0-012</p>
 </blockquote>
 <p>Tests enforce this: <code>DowGeneralist ≥ each Dow specialist</code> and <code>PringGeneralist ≥ each Pring specialist</code> by fact count.</p>
-<h3>Display Names</h3>
+<h3 id="display-names"><a class="heading-anchor" href="#display-names" aria-hidden="true">#</a>Display Names</h3>
 <table>
 <thead>
 <tr>
@@ -343,13 +346,13 @@
 </tbody>
 </table>
 <hr />
-<h2>Market Lens Wiring — Module Map</h2>
+<h2 id="market-lens-wiring-module-map"><a class="heading-anchor" href="#market-lens-wiring-module-map" aria-hidden="true">#</a>Market Lens Wiring — Module Map</h2>
 <p>Source: <code>src/domain/lens.rs</code> function <code>market_lens_facts</code> (lines 42–165).</p>
 <blockquote>
 <p>&quot;Shared: time facts (all lenses get these)&quot; — line 43–44</p>
 </blockquote>
 <p>Every market lens includes <code>encode_time_facts(candle)</code> — the 5 shared temporal atoms (minute, hour, day-of-week, day-of-month, month-of-year) — encoded once before the match, not repeated per arm.</p>
-<h3>Dow School</h3>
+<h3 id="dow-school"><a class="heading-anchor" href="#dow-school" aria-hidden="true">#</a>Dow School</h3>
 <table>
 <thead>
 <tr>
@@ -381,7 +384,7 @@
 </tr>
 </tbody>
 </table>
-<h3>Pring School</h3>
+<h3 id="pring-school"><a class="heading-anchor" href="#pring-school" aria-hidden="true">#</a>Pring School</h3>
 <table>
 <thead>
 <tr>
@@ -416,7 +419,7 @@
 <blockquote>
 <p><strong>Note:</strong> <code>divergence</code> uses conditional emission (0–3 atoms), so PringConfirmation and PringGeneralist have variable fact counts.</p>
 </blockquote>
-<h3>Wyckoff School</h3>
+<h3 id="wyckoff-school"><a class="heading-anchor" href="#wyckoff-school" aria-hidden="true">#</a>Wyckoff School</h3>
 <table>
 <thead>
 <tr>
@@ -447,7 +450,7 @@
 <p><code>fibonacci</code> is used only by WyckoffPosition — the sole consumer of this module.</p>
 </blockquote>
 <hr />
-<h2>Module Popularity — How Many Lenses Use Each</h2>
+<h2 id="module-popularity-how-many-lenses-use-each"><a class="heading-anchor" href="#module-popularity-how-many-lenses-use-each" aria-hidden="true">#</a>Module Popularity — How Many Lenses Use Each</h2>
 <table>
 <thead>
 <tr>
@@ -530,7 +533,7 @@
 </tbody>
 </table>
 <hr />
-<h2>PositionLens — 2 Variants</h2>
+<h2 id="positionlens-2-variants"><a class="heading-anchor" href="#positionlens-2-variants" aria-hidden="true">#</a>PositionLens — 2 Variants</h2>
 <p>Source: <code>src/types/enums.rs</code> lines 95–103.</p>
 <blockquote>
 <p>&quot;Core: lean — regime + time. 5 trade atoms downstream.&quot;
@@ -541,7 +544,7 @@
 <p>&quot;The '5 trade atoms' and '13 trade atoms' arrive through the trade pipe, not through this vocab function. The vocab function produces only the regime/time/phase atoms. Trade atoms are injected separately by the broker.&quot;
 — T2-005</p>
 </blockquote>
-<h3><code>Core</code> — Lean exit context</h3>
+<h3 id="core-lean-exit-context"><a class="heading-anchor" href="#core-lean-exit-context" aria-hidden="true">#</a><code>Core</code> — Lean exit context</h3>
 <table>
 <thead>
 <tr>
@@ -564,7 +567,7 @@
 </tbody>
 </table>
 <p><strong>Vocab atoms: 10. Plus 5 trade atoms downstream.</strong></p>
-<h3><code>Full</code> — Rich exit context with phase biography</h3>
+<h3 id="full-rich-exit-context-with-phase-biography"><a class="heading-anchor" href="#full-rich-exit-context-with-phase-biography" aria-hidden="true">#</a><code>Full</code> — Rich exit context with phase biography</h3>
 <table>
 <thead>
 <tr>
@@ -602,13 +605,13 @@
 </tbody>
 </table>
 <p><strong>Vocab atoms: 12–15. Plus 13 trade atoms downstream.</strong></p>
-<h3>Test Assertions</h3>
+<h3 id="test-assertions"><a class="heading-anchor" href="#test-assertions" aria-hidden="true">#</a>Test Assertions</h3>
 <pre><code class="language-rust">assert_eq!(core_facts.len(), 10);  // regime(8) + time(2)
 assert_eq!(full_facts.len(), 13);  // regime(8) + time(2) + phase(3)
 </code></pre>
 <p>— <code>src/domain/lens.rs</code> lines 250–255</p>
 <hr />
-<h2>GUIDE vs Rust Divergence</h2>
+<h2 id="guide-vs-rust-divergence"><a class="heading-anchor" href="#guide-vs-rust-divergence" aria-hidden="true">#</a>GUIDE vs Rust Divergence</h2>
 <p>The GUIDE describes a flat 6-variant <code>MarketLens</code> (<code>:momentum</code>, <code>:structure</code>, <code>:volume</code>, <code>:narrative</code>, <code>:regime</code>, <code>:generalist</code>) and a 4-variant exit lens (<code>:volatility</code>, <code>:structure</code>, <code>:timing</code>, <code>:generalist</code>) mapped to wat modules. The live Rust has completely replaced both with:</p>
 <table>
 <thead>
@@ -643,7 +646,7 @@ assert_eq!(full_facts.len(), 13);  // regime(8) + time(2) + phase(3)
 </table>
 <p>The exit wat files exist in the spec but are <strong>not wired</strong> into the running system. See &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; for the full spec-vs-implementation details.</p>
 <hr />
-<h2>Removed Modules</h2>
+<h2 id="removed-modules"><a class="heading-anchor" href="#removed-modules" aria-hidden="true">#</a>Removed Modules</h2>
 <p>Per <code>src/domain/lens.rs</code> comments:</p>
 <blockquote>
 <p>&quot;Proposals 041+042: ichimoku, stochastic removed from all lenses. Their modules still exist but are no longer called.&quot;</p>
@@ -653,7 +656,7 @@ assert_eq!(full_facts.len(), 13);  // regime(8) + time(2) + phase(3)
 <li><code>stochastic</code> — 4 atoms, module file exists, zero consumers</li>
 </ul>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <ul>
 <li><code>src/domain/lens.rs</code> (258 lines) — lens wiring functions, test assertions</li>
 <li><code>src/types/enums.rs</code> (247 lines) — <code>MarketLens</code> and <code>PositionLens</code> enum definitions</li>
@@ -661,7 +664,7 @@ assert_eq!(full_facts.len(), 13);  // regime(8) + time(2) + phase(3)
 <li>T2-005: Lens — detailed module maps, atom counts, GUIDE-vs-Rust divergence</li>
 <li>T2-004: Vocabulary — complete atom catalog, encoding schemes, exit module divergence</li>
 </ul>
-<h2>See Also</h2>
+<h2 id="see-also"><a class="heading-anchor" href="#see-also" aria-hidden="true">#</a>See Also</h2>
 <ul>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; — the complete atom set and module organization</li>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;observer&lt;/a&gt; — consumers of lens-selected vocab facts</li>

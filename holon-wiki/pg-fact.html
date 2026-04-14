@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -221,7 +224,7 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR</strong>: A fact is a named scalar value emitted by a &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; module, represented as a <a href="#thoughtast-representation"><code>ThoughtAST</code></a> leaf node, and encoded into a fixed-width bipolar vector via the &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;scalar encoder&lt;/a&gt;. Facts are the atomic inputs to &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-space.html&quot;&gt;holonic cognition&lt;/a&gt; — no booleans, no categories, only signed scalars. The discriminant learns where the boundaries are.</p>
 <hr />
-<h2>What a fact is</h2>
+<h2 id="what-a-fact-is"><a class="heading-anchor" href="#what-a-fact-is" aria-hidden="true">#</a>What a fact is</h2>
 <p>From the GUIDE:</p>
 <blockquote>
 <p>&quot;No zones. No categories. Only scalars. 'Overbought' is a human label on a continuous value — a magic number wearing a name. WHO decided 70 was the boundary? The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are.&quot;
@@ -260,7 +263,7 @@
 </table>
 <p>Vocabulary modules are &quot;pure functions. Something in, facts out. No state.&quot; (T2-004, GUIDE line 1245).</p>
 <hr />
-<h2>ThoughtAST representation</h2>
+<h2 id="thoughtast-representation"><a class="heading-anchor" href="#thoughtast-representation" aria-hidden="true">#</a>ThoughtAST representation</h2>
 <p>Facts are represented as leaf nodes in the <a href="T0-011-thought-encoder-rust.md"><code>ThoughtAST</code></a> enum. The four factual variants are:</p>
 <table>
 <thead>
@@ -301,7 +304,7 @@
 <p>Bare <code>Atom(name)</code> nodes are <strong>not</strong> facts — they are names without values. The <code>collect_facts</code> function explicitly skips them: &quot;name without value — not a fact&quot; (T0-011, line 174).</p>
 <p>All four factual variants — <code>Linear</code>, <code>Log</code>, <code>Circular</code>, and <code>Bind</code> — are returned as-is by <code>collect_facts</code>, while <code>Bundle</code> and <code>Sequential</code> containers are transparently flattened (T0-011, lines 341–352).</p>
 <hr />
-<h2>Encoding schemes</h2>
+<h2 id="encoding-schemes"><a class="heading-anchor" href="#encoding-schemes" aria-hidden="true">#</a>Encoding schemes</h2>
 <p>The encoding scheme determines how a scalar value maps into vector space. Three schemes exist (T2-004, GUIDE lines 1376–1395):</p>
 <blockquote>
 <p>&quot;The encoding scheme IS the bounding strategy.&quot;</p>
@@ -348,13 +351,13 @@
 <p>&quot;For periodic quantities (hour of day, day of week, angle), use circular encoding where the endpoint wraps to the start.&quot;
 — T0-004 (scalar encoding), scalar.rs:19–20</p>
 </blockquote>
-<h3>The bounding philosophy</h3>
+<h3 id="the-bounding-philosophy"><a class="heading-anchor" href="#the-bounding-philosophy" aria-hidden="true">#</a>The bounding philosophy</h3>
 <blockquote>
 <p>&quot;Some facts are bounded. Some aren't. That's honest. The log doesn't bound — it compresses. The circular doesn't bound — it wraps. Only linear needs bounds, and linear's bounds come from the math.&quot;
 — T2-004 (vocabulary), GUIDE lines 1393–1395</p>
 </blockquote>
 <hr />
-<h2>How a fact becomes a vector</h2>
+<h2 id="how-a-fact-becomes-a-vector"><a class="heading-anchor" href="#how-a-fact-becomes-a-vector" aria-hidden="true">#</a>How a fact becomes a vector</h2>
 <p>When <code>ThoughtEncoder::encode()</code> walks a factual AST leaf (T0-011, lines 147–198):</p>
 <ol>
 <li><strong><code>Linear { value, scale }</code></strong> → calls <code>ScalarEncoder::encode(value, ScalarMode::Linear { scale })</code></li>
@@ -363,14 +366,14 @@
 <li><strong><code>Bind(left, right)</code></strong> → encodes both children, then <code>Primitives::bind(&amp;l_vec, &amp;r_vec)</code></li>
 </ol>
 <p>The output is always a fixed-width bipolar vector in <code>{−1, 0, +1}^dim</code> (typically dim=4096). Closer scalar values produce more similar vectors — verified by tests confirming <code>sim(0,10) &gt; sim(0,50)</code> (T0-004, scalar.rs:331).</p>
-<h3>Quantization awareness</h3>
+<h3 id="quantization-awareness"><a class="heading-anchor" href="#quantization-awareness" aria-hidden="true">#</a>Quantization awareness</h3>
 <blockquote>
 <p>&quot;bipolar thresholding causes quantization; use accumulator averaging to recover gradient behavior.&quot;
 — T0-004 (scalar encoding), scalar.rs:206–207</p>
 </blockquote>
 <p>Log encoding in particular &quot;works best when used with accumulators that average multiple samples, recovering gradient behavior&quot; (T0-004, scalar.rs:364–365).</p>
 <hr />
-<h2>Fact lifecycle in the system</h2>
+<h2 id="fact-lifecycle-in-the-system"><a class="heading-anchor" href="#fact-lifecycle-in-the-system" aria-hidden="true">#</a>Fact lifecycle in the system</h2>
 <pre><code>Vocabulary module (pure function)
     ↓ emits Vec&lt;ThoughtAST&gt;
 collect_facts() — flattens bundles, strips bare atoms
@@ -383,7 +386,7 @@ Downstream: lens observers, discriminants, accumulators
 </code></pre>
 <p>The <code>IncrementalBundle</code> optimizes repeated encoding by maintaining element-wise sums and diffing facts between ticks. It depends on <code>round_to</code> at vocabulary emission time — &quot;load-bearing for the AST diff. Quantized floats compare reliably&quot; (T0-011, lines 208–211).</p>
 <hr />
-<h2>The full fact catalog</h2>
+<h2 id="the-full-fact-catalog"><a class="heading-anchor" href="#the-full-fact-catalog" aria-hidden="true">#</a>The full fact catalog</h2>
 <p>~99 unique atom names exist in the live Rust system across three domains (T2-004):</p>
 <table>
 <thead>
@@ -417,7 +420,7 @@ Downstream: lens observers, discriminants, accumulators
 </table>
 <p>Two additional market modules (ichimoku, stochastic) exist in the wat spec but were removed from live wiring via Proposals 041+042.</p>
 <hr />
-<h2>Key properties of facts</h2>
+<h2 id="key-properties-of-facts"><a class="heading-anchor" href="#key-properties-of-facts" aria-hidden="true">#</a>Key properties of facts</h2>
 <ol>
 <li><strong>Deterministic</strong>: Same seed → same vector. <code>ScalarEncoder::with_seed(4096, 42)</code> is reproducible (T0-004, scalar.rs:403).</li>
 <li><strong>Stateless emission</strong>: Vocabulary modules are pure functions — no cache, no side effects (T2-004, GUIDE line 1244).</li>
@@ -426,7 +429,7 @@ Downstream: lens observers, discriminants, accumulators
 <li><strong>Named, not categorized</strong>: The vocabulary emits the raw scalar. It does not label &quot;overbought&quot; or &quot;trending.&quot; Those interpretations belong to the discriminant layer.</li>
 </ol>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <ul>
 <li>T0-004 — Scalar Encoding: bipolar vector representations, rotational and positional algorithms, encoding properties</li>
 <li>T0-011 — ThoughtEncoder (Rust): AST representation, <code>collect_facts</code>, <code>IncrementalBundle</code>, encoding walk</li>

@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -223,14 +226,14 @@
 <p><strong>TL;DR:</strong> CIRCUIT.md is the architectural wiring diagram for the holon-lab-trading system. It defines 11 sub-circuits (each rendered as a Mermaid graph) that together form a complete trading machine: raw candles enter, thoughts are encoded, predictions are made, proposals are funded as trades, outcomes propagate back as learning, and stops breathe every candle. The core equation is <code>f(state, candle) → state</code> — one tick of the clock.</p>
 </blockquote>
 <hr />
-<h2>Source</h2>
+<h2 id="source"><a class="heading-anchor" href="#source" aria-hidden="true">#</a>Source</h2>
 <p><code>wat/CIRCUIT.md</code> — 456 lines, ~19KB. Renders natively on GitHub via Mermaid.</p>
 <hr />
-<h2>Overview</h2>
+<h2 id="overview"><a class="heading-anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
 <p>The document describes the machine as <strong>signal flow diagrams for humans</strong>. Each circuit is a Mermaid <code>graph TD</code> (top-down) definition. Signals flow down (candle → thought → proposal); outcomes flow back up (settlement → propagation → observers). The entire system is a loop.</p>
 <hr />
-<h2>The 11 Sub-Circuits</h2>
-<h3>1. The Full Enterprise (top-level)</h3>
+<h2 id="the-11-sub-circuits"><a class="heading-anchor" href="#the-11-sub-circuits" aria-hidden="true">#</a>The 11 Sub-Circuits</h2>
+<h3 id="1-the-full-enterprise-top-level"><a class="heading-anchor" href="#1-the-full-enterprise-top-level" aria-hidden="true">#</a>1. The Full Enterprise (top-level)</h3>
 <p>The master diagram. One <strong>Post</strong> per asset pair. Data flows:</p>
 <ul>
 <li><strong>RawCandle → IndicatorBank → Candle</strong> (enriched with 100+ indicators)</li>
@@ -241,18 +244,18 @@
 <li><strong>Enterprise → Posts</strong> (propagation back down — learning signals)</li>
 </ul>
 <p>Key architectural constraint: dashed arrows denote <strong>tool usage</strong> (Vocabulary, ThoughtEncoder), not data flow. Observers call these tools; they are not upstream producers.</p>
-<h3>2. The Encoding Circuit</h3>
+<h3 id="2-the-encoding-circuit"><a class="heading-anchor" href="#2-the-encoding-circuit" aria-hidden="true">#</a>2. The Encoding Circuit</h3>
 <p><strong>RawCandle in, Vector out.</strong> Two layers of laziness:</p>
 <ul>
 <li><strong>IncrementalBundle</strong> — diffs against last candle's facts; unchanged facts incur zero work (their sum contribution persists)</li>
 <li><strong>Composition cache</strong> — avoids recomputing unchanged sub-trees at the encode step</li>
 </ul>
 <p>The result is a <strong>thought vector</strong>, bit-identical to a full (non-incremental) bundle.</p>
-<h3>3. The Learning Circuit</h3>
+<h3 id="3-the-learning-circuit"><a class="heading-anchor" href="#3-the-learning-circuit" aria-hidden="true">#</a>3. The Learning Circuit</h3>
 <p>The feedback loop. A &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; accumulates observations. Grace (correct prediction) strengthens the discriminant; Violence (incorrect) weakens it. The loop is the learning — every tick sharpens the next prediction.</p>
-<h3>4. The Paper Circuit</h3>
+<h3 id="4-the-paper-circuit"><a class="heading-anchor" href="#4-the-paper-circuit" aria-hidden="true">#</a>4. The Paper Circuit</h3>
 <p>The fast learning stream. Every candle, every broker, no real capital. Papers play <strong>both sides</strong> (buy and sell) simultaneously. When a side's trailing stop fires, the paper resolves. Direction determined by which side fired first. Papers are how the machine learns before it trades.</p>
-<h3>5. The Funding Circuit</h3>
+<h3 id="5-the-funding-circuit"><a class="heading-anchor" href="#5-the-funding-circuit" aria-hidden="true">#</a>5. The Funding Circuit</h3>
 <p>The capital lifecycle. States:</p>
 <ul>
 <li><code>available → reserved</code> (proposal funded)</li>
@@ -262,16 +265,16 @@
 <li><code>:settled-violence</code> (safety-stop fires OR trail fires with exit ≤ principal — loss bounded by reservation)</li>
 </ul>
 <p>Exactly <strong>two swaps</strong> per trade lifecycle (entry + exit). Runner transition is <strong>not</strong> a swap.</p>
-<h3>6. The Breathing Stops Circuit</h3>
+<h3 id="6-the-breathing-stops-circuit"><a class="heading-anchor" href="#6-the-breathing-stops-circuit" aria-hidden="true">#</a>6. The Breathing Stops Circuit</h3>
 <p><strong>Step 3c of the four-step loop.</strong> Every candle, stops adapt. Reuses the market-thoughts-cache from step 2 — no fresh encoding. The exit observer's reckoner predicts optimal distances for the current market context. Distances convert to price levels. The trailing stop moves. The trade breathes. This is described as <strong>the value extraction mechanism</strong> — continuous adaptation, not set-and-forget.</p>
-<h3>7. The Cascade Circuit</h3>
+<h3 id="7-the-cascade-circuit"><a class="heading-anchor" href="#7-the-cascade-circuit" aria-hidden="true">#</a>7. The Cascade Circuit</h3>
 <p>Three levels of distance knowledge, from specific to general:</p>
 <ol>
 <li><strong>Reckoner (K=10 bucketed)</strong> — contextual: &quot;for THIS thought, what distance?&quot; Cosine against K prototypes, soft-weight top-3, interpolate. O(K×D).</li>
 <li><strong>ScalarAccumulator (global)</strong> — if reckoner inexperienced: &quot;what does Grace prefer for this pair overall?&quot;</li>
 <li><strong>Default crutch</strong> — if accumulator empty: the hardcoded default from construction.</li>
 </ol>
-<h3>8. The Propagation Circuit</h3>
+<h3 id="8-the-propagation-circuit"><a class="heading-anchor" href="#8-the-propagation-circuit" aria-hidden="true">#</a>8. The Propagation Circuit</h3>
 <p>The signal that teaches. TreasurySettlement → Enterprise computes direction + optimal distances → post-propagate → broker fans out learning signals to:</p>
 <ul>
 <li>Broker's own reckoner (Grace/Violence)</li>
@@ -280,7 +283,7 @@
 <li>ScalarAccumulators (values)</li>
 </ul>
 <p>Weighted — large Grace teaches harder than marginal Grace. Everyone learns from one resolution.</p>
-<h3>9. The Binary Circuit</h3>
+<h3 id="9-the-binary-circuit"><a class="heading-anchor" href="#9-the-binary-circuit" aria-hidden="true">#</a>9. The Binary Circuit</h3>
 <p>The outer loop. 30+ threads:</p>
 <ul>
 <li>6 observer threads (bounded 1 in/out, unbounded learn)</li>
@@ -289,14 +292,14 @@
 <li>1 LogService thread (SQLite, batch commits)</li>
 </ul>
 <p>Per-candle fold: Step 1 (settle+propagate) → Step 2 (tick+collect) → Step 3 (paper resolutions + exit learning) → Step 3c (trigger updates) → Step 4 (fund proposals, diagnostics). Shutdown: drop send ends → threads exit recv loops → join returns state.</p>
-<h3>10. The Moment Circuit</h3>
+<h3 id="10-the-moment-circuit"><a class="heading-anchor" href="#10-the-moment-circuit" aria-hidden="true">#</a>10. The Moment Circuit</h3>
 <p><strong>Decoupling prediction from learning.</strong> Two independent timelines:</p>
 <ul>
 <li><strong>The Moment</strong> (every candle, constant time) — encode, predict (one cosine), set stops, register paper, tick papers, queue resolutions for learning</li>
 <li><strong>The Past</strong> (separate schedule, deferred) — drain learn queue, update reckoners, discriminant converges</li>
 </ul>
 <p>The reckoner is a CRDT. The discriminant is a commutative monoid. Order of observation doesn't change the destination. Warmup is synchronous for the first N candles, then async.</p>
-<h3>11. The Pipe Circuit</h3>
+<h3 id="11-the-pipe-circuit"><a class="heading-anchor" href="#11-the-pipe-circuit" aria-hidden="true">#</a>11. The Pipe Circuit</h3>
 <p>CSP (communicating sequential processes). Concrete layout:</p>
 <ul>
 <li>Main thread = heartbeat (drives the fold)</li>
@@ -306,7 +309,7 @@
 <li>Log service batches 100 rows per commit</li>
 </ul>
 <hr />
-<h2>Key Architectural Principles</h2>
+<h2 id="key-architectural-principles"><a class="heading-anchor" href="#key-architectural-principles" aria-hidden="true">#</a>Key Architectural Principles</h2>
 <table>
 <thead>
 <tr>
@@ -338,7 +341,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Component Summary (from Circuit 1 legend)</h2>
+<h2 id="component-summary-from-circuit-1-legend"><a class="heading-anchor" href="#component-summary-from-circuit-1-legend" aria-hidden="true">#</a>Component Summary (from Circuit 1 legend)</h2>
 <table>
 <thead>
 <tr>
@@ -394,7 +397,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Notes</h2>
+<h2 id="notes"><a class="heading-anchor" href="#notes" aria-hidden="true">#</a>Notes</h2>
 <ul>
 <li>The document uses &quot;ExitObserver&quot; throughout; per the project's CLAUDE.md, this was renamed to &quot;Position Observer&quot; in Proposal 050, but CIRCUIT.md has not been updated to reflect this rename.</li>
 <li>The &quot;misses&quot; pattern (cache misses returned as values, inserted between candles) is consistent throughout all circuits.</li>

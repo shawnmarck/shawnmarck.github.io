@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -223,7 +226,7 @@
 <p><strong>Verified against source.</strong> Every claim below is traceable to <code>reckoner.rs</code> (1107 lines), <code>core/primitives.wat</code> (lines 28–83), and <code>std/memory.wat</code> (28 lines). Nothing is fabricated.</p>
 </blockquote>
 <hr />
-<h2>1. What It IS</h2>
+<h2 id="1-what-it-is"><a class="heading-anchor" href="#1-what-it-is" aria-hidden="true">#</a>1. What It IS</h2>
 <p>The Reckoner is <strong>one primitive, two readout modes</strong>:</p>
 <ul>
 <li><strong>Discrete mode</strong> — N-ary classification with symbol labels. &quot;Which of these labels does this thought match?&quot; Returns a <code>Prediction</code> with per-label cosine scores, a winning direction, and a conviction strength.</li>
@@ -234,7 +237,7 @@
 <p><em>&quot;Discrete mode: N-ary discriminant learner with symbol labels. Continuous mode: nearest-neighbor regression over (thought, scalar) pairs. Same accumulation mechanism. Same decay. Same recalibration.&quot;</em></p>
 </blockquote>
 <p>Both modes share a common <code>Reckoner</code> struct. The mode is determined at construction via <code>ReckConfig</code> and is immutable for the lifetime of the instance.</p>
-<h3>The WAT Specification</h3>
+<h3 id="the-wat-specification"><a class="heading-anchor" href="#the-wat-specification" aria-hidden="true">#</a>The WAT Specification</h3>
 <p>The formal spec calls the Reckoner a <strong>coalgebra</strong> — an opaque state machine with co-generators:</p>
 <blockquote>
 <p><em>&quot;Opaque state. The co-generators produce all observable behavior. Removing any one makes the external characterization incomplete.&quot;</em> — <code>primitives.wat</code></p>
@@ -287,8 +290,8 @@
 </tbody>
 </table>
 <hr />
-<h2>2. Construction</h2>
-<h3>The <code>Reckoner</code> struct</h3>
+<h2 id="2-construction"><a class="heading-anchor" href="#2-construction" aria-hidden="true">#</a>2. Construction</h2>
+<h3 id="the-reckoner-struct"><a class="heading-anchor" href="#the-reckoner-struct" aria-hidden="true">#</a>The <code>Reckoner</code> struct</h3>
 <pre><code class="language-rust">pub struct Reckoner {
     name: String,           // human-readable name
     dims: usize,            // vector dimensionality
@@ -300,7 +303,7 @@
     mode: ReckMode,         // Discrete or Continuous
 }
 </code></pre>
-<h3>Constructor</h3>
+<h3 id="constructor"><a class="heading-anchor" href="#constructor" aria-hidden="true">#</a>Constructor</h3>
 <pre><code class="language-rust">Reckoner::new(name, dims, recalib_interval, config) -&gt; Reckoner
 </code></pre>
 <ul>
@@ -308,7 +311,7 @@
 <li><strong><code>recalib_interval</code></strong>: Every N <code>observe()</code> calls in discrete mode, <code>recalibrate()</code> runs automatically.</li>
 <li><strong><code>config</code></strong>: <code>ReckConfig::Discrete(label_names)</code> or <code>ReckConfig::Continuous { default_value, buckets }</code>.</li>
 </ul>
-<h3>Discrete mode initialization</h3>
+<h3 id="discrete-mode-initialization"><a class="heading-anchor" href="#discrete-mode-initialization" aria-hidden="true">#</a>Discrete mode initialization</h3>
 <p>On construction with <code>ReckConfig::Discrete(vec![...])</code>:</p>
 <ul>
 <li>Creates one <code>Accumulator</code> per label (all zeroed).</li>
@@ -316,20 +319,20 @@
 <li>Creates <code>mean_proto</code> as <code>None</code>.</li>
 <li>Initializes the curve-fitting state: <code>resolved</code> = empty vec, <code>resolved_cap</code> = 5000, <code>min_resolved</code> = 500, <code>n_bins</code> = 20, <code>curve_a</code> = 0.0, <code>curve_b</code> = 0.0, <code>curve_valid</code> = false.</li>
 </ul>
-<h3>Continuous mode initialization</h3>
+<h3 id="continuous-mode-initialization"><a class="heading-anchor" href="#continuous-mode-initialization" aria-hidden="true">#</a>Continuous mode initialization</h3>
 <p>On construction with <code>ReckConfig::Continuous { default_value, buckets }</code>:</p>
 <ul>
 <li>Creates K <code>ScalarBucket</code> instances, each with an <code>Accumulator(dims)</code> and <code>center: 0.0</code>.</li>
 <li><code>range_min = 0.0</code>, <code>range_max = 0.0</code>, <code>total_observations = 0</code>, <code>obs_since_rebalance = 0</code>, <code>initialized = false</code>.</li>
 <li>The spec notes: <em>&quot;Range is discovered from observations. Decay + rebalance = breathing range. No magic min/max. The data teaches the range. K is the only parameter.&quot;</em></li>
 </ul>
-<h3>Chainable configuration</h3>
+<h3 id="chainable-configuration"><a class="heading-anchor" href="#chainable-configuration" aria-hidden="true">#</a>Chainable configuration</h3>
 <pre><code class="language-rust">.with_curve_params(resolved_cap, min_resolved, n_bins) -&gt; Self  // discrete only, no-op for continuous
 .with_max_observations(max) -&gt; Self  // legacy no-op: &quot;Bucketed accumulators don't cap — they compress them.&quot;
 </code></pre>
 <hr />
-<h2>3. Discrete Mode</h2>
-<h3>3.1 <code>observe(vec, label, weight)</code> — State Transition</h3>
+<h2 id="3-discrete-mode"><a class="heading-anchor" href="#3-discrete-mode" aria-hidden="true">#</a>3. Discrete Mode</h2>
+<h3 id="31-observevec-label-weight-state-transition"><a class="heading-anchor" href="#31-observevec-label-weight-state-transition" aria-hidden="true">#</a>3.1 <code>observe(vec, label, weight)</code> — State Transition</h3>
 <pre><code class="language-rust">pub fn observe(&amp;mut self, vec: &amp;Vector, label: Label, weight: f64)
 </code></pre>
 <p><strong>Panics</strong> if called on a continuous-mode reckoner (with message directing to <code>observe_scalar()</code>).</p>
@@ -341,7 +344,7 @@
 <li>Call <code>accumulators[idx].add_weighted(vec, weight)</code> — adds the vector weighted into the label's accumulator.</li>
 </ol>
 <p>The <code>Accumulator::add_weighted</code> implementation: for each dimension <code>s</code>, <code>s += (v as f64) * weight</code>, then <code>count += 1</code>. This is <strong>frequency-preserving</strong>: <em>&quot;Unlike bundling, accumulation preserves frequency information: patterns seen many times contribute proportionally more.&quot;</em></p>
-<h3>3.2 <code>predict(vec)</code> — Observation</h3>
+<h3 id="32-predictvec-observation"><a class="heading-anchor" href="#32-predictvec-observation" aria-hidden="true">#</a>3.2 <code>predict(vec)</code> — Observation</h3>
 <pre><code class="language-rust">pub fn predict(&amp;self, vec: &amp;Vector) -&gt; Prediction
 </code></pre>
 <p>Returns <code>Prediction::default()</code> for continuous mode or when no discriminants exist yet.</p>
@@ -368,7 +371,7 @@
 }
 </code></pre>
 <p><strong>Important note on sorting vs. direction selection</strong>: Scores are sorted by raw cosine descending in the code (<code>b.cosine.partial_cmp(&amp;a.cosine)</code>), but <code>conviction</code> is set to <code>best.cosine.abs()</code>. This means the winning label is the one with the highest <em>raw</em> cosine, and conviction measures magnitude.</p>
-<h3>3.3 <code>recalibrate()</code> — Internal (called automatically)</h3>
+<h3 id="33-recalibrate-internal-called-automatically"><a class="heading-anchor" href="#33-recalibrate-internal-called-automatically" aria-hidden="true">#</a>3.3 <code>recalibrate()</code> — Internal (called automatically)</h3>
 <pre><code class="language-rust">fn recalibrate(&amp;mut self)
 </code></pre>
 <p>No-op for continuous mode. Only meaningful when <code>label_count &gt;= 2</code> and <strong>all accumulators have at least one observation</strong>.</p>
@@ -391,18 +394,18 @@
 <p><em>&quot;discriminant(label) = prototype(label) - prototype(other).&quot;</em></p>
 </blockquote>
 <p>For binary classification, this simplifies to <code>prototype(A) - prototype(B)</code>, which is the classic Fisher-like linear discriminant direction.</p>
-<h3>3.4 <code>decay(factor)</code> — Aging</h3>
+<h3 id="34-decayfactor-aging"><a class="heading-anchor" href="#34-decayfactor-aging" aria-hidden="true">#</a>3.4 <code>decay(factor)</code> — Aging</h3>
 <pre><code class="language-rust">pub fn decay(&amp;mut self, factor: f64)
 </code></pre>
 <p>Works for <strong>both</strong> modes. Calls <code>accumulator.decay(factor)</code> on every accumulator.</p>
 <p><code>Accumulator::decay</code>: <code>sums *= factor</code>. The count is <strong>not</strong> decremented — it tracks history, not current weight.</p>
 <p><em>&quot;Useful for time-weighted baselines where recent patterns should have more influence.&quot;</em></p>
-<h3>3.5 <code>resolve(conviction, correct)</code> — Curve Fitting Input</h3>
+<h3 id="35-resolveconviction-correct-curve-fitting-input"><a class="heading-anchor" href="#35-resolveconviction-correct-curve-fitting-input" aria-hidden="true">#</a>3.5 <code>resolve(conviction, correct)</code> — Curve Fitting Input</h3>
 <pre><code class="language-rust">pub fn resolve(&amp;mut self, conviction: f64, correct: bool)
 </code></pre>
 <p>Discrete mode only (no-op for continuous).</p>
 <p>Pushes <code>(conviction, correct)</code> onto the <code>resolved</code> vec. If <code>resolved.len() &gt; resolved_cap</code>, the oldest entry is removed (<code>remove(0)</code>). This is a sliding window of bounded size.</p>
-<h3>3.6 <code>curve()</code> — Self-Evaluation</h3>
+<h3 id="36-curve-self-evaluation"><a class="heading-anchor" href="#36-curve-self-evaluation" aria-hidden="true">#</a>3.6 <code>curve()</code> — Self-Evaluation</h3>
 <pre><code class="language-rust">pub fn curve(&amp;mut self) -&gt; Option&lt;(f64, f64)&gt;
 </code></pre>
 <p>Discrete mode only. Fits the conviction-accuracy relationship.</p>
@@ -435,12 +438,12 @@
 <blockquote>
 <p><em>&quot;accuracy = (1/N) + a × exp(b × conviction), N = number of labels. At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal.&quot;</em></p>
 </blockquote>
-<h3>3.7 <code>accuracy_at(conviction)</code> — Evaluate Curve</h3>
+<h3 id="37-accuracy_atconviction-evaluate-curve"><a class="heading-anchor" href="#37-accuracy_atconviction-evaluate-curve" aria-hidden="true">#</a>3.7 <code>accuracy_at(conviction)</code> — Evaluate Curve</h3>
 <pre><code class="language-rust">pub fn accuracy_at(&amp;self, conviction: f64) -&gt; Option&lt;f64&gt;
 </code></pre>
 <p>Returns <code>None</code> if curve not valid or fewer than 2 labels.</p>
 <p>Formula: <code>min(base + curve_a × exp(curve_b × conviction), 0.99)</code> — capped at 99%.</p>
-<h3>3.8 Other Discrete Accessors</h3>
+<h3 id="38-other-discrete-accessors"><a class="heading-anchor" href="#38-other-discrete-accessors" aria-hidden="true">#</a>3.8 Other Discrete Accessors</h3>
 <table>
 <thead>
 <tr>
@@ -496,8 +499,8 @@
 </tbody>
 </table>
 <hr />
-<h2>4. Continuous Mode</h2>
-<h3>4.1 <code>observe_scalar(vec, value, weight)</code> — State Transition</h3>
+<h2 id="4-continuous-mode"><a class="heading-anchor" href="#4-continuous-mode" aria-hidden="true">#</a>4. Continuous Mode</h2>
+<h3 id="41-observe_scalarvec-value-weight-state-transition"><a class="heading-anchor" href="#41-observe_scalarvec-value-weight-state-transition" aria-hidden="true">#</a>4.1 <code>observe_scalar(vec, value, weight)</code> — State Transition</h3>
 <pre><code class="language-rust">pub fn observe_scalar(&amp;mut self, vec: &amp;Vector, value: f64, weight: f64)
 </code></pre>
 <p><strong>Panics</strong> if called on a discrete-mode reckoner.</p>
@@ -515,7 +518,7 @@
 <li><strong>Bucket assignment</strong>: <code>idx = floor((value - range_min) / width).min(K - 1)</code>. Add the weighted vector to <code>buckets[idx].accumulator</code>. Weight is floored at <code>1e-10</code>.</li>
 <li><strong>Periodic rebalance</strong>: every 100 observations, call <code>rebalance_continuous()</code> and reset <code>obs_since_rebalance</code>.</li>
 </ol>
-<h3>4.2 <code>rebalance_continuous()</code> — Internal</h3>
+<h3 id="42-rebalance_continuous-internal"><a class="heading-anchor" href="#42-rebalance_continuous-internal" aria-hidden="true">#</a>4.2 <code>rebalance_continuous()</code> — Internal</h3>
 <pre><code class="language-rust">fn rebalance_continuous(buckets, k, range_min, range_max, dims)
 </code></pre>
 <p>This is the &quot;breathing&quot; mechanism. It contracts the range to where active weight lives.</p>
@@ -530,7 +533,7 @@
 <li><strong>Pour old data</strong>: for each alive old bucket, find its nearest new bucket by center position, and <code>merge()</code> the accumulator in.</li>
 </ol>
 <p>This is how the continuous reckoner adapts its range to the data without hardcoded bounds.</p>
-<h3>4.3 <code>query(vec)</code> — Observation</h3>
+<h3 id="43-queryvec-observation"><a class="heading-anchor" href="#43-queryvec-observation" aria-hidden="true">#</a>4.3 <code>query(vec)</code> — Observation</h3>
 <pre><code class="language-rust">pub fn query(&amp;self, vec: &amp;Vector) -&gt; f64
 </code></pre>
 <p>Returns <code>default_value</code> if no observations yet, or <code>0.0</code> if called on discrete mode.</p>
@@ -552,7 +555,7 @@
 </ol>
 <p>The docstring explains: <em>&quot;Cosine against K bucket prototypes, soft-weight top-3, interpolate. O(K × D) — constant in observation count.&quot;</em></p>
 <p>The interpolation means: <em>&quot;interpolate, don't argmax&quot;</em> — the reckoner returns a blend of the three closest bucket centers, weighted by how well the thought matches each bucket's prototype direction.</p>
-<h3>4.4 Other Continuous Accessors</h3>
+<h3 id="44-other-continuous-accessors"><a class="heading-anchor" href="#44-other-continuous-accessors" aria-hidden="true">#</a>4.4 Other Continuous Accessors</h3>
 <table>
 <thead>
 <tr>
@@ -572,8 +575,8 @@
 </tbody>
 </table>
 <hr />
-<h2>5. Introspection — The Full API Surface</h2>
-<h3>Both modes</h3>
+<h2 id="5-introspection-the-full-api-surface"><a class="heading-anchor" href="#5-introspection-the-full-api-surface" aria-hidden="true">#</a>5. Introspection — The Full API Surface</h2>
+<h3 id="both-modes"><a class="heading-anchor" href="#both-modes" aria-hidden="true">#</a>Both modes</h3>
 <table>
 <thead>
 <tr>
@@ -612,7 +615,7 @@
 </tr>
 </tbody>
 </table>
-<h3>Discrete-only</h3>
+<h3 id="discrete-only"><a class="heading-anchor" href="#discrete-only" aria-hidden="true">#</a>Discrete-only</h3>
 <table>
 <thead>
 <tr>
@@ -699,7 +702,7 @@
 </tr>
 </tbody>
 </table>
-<h3>Continuous-only</h3>
+<h3 id="continuous-only"><a class="heading-anchor" href="#continuous-only" aria-hidden="true">#</a>Continuous-only</h3>
 <table>
 <thead>
 <tr>
@@ -723,52 +726,52 @@
 </tbody>
 </table>
 <hr />
-<h2>6. Key Properties</h2>
-<h3>6.1 Accumulation, not storage</h3>
+<h2 id="6-key-properties"><a class="heading-anchor" href="#6-key-properties" aria-hidden="true">#</a>6. Key Properties</h2>
+<h3 id="61-accumulation-not-storage"><a class="heading-anchor" href="#61-accumulation-not-storage" aria-hidden="true">#</a>6.1 Accumulation, not storage</h3>
 <p>The Reckoner never stores individual observations. It uses <code>Accumulator</code>s that maintain <strong>running weighted sums</strong> of vectors. The key insight:</p>
 <blockquote>
 <p><em>&quot;Unlike bundling, this does NOT threshold after each addition, preserving frequency information.&quot;</em> — accumulator.rs</p>
 </blockquote>
 <p>An accumulator's <code>add_weighted</code> is <code>sums += vec * weight; count += 1</code>. The <code>normalize_f64()</code> call returns <code>sums / ||sums||</code>. This is a streaming prototype: the more you observe a pattern, the stronger its direction.</p>
-<h3>6.2 Cosine as the sole measurement</h3>
+<h3 id="62-cosine-as-the-sole-measurement"><a class="heading-anchor" href="#62-cosine-as-the-sole-measurement" aria-hidden="true">#</a>6.2 Cosine as the sole measurement</h3>
 <p>All similarity computation uses cosine similarity. The WAT spec states:</p>
 <blockquote>
 <p><em>&quot;(cosine thought direction) → Float ; [-1.0, +1.0]&quot;</em>
 <em>&quot;The only measurement. One number.&quot;</em></p>
 </blockquote>
 <p>The discrete discriminant is compared via cosine. The continuous bucket prototypes are compared via cosine. The conviction is an absolute cosine. This is consistent throughout.</p>
-<h3>6.3 Frequency preservation vs. bundling</h3>
+<h3 id="63-frequency-preservation-vs-bundling"><a class="heading-anchor" href="#63-frequency-preservation-vs-bundling" aria-hidden="true">#</a>6.3 Frequency preservation vs. bundling</h3>
 <ul>
 <li><code>bundle([a, a, a, a, a])</code> = <code>a</code> (idempotent — bundling is a set operation).</li>
 <li><code>accumulator.add(a)</code> × 5 preserves that <code>a</code> was seen 5 times (the sum vector has 5× magnitude).</li>
 </ul>
-<h3>6.4 Decay is multiplicative on sums, not on count</h3>
+<h3 id="64-decay-is-multiplicative-on-sums-not-on-count"><a class="heading-anchor" href="#64-decay-is-multiplicative-on-sums-not-on-count" aria-hidden="true">#</a>6.4 Decay is multiplicative on sums, not on count</h3>
 <p><code>decay(factor)</code> calls <code>sums *= factor</code>. The observation <code>count</code> is never decremented. From the test:</p>
 <blockquote>
 <p><em>&quot;Count stays — it tracks total observations ever, not current weight. The accumulator sums decay to near-zero but the count is history.&quot;</em></p>
 </blockquote>
-<h3>6.5 Continuous range is data-driven</h3>
+<h3 id="65-continuous-range-is-data-driven"><a class="heading-anchor" href="#65-continuous-range-is-data-driven" aria-hidden="true">#</a>6.5 Continuous range is data-driven</h3>
 <p>The continuous reckoner has no hardcoded value range. The first observation seeds a tiny range (<code>±0.001</code>). Every out-of-range observation expands the range and triggers rebalancing. Every 100 observations, the range contracts to where alive weight still lives. The comment:</p>
 <blockquote>
 <p><em>&quot;Range is discovered from observations. Decay + rebalance = breathing range. No magic min/max. The data teaches the range. K is the only parameter.&quot;</em></p>
 </blockquote>
-<h3>6.6 Recalibration is periodic, not event-driven</h3>
+<h3 id="66-recalibration-is-periodic-not-event-driven"><a class="heading-anchor" href="#66-recalibration-is-periodic-not-event-driven" aria-hidden="true">#</a>6.6 Recalibration is periodic, not event-driven</h3>
 <p>In discrete mode, <code>recalibrate()</code> is called every <code>recalib_interval</code> observations (checked modulo in <code>observe()</code>). It is a batch operation: extract all prototypes, compute discriminants, write them back. There is no incremental update.</p>
-<h3>6.7 Curve fitting validates the reckoner's own confidence</h3>
+<h3 id="67-curve-fitting-validates-the-reckoners-own-confidence"><a class="heading-anchor" href="#67-curve-fitting-validates-the-reckoners-own-confidence" aria-hidden="true">#</a>6.7 Curve fitting validates the reckoner's own confidence</h3>
 <p>The curve mechanism answers: &quot;When this reckoner says it's confident, is it actually right?&quot; By recording <code>(conviction, correct)</code> pairs and fitting <code>accuracy = 1/N + a·exp(b·conviction)</code>, the system gets a self-calibration measure. A positive <code>b</code> means higher conviction correlates with higher accuracy — the reckoner knows what it knows.</p>
-<h3>6.8 Computational complexity</h3>
+<h3 id="68-computational-complexity"><a class="heading-anchor" href="#68-computational-complexity" aria-hidden="true">#</a>6.8 Computational complexity</h3>
 <ul>
 <li><strong>Discrete predict</strong>: O(L × D) where L = labels, D = dimensions.</li>
 <li><strong>Continuous query</strong>: O(K × D) where K = buckets, D = dimensions. The top-3 selection is O(K log K) for the sort, but K is typically small (e.g., 10).</li>
 <li><strong>Both are constant in the number of observations</strong> — the accumulator compresses everything into a single D-dimensional sum vector.</li>
 </ul>
-<h3>6.9 The <code>with_max_observations</code> is a no-op</h3>
+<h3 id="69-the-with_max_observations-is-a-no-op"><a class="heading-anchor" href="#69-the-with_max_observations-is-a-no-op" aria-hidden="true">#</a>6.9 The <code>with_max_observations</code> is a no-op</h3>
 <p>The method exists as a legacy API. The code comments:</p>
 <blockquote>
 <p><em>&quot;Legacy — was max observations for brute-force mode. Now a no-op. Bucketed accumulators don't cap observations — they compress them.&quot;</em></p>
 </blockquote>
 <hr />
-<h2>7. Source Quotes (Verbatim)</h2>
+<h2 id="7-source-quotes-verbatim"><a class="heading-anchor" href="#7-source-quotes-verbatim" aria-hidden="true">#</a>7. Source Quotes (Verbatim)</h2>
 <p>From <code>reckoner.rs</code>:</p>
 <ul>
 <li>Line 1–2: <em>&quot;Reckoner — one primitive, two readout modes.&quot;</em></li>

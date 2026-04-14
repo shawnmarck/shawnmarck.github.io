@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -223,18 +226,18 @@
 <strong>Verified by:</strong> Subagent read — full document consumed
 <strong>Date:</strong> 2026-04-14</p>
 <hr />
-<h2>What It Is</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It Is</h2>
 <p>The 007 blueprint. A complete technical specification for the holon trading machine, written as a web-published blog post. It declares every struct, interface, dependency, and construction order. No implementation — only declarations. The document is structured as a walkable path: leaves first, root last, with every dependency satisfied before its consumer is introduced.</p>
 <p>The web version has frontmatter (title, description) for the Astro-based website. It is intended to be read top-to-bottom by a newcomer who knows nothing about the project.</p>
 <hr />
-<h2>Document Structure</h2>
-<h3>Frontmatter</h3>
+<h2 id="document-structure"><a class="heading-anchor" href="#document-structure" aria-hidden="true">#</a>Document Structure</h2>
+<h3 id="frontmatter"><a class="heading-anchor" href="#frontmatter" aria-hidden="true">#</a>Frontmatter</h3>
 <pre><code class="language-yaml">title: &quot;The Guide&quot;
 description: &quot;The 007 blueprint. Every struct, every interface, every dependency, every construction order.&quot;
 </code></pre>
-<h3>Section 1: Holon-rs Primitives</h3>
+<h3 id="section-1-holon-rs-primitives"><a class="heading-anchor" href="#section-1-holon-rs-primitives" aria-hidden="true">#</a>Section 1: Holon-rs Primitives</h3>
 <p>The six substrate primitives provided by holon-rs (atom, bind, bundle, cosine, reckoner, curve) plus OnlineSubspace, ScalarEncoder, VectorManager, and utility operations. These are NOT specified in this tree — they are imported.</p>
-<h3>Section 2: Definitions</h3>
+<h3 id="section-2-definitions"><a class="heading-anchor" href="#section-2-definitions" aria-hidden="true">#</a>Section 2: Definitions</h3>
 <p>Shared terminology and concepts:</p>
 <ul>
 <li><strong>Labels and measurement</strong> — Outcome (Grace/Violence), Prediction (Discrete/Continuous), TradePhase, MarketLens, ExitLens</li>
@@ -243,10 +246,10 @@ description: &quot;The 007 blueprint. Every struct, every interface, every depen
 <li><strong>Trade lifecycle</strong> — Paper trades, settlements, residue, the runner</li>
 <li><strong>Infrastructure</strong> — Window sampler, ctx (immutable shared context), the ledger</li>
 </ul>
-<h3>Section 3: Forward Declarations</h3>
+<h3 id="section-3-forward-declarations"><a class="heading-anchor" href="#section-3-forward-declarations" aria-hidden="true">#</a>Section 3: Forward Declarations</h3>
 <p>The path from market to thought (ASCII diagram showing raw-candle → candle → indicators → vocabulary → encoder → thought → observer → broker → proposal).
 The construction order listing every entity in build sequence.</p>
-<h3>Section 4: Structs and Interfaces</h3>
+<h3 id="section-4-structs-and-interfaces"><a class="heading-anchor" href="#section-4-structs-and-interfaces" aria-hidden="true">#</a>Section 4: Structs and Interfaces</h3>
 <p>17 entity definitions in dependency order:</p>
 <ol>
 <li>RawCandle</li>
@@ -266,9 +269,9 @@ The construction order listing every entity in build sequence.</p>
 <li>The Binary</li>
 </ol>
 <p>Each entity declares: type, fields with types, interfaces (functions it provides), dependencies on prior entities, and key design notes.</p>
-<h3>Section 5: The Build Order</h3>
+<h3 id="section-5-the-build-order"><a class="heading-anchor" href="#section-5-the-build-order" aria-hidden="true">#</a>Section 5: The Build Order</h3>
 <p>Summary construction order — reiterates leaves-to-root.</p>
-<h3>Section 6: The CSP Per Candle</h3>
+<h3 id="section-6-the-csp-per-candle"><a class="heading-anchor" href="#section-6-the-csp-per-candle" aria-hidden="true">#</a>Section 6: The CSP Per Candle</h3>
 <p>The Communicating Sequential Process model — four steps per candle:</p>
 <ol>
 <li><strong>Produce</strong> (parallel) — posts observe candles, encode thoughts, brokers propose</li>
@@ -277,11 +280,11 @@ The construction order listing every entity in build sequence.</p>
 <li><strong>Collect</strong> (sequential) — process logs, drain queues, prepare next candle</li>
 </ol>
 <p>Channel types and typed boundaries between steps.</p>
-<h3>Section 7: The Circuit</h3>
+<h3 id="section-7-the-circuit"><a class="heading-anchor" href="#section-7-the-circuit" aria-hidden="true">#</a>Section 7: The Circuit</h3>
 <p>ASCII art dataflow diagram showing the entire system's data flow.</p>
 <hr />
-<h2>Key Declarations</h2>
-<h3>The reckoner interface</h3>
+<h2 id="key-declarations"><a class="heading-anchor" href="#key-declarations" aria-hidden="true">#</a>Key Declarations</h2>
+<h3 id="the-reckoner-interface"><a class="heading-anchor" href="#the-reckoner-interface" aria-hidden="true">#</a>The reckoner interface</h3>
 <pre><code class="language-scheme">(make-reckoner config) → Reckoner   ; config = (dims, recalib-interval, mode)
 (observe reckoner thought observation weight)
 (predict reckoner thought) → Prediction
@@ -289,18 +292,18 @@ The construction order listing every entity in build sequence.</p>
 (experience reckoner) → f64
 </code></pre>
 <p>Two modes: <code>Discrete</code> (labels: Up/Down classification) and <code>Continuous</code> (default-value: scalar regression).</p>
-<h3>The curve (as standalone)</h3>
+<h3 id="the-curve-as-standalone"><a class="heading-anchor" href="#the-curve-as-standalone" aria-hidden="true">#</a>The curve (as standalone)</h3>
 <pre><code class="language-scheme">(make-curve) → Curve
 (record-prediction curve conviction correct?)
 (edge-at curve conviction) → f64
 (proven? curve min-samples) → bool
 </code></pre>
 <p><strong>Note:</strong> The web guide has the curve as a standalone primitive with <code>(make-curve)</code>. The lab guide changed this — the curve became internal to the reckoner.</p>
-<h3>The enterprise expression</h3>
+<h3 id="the-enterprise-expression"><a class="heading-anchor" href="#the-enterprise-expression" aria-hidden="true">#</a>The enterprise expression</h3>
 <pre><code class="language-scheme">(on-candle enterprise raw-candle ctx)
 </code></pre>
 <p>This is THE function — the single entry point that runs the entire four-step loop.</p>
-<h3>Trade phases (web version)</h3>
+<h3 id="trade-phases-web-version"><a class="heading-anchor" href="#trade-phases-web-version" aria-hidden="true">#</a>Trade phases (web version)</h3>
 <ul>
 <li>Active → Settled(Violence) on safety-stop</li>
 <li>Active → PrincipalRecovered on take-profit</li>
@@ -308,25 +311,25 @@ The construction order listing every entity in build sequence.</p>
 <li>Runner → RunnerSettled(Grace) on runner-trail stop</li>
 </ul>
 <p><strong>Note:</strong> The lab guide significantly changed the trade lifecycle. See comparison below.</p>
-<h3>Distances (web version)</h3>
+<h3 id="distances-web-version"><a class="heading-anchor" href="#distances-web-version" aria-hidden="true">#</a>Distances (web version)</h3>
 <p>4 learnable scalars: <code>trail</code>, <code>stop</code>, <code>tp</code>, <code>runner-trail</code></p>
 <p><strong>Note:</strong> The lab guide reduced this to 2: <code>trail</code> and <code>stop</code>.</p>
-<h3>Exit observers (web version)</h3>
+<h3 id="exit-observers-web-version"><a class="heading-anchor" href="#exit-observers-web-version" aria-hidden="true">#</a>Exit observers (web version)</h3>
 <p>4 continuous reckoners (one per distance: trail, stop, tp, runner-trail)</p>
 <p><strong>Note:</strong> The lab guide reduced this to 2.</p>
-<h3>N and M (web version)</h3>
+<h3 id="n-and-m-web-version"><a class="heading-anchor" href="#n-and-m-web-version" aria-hidden="true">#</a>N and M (web version)</h3>
 <p>N = 6 market observers, M = 4 exit observers → N×M = 24 brokers</p>
 <p><strong>Note:</strong> The lab guide removed the specific numbers.</p>
 <hr />
-<h2>How It Maps to the Lab Guide</h2>
+<h2 id="how-it-maps-to-the-lab-guide"><a class="heading-anchor" href="#how-it-maps-to-the-lab-guide" aria-hidden="true">#</a>How It Maps to the Lab Guide</h2>
 <p>See the comparison section below for a detailed analysis.</p>
 <hr />
-<h2>Comparison: Web Guide vs. Lab Guide</h2>
+<h2 id="comparison-web-guide-vs-lab-guide"><a class="heading-anchor" href="#comparison-web-guide-vs-lab-guide" aria-hidden="true">#</a>Comparison: Web Guide vs. Lab Guide</h2>
 <p><strong>Web guide:</strong> <code>algebraic-intelligence.dev/src/content/docs/blog/guide.md</code> (2141 lines, ~103KB)
 <strong>Lab guide:</strong> <code>holon-lab-trading/wat/GUIDE.md</code> (2568 lines, ~126KB)</p>
-<h3>Same Document, Different Version</h3>
+<h3 id="same-document-different-version"><a class="heading-anchor" href="#same-document-different-version" aria-hidden="true">#</a>Same Document, Different Version</h3>
 <p>These are <strong>the same document at different points in time</strong>. The lab guide is the evolved, more mature version. The web guide is the published snapshot. They share the same structure, the same entity names, the same construction order, and the same philosophical framing. The differences are meaningful but architectural, not fundamental.</p>
-<h3>Structural Differences</h3>
+<h3 id="structural-differences"><a class="heading-anchor" href="#structural-differences" aria-hidden="true">#</a>Structural Differences</h3>
 <table>
 <thead>
 <tr>
@@ -358,7 +361,7 @@ The construction order listing every entity in build sequence.</p>
 </tr>
 </tbody>
 </table>
-<h3>Key Technical Divergences</h3>
+<h3 id="key-technical-divergences"><a class="heading-anchor" href="#key-technical-divergences" aria-hidden="true">#</a>Key Technical Divergences</h3>
 <ol>
 <li><p><strong>The Curve — Standalone vs. Internal</strong></p>
 <ul>
@@ -432,7 +435,7 @@ The construction order listing every entity in build sequence.</p>
 </ul>
 </li>
 </ol>
-<h3>What Stayed the Same</h3>
+<h3 id="what-stayed-the-same"><a class="heading-anchor" href="#what-stayed-the-same" aria-hidden="true">#</a>What Stayed the Same</h3>
 <ul>
 <li>The philosophical framing (&quot;The coordinates to where the machine is&quot;)</li>
 <li>All 15 core entity names and their dependency relationships</li>
@@ -446,7 +449,7 @@ The construction order listing every entity in build sequence.</p>
 <li>The enterprise as root with <code>on-candle</code> as THE function</li>
 <li>The definitions section terminology</li>
 </ul>
-<h3>Summary of Divergence</h3>
+<h3 id="summary-of-divergence"><a class="heading-anchor" href="#summary-of-divergence" aria-hidden="true">#</a>Summary of Divergence</h3>
 <p>The web guide is a <strong>snapshot</strong> published before the full ignorant reader process completed. The lab guide is the <strong>evolved specification</strong> after 32 passes of the ignorant ward, designer consultations, and architectural refinements. The core structure is identical; the differences are in:</p>
 <ol>
 <li><strong>The curve</strong> — moved from standalone to reckoner-internal</li>

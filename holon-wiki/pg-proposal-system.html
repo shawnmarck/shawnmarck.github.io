@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,12 +222,12 @@
         Proposal System <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; evolves through a formal proposal process. Each proposal describes a problem, proposes alternatives, and is independently reviewed by two designers — <strong>Brian Beckman</strong> (algebraic authority) and <strong>Rich Hickey</strong> (simplicity authority). A <strong>datamancer arbitrator</strong> synthesizes their reviews into a final resolution, sometimes overriding both. Eighteen proposals have been resolved to date (March–April 2026), shaping the language's &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;, core algebra, and concurrency model.</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2>Anatomy of a Proposal</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="anatomy-of-a-proposal"><a class="heading-anchor" href="#anatomy-of-a-proposal" aria-hidden="true">#</a>Anatomy of a Proposal</h2>
 <p>Every proposal is a <code>PROPOSAL.md</code> with seven required sections:</p>
 <ol>
 <li><strong>Scope</strong> — classified as <code>core</code>, <code>structural</code>, or following from a prior proposal.</li>
@@ -235,8 +238,8 @@
 <li><strong>The Simplicity Question</strong> — Hickey's test: &quot;Is this simple or easy?&quot; What is being complected? Could existing primitives solve it?</li>
 <li><strong>Questions for Designers</strong> — specific yes/no and tradeoff questions for the review panel.</li>
 </ol>
-<h2>The Review Panel</h2>
-<h3>Brian Beckman — Algebraic Authority</h3>
+<h2 id="the-review-panel"><a class="heading-anchor" href="#the-review-panel" aria-hidden="true">#</a>The Review Panel</h2>
+<h3 id="brian-beckman-algebraic-authority"><a class="heading-anchor" href="#brian-beckman-algebraic-authority" aria-hidden="true">#</a>Brian Beckman — Algebraic Authority</h3>
 <p>Frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. His recurring questions: <em>&quot;Does this compose?&quot;</em> and <em>&quot;What categorical construction is this?&quot;</em> He tends to see mathematical structure where Hickey sees convention.</p>
 <p><strong>Key positions:</strong></p>
 <ul>
@@ -245,7 +248,7 @@
 <li>Argued journal operations are co-generators of a coalgebra and belong in core (004).</li>
 </ul>
 <p><strong>Overridden on:</strong> struct field types (007 — wanted mandatory types; untyped won) and <code>defservice</code> (04/003 — datamancer showed functions + &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;select&lt;/a&gt; suffice).</p>
-<h3>Rich Hickey — Simplicity Authority</h3>
+<h3 id="rich-hickey-simplicity-authority"><a class="heading-anchor" href="#rich-hickey-simplicity-authority" aria-hidden="true">#</a>Rich Hickey — Simplicity Authority</h3>
 <p>Applies &quot;simple made easy&quot; — distinguishes <strong>simple</strong> (one concept, one job) from <strong>easy</strong> (familiar, convenient). Protects the six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; from growth. His recurring questions: <em>&quot;Does this complect?&quot;</em> and <em>&quot;Could existing forms do this?&quot;</em> He tends to reject new forms when discipline or data restructuring suffices.</p>
 <p><strong>Key positions:</strong></p>
 <ul>
@@ -254,13 +257,13 @@
 <li>Won keyword-as-function access: <em>&quot;Keywords read like English&quot;</em> (007).</li>
 </ul>
 <p><strong>Overridden on:</strong> journal operations in stdlib (004 — reversed after opacity argument), <code>nil</code> (013 — datamancer chose structural absence), and channels (003 — deleted as contradicting fold-based design).</p>
-<h3>The Datamancer — Arbitrator</h3>
+<h3 id="the-datamancer-arbitrator"><a class="heading-anchor" href="#the-datamancer-arbitrator" aria-hidden="true">#</a>The Datamancer — Arbitrator</h3>
 <p>Not a formal reviewer but a <strong>synthesizing role</strong> visible in resolutions. Appears when the two designers disagree or when neither option is right. The datamancer has overruled <em>both</em> designers:</p>
 <ul>
 <li><strong>Proposal 013</strong> — chose &quot;structural absence&quot; with the <code>?</code> field convention, rejecting both Clojure truthiness and Rust's nil separation.</li>
 <li><strong>Proposal 04/003</strong> — showed that &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;select&lt;/a&gt; + functions + <code>spawn</code> subsume <code>defprocess</code> and <code>defservice</code> entirely, retiring both forms.</li>
 </ul>
-<h2>Resolution</h2>
+<h2 id="resolution"><a class="heading-anchor" href="#resolution" aria-hidden="true">#</a>Resolution</h2>
 <p>A <code>RESOLUTION.md</code> synthesizes the two reviews into one of four outcomes:</p>
 <table>
 <thead>
@@ -289,7 +292,7 @@
 </tbody>
 </table>
 <p>Resolution documents record who was overridden and why.</p>
-<h2>Design Principles (Emergent)</h2>
+<h2 id="design-principles-emergent"><a class="heading-anchor" href="#design-principles-emergent" aria-hidden="true">#</a>Design Principles (Emergent)</h2>
 <p>The proposal system has produced six stable principles:</p>
 <ol>
 <li><p><strong>Transparency to Rust.</strong> Form names match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax maps obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</p>
@@ -305,7 +308,7 @@
 <li><p><strong>The four-layer model</strong> (003): <strong>Syntax</strong> (compiler builtins), <strong>Core</strong> (algebra), <strong>Stdlib</strong> (derived operations), <strong>Userland</strong> (domain code). Each layer has a boundary rule — stdlib cannot import from userland; core can only be extended by proposal.</p>
 </li>
 </ol>
-<h2>Proposal Dependency Chain</h2>
+<h2 id="proposal-dependency-chain"><a class="heading-anchor" href="#proposal-dependency-chain" aria-hidden="true">#</a>Proposal Dependency Chain</h2>
 <p>The proposals form a clear dependency graph:</p>
 <pre><code>001 → 002   (rejected processor → accepted fold)
 002 → 003   (fold accepted → channels deleted, layers defined)
@@ -315,7 +318,7 @@
 014 → 015   (protocols accepted → satisfaction mechanics)
 04/002 → 04/003  (pipes accepted → select → superseded by simpler answer)
 </code></pre>
-<h2>Status Summary</h2>
+<h2 id="status-summary"><a class="heading-anchor" href="#status-summary" aria-hidden="true">#</a>Status Summary</h2>
 <table>
 <thead>
 <tr>
@@ -344,7 +347,7 @@
 </table>
 <p>All 18 proposals have final resolutions.</p>
 <hr />
-<h2>Related Concepts</h2>
+<h2 id="related-concepts"><a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a>Related Concepts</h2>
 <ul>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; — the language these proposals shape</li>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — added through proposals</li>

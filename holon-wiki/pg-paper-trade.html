@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,12 +222,12 @@
         Paper Trade — hypothetical accountability without execution <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&amp;L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is &quot;hypothetical accountability.&quot;</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2>Lifecycle</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="lifecycle"><a class="heading-anchor" href="#lifecycle" aria-hidden="true">#</a>Lifecycle</h2>
 <pre class="mermaid">flowchart TD
     created[&quot;Created\n(register_paper)&quot;] --&gt;|&quot;price moves against prediction\nhits fixed stop&quot;| violence[&quot;Violence\n(resolved, never signaled)&quot;]
     created --&gt;|&quot;price moves in predicted direction\nfar enough to cross trail threshold&quot;| runner[&quot;signaled = true\nnow a Runner&quot;]
@@ -237,7 +240,7 @@
 <p>Source: T0-015 § Lifecycle Summary; T0-018 § 7.7</p>
 </blockquote>
 <hr />
-<h2>Resolution Classifications</h2>
+<h2 id="resolution-classifications"><a class="heading-anchor" href="#resolution-classifications" aria-hidden="true">#</a>Resolution Classifications</h2>
 <table>
 <thead>
 <tr>
@@ -268,28 +271,28 @@
 <blockquote>
 <p>Source: T0-015 § Resolution Classifications</p>
 </blockquote>
-<h3>Stop priority</h3>
+<h3 id="stop-priority"><a class="heading-anchor" href="#stop-priority" aria-hidden="true">#</a>Stop priority</h3>
 <p>Violence is checked <em>before</em> Grace on each tick. If both triggers would fire simultaneously, Violence wins — a price that hits the stop and the trail-cross threshold on the same tick is classified as Violence, not Grace.</p>
 <blockquote>
 <p>Source: T0-015 § tick — &quot;Key ordering&quot;</p>
 </blockquote>
 <hr />
-<h2>Triggers</h2>
-<h3>Trail (Grace)</h3>
+<h2 id="triggers"><a class="heading-anchor" href="#triggers" aria-hidden="true">#</a>Triggers</h2>
+<h3 id="trail-grace"><a class="heading-anchor" href="#trail-grace" aria-hidden="true">#</a>Trail (Grace)</h3>
 <p>A trailing stop that follows the best price in the predicted direction:</p>
 <ul>
 <li><strong>Up predictions:</strong> <code>trail_level = extreme - extreme × trail_distance</code>. Only ratchets upward.</li>
 <li><strong>Down predictions:</strong> <code>trail_level = extreme + extreme × trail_distance</code>. Only ratchets downward.</li>
 </ul>
 <p>The <code>extreme</code> tracks the best price seen so far (monotonically favorable). The trail level follows with a gap of <code>trail_distance</code> percent.</p>
-<h3>Stop (Violence)</h3>
+<h3 id="stop-violence"><a class="heading-anchor" href="#stop-violence" aria-hidden="true">#</a>Stop (Violence)</h3>
 <p>A fixed stop loss set at creation, never moves:</p>
 <ul>
 <li><strong>Up predictions:</strong> <code>entry - entry × stop_distance</code> (below entry).</li>
 <li><strong>Down predictions:</strong> <code>entry + entry × stop_distance</code> (above entry).</li>
 </ul>
 <hr />
-<h2>PaperEntry Fields</h2>
+<h2 id="paperentry-fields"><a class="heading-anchor" href="#paperentry-fields" aria-hidden="true">#</a>PaperEntry Fields</h2>
 <table>
 <thead>
 <tr>
@@ -380,7 +383,7 @@
 <p>Source: T0-015 § Fields</p>
 </blockquote>
 <hr />
-<h2>Excursion</h2>
+<h2 id="excursion"><a class="heading-anchor" href="#excursion" aria-hidden="true">#</a>Excursion</h2>
 <p><code>excursion()</code> measures how far price moved in the predicted direction, as a fraction of entry:</p>
 <ul>
 <li>Up: <code>(extreme - entry) / entry</code></li>
@@ -391,13 +394,13 @@
 <p>Source: T0-015 § excursion()</p>
 </blockquote>
 <hr />
-<h2>Broker Integration</h2>
-<h3>Creation</h3>
+<h2 id="broker-integration"><a class="heading-anchor" href="#broker-integration" aria-hidden="true">#</a>Broker Integration</h2>
+<h3 id="creation"><a class="heading-anchor" href="#creation" aria-hidden="true">#</a>Creation</h3>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; creates a paper every candle via <code>register_paper()</code>, which assigns a monotonic <code>paper_id</code> and pushes the paper onto a <code>VecDeque</code>. Three separate thoughts are recorded: composed, market, and position (Proposal 026 — position observer learns from its own thought, not composed).</p>
 <blockquote>
 <p>Source: T0-018 § 7.5</p>
 </blockquote>
-<h3>Ticking</h3>
+<h3 id="ticking"><a class="heading-anchor" href="#ticking" aria-hidden="true">#</a>Ticking</h3>
 <p><code>tick_papers()</code> returns two vectors:</p>
 <ol>
 <li><strong><code>market_signals</code></strong> — Grace signals and Violence stops, for market observer learning.</li>
@@ -407,13 +410,13 @@
 <blockquote>
 <p>Source: T0-018 § 7.7</p>
 </blockquote>
-<h3>Direction Flip</h3>
+<h3 id="direction-flip"><a class="heading-anchor" href="#direction-flip" aria-hidden="true">#</a>Direction Flip</h3>
 <p>When the market observer's active direction flips, <code>close_all_runners()</code> force-resolves all active runners as Grace. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally).</p>
 <blockquote>
 <p>Source: T0-018 § 7.6</p>
 </blockquote>
 <hr />
-<h2>From Resolution to Learning</h2>
+<h2 id="from-resolution-to-learning"><a class="heading-anchor" href="#from-resolution-to-learning" aria-hidden="true">#</a>From Resolution to Learning</h2>
 <p>Resolutions flow through <code>propagate()</code>, which performs three actions:</p>
 <ol>
 <li><strong>Track record</strong> — updates cumulative grace/violence and counts.</li>
@@ -424,7 +427,7 @@
 <p>Source: T0-018 § 7.8</p>
 </blockquote>
 <hr />
-<h2>The Gate</h2>
+<h2 id="the-gate"><a class="heading-anchor" href="#the-gate" aria-hidden="true">#</a>The Gate</h2>
 <p>Paper trade outcomes power the broker's gate via <code>gate_open()</code>:</p>
 <ul>
 <li><strong>Cold start</strong> (&lt; 50 of either outcome): gate always open — not enough data.</li>
@@ -435,7 +438,7 @@
 <p>Source: T0-018 § 7.3</p>
 </blockquote>
 <hr />
-<h2>Distance Cascade</h2>
+<h2 id="distance-cascade"><a class="heading-anchor" href="#distance-cascade" aria-hidden="true">#</a>Distance Cascade</h2>
 <p>Trail and stop distances come from a three-tier fallback:</p>
 <table>
 <thead>
@@ -467,7 +470,7 @@
 <p>Source: T0-018 § 7.4</p>
 </blockquote>
 <hr />
-<h2>Design Principles</h2>
+<h2 id="design-principles"><a class="heading-anchor" href="#design-principles" aria-hidden="true">#</a>Design Principles</h2>
 <table>
 <thead>
 <tr>
@@ -510,7 +513,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <ul>
 <li>T0-015: <code>PaperEntry</code> verification — <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines, 12 tests)</li>
 <li>T0-018: <code>Broker</code> verification — <code>holon-lab-trading/src/domain/broker.rs</code> (887 lines, 15 tests)</li>

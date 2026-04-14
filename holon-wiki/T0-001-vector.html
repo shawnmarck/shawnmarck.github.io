@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -222,7 +225,7 @@
       <div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-rs/src/kernel/vector.rs</code> (132 lines)
 <strong>Verified:</strong> 2026-04-14</p>
 <hr />
-<h2>What it IS</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What it IS</h2>
 <p><code>Vector</code> is a struct containing a single field: a <code>Vec&lt;i8&gt;</code> called <code>data</code>. Each element is constrained to the set <strong>{-1, 0, 1}</strong> — a <em>bipolar</em> vector with a zero state.</p>
 <blockquote>
 <p>&quot;A high-dimensional vector with bipolar elements {-1, 0, 1}.&quot;
@@ -230,8 +233,8 @@
 </blockquote>
 <p>The source doc comment states the purpose plainly: <em>&quot;Holon uses bipolar vectors with elements in {-1, 0, 1}. Internally stored as i8 for memory efficiency.&quot;</em></p>
 <p>The struct derives <code>Clone</code> and <code>Debug</code>. It implements <code>PartialEq</code>/<code>Eq</code> (exact element-wise equality) and <code>Index</code>/<code>IndexMut&lt;usize&gt;</code> for direct element access.</p>
-<h2>How it works</h2>
-<h3>Construction</h3>
+<h2 id="how-it-works"><a class="heading-anchor" href="#how-it-works" aria-hidden="true">#</a>How it works</h2>
+<h3 id="construction"><a class="heading-anchor" href="#construction" aria-hidden="true">#</a>Construction</h3>
 <table>
 <thead>
 <tr>
@@ -259,7 +262,7 @@
 </tbody>
 </table>
 <p>The <code>from_f64</code> constructor is the only place bipolar discipline is enforced. <code>from_data</code> trusts the caller.</p>
-<h3>Query operations</h3>
+<h3 id="query-operations"><a class="heading-anchor" href="#query-operations" aria-hidden="true">#</a>Query operations</h3>
 <ul>
 <li><code>dimensions()</code> → returns <code>data.len()</code></li>
 <li><code>data()</code> / <code>data_mut()</code> → raw slice access</li>
@@ -268,7 +271,7 @@
 <li><code>normalized()</code> → returns <code>Vec&lt;f64&gt;</code> (not a <code>Vector</code>), each element divided by the L2 norm; returns a zero vector if the norm is below <code>1e-10</code></li>
 <li><code>to_f64()</code> → casts each element to <code>f64</code></li>
 </ul>
-<h2>Key properties</h2>
+<h2 id="key-properties"><a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a>Key properties</h2>
 <ol>
 <li><strong>No dimension check on construction.</strong> <code>from_data</code> and <code>from_f64</code> accept any-length input. No fixed dimensionality is enforced at the type level.</li>
 <li><strong>No bipolar invariant enforced at rest.</strong> Only <code>from_f64</code> guarantees {-1, 0, 1}. <code>from_data</code> and <code>data_mut()</code> allow arbitrary <code>i8</code> values to be injected.</li>
@@ -276,14 +279,14 @@
 <li><strong>Normalization escapes the type.</strong> <code>normalized()</code> returns <code>Vec&lt;f64&gt;</code>, not <code>Vector</code> — it leaves the bipolar domain.</li>
 <li><strong>Sparse-friendly API.</strong> <code>nnz()</code> is provided, suggesting vectors may often be mostly zeros.</li>
 </ol>
-<h2>Source quotes</h2>
+<h2 id="source-quotes"><a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a>Source quotes</h2>
 <ul>
 <li>Module doc: <em>&quot;Holon uses bipolar vectors with elements in {-1, 0, 1}. Internally stored as i8 for memory efficiency.&quot;</em></li>
 <li>Struct doc: <em>&quot;A high-dimensional vector with bipolar elements {-1, 0, 1}.&quot;</em> / <em>&quot;This is the core data structure for all VSA operations.&quot;</em></li>
 <li><code>from_data</code> doc: <em>&quot;Create a vector from raw data.&quot;</em></li>
 <li><code>from_f64</code> doc: <em>&quot;Create a vector from f64 values (thresholds to bipolar).&quot;</em></li>
 </ul>
-<h2>Test coverage (lines 110–132)</h2>
+<h2 id="test-coverage-lines-110132"><a class="heading-anchor" href="#test-coverage-lines-110132" aria-hidden="true">#</a>Test coverage (lines 110–132)</h2>
 <p>Three tests exist:</p>
 <ul>
 <li><code>test_zeros</code>: verifies <code>Vector::zeros(100)</code> produces 100 zero elements.</li>

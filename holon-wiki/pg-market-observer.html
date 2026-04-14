@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -221,7 +224,7 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>MarketObserver</code> takes a candle-encoded thought vector, strips learned background noise via an online PCA subspace, and classifies the residual anomaly as Up or Down using a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;. It never labels itself — the market is the judge. Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; (vocabulary selection), maintains its own &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;WindowSampler&lt;/a&gt; time scale, and gates its knowledge into long-term memory via an &lt;a class=&quot;wikilink&quot; href=&quot;T0-009-engram.html&quot;&gt;engram&lt;/a&gt; gate. One per asset-pair; N per trading system.</p>
 <hr />
-<h2>Anatomy</h2>
+<h2 id="anatomy"><a class="heading-anchor" href="#anatomy" aria-hidden="true">#</a>Anatomy</h2>
 <table>
 <thead>
 <tr>
@@ -268,7 +271,7 @@
 <p><em>&quot;Its own teacher. The market is the judge.&quot;</em> — T0-013</p>
 </blockquote>
 <hr />
-<h2>Prediction (<code>observe</code>)</h2>
+<h2 id="prediction-observe"><a class="heading-anchor" href="#prediction-observe" aria-hidden="true">#</a>Prediction (<code>observe</code>)</h2>
 <p>There is no method literally named <code>predict</code>. Prediction lives in <code>observe()</code>:</p>
 <ol>
 <li><strong>Clone raw thought</strong> — preserved for downstream consumers who need both raw and cleaned vectors.</li>
@@ -280,7 +283,7 @@
 <li><strong>Return <code>ObserveResult</code></strong> — containing <code>raw_thought</code>, <code>anomaly</code>, <code>prediction</code> (scores + conviction), and <code>edge</code>.</li>
 </ol>
 <p><strong>Key design:</strong> prediction and learning are aligned — both operate on the anomaly, not the raw thought.</p>
-<h3>ObserveResult</h3>
+<h3 id="observeresult"><a class="heading-anchor" href="#observeresult" aria-hidden="true">#</a>ObserveResult</h3>
 <table>
 <thead>
 <tr>
@@ -308,7 +311,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Learning (<code>resolve</code>)</h2>
+<h2 id="learning-resolve"><a class="heading-anchor" href="#learning-resolve" aria-hidden="true">#</a>Learning (<code>resolve</code>)</h2>
 <p>Called by broker propagation when a trade settles:</p>
 <ol>
 <li><strong>Map direction to label</strong> — <code>Direction::Up</code> → index 0, <code>Direction::Down</code> → index 1.</li>
@@ -318,7 +321,7 @@
 <li><strong>Engram gate check</strong> — accumulates wins and totals, then evaluates whether the observer has proven itself through <code>check_engram_gate()</code>. The gate uses <code>good_state_subspace</code> to learn what good discriminant states look like.</li>
 </ol>
 <hr />
-<h2>Noise Stripping — The Subspace Pipeline</h2>
+<h2 id="noise-stripping-the-subspace-pipeline"><a class="heading-anchor" href="#noise-stripping-the-subspace-pipeline" aria-hidden="true">#</a>Noise Stripping — The Subspace Pipeline</h2>
 <p>The <code>noise_subspace</code> is an &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt; (8 principal components) implementing &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;CCIPCA&lt;/a&gt; (Weng et al., 2003):</p>
 <ul>
 <li><strong>Online PCA</strong> — incrementally learns the principal components of incoming thought vectors without storing them.</li>
@@ -330,7 +333,7 @@
 </blockquote>
 <p>The result: normal market chatter is projected out. What remains is the signal — structural shifts that the background model hasn't absorbed yet.</p>
 <hr />
-<h2>The Reckoner — Classification Engine</h2>
+<h2 id="the-reckoner-classification-engine"><a class="heading-anchor" href="#the-reckoner-classification-engine" aria-hidden="true">#</a>The Reckoner — Classification Engine</h2>
 <p>The <code>reckoner</code> is a discrete-mode &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; with two labels: &quot;Up&quot; and &quot;Down&quot;.</p>
 <ul>
 <li><strong>Accumulation</strong> — maintains running weighted sums of thought vectors per label (not individual observations). Frequency-preserving: patterns seen many times contribute proportionally more.</li>
@@ -342,7 +345,7 @@
 <p><em>&quot;The discriminant IS the reckoner's learned knowledge, externalized.&quot;</em> — <code>primitives.wat</code></p>
 </blockquote>
 <hr />
-<h2>The Lens — What the Observer Sees</h2>
+<h2 id="the-lens-what-the-observer-sees"><a class="heading-anchor" href="#the-lens-what-the-observer-sees" aria-hidden="true">#</a>The Lens — What the Observer Sees</h2>
 <p>Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; that determines which vocabulary modules are encoded into its thought vector. 11 variants across three schools:</p>
 <table>
 <thead>
@@ -368,7 +371,7 @@
 </table>
 <p>Each <code>*Generalist</code> is the union of its school's specialist lenses (superset of modules). Vocabulary modules include: momentum, persistence, regime, timeframe, flow, standard, keltner, oscillators, divergence, price_action, fibonacci. All lenses share <code>shared::time</code> (encoded once before the match).</p>
 <hr />
-<h2>Self-Evaluation — Proof Through Outcomes</h2>
+<h2 id="self-evaluation-proof-through-outcomes"><a class="heading-anchor" href="#self-evaluation-proof-through-outcomes" aria-hidden="true">#</a>Self-Evaluation — Proof Through Outcomes</h2>
 <p>The observer's conviction→accuracy curve is its proof of reliability:</p>
 <ul>
 <li>Requires ≥500 resolved predictions (default <code>min_resolved</code>).</li>
@@ -377,7 +380,7 @@
 <li>The <code>edge</code> metric (accuracy at current conviction, capped at 99%) drives downstream trading decisions.</li>
 </ul>
 <hr />
-<h2>Engram Gate — Earning Long-Term Memory</h2>
+<h2 id="engram-gate-earning-long-term-memory"><a class="heading-anchor" href="#engram-gate-earning-long-term-memory" aria-hidden="true">#</a>Engram Gate — Earning Long-Term Memory</h2>
 <p>The <code>good_state_subspace</code> (4 components) learns what good discriminant states look like. The engram gate evaluates:</p>
 <ul>
 <li><strong>Recalibration win rate</strong> — <code>recalib_wins / recalib_total</code> since last gate check.</li>
@@ -385,7 +388,7 @@
 </ul>
 <p>Observers that prove themselves get their knowledge gated into long-term memory (engrams). Those that don't are recycled.</p>
 <hr />
-<h2>Construction</h2>
+<h2 id="construction"><a class="heading-anchor" href="#construction" aria-hidden="true">#</a>Construction</h2>
 <pre><code class="language-rust">MarketObserver::new(lens, dims, recalib_interval, window_sampler)
 </code></pre>
 <ul>
@@ -395,7 +398,7 @@
 <li><code>resolved</code> starts at 0. <code>last_prediction</code> defaults to <code>Down</code> (arbitrary).</li>
 </ul>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <table>
 <thead>
 <tr>

@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -221,7 +224,7 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Thought space is a high-dimensional vector space (typically 4,096–16,384 dimensions) with bipolar elements {-1, 0, 1}. Meaning lives in geometry: proximity = similarity, orthogonality = unrelatedness, opposition = anti-parallel direction. Every concept, document, and pattern the system handles becomes a single point in this space, constructed from three operations — &lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt; — and queryable by angle alone.</p>
 <hr />
-<h2>The geometry</h2>
+<h2 id="the-geometry"><a class="heading-anchor" href="#the-geometry" aria-hidden="true">#</a>The geometry</h2>
 <p>Thought space is built on Vector Symbolic Architectures (VSA), specifically the MAP variant. The &lt;a class=&quot;wikilink&quot; href=&quot;T0-001-vector.html&quot;&gt;vector&lt;/a&gt; struct — a <code>Vec&lt;i8&gt;</code> with elements constrained to {-1, 0, 1} — is the atomic unit.</p>
 <blockquote>
 <p>&quot;A very large vector of numbers — thousands of dimensions of values in <code>{-1, 0, 1}</code>.&quot;
@@ -233,7 +236,7 @@
 — Primer 000</p>
 </blockquote>
 <p>The literature (Kanerva) recommends at least 10,000 dimensions for the guarantees to hold comfortably. Holon experiments ran at 16,384 and 4,096.</p>
-<h2>Coordinates and determinism</h2>
+<h2 id="coordinates-and-determinism"><a class="heading-anchor" href="#coordinates-and-determinism" aria-hidden="true">#</a>Coordinates and determinism</h2>
 <p>Every point in thought space is generated deterministically from its inputs:</p>
 <blockquote>
 <p>&quot;<code>SHA-256(atom_string) XOR global_seed</code> → deterministic 4096-dimensional vector. Same atom, same language implementation, any machine, any process: identical vector.&quot;
@@ -245,7 +248,7 @@
 — Primer 004</p>
 </blockquote>
 <p>This determinism is load-bearing — without identical atom vectors on every node, &lt;a class=&quot;wikilink&quot; href=&quot;T0-009-engram.html&quot;&gt;engram&lt;/a&gt;s become geometrically incoherent.</p>
-<h2>Encoding: how data enters the space</h2>
+<h2 id="encoding-how-data-enters-the-space"><a class="heading-anchor" href="#encoding-how-data-enters-the-space" aria-hidden="true">#</a>Encoding: how data enters the space</h2>
 <p>Structured data (JSON, events, documents) becomes a single point via the encoding stack:</p>
 <ol>
 <li><strong>Atomization</strong> — map each field value to a deterministic vector</li>
@@ -262,7 +265,7 @@
 <p>&quot;The document vector is simultaneously a <em>hash function</em> and a <em>queryable fingerprint</em>.&quot;
 — Primer 001</p>
 </blockquote>
-<h2>Measurement: one number</h2>
+<h2 id="measurement-one-number"><a class="heading-anchor" href="#measurement-one-number" aria-hidden="true">#</a>Measurement: one number</h2>
 <p>Cosine similarity is the canonical measurement — &quot;the only measurement&quot; in the algebraic specification:</p>
 <blockquote>
 <p>&quot;(cosine thought direction) → Float  ; [-1.0, +1.0]&quot;
@@ -297,7 +300,7 @@
 </blockquote>
 <p>The implementation also provides a z-score transform for statistical significance in high dimensions: <code>similarity × √d</code>. Thresholds: |z| &gt; 2.0 likely meaningful, &gt; 3.0 very significant, &gt; 5.0 essentially certain.</p>
 <p>The Rust codebase exposes additional metrics (Dot, Euclidean, Manhattan, Hamming, Overlap, Agreement, Chebyshev) for practical flexibility, but cosine remains the canonical primitive.</p>
-<h2>Algebra: operations within the space</h2>
+<h2 id="algebra-operations-within-the-space"><a class="heading-anchor" href="#algebra-operations-within-the-space" aria-hidden="true">#</a>Algebra: operations within the space</h2>
 <p>Thought space has three VSA base operations from which everything is built:</p>
 <table>
 <thead>
@@ -327,7 +330,7 @@
 </table>
 <p>Binding is self-inverse for bipolar vectors: <code>bind(bind(A, B), A) = B</code>, enabling decomposition and explainability.</p>
 <p>Beyond these, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-space.html&quot;&gt;holon algebra&lt;/a&gt; extends the space with <code>prototype</code>, <code>negate</code>, <code>amplify</code>, <code>difference</code>, <code>analogy</code>, <code>attend</code>, <code>project</code>, <code>reject</code>, <code>resonance</code>, <code>cleanup</code>, <code>coherence</code>, and more — plus streaming operations like <code>accumulate</code>/<code>decay</code>.</p>
-<h2>Memory: learning patterns in the space</h2>
+<h2 id="memory-learning-patterns-in-the-space"><a class="heading-anchor" href="#memory-learning-patterns-in-the-space" aria-hidden="true">#</a>Memory: learning patterns in the space</h2>
 <p>Streams of encoded vectors occupy structured regions of thought space. The memory layer learns those structures:</p>
 <ul>
 <li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt;</strong> — incremental manifold learning via CCIPCA. Captures what normal looks like; residual becomes the anomaly signal.</li>
@@ -336,7 +339,7 @@
 <li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;</strong> — discriminant learner: discrete classification + continuous regression in vector space.</li>
 </ul>
 <p>The dual-signal principle pervades: every successful discrimination requires both magnitude (aggregate residual) and direction (residual profile).</p>
-<h2>Properties</h2>
+<h2 id="properties"><a class="heading-anchor" href="#properties" aria-hidden="true">#</a>Properties</h2>
 <ol>
 <li><p><strong>Geometry encodes structure, not semantics.</strong> The algebra doesn't know what data means — it encodes structural relationships. Similarity falls out of the cosine.</p>
 </li>
@@ -349,9 +352,9 @@
 <li><p><strong>Stability across time.</strong> &quot;Engrams minted today are valid indefinitely — the geometric relationships they encode don't expire.&quot; — Primer 004</p>
 </li>
 </ol>
-<h2>Implementation notes</h2>
+<h2 id="implementation-notes"><a class="heading-anchor" href="#implementation-notes" aria-hidden="true">#</a>Implementation notes</h2>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;T0-001-vector.html&quot;&gt;vector&lt;/a&gt; struct stores data as <code>Vec&lt;i8&gt;</code> for memory efficiency. No bipolar invariant is enforced at rest — only the <code>from_f64</code> constructor guarantees {-1, 0, 1}. Normalization (<code>normalized()</code>) returns <code>Vec&lt;f64&gt;</code>, escaping the bipolar domain. A SIMD path (via <code>simsimd</code>) provides &quot;up to 200x faster similarity computations on supported hardware.&quot;</p>
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <table>
 <thead>
 <tr>

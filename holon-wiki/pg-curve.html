@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -221,28 +224,28 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The curve is a self-calibration mechanism inside every discrete &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;. It records <code>(conviction, correct)</code> pairs, fits the exponential model <code>accuracy = 1/N + a·exp(b·conviction)</code>, and answers the question: <em>&quot;When this reckoner says it's confident, is it actually right?&quot;</em> A positive <code>b</code> means the reckoner knows what it knows.</p>
 <hr />
-<h2>What it IS</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What it IS</h2>
 <p>The curve maps &lt;a class=&quot;wikilink&quot; href=&quot;pg-conviction.html&quot;&gt;conviction&lt;/a&gt; (the absolute &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt; of the winning discriminant) to empirical accuracy (fraction of correct predictions). It is an introspection tool — the reckoner's proof that its confidence is calibrated.</p>
 <p>The WAT spec declares:</p>
 <blockquote>
 <p><em>&quot;accuracy = (1/N) + a × exp(b × conviction), N = number of labels. At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal.&quot;</em>
 — <code>primitives.wat</code></p>
 </blockquote>
-<h3>Why it exists</h3>
+<h3 id="why-it-exists"><a class="heading-anchor" href="#why-it-exists" aria-hidden="true">#</a>Why it exists</h3>
 <p>Conviction alone is just a number — <code>|cosine(discriminant, thought)|</code> in <code>[-1, 1]</code> (see &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt;). Without the curve, there's no way to know whether high conviction correlates with being correct. The curve provides that calibration: it transforms raw conviction into a predicted accuracy.</p>
 <hr />
-<h2>How data is collected</h2>
-<h3><code>resolve(conviction, correct)</code> — recording outcomes</h3>
+<h2 id="how-data-is-collected"><a class="heading-anchor" href="#how-data-is-collected" aria-hidden="true">#</a>How data is collected</h2>
+<h3 id="resolveconviction-correct-recording-outcomes"><a class="heading-anchor" href="#resolveconviction-correct-recording-outcomes" aria-hidden="true">#</a><code>resolve(conviction, correct)</code> — recording outcomes</h3>
 <pre><code class="language-rust">pub fn resolve(&amp;mut self, conviction: f64, correct: bool)
 
 <p>Discrete mode only. Pushes <code>(conviction, correct)</code> onto a bounded sliding window (<code>resolved_cap = 5000</code> by default). When the window overflows, the oldest entry is evicted. This is a FIFO queue of bounded size.</p>
 <p><strong>Source:</strong> <code>reckoner.rs</code> — <em>&quot;Pushes <code>(conviction, correct)</code> onto the <code>resolved</code> vec. If <code>resolved.len() &gt; resolved_cap</code>, the oldest entry is removed.&quot;</em> (T0-008, §3.5)</p>
-<h3>Where resolve is called</h3>
+<h3 id="where-resolve-is-called"><a class="heading-anchor" href="#where-resolve-is-called" aria-hidden="true">#</a>Where resolve is called</h3>
 <p>In the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; domain, resolutions flow through <code>propagate()</code> → <code>PropagationFacts</code> → the post routes outcomes back to the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;. The broker itself does not call resolve — it returns structured &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;Resolution&lt;/a&gt; objects that carry the outcome upstream.</p>
 <p><strong>Source:</strong> <code>broker.rs</code> — <em>&quot;<code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state.&quot;</em> (T0-018, §12.2)</p>
 <hr />
-<h2>Fitting procedure</h2>
-<h3><code>curve()</code> — fit the model</h3>
+<h2 id="fitting-procedure"><a class="heading-anchor" href="#fitting-procedure" aria-hidden="true">#</a>Fitting procedure</h2>
+<h3 id="curve-fit-the-model"><a class="heading-anchor" href="#curve-fit-the-model" aria-hidden="true">#</a><code>curve()</code> — fit the model</h3>
 <pre><code class="language-rust">pub fn curve(&amp;mut self) -&gt; Option&lt;(f64, f64)&gt;
 </code></pre>
 <p>Returns <code>Some((a, b))</code> on success, <code>None</code> if prerequisites aren't met.</p>
@@ -289,19 +292,19 @@
 </ol>
 <p><strong>Source:</strong> T0-008, §3.6 — complete algorithm traced against <code>reckoner.rs</code>.</p>
 <hr />
-<h2>Reading the curve</h2>
-<h3><code>accuracy_at(conviction)</code> — predict accuracy</h3>
+<h2 id="reading-the-curve"><a class="heading-anchor" href="#reading-the-curve" aria-hidden="true">#</a>Reading the curve</h2>
+<h3 id="accuracy_atconviction-predict-accuracy"><a class="heading-anchor" href="#accuracy_atconviction-predict-accuracy" aria-hidden="true">#</a><code>accuracy_at(conviction)</code> — predict accuracy</h3>
 <pre><code class="language-rust">pub fn accuracy_at(&amp;self, conviction: f64) -&gt; Option&lt;f64&gt;
 </code></pre>
 <p>Formula: <code>min(base + a·exp(b·conviction), 0.99)</code> — capped at 99%.</p>
-<h3><code>curve_params()</code> and <code>curve_valid()</code></h3>
+<h3 id="curve_params-and-curve_valid"><a class="heading-anchor" href="#curve_params-and-curve_valid" aria-hidden="true">#</a><code>curve_params()</code> and <code>curve_valid()</code></h3>
 <ul>
 <li><code>curve_params()</code> → <code>Option&lt;(f64, f64)&gt;</code> — returns cached <code>(a, b)</code> if fitted.</li>
 <li><code>curve_valid()</code> → <code>bool</code> — whether a curve has been successfully fitted.</li>
 </ul>
 <hr />
-<h2>Interpretation</h2>
-<h3>What <code>b</code> means</h3>
+<h2 id="interpretation"><a class="heading-anchor" href="#interpretation" aria-hidden="true">#</a>Interpretation</h2>
+<h3 id="what-b-means"><a class="heading-anchor" href="#what-b-means" aria-hidden="true">#</a>What <code>b</code> means</h3>
 <table>
 <thead>
 <tr>
@@ -324,16 +327,16 @@
 </tr>
 </tbody>
 </table>
-<h3>What <code>a</code> means</h3>
+<h3 id="what-a-means"><a class="heading-anchor" href="#what-a-means" aria-hidden="true">#</a>What <code>a</code> means</h3>
 <p><code>a</code> controls the <em>spread</em> between the chance floor (<code>1/N</code>) and the asymptotic ceiling (<code>1/N + a</code>). A larger <code>a</code> means the reckoner has a wider accuracy range — more room for confidence to discriminate good predictions from bad ones.</p>
-<h3>The WAT spec's claim</h3>
+<h3 id="the-wat-specs-claim"><a class="heading-anchor" href="#the-wat-specs-claim" aria-hidden="true">#</a>The WAT spec's claim</h3>
 <blockquote>
 <p><em>&quot;Monotonically increasing = real signal.&quot;</em>
 — <code>primitives.wat</code></p>
 </blockquote>
 <p>A monotonic increase means <code>b &gt; 0</code>: the higher the conviction, the more often the reckoner is right. This is the gold standard — the reckoner's internal confidence aligns with external reality.</p>
 <hr />
-<h2>Configuration</h2>
+<h2 id="configuration"><a class="heading-anchor" href="#configuration" aria-hidden="true">#</a>Configuration</h2>
 <p>Configurable via the chainable builder:</p>
 <pre><code class="language-rust">Reckoner::new(...)
     .with_curve_params(resolved_cap, min_resolved, n_bins)
@@ -367,7 +370,7 @@
 <p>This is discrete-only. The continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; mode has no curve — it doesn't produce conviction values.</p>
 <p><strong>Source:</strong> T0-008, §2 — <em>&quot;<code>.with_curve_params(resolved_cap, min_resolved, n_bins) -&gt; Self // discrete only, no-op for continuous</code>&quot;</em></p>
 <hr />
-<h2>Position in the system</h2>
+<h2 id="position-in-the-system"><a class="heading-anchor" href="#position-in-the-system" aria-hidden="true">#</a>Position in the system</h2>
 <pre class="mermaid">flowchart TD
     mkt_obs[&quot;Market Observer\n(discrete Reckoner)&quot;] --&gt;|&quot;predict(thought)&quot;| prediction[&quot;Prediction\n{ conviction, direction }&quot;]
     mkt_obs --&gt;|&quot;resolve(conviction, correct)&quot;| feeds[&quot;feeds the curve&quot;]
@@ -376,7 +379,7 @@
 </code></pre>
 <p>The curve closes the feedback loop: prediction → conviction → outcome → calibration → better trust weighting.</p>
 <hr />
-<h2>Key properties</h2>
+<h2 id="key-properties"><a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a>Key properties</h2>
 <ol>
 <li><strong>Requires discrete mode.</strong> Continuous reckoners have no curve — no conviction, no classification. (T0-008, §3.5)</li>
 <li><strong>Bounded memory.</strong> The sliding window caps at <code>resolved_cap</code> (default 5000). Old data is evicted FIFO. (T0-008, §3.5)</li>
@@ -387,7 +390,7 @@
 <li><strong>Validates the reckoner's own confidence.</strong> <em>&quot;By recording <code>(conviction, correct)</code> pairs and fitting <code>accuracy = 1/N + a·exp(b·conviction)</code>, the system gets a self-calibration measure.&quot;</em> (T0-008, §6.7)</li>
 </ol>
 <hr />
-<h2>Source documents</h2>
+<h2 id="source-documents"><a class="heading-anchor" href="#source-documents" aria-hidden="true">#</a>Source documents</h2>
 <table>
 <thead>
 <tr>

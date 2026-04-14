@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,12 +222,12 @@
         Encoding Cache — the distributed LRU encoding service <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>The <strong>Encoding Cache</strong> (&lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;EncoderService&lt;/a&gt;) is a single-threaded pipe loop that owns the persistent LRU composition cache for &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt;→&lt;a class=&quot;wikilink&quot; href=&quot;T0-001-vector.html&quot;&gt;Vector&lt;/a&gt; mappings. It serves N concurrent callers without any mutex — each caller gets its own three-pipe <code>EncoderHandle</code>, and the service thread iterates all handles once per loop iteration. Callers compute vectors locally on cache misses and fire-and-forget install them back. The cache is purely a store — it never computes, only stores and retrieves. Three <code>Arc&lt;AtomicUsize&gt;</code> counters (hits, misses, cache-size) provide lock-free observability. Shutdown is automatic when all handles drop.</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2>What the encoding cache IS</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-the-encoding-cache-is"><a class="heading-anchor" href="#what-the-encoding-cache-is" aria-hidden="true">#</a>What the encoding cache IS</h2>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; produces vectors from ASTs, but recomputing every subtree on every candle is expensive. The encoding cache is the solution: a shared, cross-candle LRU cache that sits between callers and the encoder. It stores the results of expensive tree walks so that structurally identical ASTs can skip re-evaluation entirely.</p>
 <blockquote>
 <p>&quot;ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache.&quot;
@@ -236,8 +239,8 @@
 — T2-002, Relationship to ThoughtEncoder</p>
 </blockquote>
 <hr />
-<h2>Architecture — one thread, N callers, zero mutexes</h2>
-<h3>EncoderHandle — per-caller pipe set</h3>
+<h2 id="architecture-one-thread-n-callers-zero-mutexes"><a class="heading-anchor" href="#architecture-one-thread-n-callers-zero-mutexes" aria-hidden="true">#</a>Architecture — one thread, N callers, zero mutexes</h2>
+<h3 id="encoderhandle-per-caller-pipe-set"><a class="heading-anchor" href="#encoderhandle-per-caller-pipe-set" aria-hidden="true">#</a>EncoderHandle — per-caller pipe set</h3>
 <p>Each caller receives an <code>EncoderHandle</code> containing three pipes:</p>
 <pre><code class="language-scheme">(struct encoder-handle
   [lookup  : Sender&lt;ThoughtAST&gt;]          ; bounded 1
@@ -275,16 +278,16 @@
 </tr>
 </tbody>
 </table>
-<h3><code>encoder-get</code> — blocking lookup</h3>
+<h3 id="encoder-get-blocking-lookup"><a class="heading-anchor" href="#encoder-get-blocking-lookup" aria-hidden="true">#</a><code>encoder-get</code> — blocking lookup</h3>
 <p>Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option&lt;Vector&gt;</code>. Bounded-1 on both sides provides natural backpressure.</p>
 <p><em>(T2-002, lines 28–31)</em></p>
-<h3><code>encoder-set</code> — fire-and-forget install</h3>
+<h3 id="encoder-set-fire-and-forget-install"><a class="heading-anchor" href="#encoder-set-fire-and-forget-install" aria-hidden="true">#</a><code>encoder-set</code> — fire-and-forget install</h3>
 <p>Sends <code>(AST, Vector)</code> pair on <code>install</code>. Non-blocking, unbounded capacity. The caller does not wait for confirmation.</p>
 <p><em>(T2-002, lines 34–36)</em></p>
 <hr />
-<h2>Service thread loop — three phases per iteration</h2>
+<h2 id="service-thread-loop-three-phases-per-iteration"><a class="heading-anchor" href="#service-thread-loop-three-phases-per-iteration" aria-hidden="true">#</a>Service thread loop — three phases per iteration</h2>
 <p>The service runs an infinite loop. Each iteration has three phases:</p>
-<h3>Pass 1 — Drain installs</h3>
+<h3 id="pass-1-drain-installs"><a class="heading-anchor" href="#pass-1-drain-installs" aria-hidden="true">#</a>Pass 1 — Drain installs</h3>
 <p>Iterates all install receivers. Drains each one completely via <code>try-recv</code>. Every <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates the <code>cache-size</code> atomic.</p>
 <blockquote>
 <p>&quot;Pass 1: drain ALL install pipes. Put into cache.&quot;
@@ -295,20 +298,20 @@
 <p>&quot;The GUIDE (line 1440) declares the compositions field as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> and explains the eventual-consistency model (lines 1441–1446): <em>'miss on candle N, hit on N+1'</em>. The EncoderService implements this.&quot;
 — T2-002, Relationship to ThoughtEncoder</p>
 </blockquote>
-<h3>Pass 2 — Service lookups</h3>
+<h3 id="pass-2-service-lookups"><a class="heading-anchor" href="#pass-2-service-lookups" aria-hidden="true">#</a>Pass 2 — Service lookups</h3>
 <p>Iterates all lookup receivers. For each pending AST: checks the LRU cache, increments <code>hits</code> or <code>misses</code> atomic accordingly, sends result (<code>Some(Vector)</code> or <code>None</code>) back on the corresponding answer pipe. On channel disconnect: marks that handle as closed.</p>
 <blockquote>
 <p>&quot;Pass 2: service ALL pending lookup pipes.&quot;
 — encoder-service.wat, line 93 <em>(T2-002)</em></p>
 </blockquote>
-<h3>Pass 3 — Shutdown check &amp; idle blocking</h3>
+<h3 id="pass-3-shutdown-check-amp-idle-blocking"><a class="heading-anchor" href="#pass-3-shutdown-check-amp-idle-blocking" aria-hidden="true">#</a>Pass 3 — Shutdown check &amp; idle blocking</h3>
 <p>If all handles are disconnected, the loop breaks and the thread exits. Otherwise, uses <code>select</code> over all open pipes to block until any channel has data. <strong>Zero CPU when idle.</strong></p>
 <blockquote>
 <p>&quot;Block until ANY channel has data. Zero CPU when idle.&quot;
 — encoder-service.wat, lines 112–113 <em>(T2-002)</em></p>
 </blockquote>
 <hr />
-<h2>Protocol summary</h2>
+<h2 id="protocol-summary"><a class="heading-anchor" href="#protocol-summary" aria-hidden="true">#</a>Protocol summary</h2>
 <pre class="mermaid">flowchart TD
     caller_lookup[&quot;Caller&quot;] --&gt;|&quot;write AST to lookup pipe&quot;| block[&quot;block on answer&quot;]
     block --&gt;|&quot;receive Some/None&quot;| result{&quot;Some\n(hit) or None\n(miss)&quot;}
@@ -328,7 +331,7 @@
 — thought-encoder.wat, lines 11–13 <em>(T2-001)</em></p>
 </blockquote>
 <hr />
-<h2>EncoderService struct</h2>
+<h2 id="encoderservice-struct"><a class="heading-anchor" href="#encoderservice-struct" aria-hidden="true">#</a>EncoderService struct</h2>
 <pre><code class="language-scheme">(struct encoder-service
   [handle     : JoinHandle&lt;()&gt;]
   [hits       : Arc&lt;AtomicUsize&gt;]         ; cache hit counter
@@ -341,7 +344,7 @@
 <p>&quot;Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits.&quot;
 — encoder-service.wat, lines 39–41 <em>(T2-002)</em></p>
 </blockquote>
-<h3>Lock-free observability</h3>
+<h3 id="lock-free-observability"><a class="heading-anchor" href="#lock-free-observability" aria-hidden="true">#</a>Lock-free observability</h3>
 <p>Three accessors provide atomic reads from any thread:</p>
 <table>
 <thead>
@@ -371,18 +374,18 @@
 </table>
 <p><em>(T2-002, lines 135–142)</em></p>
 <hr />
-<h2>Spawn and shutdown</h2>
-<h3><code>encoder-service-spawn(n-callers, cache-capacity) → (EncoderService, Vec&lt;EncoderHandle&gt;)</code></h3>
+<h2 id="spawn-and-shutdown"><a class="heading-anchor" href="#spawn-and-shutdown" aria-hidden="true">#</a>Spawn and shutdown</h2>
+<h3 id="encoder-service-spawnn-callers-cache-capacity-encoderservice-vecltencoderhandlegt"><a class="heading-anchor" href="#encoder-service-spawnn-callers-cache-capacity-encoderservice-vecltencoderhandlegt" aria-hidden="true">#</a><code>encoder-service-spawn(n-callers, cache-capacity) → (EncoderService, Vec&lt;EncoderHandle&gt;)</code></h3>
 <p>Creates the service and N handles. For each caller, creates three pipe pairs (lookup/answer bounded-1, install unbounded). Spawns the service thread with the receiver halves.</p>
 <p><em>(T2-002, lines 51–122)</em></p>
-<h3><code>encoder-service-shutdown(svc)</code></h3>
+<h3 id="encoder-service-shutdownsvc"><a class="heading-anchor" href="#encoder-service-shutdownsvc" aria-hidden="true">#</a><code>encoder-service-shutdown(svc)</code></h3>
 <p>Joins the thread handle. Requires that all handles have already been dropped.</p>
 <blockquote>
 <p>&quot;The cascade must have already closed all handles.&quot;
 — encoder-service.wat, line 125 <em>(T2-002)</em></p>
 </blockquote>
 <hr />
-<h2>Relationship to ThoughtEncoder memory model</h2>
+<h2 id="relationship-to-thoughtencoder-memory-model"><a class="heading-anchor" href="#relationship-to-thoughtencoder-memory-model" aria-hidden="true">#</a>Relationship to ThoughtEncoder memory model</h2>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; maintains two kinds of memory with fundamentally different semantics:</p>
 <table>
 <thead>
@@ -423,7 +426,7 @@
 </blockquote>
 <p>The AST structure IS the cache key — structural equality (with <code>round_to</code> quantization at vocabulary emission time for reliable float hashing) determines identity.</p>
 <hr />
-<h2>Design principles</h2>
+<h2 id="design-principles"><a class="heading-anchor" href="#design-principles" aria-hidden="true">#</a>Design principles</h2>
 <table>
 <thead>
 <tr>
@@ -459,7 +462,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Related Concepts</h2>
+<h2 id="related-concepts"><a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a>Related Concepts</h2>
 <ul>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; — The AST evaluator that produces vectors. Stateless in production; depends on the EncoderService for caching.</li>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; — The AST enum (<code>Atom</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code>, <code>Bundle</code>, <code>Sequential</code>). Its structure is the cache key.</li>
@@ -469,7 +472,7 @@
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;EncoderService&lt;/a&gt; — This page's subject; the service struct and its pipe-based protocol.</li>
 </ul>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <ul>
 <li>T2-001 — ThoughtEncoder, <code>wat/thought-encoder.wat</code> (198 lines), GUIDE.md lines 1416–1597</li>
 <li>T2-002 — EncoderService, <code>wat/encoder-service.wat</code> (142 lines)</li>

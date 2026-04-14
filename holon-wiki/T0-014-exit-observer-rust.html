@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -222,11 +225,11 @@
       <div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/domain/position_observer.rs</code> (291 lines)
 <strong>Context:</strong> None. Read only what the code says.</p>
 <hr />
-<h2>What It Is</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It Is</h2>
 <p>A <code>PositionObserver</code>. The module docstring calls it &quot;position observer&quot; (not &quot;exit observer&quot;). The file-level comment says: &quot;Estimates position distances. Learned. Two continuous reckoners (trail, stop). Compiled from wat/position-observer.wat.&quot;</p>
 <p>It has six fields. It is a struct, not a trait.</p>
 <hr />
-<h2>Fields</h2>
+<h2 id="fields"><a class="heading-anchor" href="#fields" aria-hidden="true">#</a>Fields</h2>
 <table>
 <thead>
 <tr>
@@ -269,7 +272,7 @@
 </tbody>
 </table>
 <hr />
-<h2>How It Predicts Distances</h2>
+<h2 id="how-it-predicts-distances"><a class="heading-anchor" href="#how-it-predicts-distances" aria-hidden="true">#</a>How It Predicts Distances</h2>
 <p>One public prediction method: <code>reckoner_distances(position_thought: &amp;Vector) -&gt; Option&lt;Distances&gt;</code>.</p>
 <ol>
 <li>Check experience of both reckoners (trail and stop). If either has zero experience, return <code>None</code>.</li>
@@ -281,7 +284,7 @@
 <p>A second method <code>recommended_distances</code> exists but is <code>#[cfg(test)]</code> only. It implements the full cascade: reckoner → broker accumulator → default_distances. Not used in production.</p>
 <p>Both methods query on <code>position_thought</code> only (Proposal 026). No composition with market thought at query time.</p>
 <hr />
-<h2>How It Learns</h2>
+<h2 id="how-it-learns"><a class="heading-anchor" href="#how-it-learns" aria-hidden="true">#</a>How It Learns</h2>
 <p>One learning method: <code>observe_distances(position_thought: &amp;Vector, optimal: &amp;Distances) -&gt; (f64, f64, f64, f64, f64, f64)</code>.</p>
 <ol>
 <li><strong>Pre-learning prediction:</strong> Query each reckoner for what it <em>would</em> predict given current state. If no experience, use default.</li>
@@ -291,14 +294,14 @@
 </ol>
 <p>The &quot;optimal&quot; distances come from hindsight — simulation sweeps candidate values against actual price histories to determine what would have been ideal (defined in <code>simulation</code> module, not here).</p>
 <hr />
-<h2>Noise Subspace</h2>
+<h2 id="noise-subspace"><a class="heading-anchor" href="#noise-subspace" aria-hidden="true">#</a>Noise Subspace</h2>
 <p><code>strip_noise(thought: &amp;Vector) -&gt; Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as market_observer.</p>
 <hr />
-<h2>Discrepancy With Module Docstring</h2>
+<h2 id="discrepancy-with-module-docstring"><a class="heading-anchor" href="#discrepancy-with-module-docstring" aria-hidden="true">#</a>Discrepancy With Module Docstring</h2>
 <p>Lines 1–5 state: &quot;Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating.&quot;</p>
 <p>The struct actually <strong>has</strong> a <code>noise_subspace</code> field (line 27–28) and a <code>strip_noise</code> method (line 165). The docstring contradicts the code.</p>
 <hr />
-<h2>Tests</h2>
+<h2 id="tests"><a class="heading-anchor" href="#tests" aria-hidden="true">#</a>Tests</h2>
 <p>7 tests in <code>#[cfg(test)] mod tests</code>:</p>
 <ul>
 <li>Construction defaults correct</li>
@@ -311,7 +314,7 @@
 </ul>
 <p>All use DIMS=4096, RECALIB=100, DEFAULT_TRAIL=0.02, DEFAULT_STOP=0.05.</p>
 <hr />
-<h2>Summary</h2>
+<h2 id="summary"><a class="heading-anchor" href="#summary" aria-hidden="true">#</a>Summary</h2>
 <p>PositionObserver predicts two continuous values (trailing stop distance, safety stop distance) from a position thought vector using two independent continuous Reckoners. It learns from hindsight-optimal distances with unit weight. It has a noise subspace despite its own docstring claiming it doesn't. The broker owns the production cascade; the observer only exposes raw reckoner queries.</p>
 </div>
     </main>

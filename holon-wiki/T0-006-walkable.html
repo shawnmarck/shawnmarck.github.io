@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,14 +222,14 @@
         T0-006 · Walkable — the AST traversal trait and thought expression tree <span class="badge badge-how">HOW</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2>What it IS</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What it IS</h2>
 <p>Walkable is the trait that enables <strong>zero-serialization encoding</strong>: any Rust type implementing <code>Walkable</code> can be directly converted into high-dimensional vectors without passing through JSON or EDN. It defines a structural type system (<code>WalkType</code>) that the encoder recursively walks to produce role-filler bindings, which are then bundled into a single vector.</p>
 <p>Source: <code>holon-rs/src/kernel/walkable.rs</code> (1002 lines)
 Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <code>encode_walkable</code> recursive traversal.</p>
 <blockquote>
 <p>&quot;This module provides the Walkable trait that allows encoding in-memory data structures directly without JSON/EDN serialization.&quot;</p>
 </blockquote>
-<h2>The structural type system — <code>WalkType</code></h2>
+<h2 id="the-structural-type-system-walktype"><a class="heading-anchor" href="#the-structural-type-system-walktype" aria-hidden="true">#</a>The structural type system — <code>WalkType</code></h2>
 <p>There are five structural types:</p>
 <table>
 <thead>
@@ -267,7 +270,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 <blockquote>
 <p>&quot;<code>List</code> and <code>Set</code> are <strong>composed</strong>: items are encoded and bundled into a single vector. <code>Spread</code> is <strong>fanned out</strong>: each element becomes an independent leaf binding with its own indexed path (e.g., <code>field.[0]</code>, <code>field.[1]</code>). The Walkable implementation chooses which semantics to use per field.&quot;</p>
 </blockquote>
-<h2><code>WalkableValue</code> — the AST node enum</h2>
+<h2 id="walkablevalue-the-ast-node-enum"><a class="heading-anchor" href="#walkablevalue-the-ast-node-enum" aria-hidden="true">#</a><code>WalkableValue</code> — the AST node enum</h2>
 <p><code>WalkableValue</code> is the owned enum that represents the tree. It is the recursive data structure the encoder traverses:</p>
 <pre><code class="language-rust">pub enum WalkableValue {
     Scalar(ScalarValue),
@@ -278,7 +281,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 }
 </code></pre>
 <p>Each variant is recursive (except <code>Scalar</code> which is a leaf). This is the <strong>thought expression tree</strong>: structured data decomposed into a form the encoder can recursively walk.</p>
-<h2>Scalar types — <code>ScalarValue</code></h2>
+<h2 id="scalar-types-scalarvalue"><a class="heading-anchor" href="#scalar-types-scalarvalue" aria-hidden="true">#</a>Scalar types — <code>ScalarValue</code></h2>
 <p>The leaf nodes of the tree. Eight variants:</p>
 <table>
 <thead>
@@ -326,13 +329,13 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 <p>&quot;Numeric scalars don't use atom encoding — handled specially by encoder.&quot;</p>
 </blockquote>
 <p>The three numeric scalars (<code>LogFloat</code>, <code>LinearFloat</code>, <code>TimeFloat</code>) are flagged by <code>is_numeric_scalar()</code> and routed to special encoder methods instead of atom lookup. Their <code>to_atom()</code> methods produce prefixed strings (<code>&quot;$log:…&quot;</code>, <code>&quot;$linear:…&quot;</code>, <code>&quot;$time:…&quot;</code>) but these are informational only — the encoder dispatches on the variant, not on the atom string.</p>
-<h3>Default scales and resolutions</h3>
+<h3 id="default-scales-and-resolutions"><a class="heading-anchor" href="#default-scales-and-resolutions" aria-hidden="true">#</a>Default scales and resolutions</h3>
 <ul>
 <li><code>ScalarValue::log(value)</code> — scale defaults to <code>1000.0</code></li>
 <li><code>ScalarValue::linear(value)</code> — scale defaults to <code>1000.0</code></li>
 <li><code>ScalarValue::time(value)</code> — resolution defaults to <code>TimeResolution::Hour</code></li>
 </ul>
-<h3><code>TimeResolution</code></h3>
+<h3 id="timeresolution"><a class="heading-anchor" href="#timeresolution" aria-hidden="true">#</a><code>TimeResolution</code></h3>
 <p>Controls positional granularity for time encoding:</p>
 <table>
 <thead>
@@ -360,7 +363,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 </tr>
 </tbody>
 </table>
-<h2>The <code>Walkable</code> trait</h2>
+<h2 id="the-walkable-trait"><a class="heading-anchor" href="#the-walkable-trait" aria-hidden="true">#</a>The <code>Walkable</code> trait</h2>
 <pre><code class="language-rust">pub trait Walkable {
     fn walk_type(&amp;self) -&gt; WalkType;
     fn walk_scalar(&amp;self) -&gt; ScalarValue { panic!(…) }
@@ -381,21 +384,21 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 <blockquote>
 <p>&quot;Based on <code>walk_type()</code>, implement the corresponding method: <code>WalkType::Scalar</code> → <code>walk_scalar()</code>, <code>WalkType::Map</code> → <code>walk_map_items()</code>, <code>WalkType::List</code> → <code>walk_list_items()</code>, <code>WalkType::Set</code> → <code>walk_set_items()</code>.&quot;</p>
 </blockquote>
-<h3>Two encoding paths</h3>
+<h3 id="two-encoding-paths"><a class="heading-anchor" href="#two-encoding-paths" aria-hidden="true">#</a>Two encoding paths</h3>
 <ol>
 <li><strong>Owned path</strong>: <code>walk_map_items()</code> etc. return <code>Vec&lt;WalkableValue&gt;</code> — allocates, but simpler to implement.</li>
 <li><strong>Zero-allocation visitor path</strong>: <code>walk_map_visitor()</code> etc. call a closure with <code>WalkableRef&lt;'_&gt;</code> — borrows data, avoids cloning strings. The encoder checks <code>has_fast_visitor()</code> and uses this path when available.</li>
 </ol>
-<h2><code>WalkableRef</code> — the borrowed counterpart</h2>
+<h2 id="walkableref-the-borrowed-counterpart"><a class="heading-anchor" href="#walkableref-the-borrowed-counterpart" aria-hidden="true">#</a><code>WalkableRef</code> — the borrowed counterpart</h2>
 <pre><code class="language-rust">pub enum WalkableRef&lt;'a&gt; {
     Scalar(ScalarRef&lt;'a&gt;),   // zero-allocation for flat scalars
     Nested(WalkableValue),    // owned allocation for nested structures
 }
 </code></pre>
 <p><code>ScalarRef&lt;'a&gt;</code> mirrors <code>ScalarValue</code> but borrows strings (<code>&amp;'a str</code> instead of <code>String</code>). Constructor helpers: <code>WalkableRef::string(s)</code>, <code>WalkableRef::int(i)</code>, <code>WalkableRef::float(f)</code>, <code>WalkableRef::bool(b)</code>, <code>WalkableRef::null()</code>, <code>WalkableRef::time(value)</code>, <code>WalkableRef::nested(value)</code>.</p>
-<h2>How <code>encode()</code> recursively walks the tree</h2>
+<h2 id="how-encode-recursively-walks-the-tree"><a class="heading-anchor" href="#how-encode-recursively-walks-the-tree" aria-hidden="true">#</a>How <code>encode()</code> recursively walks the tree</h2>
 <p>The encoder's <code>encode_walkable&lt;W: Walkable&gt;(walkable)</code> calls <code>encode_walkable_recursive(walkable, None)</code>, which dispatches on <code>walkable.walk_type()</code>:</p>
-<h3>Map encoding (<code>WalkType::Map</code>)</h3>
+<h3 id="map-encoding-walktypemap"><a class="heading-anchor" href="#map-encoding-walktypemap" aria-hidden="true">#</a>Map encoding (<code>WalkType::Map</code>)</h3>
 <pre><code>encode_walkable_map(walkable, prefix):
   if has_fast_visitor() → encode_walkable_map_fast (visitor-based)
   else → walk_map_items() → for each (key, value):
@@ -409,7 +412,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 <blockquote>
 <p>&quot;The key insight is <strong>role-filler binding</strong>: we bind each value (filler) with its key (role) before bundling.&quot;</p>
 </blockquote>
-<h3>List/Spread encoding (<code>WalkType::List</code> or <code>WalkType::Spread</code>)</h3>
+<h3 id="listspread-encoding-walktypelist-or-walktypespread"><a class="heading-anchor" href="#listspread-encoding-walktypelist-or-walktypespread" aria-hidden="true">#</a>List/Spread encoding (<code>WalkType::List</code> or <code>WalkType::Spread</code>)</h3>
 <p>Both use identical encoding logic:</p>
 <pre><code>encode_walkable_list(walkable, prefix):
   walk_list_items() → for each (i, item):
@@ -421,7 +424,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
   bundle(all bounds)
 </code></pre>
 <p>The difference between List and Spread is <strong>not</strong> in the encoding but in the striped/fan-out path (see below).</p>
-<h3>Set encoding (<code>WalkType::Set</code>)</h3>
+<h3 id="set-encoding-walktypeset"><a class="heading-anchor" href="#set-encoding-walktypeset" aria-hidden="true">#</a>Set encoding (<code>WalkType::Set</code>)</h3>
 <pre><code>encode_walkable_set(walkable, prefix):
   set_indicator = encode_atom(&quot;set_indicator&quot;)
   walk_set_items() → for each item:
@@ -431,7 +434,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
   bind(set_indicator, bundled)
 </code></pre>
 <p>Sets are order-independent: no positional binding. The <code>set_indicator</code> role vector distinguishes a set from a random bundle.</p>
-<h3>Recursive <code>WalkableValue</code> encoding</h3>
+<h3 id="recursive-walkablevalue-encoding"><a class="heading-anchor" href="#recursive-walkablevalue-encoding" aria-hidden="true">#</a>Recursive <code>WalkableValue</code> encoding</h3>
 <p>The <code>encode_walkable_value_recursive</code> method handles the full tree for nested values:</p>
 <table>
 <thead>
@@ -463,13 +466,13 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 </tr>
 </tbody>
 </table>
-<h3>Empty container encoding</h3>
+<h3 id="empty-container-encoding"><a class="heading-anchor" href="#empty-container-encoding" aria-hidden="true">#</a>Empty container encoding</h3>
 <ul>
 <li>Empty Map → <code>encode_atom(make_path(prefix, &quot;{}&quot;))</code></li>
 <li>Empty List → <code>encode_atom(make_path(prefix, &quot;[]&quot;))</code></li>
 <li>Empty Set → <code>encode_atom(make_path(prefix, &quot;#{}&quot;))</code></li>
 </ul>
-<h2>Striped encoding and the difference between List and Spread</h2>
+<h2 id="striped-encoding-and-the-difference-between-list-and-spread"><a class="heading-anchor" href="#striped-encoding-and-the-difference-between-list-and-spread" aria-hidden="true">#</a>Striped encoding and the difference between List and Spread</h2>
 <p>In the hierarchical encode path (<code>encode_walkable</code>), List and Spread are encoded identically. The difference appears in the <strong>striped</strong> path (<code>encode_walkable_striped</code>):</p>
 <p><code>collect_leaf_bindings</code> treats them differently:</p>
 <ul>
@@ -482,7 +485,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 <blockquote>
 <p>&quot;Use when per-element attribution or rule crafting is needed.&quot;</p>
 </blockquote>
-<h2>Built-in Walkable implementations</h2>
+<h2 id="built-in-walkable-implementations"><a class="heading-anchor" href="#built-in-walkable-implementations" aria-hidden="true">#</a>Built-in Walkable implementations</h2>
 <p>The file provides <code>Walkable</code> impls for:</p>
 <ul>
 <li><strong>Scalars</strong>: <code>String</code>, <code>&amp;str</code>, <code>i64</code>, <code>i32</code>, <code>u32</code>, <code>u64</code>, <code>usize</code>, <code>f64</code>, <code>f32</code>, <code>bool</code></li>
@@ -490,7 +493,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 <li><strong>Self-referential</strong>: <code>WalkableValue</code> itself</li>
 <li><strong>JSON bridge</strong>: <code>serde_json::Value</code> — Null/Bool/Number/String → Scalar, Array → List, Object → Map</li>
 </ul>
-<h2>Structural forms in wat (orthogonal context)</h2>
+<h2 id="structural-forms-in-wat-orthogonal-context"><a class="heading-anchor" href="#structural-forms-in-wat-orthogonal-context" aria-hidden="true">#</a>Structural forms in wat (orthogonal context)</h2>
 <p>The <code>wat/core/structural.wat</code> file defines three structural forms orthogonal to the vector algebra:</p>
 <blockquote>
 <p>&quot;A struct cannot be bound, bundled, or cosined. It holds things that can. An enum variant is an identity, not a geometric object. A protocol is a contract, not a computation.&quot;</p>
@@ -522,7 +525,7 @@ Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <cod
 </tbody>
 </table>
 <p>These forms organize programs but do not enter the vector algebra. A Walkable impl bridges between a struct and the encoder, but the struct itself is not a vector object.</p>
-<h2>Source quotes</h2>
+<h2 id="source-quotes"><a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a>Source quotes</h2>
 <blockquote>
 <p>&quot;Zero-cost abstraction: Trait dispatch is compile-time where possible.&quot;</p>
 </blockquote>

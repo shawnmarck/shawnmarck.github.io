@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,7 +222,7 @@
         T0-009: Engram — Observation Storage and Retrieval <span class="badge badge-how">HOW</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2>What It IS</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It IS</h2>
 <p>An <code>Engram</code> is &quot;a named, serializable snapshot of a trained <code>OnlineSubspace</code>.&quot; It records what a learned pattern &quot;looks like&quot; at the moment of training and is <strong>immutable once created</strong>.</p>
 <p>An <code>EngramLibrary</code> is a <code>HashMap</code>-backed collection of named engrams that provides three matching strategies against probes:</p>
 <ol>
@@ -227,8 +230,8 @@
 <li><strong>Spectrum matching</strong> (<code>match_spectrum</code>): cosine similarity on eigenvalue signatures</li>
 <li><strong>Alignment matching</strong> (<code>match_alignment</code>): directional alignment between subspaces via principal angles</li>
 </ol>
-<h2>How It Works</h2>
-<h3>Engram Creation</h3>
+<h2 id="how-it-works"><a class="heading-anchor" href="#how-it-works" aria-hidden="true">#</a>How It Works</h2>
+<h3 id="engram-creation"><a class="heading-anchor" href="#engram-creation" aria-hidden="true">#</a>Engram Creation</h3>
 <p>When <code>EngramLibrary::add()</code> mints an engram from a trained <code>OnlineSubspace</code>, it:</p>
 <ol>
 <li>Extracts the subspace's eigenvalue vector.</li>
@@ -236,21 +239,21 @@
 <li>Calls <code>subspace.snapshot()</code> to capture the full <code>SubspaceSnapshot</code> (mean, component matrix, n, threshold state).</li>
 <li>Stores optional <code>surprise_profile</code> (per-feature surprise scores) and arbitrary <code>metadata</code> (JSON).</li>
 </ol>
-<h3>Subspace Cache</h3>
+<h3 id="subspace-cache"><a class="heading-anchor" href="#subspace-cache" aria-hidden="true">#</a>Subspace Cache</h3>
 <p>Engrams do <strong>not</strong> serialize a live <code>OnlineSubspace</code>. The field <code>subspace_cache</code> is <code>#[serde(skip)]</code>. When <code>engram.subspace()</code> is called, it lazily reconstructs the <code>OnlineSubspace</code> from the stored snapshot via <code>OnlineSubspace::from_snapshot()</code>.</p>
-<h3>Two-Tier Matching (<code>match_vec</code>)</h3>
+<h3 id="two-tier-matching-match_vec"><a class="heading-anchor" href="#two-tier-matching-match_vec" aria-hidden="true">#</a>Two-Tier Matching (<code>match_vec</code>)</h3>
 <p>Takes a raw <code>&amp;[f64]</code> probe, <code>top_k</code>, and <code>prefilter_k</code>:</p>
 <ol>
 <li><strong>Eigenvalue pre-filter</strong> (O(k·n)): ranks engrams by eigenvalue energy (sum of squared signature values), takes the top <code>prefilter_k</code> candidates. Skipped entirely if <code>len(engrams) ≤ prefilter_k</code>.</li>
 <li><strong>Full residual</strong> (O(k·dim)): scores candidates by computing <code>engram.residual(x)</code> on each — the residual norm after projecting the probe onto the engram's learned manifold. Returns <code>Vec&lt;(name, residual)&gt;</code> sorted ascending (lower = better fit).</li>
 </ol>
-<h3>Spectrum Matching (<code>match_spectrum</code>)</h3>
+<h3 id="spectrum-matching-match_spectrum"><a class="heading-anchor" href="#spectrum-matching-match_spectrum" aria-hidden="true">#</a>Spectrum Matching (<code>match_spectrum</code>)</h3>
 <p>Takes an eigenvalue slice and <code>top_k</code>. Computes cosine similarity between the probe's eigenvalue spectrum and each engram's stored L2-normalized <code>eigenvalue_signature</code>. &quot;Use for rough pre-screening.&quot; Returns sorted descending (higher = better).</p>
-<h3>Alignment Matching (<code>match_alignment</code>)</h3>
+<h3 id="alignment-matching-match_alignment"><a class="heading-anchor" href="#alignment-matching-match_alignment" aria-hidden="true">#</a>Alignment Matching (<code>match_alignment</code>)</h3>
 <p>Takes a probe <code>OnlineSubspace</code> and <code>top_k</code>. Calls <code>subspace_alignment(engram.subspace(), 0)</code> for each engram — measuring whether variance lives in the same part of the vector space. Returns <code>Vec&lt;(name, alignment_score)&gt;</code> sorted descending; &quot;alignment is in [0, 1]: 1.0 = same directions, 0.0 = orthogonal.&quot;</p>
-<h3>Persistence</h3>
+<h3 id="persistence"><a class="heading-anchor" href="#persistence" aria-hidden="true">#</a>Persistence</h3>
 <p><code>EngramLibrary</code> implements JSON round-trip via <code>save()</code> / <code>load()</code>. The test <code>test_serialization_round_trip</code> confirms that match results are bitwise identical after save→load.</p>
-<h2>Key Properties</h2>
+<h2 id="key-properties"><a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a>Key Properties</h2>
 <table>
 <thead>
 <tr>
@@ -281,7 +284,7 @@
 </tr>
 </tbody>
 </table>
-<h2>Source Quotes</h2>
+<h2 id="source-quotes"><a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a>Source Quotes</h2>
 <blockquote>
 <p>&quot;An engram represents a learned pattern ('what normal looks like' for a given class of input).&quot;
 — module-level doc, line 3–4</p>
@@ -302,7 +305,7 @@
 <p>&quot;Lower residual = better fit (vector is more 'in-distribution' for the pattern this engram represents).&quot;
 — <code>residual()</code> doc, line 122–123</p>
 </blockquote>
-<h2>Test Coverage</h2>
+<h2 id="test-coverage"><a class="heading-anchor" href="#test-coverage" aria-hidden="true">#</a>Test Coverage</h2>
 <ul>
 <li><code>test_add_and_match</code>: probes from distribution A match engram A first</li>
 <li><code>test_remove_and_names</code>: add/remove/contains/len/names</li>

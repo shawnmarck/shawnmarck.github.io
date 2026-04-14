@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,13 +222,13 @@
         Panel of Experts <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; uses a <strong>two-reviewer panel</strong> to evaluate every proposal. <strong>Brian Beckman</strong> reviews through the lens of algebraic/category-theory rigor — asking whether a proposal composes with the existing &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;monoid&lt;/a&gt; and what categorical construction it represents. <strong>Rich Hickey</strong> reviews through the lens of simplicity — asking whether a proposal complects concerns and whether existing forms already suffice. Each produces an independent verdict (ACCEPTED / CONDITIONAL / REJECTED). When they disagree, a <strong>datamancer arbitrator</strong> synthesizes a final resolution, sometimes overriding both.</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2>The Two Reviewers</h2>
-<h3>Brian Beckman — Algebraic Rigor</h3>
+      <div class="prose prose-invert max-w-none"><h2 id="the-two-reviewers"><a class="heading-anchor" href="#the-two-reviewers" aria-hidden="true">#</a>The Two Reviewers</h2>
+<h3 id="brian-beckman-algebraic-rigor"><a class="heading-anchor" href="#brian-beckman-algebraic-rigor" aria-hidden="true">#</a>Brian Beckman — Algebraic Rigor</h3>
 <p><strong>Philosophy:</strong> Every language form should have a clear algebraic identity. If you can't name the categorical construction, you don't understand what you're adding.</p>
 <p>Beckman frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. He sees mathematical structure where Hickey sees convention.</p>
 <p><strong>Core questions:</strong></p>
@@ -248,7 +251,7 @@
 <li>Wanted mandatory types on struct fields (007 — lost to Hickey).</li>
 </ul>
 <p><strong>When overridden:</strong> On struct field types (007) and <code>defservice</code> (04/003). In both cases, the simplicity argument prevailed: types as documentation rather than enforcement, and functions + <code>select</code> subsuming a dedicated service form.</p>
-<h3>Rich Hickey — Simplicity / Anti-Complecting</h3>
+<h3 id="rich-hickey-simplicity-anti-complecting"><a class="heading-anchor" href="#rich-hickey-simplicity-anti-complecting" aria-hidden="true">#</a>Rich Hickey — Simplicity / Anti-Complecting</h3>
 <p><strong>Philosophy:</strong> Distinguish <strong>simple</strong> (one concept, one job, interleaving nothing) from <strong>easy</strong> (familiar, convenient, available to hand). Build simple; don't add what discipline or data restructuring already solve.</p>
 <p>Hickey applies the &quot;simple made easy&quot; framework from his Clojure design work. He protects the six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; from proliferation and guards against forms that bundle multiple concerns into one interface.</p>
 <p><strong>Core questions:</strong></p>
@@ -272,8 +275,8 @@
 </ul>
 <p><strong>When overridden:</strong> On journal operations (004 — the opacity argument convinced the arbitrator they're core), <code>nil</code>/boolean handling (013 — datamancer chose structural absence), and channels (003 — deleted as contradicting fold-based design).</p>
 <hr />
-<h2>How Reviews Work</h2>
-<h3>Independent verdicts</h3>
+<h2 id="how-reviews-work"><a class="heading-anchor" href="#how-reviews-work" aria-hidden="true">#</a>How Reviews Work</h2>
+<h3 id="independent-verdicts"><a class="heading-anchor" href="#independent-verdicts" aria-hidden="true">#</a>Independent verdicts</h3>
 <p>Each reviewer writes a separate <code>review-beckman.md</code> and <code>review-hickey.md</code>. Reviews are <strong>not rubber stamps</strong>. The two reviewers have:</p>
 <ul>
 <li>Reversed proposals (001 — Beckman accepted, Hickey rejected; Hickey's rejection won).</li>
@@ -286,7 +289,7 @@
 <li><strong>CONDITIONAL</strong> — accepted with specific modifications or constraints</li>
 <li><strong>REJECTED</strong> — with reasoning and often suggestions for alternative approaches</li>
 </ul>
-<h3>The characteristic tension</h3>
+<h3 id="the-characteristic-tension"><a class="heading-anchor" href="#the-characteristic-tension" aria-hidden="true">#</a>The characteristic tension</h3>
 <p>The Beckman-Hickey tension is productive and by design:</p>
 <table>
 <thead>
@@ -326,8 +329,8 @@
 </table>
 <p>This is not a left-right spectrum. Both reviewers agree on foundational principles (transparency to Rust, protect the algebra, the four-layer model). They disagree on <em>how to apply those principles</em> — particularly on whether a proposed form reveals necessary structure or introduces unnecessary ceremony.</p>
 <hr />
-<h2>Resolution: How Disagreements Are Settled</h2>
-<h3>The Datamancer</h3>
+<h2 id="resolution-how-disagreements-are-settled"><a class="heading-anchor" href="#resolution-how-disagreements-are-settled" aria-hidden="true">#</a>Resolution: How Disagreements Are Settled</h2>
+<h3 id="the-datamancer"><a class="heading-anchor" href="#the-datamancer" aria-hidden="true">#</a>The Datamancer</h3>
 <p>When the two reviewers disagree, a <strong>datamancer</strong> arbitrator synthesizes the final <code>RESOLUTION.md</code>. This role is not a third voter or tiebreaker — it's a <em>designer</em> who looks at the problem space itself and sometimes finds that neither reviewer's position is right.</p>
 <p>The datamancer has produced three kinds of resolution:</p>
 <ol>
@@ -338,7 +341,7 @@
 <li><p><strong>Show both are unnecessary</strong> — the simplest answer is that no new form is needed. Example: proposal 04/003, the datamancer demonstrated that &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;select&lt;/a&gt; + functions + <code>spawn</code> subsume both <code>defprocess</code> and <code>defservice</code>, retiring both proposed forms entirely.</p>
 </li>
 </ol>
-<h3>Resolution outcomes</h3>
+<h3 id="resolution-outcomes"><a class="heading-anchor" href="#resolution-outcomes" aria-hidden="true">#</a>Resolution outcomes</h3>
 <table>
 <thead>
 <tr>
@@ -367,7 +370,7 @@
 </table>
 <p>Every resolution documents <strong>who was overridden and why</strong>. This creates an audit trail of design reasoning — not just what was decided, but <em>whose argument was stronger and why</em>.</p>
 <hr />
-<h2>Historical Record</h2>
+<h2 id="historical-record"><a class="heading-anchor" href="#historical-record" aria-hidden="true">#</a>Historical Record</h2>
 <p>Across 18 resolved proposals (March–April 2026):</p>
 <table>
 <thead>
@@ -397,7 +400,7 @@
 </table>
 <p>Both reviewers have been overturned roughly equally. The datamancer has intervened only twice, but both interventions shaped fundamental design decisions.</p>
 <hr />
-<h2>Related Concepts</h2>
+<h2 id="related-concepts"><a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a>Related Concepts</h2>
 <ul>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-proposal-system.html&quot;&gt;Proposal System&lt;/a&gt; — the formal process that invokes this panel</li>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; — the language being designed</li>

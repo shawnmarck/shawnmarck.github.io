@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -221,7 +224,7 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The broker binds exactly one &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observer&lt;/a&gt; to one &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position observer&lt;/a&gt;, forming a cell in an N×M grid. It owns &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;paper trades&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;scalar accumulators&lt;/a&gt; for trail/stop distances, and a dollar-P&amp;L gate. Every output flows upward as return values — the broker never mutates observer state directly. It is the unit of accountability: it proposes, tracks, resolves, and decides whether it has earned the right to trade.</p>
 <hr />
-<h2>What it is</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What it is</h2>
 <blockquote>
 <p><em>&quot;The broker IS the accountability unit. It owns paper trades, scalar accumulators, and a Grace/Violence reckoner. Values up, not effects down.&quot;</em> — broker.rs</p>
 </blockquote>
@@ -232,7 +235,7 @@
 <li>The broker <strong>gates</strong> itself. A broker with negative expected value cannot propose funded trades.</li>
 </ul>
 <hr />
-<h2>The N×M Grid</h2>
+<h2 id="the-nm-grid"><a class="heading-anchor" href="#the-nm-grid" aria-hidden="true">#</a>The N×M Grid</h2>
 <p>Brokers live in a flat array indexed by <code>slot_idx</code>. With N market observers and M position observers:</p>
 <pre><code>slot_idx = market_idx × M + position_idx
 market_idx = slot_idx / M       (integer division)
@@ -240,7 +243,7 @@ position_idx = slot_idx % M
 
 <p>Each broker's <code>slot_idx</code> is <strong>its identity</strong> — it determines which market observer and which position observer it binds. For example: <code>slot_idx=5, M=3</code> → <code>market_idx=1, position_idx=2</code>. (T0-018, lines 217–224)</p>
 <hr />
-<h2>Core Data Flow</h2>
+<h2 id="core-data-flow"><a class="heading-anchor" href="#core-data-flow" aria-hidden="true">#</a>Core Data Flow</h2>
 <pre class="mermaid">flowchart TD
     candle_arrives[&quot;Candle arrives&quot;] --&gt; register_paper[&quot;register_paper()\ncreates PaperEntry with thoughts + distances&quot;]
     register_paper --&gt;|&quot;next candle&quot;| tick_papers[&quot;tick_papers()&quot;]
@@ -260,7 +263,7 @@ position_idx = slot_idx % M
 
 <p>— T0-018, §10</p>
 <hr />
-<h2>The Gate</h2>
+<h2 id="the-gate"><a class="heading-anchor" href="#the-gate" aria-hidden="true">#</a>The Gate</h2>
 <pre><code class="language-rust">pub fn gate_open(&amp;self) -&gt; bool {
     let cold_start = self.grace_count &lt; 50 || self.violence_count &lt; 50;
     cold_start || self.expected_value &gt; 0.0
@@ -276,7 +279,7 @@ position_idx = slot_idx % M
 </code></pre>
 <p>Where <code>avg_grace_net</code> and <code>avg_violence_net</code> are EMAs (α=0.038, half-life ~50 papers) of dollar-P&amp;L per paper against a $10,000 reference capital, including swap fees on both entry and exit. (T0-018, §7.8)</p>
 <hr />
-<h2>The Distance Cascade</h2>
+<h2 id="the-distance-cascade"><a class="heading-anchor" href="#the-distance-cascade" aria-hidden="true">#</a>The Distance Cascade</h2>
 <p>When a broker needs trail/stop distances, it consults a three-tier fallback:</p>
 <table>
 <thead>
@@ -306,7 +309,7 @@ position_idx = slot_idx % M
 </table>
 <p>The broker owns tiers 2 and 3. Tier 1 comes from outside. (T0-018, §7.4)</p>
 <hr />
-<h2>Paper Trades</h2>
+<h2 id="paper-trades"><a class="heading-anchor" href="#paper-trades" aria-hidden="true">#</a>Paper Trades</h2>
 <p>Each candle, the broker calls <code>register_paper()</code> to create a new &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;PaperEntry&lt;/a&gt;. The paper:</p>
 <ul>
 <li>Records the composed thought (market + position), the raw market thought, and the position thought separately (Proposal 026: position learns from its own thought, not composed)</li>
@@ -324,7 +327,7 @@ position_idx = slot_idx % M
 </code></pre>
 <p><strong>Key ordering:</strong> Violence is checked before Grace. If both would fire on the same tick, Violence wins. (T0-015, §tick)</p>
 <hr />
-<h2>Runners and Deferred Training</h2>
+<h2 id="runners-and-deferred-training"><a class="heading-anchor" href="#runners-and-deferred-training" aria-hidden="true">#</a>Runners and Deferred Training</h2>
 <p>When a paper signals Grace (trail crosses), it becomes a <strong>runner</strong>. While running, the broker accumulates a <code>RunnerHistory</code> — parallel arrays of composed thoughts, distances, and prices at each candle.</p>
 <p>When the runner resolves (trailing stop fires), <code>compute_position_batch()</code> produces deferred training data for the position observer:</p>
 <ol>
@@ -336,7 +339,7 @@ position_idx = slot_idx % M
 </ol>
 <p>This batch is included in the <code>Resolution</code> struct as <code>position_batch</code> and routed to the position observer by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt;. (T0-018, §8.2)</p>
 <hr />
-<h2>Propagation and Learning</h2>
+<h2 id="propagation-and-learning"><a class="heading-anchor" href="#propagation-and-learning" aria-hidden="true">#</a>Propagation and Learning</h2>
 <p><code>propagate()</code> is called by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt; with each resolved paper's data. It performs three steps:</p>
 <ol>
 <li><strong>Track record</strong> — increment cumulative grace/violence and trade counts</li>
@@ -345,7 +348,7 @@ position_idx = slot_idx % M
 </ol>
 <p>The method returns <code>PropagationFacts</code> — a data struct containing which observers should learn and with what data. The broker does <strong>not</strong> talk to observers directly. (T0-018, §7.8)</p>
 <hr />
-<h2>Resolution Struct</h2>
+<h2 id="resolution-struct"><a class="heading-anchor" href="#resolution-struct" aria-hidden="true">#</a>Resolution Struct</h2>
 <p>Every resolved paper produces a <code>Resolution</code> with 15 fields:</p>
 <table>
 <thead>
@@ -390,10 +393,10 @@ position_idx = slot_idx % M
 </tbody>
 </table>
 <hr />
-<h2>Direction Flip: <code>close_all_runners()</code></h2>
+<h2 id="direction-flip-close_all_runners"><a class="heading-anchor" href="#direction-flip-close_all_runners" aria-hidden="true">#</a>Direction Flip: <code>close_all_runners()</code></h2>
 <p>When the market observer's active direction flips, <code>close_all_runners()</code> force-resolves all active runners with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip and will hit their stop naturally. (T0-018, §7.6)</p>
 <hr />
-<h2>Key Design Decisions</h2>
+<h2 id="key-design-decisions"><a class="heading-anchor" href="#key-design-decisions" aria-hidden="true">#</a>Key Design Decisions</h2>
 <table>
 <thead>
 <tr>
@@ -446,7 +449,7 @@ position_idx = slot_idx % M
 </tbody>
 </table>
 <hr />
-<h2>Verified Properties</h2>
+<h2 id="verified-properties"><a class="heading-anchor" href="#verified-properties" aria-hidden="true">#</a>Verified Properties</h2>
 <ol>
 <li><strong>No shared mutation.</strong> <code>propagate()</code> returns <code>PropagationFacts</code>. <code>tick_papers()</code> returns <code>Vec&lt;Resolution&gt;</code>. The broker never touches observer state. (T0-018, §12)</li>
 <li><strong>Runner history is scoped.</strong> Created at Grace signal, accumulated per-candle, consumed at runner resolution. Keyed by <code>paper_id</code>, preventing stale data. (T0-018, §12)</li>
@@ -456,7 +459,7 @@ position_idx = slot_idx % M
 <li><strong>15 tests</strong> cover construction, grid math, gate logic, paper lifecycle, propagation, dollar P&amp;L, EMA convergence, accumulator naming, and optimal distance approximation. (T0-018, §9)</li>
 </ol>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <ul>
 <li><strong>T0-018</strong> — <code>broker.rs</code> (887 lines, 489 production + 398 test). Full verification of all 24 fields, 9 methods, 15 tests.</li>
 <li><strong>T0-015</strong> — <code>paper_entry.rs</code> (370 lines). Paper trade lifecycle, tick mechanics, resolution classifications.</li>

@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,16 +222,16 @@
         T0-016 — Services (Rust) — Verification <span class="badge badge-what">WHAT</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2>Source Files</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="source-files"><a class="heading-anchor" href="#source-files" aria-hidden="true">#</a>Source Files</h2>
 <ul>
 <li><code>src/services/queue.rs</code> — 123 lines</li>
 <li><code>src/services/topic.rs</code> — 129 lines</li>
 <li><code>src/services/mailbox.rs</code> — 200 lines</li>
 </ul>
-<h2>What They Are</h2>
+<h2 id="what-they-are"><a class="heading-anchor" href="#what-they-are" aria-hidden="true">#</a>What They Are</h2>
 <p>Three messaging primitives. Point-to-point (Queue), fan-out (Topic), fan-in (Mailbox). All built on <code>crossbeam::channel</code>. Zero <code>Mutex</code>. Concurrency through message passing alone.</p>
 <hr />
-<h2>Queue — Point-to-Point</h2>
+<h2 id="queue-point-to-point"><a class="heading-anchor" href="#queue-point-to-point" aria-hidden="true">#</a>Queue — Point-to-Point</h2>
 <p>One producer, one consumer. The atom.</p>
 <p><strong>Wrapper around <code>crossbeam::channel</code>.</strong> Two newtypes:</p>
 <ul>
@@ -253,7 +256,7 @@
 <p><strong>Error types:</strong> <code>SendError&lt;T&gt;</code> and <code>RecvError</code> — both custom, both implement <code>Display</code>. Purpose is to decouple the public API from crossbeam's error types.</p>
 <p><strong>Tests (4):</strong> send/receive one, multiple in order, bounded backpressure (sender blocks in spawned thread until consumer frees a slot), shutdown on sender drop.</p>
 <hr />
-<h2>Topic — Fan-Out</h2>
+<h2 id="topic-fan-out"><a class="heading-anchor" href="#topic-fan-out" aria-hidden="true">#</a>Topic — Fan-Out</h2>
 <p>One producer, N consumers. A proxy that writes to N queues.</p>
 <p><strong>How it works:</strong></p>
 <ol>
@@ -271,7 +274,7 @@
 <p><strong>Bounds:</strong> <code>T: Send + Clone + 'static</code>. Clone is required because the message is cloned to each subscriber.</p>
 <p><strong>Tests (3):</strong> one message reaches all subscribers, N messages in order per subscriber, shutdown cascades on sender drop.</p>
 <hr />
-<h2>Mailbox — Fan-In</h2>
+<h2 id="mailbox-fan-in"><a class="heading-anchor" href="#mailbox-fan-in" aria-hidden="true">#</a>Mailbox — Fan-In</h2>
 <p>N producers, one consumer. A proxy that reads from N queues.</p>
 <p><strong>How it works:</strong></p>
 <ol>
@@ -301,7 +304,7 @@
 </ul>
 <p><strong>Tests (4):</strong> multiple senders one receiver, interleaved messages from different threads, shutdown on all senders dropped, partial sender drop still works.</p>
 <hr />
-<h2>How Concurrency Is Achieved Without Mutex</h2>
+<h2 id="how-concurrency-is-achieved-without-mutex"><a class="heading-anchor" href="#how-concurrency-is-achieved-without-mutex" aria-hidden="true">#</a>How Concurrency Is Achieved Without Mutex</h2>
 <p><strong>All three primitives use <code>crossbeam::channel</code> as their sole concurrency mechanism.</strong></p>
 <p><code>crossbeam::channel</code> is a lock-free multi-producer multi-consumer channel built on atomic operations. The internal implementation uses compare-and-swap and spin-locks — no <code>std::sync::Mutex</code> anywhere.</p>
 <p>The concurrency pattern:</p>

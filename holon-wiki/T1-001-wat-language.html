@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -222,14 +225,14 @@
       <div class="prose prose-invert max-w-none"><p><strong>Verified leaf: T1-001</strong>
 <strong>Sources:</strong> <code>wat/LANGUAGE.md</code> (341 lines), <code>wat/core/structural.wat</code> (115 lines)</p>
 <hr />
-<h2>What wat is</h2>
+<h2 id="what-wat-is"><a class="heading-anchor" href="#what-wat-is" aria-hidden="true">#</a>What wat is</h2>
 <p>Wat is &quot;an s-expression language for algebraic cognition.&quot; It is not a general-purpose language, not Turing complete, and not interpreted at runtime — it &quot;specifies Rust implementations.&quot; It is &quot;Lisp with a purpose: algebraic cognition from named thoughts.&quot;</p>
 <ul>
 <li>&quot;A specification language for Holon programs.&quot;</li>
 <li>&quot;A shared language between human intuition and machine implementation.&quot;</li>
 <li>&quot;The intermediate representation between thought and execution.&quot;</li>
 </ul>
-<h2>Grammar</h2>
+<h2 id="grammar"><a class="heading-anchor" href="#grammar" aria-hidden="true">#</a>Grammar</h2>
 <p>EBNF grammar from <code>LANGUAGE.md</code> lines 7–16:</p>
 <pre><code>program    = form*
 form       = atom | number | string | list | typed-param | comment
@@ -241,7 +244,7 @@ typed-param = '[' atom ':' atom ']'
 comment    = ';' char* newline
 </code></pre>
 <p>A <code>form</code> is the fundamental unit: an atom, number, string, list, typed parameter, or comment.</p>
-<h2>Type annotations (optional)</h2>
+<h2 id="type-annotations-optional"><a class="heading-anchor" href="#type-annotations-optional" aria-hidden="true">#</a>Type annotations (optional)</h2>
 <p>&quot;Parseable but not enforced.&quot; The source says: &quot;The annotations are metadata on a free algebra — they name which carrier set a variable lives in.&quot;</p>
 <p>Two forms:</p>
 <ul>
@@ -249,7 +252,7 @@ comment    = ';' char* newline
 <li>Return type: <code>: Type</code> after the parameter list</li>
 </ul>
 <p>&quot;Tooling may extract annotations when present. The language never demands them.&quot; &quot;Types are documentation, not enforcement. The algebra doesn't type-check — the curve validates.&quot;</p>
-<h2>Host language forms</h2>
+<h2 id="host-language-forms"><a class="heading-anchor" href="#host-language-forms" aria-hidden="true">#</a>Host language forms</h2>
 <p>Wat &quot;inherits standard forms from the host&quot; Lisp. These are enumerated in the source and include:</p>
 <p><strong>Arithmetic:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>abs</code>, <code>sqrt</code>, <code>mod</code>, <code>max</code>, <code>min</code>, <code>round</code>, <code>clamp</code>, <code>exp</code>, <code>ln</code>, <code>signum</code>, <code>f64-infinity</code>, <code>f64-neg-infinity</code></p>
 <p><strong>Comparison:</strong> <code>=</code>, <code>!=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code></p>
@@ -274,8 +277,8 @@ comment    = ';' char* newline
 <p><strong>Pipes:</strong> <code>make-pipe</code>, <code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code></p>
 <p><strong>Fan-out:</strong> <code>make-topic</code></p>
 <p><strong>Threads:</strong> <code>spawn</code>, <code>join</code></p>
-<h2>Concurrency model: pipes, topics, threads</h2>
-<h3>Pipes</h3>
+<h2 id="concurrency-model-pipes-topics-threads"><a class="heading-anchor" href="#concurrency-model-pipes-topics-threads" aria-hidden="true">#</a>Concurrency model: pipes, topics, threads</h2>
+<h3 id="pipes"><a class="heading-anchor" href="#pipes" aria-hidden="true">#</a>Pipes</h3>
 <p>&quot;Pipes are CSP (communicating sequential processes).&quot;</p>
 <p><code>make-pipe</code> takes <code>:capacity</code> (a number or <code>:unbounded</code>) and <code>:carries</code> (a type declaration). Returns a <code>(tx, rx)</code> pair. &quot;Destructure at creation.&quot;</p>
 <ul>
@@ -284,25 +287,25 @@ comment    = ';' char* newline
 <li><code>try-recv</code>: non-blocking → <code>(Some value)</code> or <code>None</code>.</li>
 <li><code>select</code>: multiplexes N rx ends → <code>(Some (idx value))</code> or <code>:closed</code>. &quot;Parks when idle — zero CPU.&quot;</li>
 </ul>
-<h3>Topics</h3>
+<h3 id="topics"><a class="heading-anchor" href="#topics" aria-hidden="true">#</a>Topics</h3>
 <p><code>make-topic</code> wires 1→N fan-out over existing pipes. &quot;A topic is a write-only value.&quot; The source states: &quot;The caller's send IS the fan-out — synchronous, no thread, no queue.&quot; Maps to a Rust struct holding <code>Vec&lt;Sender&lt;T&gt;&gt;</code> with a for loop.</p>
-<h3>Threads</h3>
+<h3 id="threads"><a class="heading-anchor" href="#threads" aria-hidden="true">#</a>Threads</h3>
 <ul>
 <li><code>spawn</code>: &quot;run a function on a thread&quot; → Handle. &quot;A process is a function.&quot;</li>
 <li><code>join</code>: &quot;block until all handles in a list complete&quot; → list of return values. &quot;Always takes a list. Always returns a list.&quot;</li>
 </ul>
-<h3>Design principle</h3>
+<h3 id="design-principle"><a class="heading-anchor" href="#design-principle" aria-hidden="true">#</a>Design principle</h3>
 <p>&quot;No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions.&quot; Everything is regular functions using the seven forms listed above.</p>
-<h2>Core forms (corelib)</h2>
+<h2 id="core-forms-corelib"><a class="heading-anchor" href="#core-forms-corelib" aria-hidden="true">#</a>Core forms (corelib)</h2>
 <p>The source describes &quot;Two algebras and one structural form. The algebras transform values. The structural form carries them.&quot;</p>
-<h3>The free algebra (vector operations)</h3>
+<h3 id="the-free-algebra-vector-operations"><a class="heading-anchor" href="#the-free-algebra-vector-operations" aria-hidden="true">#</a>The free algebra (vector operations)</h3>
 <ul>
 <li><code>(atom &quot;name&quot;)</code> → Vector — &quot;Naming&quot;</li>
 <li><code>(bind role filler)</code> → Vector — &quot;Composition&quot; — &quot;two things become one relationship&quot;</li>
 <li><code>(bundle fact1 fact2 ...)</code> → Vector — &quot;Composition&quot; — &quot;many facts become one thought&quot;</li>
 <li><code>(cosine thought discriminant)</code> → Float — &quot;Measurement&quot; — returns value in [-1.0, +1.0]</li>
 </ul>
-<h3>The reckoner coalgebra (learning)</h3>
+<h3 id="the-reckoner-coalgebra-learning"><a class="heading-anchor" href="#the-reckoner-coalgebra-learning" aria-hidden="true">#</a>The reckoner coalgebra (learning)</h3>
 <p>Constructor: <code>Reckoner::new(name, dims, recalib_interval, config)</code> in holon-rs. Config is <code>ReckConfig</code>: either <code>Discrete(labels)</code> or <code>Continuous(default_value)</code>.</p>
 <table>
 <thead>
@@ -390,10 +393,10 @@ comment    = ';' char* newline
 </tr>
 </tbody>
 </table>
-<h3>Structural forms</h3>
+<h3 id="structural-forms"><a class="heading-anchor" href="#structural-forms" aria-hidden="true">#</a>Structural forms</h3>
 <p>From <code>structural.wat</code>: &quot;The ambient category's three constructions: Product (struct), Coproduct (enum), Type class (defprotocol).&quot;</p>
 <p>The source states these are &quot;orthogonal to the vector algebra and journal coalgebra.&quot; &quot;A struct cannot be bound, bundled, or cosined.&quot; &quot;Protocols never enter the algebra.&quot;</p>
-<h4>Struct (product type)</h4>
+<h4 id="struct-product-type"><a class="heading-anchor" href="#struct-product-type" aria-hidden="true">#</a>Struct (product type)</h4>
 <p><code>(struct name field1 field2 ...)</code></p>
 <ul>
 <li>&quot;Untyped: the wat struct names the shape, the Rust struct names the types.&quot;</li>
@@ -403,7 +406,7 @@ comment    = ';' char* newline
 </ul>
 <p>Field access: <code>(:field record)</code> → value — &quot;keyword as function.&quot;</p>
 <p>Functional update: <code>(update record :field1 value1 ...)</code> → record. &quot;Variadic, parallel semantics — all field expressions evaluate against the ORIGINAL record.&quot;</p>
-<h4>Enum (coproduct / sum type)</h4>
+<h4 id="enum-coproduct-sum-type"><a class="heading-anchor" href="#enum-coproduct-sum-type" aria-hidden="true">#</a>Enum (coproduct / sum type)</h4>
 <p><code>(enum name variant1 variant2 ...)</code></p>
 <ul>
 <li>&quot;Exactly one of several alternatives.&quot;</li>
@@ -411,9 +414,9 @@ comment    = ';' char* newline
 <li><code>match</code> must be exhaustive — &quot;missing an arm on a closed set is a spec violation.&quot;</li>
 <li>&quot;Wildcard _ is forbidden on closed enums — it defeats exhaustiveness.&quot;</li>
 </ul>
-<h4>Newtype</h4>
+<h4 id="newtype"><a class="heading-anchor" href="#newtype" aria-hidden="true">#</a>Newtype</h4>
 <p><code>(newtype name inner-type)</code> — &quot;A newtype is about MEANING, not structure.&quot; &quot;Maps to Rust's tuple struct: struct TradeId(usize).&quot;</p>
-<h4>Protocol (type class)</h4>
+<h4 id="protocol-type-class"><a class="heading-anchor" href="#protocol-type-class" aria-hidden="true">#</a>Protocol (type class)</h4>
 <p><code>(defprotocol name (fn-name [params] &quot;docstring&quot;))</code> — &quot;Check-only — no dispatch machinery.&quot;</p>
 <p><code>(satisfies struct-name protocol-name :fn1 impl1 :fn2 impl2 ...)</code> — &quot;Maps ALL protocol functions — exhaustive, explicit.&quot;</p>
 <p>The source specifies:</p>
@@ -423,9 +426,9 @@ comment    = ';' char* newline
 <li>&quot;The forge checks: does impl-fn exist? Correct arity?&quot;</li>
 <li>Maps to Rust trait and <code>impl Trait for Struct</code>.</li>
 </ul>
-<h2>Module system</h2>
+<h2 id="module-system"><a class="heading-anchor" href="#module-system" aria-hidden="true">#</a>Module system</h2>
 <p><code>(require module-name)</code> — for corelib, stdlib, and domain vocabularies.</p>
-<h2>File layout</h2>
+<h2 id="file-layout"><a class="heading-anchor" href="#file-layout" aria-hidden="true">#</a>File layout</h2>
 <pre><code>core/
   primitives.wat      — the four algebra generators + reckoner coalgebra
   structural.wat      — struct, enum, newtype, defprotocol

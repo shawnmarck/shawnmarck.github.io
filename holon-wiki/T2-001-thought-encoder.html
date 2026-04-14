@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -223,7 +226,7 @@
 <strong>Guide reference:</strong> <code>wat/GUIDE.md</code> lines 1416–1597
 <strong>Tier:</strong> 2 — Encoding infrastructure</p>
 <hr />
-<h2>What It IS</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It IS</h2>
 <p>The ThoughtEncoder evaluates abstract syntax trees produced by the vocabulary modules. The vocabulary answers WHAT to think (trees of named observations); the ThoughtEncoder answers HOW to think efficiently (walk those trees, reuse cached sub-results, produce a high-dimensional vector).</p>
 <blockquote>
 <p>&quot;The vocabulary produces ASTs — WHAT to think. The ThoughtEncoder evaluates them — HOW to think efficiently. Walks the AST bottom-up, checking its memory at every node. Minimum computation.&quot;
@@ -235,15 +238,15 @@
 — GUIDE.md, line 1434–1435</p>
 </blockquote>
 <hr />
-<h2>Two Kinds of Memory</h2>
+<h2 id="two-kinds-of-memory"><a class="heading-anchor" href="#two-kinds-of-memory" aria-hidden="true">#</a>Two Kinds of Memory</h2>
 <p>The encoder maintains two separate memory stores with fundamentally different semantics:</p>
-<h3>Atoms — a dictionary</h3>
+<h3 id="atoms-a-dictionary"><a class="heading-anchor" href="#atoms-a-dictionary" aria-hidden="true">#</a>Atoms — a dictionary</h3>
 <blockquote>
 <p>&quot;Finite. Known at startup. Pre-computed. Never evicted.&quot;
 — thought-encoder.wat, line 8</p>
 </blockquote>
 <p>Atoms are a <code>Map&lt;String, Vector&gt;</code>. The set is closed. Once registered, always available. Atom lookups always succeed.</p>
-<h3>Compositions — a cache</h3>
+<h3 id="compositions-a-cache"><a class="heading-anchor" href="#compositions-a-cache" aria-hidden="true">#</a>Compositions — a cache</h3>
 <blockquote>
 <p>&quot;Infinite. Optimistic. Use it if we have it. Compute if we don't.&quot;
 — thought-encoder.wat, line 9</p>
@@ -255,7 +258,7 @@
 </blockquote>
 <p>This is the <strong>one seam</strong> in the otherwise-immutable ctx: the cache mutates on miss, but only during the sequential phase between candles, never during parallel encoding.</p>
 <hr />
-<h2>The AST — <code>thought-ast</code> enum</h2>
+<h2 id="the-ast-thought-ast-enum"><a class="heading-anchor" href="#the-ast-thought-ast-enum" aria-hidden="true">#</a>The AST — <code>thought-ast</code> enum</h2>
 <pre><code class="language-scheme">(enum thought-ast
   (Atom name)                           ; dictionary lookup — always succeeds
   (Linear name value scale)             ; bind(atom, encode-linear)
@@ -300,7 +303,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Struct: <code>thought-encoder</code></h2>
+<h2 id="struct-thought-encoder"><a class="heading-anchor" href="#struct-thought-encoder" aria-hidden="true">#</a>Struct: <code>thought-encoder</code></h2>
 <pre><code class="language-scheme">(struct thought-encoder
   [atoms : Map&lt;String, Vector&gt;]                  ; finite, pre-computed, permanent
   [compositions : Map&lt;ThoughtAST, Vector&gt;]       ; optimistic cache (LRU moved to EncoderService)
@@ -308,7 +311,7 @@
   [vm : VectorManager])                          ; atom allocation, deterministic
 </code></pre>
 <p>Four fields, lines 41–45. Note the comment on <code>compositions</code>: <em>&quot;LRU moved to EncoderService&quot;</em> — the wat file's local cache is a simple map, while the GUIDE declares <code>LruCache&lt;ThoughtAST, Vector&gt;</code>. The encoder-service.wat holds the true LRU; the ThoughtEncoder's composition map is the per-candle working set.</p>
-<h2>Constructor: <code>make-thought-encoder</code></h2>
+<h2 id="constructor-make-thought-encoder"><a class="heading-anchor" href="#constructor-make-thought-encoder" aria-hidden="true">#</a>Constructor: <code>make-thought-encoder</code></h2>
 <pre><code class="language-scheme">(define (make-thought-encoder [vm : VectorManager]) : ThoughtEncoder
   ...)
 </code></pre>
@@ -318,13 +321,13 @@
 — line 54</p>
 </blockquote>
 <hr />
-<h2>Core Function: <code>encode</code></h2>
+<h2 id="core-function-encode"><a class="heading-anchor" href="#core-function-encode" aria-hidden="true">#</a>Core Function: <code>encode</code></h2>
 <pre><code class="language-scheme">(define (encode [encoder : ThoughtEncoder] [ast : ThoughtAST])
   : (Vector, Vec&lt;(ThoughtAST, Vector)&gt;)
   ...)
 </code></pre>
 <p>Lines 64–104. Returns a <strong>tuple</strong>: the computed vector plus a list of cache misses.</p>
-<h3>Algorithm:</h3>
+<h3 id="algorithm"><a class="heading-anchor" href="#algorithm" aria-hidden="true">#</a>Algorithm:</h3>
 <ol>
 <li><strong>Cache check first</strong> (line 68): <code>when-let</code> on compositions map. Hit → return vector with empty misses.</li>
 <li><strong>Evaluate the AST node</strong> via pattern match (lines 73–101):<ul>
@@ -342,7 +345,7 @@
 — GUIDE.md, line 1475</p>
 </blockquote>
 <hr />
-<h2><code>round-to</code> — Cache Key Quantization</h2>
+<h2 id="round-to-cache-key-quantization"><a class="heading-anchor" href="#round-to-cache-key-quantization" aria-hidden="true">#</a><code>round-to</code> — Cache Key Quantization</h2>
 <pre><code class="language-scheme">(define (round-to [v : f64] [digits : u32]) : f64
   (let ((factor (expt 10 digits)))
     (/ (round (* v factor)) factor)))
@@ -354,7 +357,7 @@
 </blockquote>
 <p>This is load-bearing: without quantization, floats would compare unreliably and incremental bundle optimization would degrade to full recompute.</p>
 <hr />
-<h2>IncrementalBundle — Optimization, Not Cognition</h2>
+<h2 id="incrementalbundle-optimization-not-cognition"><a class="heading-anchor" href="#incrementalbundle-optimization-not-cognition" aria-hidden="true">#</a>IncrementalBundle — Optimization, Not Cognition</h2>
 <pre><code class="language-scheme">(struct incremental-bundle
   [sums : Vec&lt;i32&gt;]                     ; running element-wise sums
   [last-facts : Map&lt;ThoughtAST, Vector&gt;] ; previous candle's facts
@@ -362,20 +365,20 @@
   [initialized : bool])                 ; whether we've done at least one full encode
 </code></pre>
 <p>Lines 119–123. Maintains running sums across candles to avoid re-encoding unchanged facts.</p>
-<h3>The Algebra</h3>
+<h3 id="the-algebra"><a class="heading-anchor" href="#the-algebra" aria-hidden="true">#</a>The Algebra</h3>
 <blockquote>
 <p>&quot;bundle = threshold(Σ vectors). If fact k changes from old to new, sums_new = sums - old + new. threshold(sums_new) == bundle(all current facts). Proven bit-identical. Integer addition is commutative and associative.&quot;
 — lines 110–113</p>
 </blockquote>
-<h3><code>incremental-encode</code> (lines 141–171)</h3>
+<h3 id="incremental-encode-lines-141171"><a class="heading-anchor" href="#incremental-encode-lines-141171" aria-hidden="true">#</a><code>incremental-encode</code> (lines 141–171)</h3>
 <p>Two paths:</p>
 <ul>
 <li><strong>First candle</strong> (<code>initialized = false</code>): calls <code>full-encode</code> — encodes all facts, populates sums and last-facts.</li>
 <li><strong>Subsequent candles</strong>: diffs against <code>last-facts</code>. Removed facts are subtracted from sums. Unchanged facts require zero work. Changed/added facts are encoded via the ThoughtEncoder and added to sums.</li>
 </ul>
-<h3><code>full-encode</code> (lines 174–187)</h3>
+<h3 id="full-encode-lines-174187"><a class="heading-anchor" href="#full-encode-lines-174187" aria-hidden="true">#</a><code>full-encode</code> (lines 174–187)</h3>
 <p>Encodes every fact from scratch, accumulates sums, stores each fact's vector in <code>last-facts</code>, sets <code>initialized = true</code>, applies <code>threshold</code>.</p>
-<h3><code>threshold</code> (lines 190–198)</h3>
+<h3 id="threshold-lines-190198"><a class="heading-anchor" href="#threshold-lines-190198" aria-hidden="true">#</a><code>threshold</code> (lines 190–198)</h3>
 <pre><code class="language-scheme">(define (threshold [sums : Vec&lt;i32&gt;] [dims : usize]) : Vector
   ...)
 </code></pre>
@@ -385,7 +388,7 @@
 — line 108</p>
 </blockquote>
 <hr />
-<h2>GUIDE vs WAT Divergence Note</h2>
+<h2 id="guide-vs-wat-divergence-note"><a class="heading-anchor" href="#guide-vs-wat-divergence-note" aria-hidden="true">#</a>GUIDE vs WAT Divergence Note</h2>
 <p>The GUIDE declares <code>compositions</code> as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> (line 1440). The wat file declares it as <code>Map&lt;ThoughtAST, Vector&gt;</code> with capacity 4096 (line 43), and annotates: <em>&quot;LRU moved to EncoderService&quot;</em>. The EncoderService (encoder-service.wat) holds the actual LRU cache. The ThoughtEncoder's composition map serves as the per-candle working set. Per CLAUDE.md: <em>&quot;When layers diverge, the guide is right.&quot;</em></p>
 </div>
     </main>

@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -223,7 +226,7 @@
 <strong>Guide reference:</strong> <code>wat/GUIDE.md</code> lines 1668–1688
 <strong>Tier:</strong> 2 — Quality gating utility</p>
 <hr />
-<h2>What It IS</h2>
+<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It IS</h2>
 <p>EngramGate is a shared utility for gating reckoner quality. After a recalibration period with good prediction accuracy, it snapshots the discriminant into a good-state subspace. The subspace accumulates knowledge of what good discriminants look like over time.</p>
 <blockquote>
 <p>&quot;Shared utility for gating reckoner quality. After recalibration with good accuracy, snapshot the discriminant into a good-state subspace. Used by both MarketObserver and Broker.&quot;
@@ -235,7 +238,7 @@
 — GUIDE.md, lines 1673–1674</p>
 </blockquote>
 <hr />
-<h2>Struct: <code>engram-gate-state</code></h2>
+<h2 id="struct-engram-gate-state"><a class="heading-anchor" href="#struct-engram-gate-state" aria-hidden="true">#</a>Struct: <code>engram-gate-state</code></h2>
 <pre><code class="language-scheme">(struct engram-gate-state
   [recalib-wins : usize]
   [recalib-total : usize]
@@ -265,7 +268,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Core Function: <code>check-engram-gate</code></h2>
+<h2 id="core-function-check-engram-gate"><a class="heading-anchor" href="#core-function-check-engram-gate" aria-hidden="true">#</a>Core Function: <code>check-engram-gate</code></h2>
 <pre><code class="language-scheme">(define (check-engram-gate [reckoner : Reckoner]
                            [good-state-subspace : Subspace]
                            [gate-state : EngramGateState]
@@ -275,7 +278,7 @@
   ...)
 </code></pre>
 <p>Lines 17–44. Five parameters, returns updated <code>EngramGateState</code>.</p>
-<h3>Algorithm</h3>
+<h3 id="algorithm"><a class="heading-anchor" href="#algorithm" aria-hidden="true">#</a>Algorithm</h3>
 <p>The function is called after each resolved prediction. It operates in two branches:</p>
 <p><strong>Branch 1 — Recalibration boundary crossed</strong> (line 30):
 When the reckoner's current <code>recalib-count</code> exceeds <code>last-recalib-count</code> in the gate state, a recalibration period has ended.</p>
@@ -294,10 +297,10 @@ No boundary crossed. Return gate-state unchanged. The wins/total will have been 
 <p>&quot;Tracks wins/total since last recalibration. When recalib-count advances and accuracy exceeds the threshold, snapshots the discriminant into the good-state subspace.&quot;
 — GUIDE.md, lines 1685–1687</p>
 </blockquote>
-<h3>Parameters Not Used in the Source</h3>
+<h3 id="parameters-not-used-in-the-source"><a class="heading-anchor" href="#parameters-not-used-in-the-source" aria-hidden="true">#</a>Parameters Not Used in the Source</h3>
 <p>The <code>recalib-interval</code> parameter is declared in the function signature (line 20) but does not appear in the function body. The boundary detection uses <code>recalib-count</code> from the reckoner directly rather than computing from an interval. This may be intentional (the reckoner itself manages recalibration timing) or an unused parameter.</p>
 <hr />
-<h2>Data Flow</h2>
+<h2 id="data-flow"><a class="heading-anchor" href="#data-flow" aria-hidden="true">#</a>Data Flow</h2>
 <pre><code>resolved prediction
   → caller increments gate-state.recalib-wins and recalib-total
   → caller calls check-engram-gate(...)

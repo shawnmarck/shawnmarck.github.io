@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,12 +222,12 @@
         Disposable Machine <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>The trading organism is <strong>built to be disposable</strong>. The T-1-004-lab-guide is its DNA — a pure specification of every struct, interface, and dependency, expressed in s-expression syntax. The Rust implementation is a <strong>phenotype</strong>: a grown expression of that specification, discardable at will. When the implementation rots or the thesis shifts, you don't refactor legacy — you tear it down and regrow it from the guide. The guide <em>is</em> the build order.</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2>The DNA/Phenotype Split</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="the-dnaphenotype-split"><a class="heading-anchor" href="#the-dnaphenotype-split" aria-hidden="true">#</a>The DNA/Phenotype Split</h2>
 <p>The architecture enforces a strict separation between <strong>what the system is</strong> and <strong>what it currently looks like</strong>:</p>
 <table>
 <thead>
@@ -255,15 +258,15 @@
 <p>The chain of derivation is one-directional: <strong>Guide → wat → Rust</strong>. The Rust never feeds back into the guide. When layers diverge, the guide is right — by declaration.</p>
 <p>This is stated explicitly: <em>&quot;Each section declares its dependencies. The order of sections IS the build order.&quot;</em> The guide is not documentation <em>about</em> the code. The guide is the code's reason to exist.</p>
 <hr />
-<h2>Why Disposable?</h2>
-<h3>Legacy is Rot</h3>
+<h2 id="why-disposable"><a class="heading-anchor" href="#why-disposable" aria-hidden="true">#</a>Why Disposable?</h2>
+<h3 id="legacy-is-rot"><a class="heading-anchor" href="#legacy-is-rot" aria-hidden="true">#</a>Legacy is Rot</h3>
 <p>Most software systems accumulate cruft: dead code paths, workaround patches, architectural compromises that made sense once but don't anymore. Each one is a hidden coupling — change one thing, break another you forgot existed. The trading organism avoids this by refusing to accumulate.</p>
-<h3>The Machine is a Function</h3>
+<h3 id="the-machine-is-a-function"><a class="heading-anchor" href="#the-machine-is-a-function" aria-hidden="true">#</a>The Machine is a Function</h3>
 <p>The T-1-005-lab-circuit reduces the entire system to one equation:</p>
 <pre><code>f(state, candle) → state
 </code></pre>
 <p>One tick of the clock. All 11 sub-circuits compose into this single pure function. A pure function has no hidden state, no legacy paths, no accumulated decisions that can't be traced from the specification. If you can write down <code>f</code>, you can rebuild <code>f</code>.</p>
-<h3>The Organism Metaphor</h3>
+<h3 id="the-organism-metaphor"><a class="heading-anchor" href="#the-organism-metaphor" aria-hidden="true">#</a>The Organism Metaphor</h3>
 <p>The guide describes the system as a <em>&quot;machine that measures thoughts against reality.&quot;</em> An organism doesn't patch itself incrementally — it grows from genetic instructions. When a cell dies, a new one differentiates from the same DNA. The trading organism works the same way:</p>
 <ul>
 <li><strong>DNA</strong> = the GUIDE.md (specification)</li>
@@ -272,14 +275,14 @@
 <li><strong>Death and regrowth</strong> = discard the Rust, regrow from the guide</li>
 </ul>
 <hr />
-<h2>How It Works in Practice</h2>
-<h3>Construction Order Is Specification Order</h3>
+<h2 id="how-it-works-in-practice"><a class="heading-anchor" href="#how-it-works-in-practice" aria-hidden="true">#</a>How It Works in Practice</h2>
+<h3 id="construction-order-is-specification-order"><a class="heading-anchor" href="#construction-order-is-specification-order" aria-hidden="true">#</a>Construction Order Is Specification Order</h3>
 <p>The guide's struct hierarchy (lines 282–299 of the GUIDE) isn't a reference — it's the <strong>build sequence</strong>. Each struct declares what it depends on. You construct them in that order. There is no other source of truth for &quot;what depends on what.&quot;</p>
-<h3>The Five Primitives</h3>
+<h3 id="the-five-primitives"><a class="heading-anchor" href="#the-five-primitives" aria-hidden="true">#</a>The Five Primitives</h3>
 <p>Everything is built from five holon-rs primitives: <strong>atom</strong>, <strong>bind</strong>, <strong>bundle</strong>, <strong>cosine</strong>, <strong>reckoner</strong>. One learning mechanism (&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;). One accountability surface (&lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;Curve&lt;/a&gt;). The entire organism — market perception, prediction, distance estimation, trade management, learning — differentiates from these five primitives as described in the guide.</p>
-<h3>No Bootstrap, No Migration</h3>
+<h3 id="no-bootstrap-no-migration"><a class="heading-anchor" href="#no-bootstrap-no-migration" aria-hidden="true">#</a>No Bootstrap, No Migration</h3>
 <p>The system <strong>starts ignorant</strong>. Every &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; begins with zero experience. Papers fill the reckoners, experience grows, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt; starts listening. There is no migration path from an old version. There is no serialized state to load. You build from the guide, you run, you learn from scratch. The learning <em>is</em> the state — and learning is always acquired fresh.</p>
-<h3>Discard and Regrow</h3>
+<h3 id="discard-and-regrow"><a class="heading-anchor" href="#discard-and-regrow" aria-hidden="true">#</a>Discard and Regrow</h3>
 <p>When you need to change the system:</p>
 <ol>
 <li><strong>Edit the guide</strong> — change the specification (add a vocabulary module, restructure the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;, change the Cascade Circuit)</li>
@@ -289,7 +292,7 @@
 </ol>
 <p>No diff against old code. No migration scripts. No &quot;what did we change last time.&quot; The guide is the single source of truth, and the implementation is always a fresh expression of it.</p>
 <hr />
-<h2>The Circuit as Phenotype Map</h2>
+<h2 id="the-circuit-as-phenotype-map"><a class="heading-anchor" href="#the-circuit-as-phenotype-map" aria-hidden="true">#</a>The Circuit as Phenotype Map</h2>
 <p>The T-1-005-lab-circuit renders the organism's wiring as 11 signal-flow diagrams. It is the <strong>phenotype map</strong> — the shape the organism takes when grown from the guide. Like a geneticist's anatomical diagram, it shows what the organism <em>looks like</em> but not why. The guide provides the <em>why</em>. The circuit provides the <em>what</em>.</p>
 <p>Together they form a complete specification:</p>
 <ul>
@@ -298,7 +301,7 @@
 <li><strong>Rust</strong> = executable phenotype (the running machine — disposable)</li>
 </ul>
 <hr />
-<h2>Implications</h2>
+<h2 id="implications"><a class="heading-anchor" href="#implications" aria-hidden="true">#</a>Implications</h2>
 <table>
 <thead>
 <tr>
@@ -330,7 +333,7 @@
 </tbody>
 </table>
 <hr />
-<h2>Related Concepts</h2>
+<h2 id="related-concepts"><a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a>Related Concepts</h2>
 <ul>
 <li>T-1-004-lab-guide — the DNA, the master specification</li>
 <li>T-1-005-lab-circuit — the phenotype map, the wiring diagram</li>

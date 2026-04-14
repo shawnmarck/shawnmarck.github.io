@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,7 +222,7 @@
         Thought Encoding — the pipeline from thought to vector <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>Thought encoding transforms structured observations (ASTs emitted by &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary-modules&lt;/a&gt;) into high-dimensional vectors. The pipeline has three layers:</p>
 <ol>
 <li><strong>Vocabulary emission</strong> — modules emit &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; trees (<code>Atom</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code>, <code>Bundle</code>, <code>Sequential</code>) with <code>round_to</code> quantization at emission time to make float keys cache-safe.</li>
@@ -235,7 +238,7 @@
 — thought-encoder.wat, lines 1–5</p>
 </blockquote>
 <hr />
-<h2>The AST — <code>ThoughtAST</code> enum</h2>
+<h2 id="the-ast-thoughtast-enum"><a class="heading-anchor" href="#the-ast-thoughtast-enum" aria-hidden="true">#</a>The AST — <code>ThoughtAST</code> enum</h2>
 <p>Seven variants, each mapping to a specific evaluation strategy:</p>
 <table>
 <thead>
@@ -288,7 +291,7 @@
 — GUIDE.md, line 1475</p>
 </blockquote>
 <p>The AST structure IS the cache key — structural equality (with <code>f64::to_bits()</code> for reliable hashing) determines identity.</p>
-<h3><code>round_to</code> — cache key quantization</h3>
+<h3 id="round_to-cache-key-quantization"><a class="heading-anchor" href="#round_to-cache-key-quantization" aria-hidden="true">#</a><code>round_to</code> — cache key quantization</h3>
 <pre><code class="language-rust">let factor = 10f64.powi(digits as i32);
 (v * factor).round() / factor
 </code></pre>
@@ -302,8 +305,8 @@
 — T0-011, lines 208–211</p>
 </blockquote>
 <hr />
-<h2>ThoughtEncoder — the evaluator</h2>
-<h3>Struct</h3>
+<h2 id="thoughtencoder-the-evaluator"><a class="heading-anchor" href="#thoughtencoder-the-evaluator" aria-hidden="true">#</a>ThoughtEncoder — the evaluator</h2>
+<h3 id="struct"><a class="heading-anchor" href="#struct" aria-hidden="true">#</a>Struct</h3>
 <table>
 <thead>
 <tr>
@@ -330,7 +333,7 @@
 <p>&quot;ThoughtEncoder is stateless — no cache. Production encoding goes through encoding::encode::encode() which checks the LRU. This struct exists for tests and IncrementalBundle.&quot;
 — T0-011, module doc</p>
 </blockquote>
-<h3><code>encode(&amp;self, ast: &amp;ThoughtAST) -&gt; Vector</code></h3>
+<h3 id="encodeampself-ast-ampthoughtast--gt-vector"><a class="heading-anchor" href="#encodeampself-ast-ampthoughtast--gt-vector" aria-hidden="true">#</a><code>encode(&amp;self, ast: &amp;ThoughtAST) -&gt; Vector</code></h3>
 <p>Recursive AST walk. Each call re-evaluates the entire subtree. For each variant:</p>
 <ul>
 <li><strong><code>Atom</code></strong> → <code>self.vm.get_vector(name)</code> — direct lookup.</li>
@@ -341,7 +344,7 @@
 </ul>
 <p>The wat specification returns a tuple <code>(Vector, Vec&lt;(ThoughtAST, Vector)&gt;)</code> — the vector plus accumulated cache misses. The Rust implementation strips this to just the vector; misses are handled externally.</p>
 <hr />
-<h2>Two Kinds of Memory</h2>
+<h2 id="two-kinds-of-memory"><a class="heading-anchor" href="#two-kinds-of-memory" aria-hidden="true">#</a>Two Kinds of Memory</h2>
 <table>
 <thead>
 <tr>
@@ -380,13 +383,13 @@
 — thought-encoder.wat, lines 11–13</p>
 </blockquote>
 <hr />
-<h2>EncoderService — the distributed cache</h2>
+<h2 id="encoderservice-the-distributed-cache"><a class="heading-anchor" href="#encoderservice-the-distributed-cache" aria-hidden="true">#</a>EncoderService — the distributed cache</h2>
 <p>The EncoderService is a single-threaded pipe loop that owns the persistent LRU composition cache, serving multiple concurrent callers without any mutex.</p>
 <blockquote>
 <p>&quot;ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache.&quot;
 — encoder-service.wat, lines 1–7</p>
 </blockquote>
-<h3>EncoderHandle — per-caller pipe set</h3>
+<h3 id="encoderhandle-per-caller-pipe-set"><a class="heading-anchor" href="#encoderhandle-per-caller-pipe-set" aria-hidden="true">#</a>EncoderHandle — per-caller pipe set</h3>
 <table>
 <thead>
 <tr>
@@ -417,13 +420,13 @@
 </tr>
 </tbody>
 </table>
-<h3>Service thread loop — three phases per iteration</h3>
+<h3 id="service-thread-loop-three-phases-per-iteration"><a class="heading-anchor" href="#service-thread-loop-three-phases-per-iteration" aria-hidden="true">#</a>Service thread loop — three phases per iteration</h3>
 <ol>
 <li><strong>Drain installs</strong> — empty all install pipes, insert <code>(AST, Vector)</code> pairs into LRU cache.</li>
 <li><strong>Service lookups</strong> — for each pending lookup, check cache, send <code>Some</code>/<code>None</code> back. Increment hit/miss atomics.</li>
 <li><strong>Select &amp; block</strong> — idle until any channel has data. Zero CPU when idle. If all handles disconnected → shutdown.</li>
 </ol>
-<h3>Protocol</h3>
+<h3 id="protocol"><a class="heading-anchor" href="#protocol" aria-hidden="true">#</a>Protocol</h3>
 <pre><code>Caller: write AST to lookup pipe → block on answer → receive Some/None
 Caller: if None, compute locally → write (AST, Vector) to install pipe (fire and forget)
 Encoder: one pass per iteration — drain installs, service lookups, select, repeat.
@@ -434,7 +437,7 @@ Encoder: one pass per iteration — drain installs, service lookups, select, rep
 </blockquote>
 <p>Three <code>Arc&lt;AtomicUsize&gt;</code> counters provide lock-free reads for <code>hit-count</code>, <code>miss-count</code>, and <code>cache-len</code>.</p>
 <hr />
-<h2>IncrementalBundle — optimization, not cognition</h2>
+<h2 id="incrementalbundle-optimization-not-cognition"><a class="heading-anchor" href="#incrementalbundle-optimization-not-cognition" aria-hidden="true">#</a>IncrementalBundle — optimization, not cognition</h2>
 <p>Maintains running element-wise sums across candles to avoid re-encoding unchanged facts. Proven <strong>bit-identical</strong> to full re-bundle.</p>
 <blockquote>
 <p>&quot;Can be reconstructed from one full encode.&quot;
@@ -471,20 +474,20 @@ Encoder: one pass per iteration — drain installs, service lookups, select, rep
 </tr>
 </tbody>
 </table>
-<h3>The algebra</h3>
+<h3 id="the-algebra"><a class="heading-anchor" href="#the-algebra" aria-hidden="true">#</a>The algebra</h3>
 <blockquote>
 <p>&quot;bundle = threshold(Σ vectors). If fact k changes from old to new, sums_new = sums − old + new. threshold(sums_new) == bundle(all current facts). Proven bit-identical. Integer addition is commutative and associative.&quot;
 — thought-encoder.wat, lines 110–113</p>
 </blockquote>
-<h3><code>encode</code> — incremental diff</h3>
+<h3 id="encode-incremental-diff"><a class="heading-anchor" href="#encode-incremental-diff" aria-hidden="true">#</a><code>encode</code> — incremental diff</h3>
 <ul>
 <li><strong>First candle</strong>: full encode — encode all facts, populate sums and last_facts.</li>
 <li><strong>Subsequent candles</strong>: diff against last_facts. Removed facts subtracted. Unchanged facts skipped. Changed/added facts encoded and added. Then <code>threshold()</code>.</li>
 </ul>
-<h3><code>threshold</code> — sign function</h3>
+<h3 id="threshold-sign-function"><a class="heading-anchor" href="#threshold-sign-function" aria-hidden="true">#</a><code>threshold</code> — sign function</h3>
 <p><code>s &gt; 0 → 1</code>, <code>s &lt; 0 → -1</code>, <code>s == 0 → 0</code>. Converts integer sums back to the bundled binary vector space {-1, 0, +1}.</p>
 <hr />
-<h2>EngramGate — gating by subspace alignment</h2>
+<h2 id="engramgate-gating-by-subspace-alignment"><a class="heading-anchor" href="#engramgate-gating-by-subspace-alignment" aria-hidden="true">#</a>EngramGate — gating by subspace alignment</h2>
 <p>&lt;a class=&quot;wikilink&quot; href=&quot;T2-003-engram-gate.html&quot;&gt;EngramGate&lt;/a&gt; is downstream of encoding. It gates reckoner quality by accumulating discriminant vectors from periods of accurate prediction into a &quot;good-state subspace.&quot;</p>
 <p>After each resolved prediction, the caller increments win/total counters and calls <code>check-engram-gate</code>. When a recalibration boundary is crossed and accuracy exceeds a threshold, the reckoner's discriminant is snapshot into the good-state subspace. The subspace accumulates knowledge of what good discriminants look like over time.</p>
 <blockquote>
@@ -492,13 +495,13 @@ Encoder: one pass per iteration — drain installs, service lookups, select, rep
 — GUIDE.md, lines 1685–1687</p>
 </blockquote>
 <hr />
-<h2>Supporting functions</h2>
-<h3><code>extract&lt;F&gt;(thought_vec, forms, encode_fn) → Vec&lt;(ThoughtAST, f64)&gt;</code></h3>
+<h2 id="supporting-functions"><a class="heading-anchor" href="#supporting-functions" aria-hidden="true">#</a>Supporting functions</h2>
+<h3 id="extractltfgtthought_vec-forms-encode_fn-vecltthoughtast-f64gt"><a class="heading-anchor" href="#extractltfgtthought_vec-forms-encode_fn-vecltthoughtast-f64gt" aria-hidden="true">#</a><code>extract&lt;F&gt;(thought_vec, forms, encode_fn) → Vec&lt;(ThoughtAST, f64)&gt;</code></h3>
 <p>Encodes each candidate form, computes cosine similarity against a target vector. Returns all <code>(ast, score)</code> pairs with <strong>no threshold, no filtering</strong> — the consumer decides. Marked <code>rune:reap(scaffolding)</code> — awaiting Phase 6 discriminant decode.</p>
-<h3><code>collect_facts(ast) → Vec&lt;ThoughtAST&gt;</code></h3>
+<h3 id="collect_factsast-vecltthoughtastgt"><a class="heading-anchor" href="#collect_factsast-vecltthoughtastgt" aria-hidden="true">#</a><code>collect_facts(ast) → Vec&lt;ThoughtAST&gt;</code></h3>
 <p>Recursively collects leaf-level factual statements from an AST. Bundles are transparent (recurse into children). Bare <code>Atom</code>s are excluded (&quot;name without value — not a fact&quot;). <code>Bind</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code> are returned as facts.</p>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <ul>
 <li>T0-011 — ThoughtEncoder (Rust) verification, <code>holon-lab-trading/src/encoding/thought_encoder.rs</code> (638 lines)</li>
 <li>T2-001 — ThoughtEncoder, <code>wat/thought-encoder.wat</code> (198 lines), GUIDE.md lines 1416–1597</li>

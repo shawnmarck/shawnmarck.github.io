@@ -37,6 +37,9 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+  .heading-anchor{color:#7170ff;opacity:0;margin-left:8px;text-decoration:none;font-weight:400;transition:opacity .15s}
+  .heading-anchor:hover{opacity:1}
+  h1:hover .heading-anchor,h2:hover .heading-anchor,h3:hover .heading-anchor,h4:hover .heading-anchor{opacity:.6}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
   @media(max-width:480px){
   .wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
@@ -219,12 +222,12 @@
         Vocabulary — the named atoms that give the system its words. <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
 <p>The vocabulary is the system's sensorium — a set of ~100 <strong>pure, stateless functions</strong> that map raw market data into &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; nodes, the intermediate representation that becomes vectors. Three encoding schemes (&lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;Linear&lt;/a&gt;, Log, Circular) govern how continuous values become bipolar vectors. Vocabulary modules are organized into three scoped domains — <strong>shared</strong>, <strong>market</strong>, and <strong>exit</strong> — each with its own subfiles. A critical design principle: <em>no zones, no categories, only scalars</em> — the vocabulary emits numbers; the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;discriminant&lt;/a&gt; decides where boundaries are.</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2>What Vocabulary Is</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-vocabulary-is"><a class="heading-anchor" href="#what-vocabulary-is" aria-hidden="true">#</a>What Vocabulary Is</h2>
 <p>Each vocabulary module is a <strong>pure function</strong>: data in, facts out, no state. From the GUIDE:</p>
 <blockquote>
 <p>&quot;Pure functions. Something in, facts out. No state. Each domain thinks about different things. Market vocab thinks about candles. Exit vocab thinks about candles and conditions. Risk vocab (future) thinks about portfolio state. The input is whatever the domain needs to form its judgment.&quot;
@@ -236,7 +239,7 @@
 </blockquote>
 <p>Every vocabulary module produces a <code>Vec&lt;ThoughtAST&gt;</code> — a list of typed facts that are walked into vectors by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;thought-encoder&lt;/a&gt;.</p>
 <hr />
-<h2>The Three Encoding Schemes</h2>
+<h2 id="the-three-encoding-schemes"><a class="heading-anchor" href="#the-three-encoding-schemes" aria-hidden="true">#</a>The Three Encoding Schemes</h2>
 <blockquote>
 <p>&quot;The encoding scheme IS the bounding strategy.&quot;
 — GUIDE, line 1376</p>
@@ -278,7 +281,7 @@
 </blockquote>
 <p>For additional encoding detail (rotational vs positional, determinism, quantization), see &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;scalar-encoding&lt;/a&gt;.</p>
 <hr />
-<h2>ThoughtAST — the language vocabulary speaks</h2>
+<h2 id="thoughtast-the-language-vocabulary-speaks"><a class="heading-anchor" href="#thoughtast-the-language-vocabulary-speaks" aria-hidden="true">#</a>ThoughtAST — the language vocabulary speaks</h2>
 <p>Vocabulary modules emit &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; nodes. The seven variants:</p>
 <table>
 <thead>
@@ -334,13 +337,13 @@
 <li>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; evaluates the AST recursively with no caching; production caching is external (LRU in <code>encoding::encode::encode()</code>).</li>
 </ul>
 <hr />
-<h2>Domain Organization</h2>
-<h3>shared/ — Universal context for all observers</h3>
+<h2 id="domain-organization"><a class="heading-anchor" href="#domain-organization" aria-hidden="true">#</a>Domain Organization</h2>
+<h3 id="shared-universal-context-for-all-observers"><a class="heading-anchor" href="#shared-universal-context-for-all-observers" aria-hidden="true">#</a>shared/ — Universal context for all observers</h3>
 <blockquote>
 <p>&quot;Any observer can use these.&quot;
 — GUIDE, line 1256</p>
 </blockquote>
-<h4>time.wat — Temporal context (5 atoms, all Circular)</h4>
+<h4 id="timewat-temporal-context-5-atoms-all-circular"><a class="heading-anchor" href="#timewat-temporal-context-5-atoms-all-circular" aria-hidden="true">#</a>time.wat — Temporal context (5 atoms, all Circular)</h4>
 <table>
 <thead>
 <tr>
@@ -379,8 +382,8 @@
 </table>
 <p>Source: <code>wat/vocab/shared/time.wat</code>. ✅ Wired in all lenses.</p>
 <hr />
-<h3>market/ — Market state vocabulary (13 modules)</h3>
-<h4>standard.wat — Positional context (8 atoms)</h4>
+<h3 id="market-market-state-vocabulary-13-modules"><a class="heading-anchor" href="#market-market-state-vocabulary-13-modules" aria-hidden="true">#</a>market/ — Market state vocabulary (13 modules)</h3>
+<h4 id="standardwat-positional-context-8-atoms"><a class="heading-anchor" href="#standardwat-positional-context-8-atoms" aria-hidden="true">#</a>standard.wat — Positional context (8 atoms)</h4>
 <p>Takes a <strong>window</strong> of candles, not a single candle.</p>
 <table>
 <thead>
@@ -434,7 +437,7 @@
 </tbody>
 </table>
 <p>✅ Wired in selected lenses.</p>
-<h4>oscillators.wat — Oscillator positions (8 atoms)</h4>
+<h4 id="oscillatorswat-oscillator-positions-8-atoms"><a class="heading-anchor" href="#oscillatorswat-oscillator-positions-8-atoms" aria-hidden="true">#</a>oscillators.wat — Oscillator positions (8 atoms)</h4>
 <table>
 <thead>
 <tr>
@@ -478,7 +481,7 @@
 </tbody>
 </table>
 <p>✅ Wired.</p>
-<h4>flow.wat — Volume and pressure (6 atoms)</h4>
+<h4 id="flowwat-volume-and-pressure-6-atoms"><a class="heading-anchor" href="#flowwat-volume-and-pressure-6-atoms" aria-hidden="true">#</a>flow.wat — Volume and pressure (6 atoms)</h4>
 <table>
 <thead>
 <tr>
@@ -514,7 +517,7 @@
 </tbody>
 </table>
 <p>✅ Wired.</p>
-<h4>persistence.wat — Series memory (3 atoms, all Linear)</h4>
+<h4 id="persistencewat-series-memory-3-atoms-all-linear"><a class="heading-anchor" href="#persistencewat-series-memory-3-atoms-all-linear" aria-hidden="true">#</a>persistence.wat — Series memory (3 atoms, all Linear)</h4>
 <table>
 <thead>
 <tr>
@@ -538,7 +541,7 @@
 </tbody>
 </table>
 <p>✅ Wired.</p>
-<h4>regime.wat — Market kind (8 atoms)</h4>
+<h4 id="regimewat-market-kind-8-atoms"><a class="heading-anchor" href="#regimewat-market-kind-8-atoms" aria-hidden="true">#</a>regime.wat — Market kind (8 atoms)</h4>
 <table>
 <thead>
 <tr>
@@ -582,7 +585,7 @@
 </tbody>
 </table>
 <p>✅ Wired.</p>
-<h4>divergence.wat — Structural RSI divergence (3 atoms, conditional)</h4>
+<h4 id="divergencewat-structural-rsi-divergence-3-atoms-conditional"><a class="heading-anchor" href="#divergencewat-structural-rsi-divergence-3-atoms-conditional" aria-hidden="true">#</a>divergence.wat — Structural RSI divergence (3 atoms, conditional)</h4>
 <p>Atoms only fire when divergence is active (&gt; 0), so 0–3 facts emitted.</p>
 <table>
 <thead>
@@ -607,7 +610,7 @@
 </tbody>
 </table>
 <p>✅ Wired.</p>
-<h4>ichimoku.wat — Cloud geometry (6 atoms)</h4>
+<h4 id="ichimokuwat-cloud-geometry-6-atoms"><a class="heading-anchor" href="#ichimokuwat-cloud-geometry-6-atoms" aria-hidden="true">#</a>ichimoku.wat — Cloud geometry (6 atoms)</h4>
 <p>⚠️ <strong>Module exists but NOT wired</strong> — removed by Proposals 041+042.</p>
 <table>
 <thead>
@@ -643,7 +646,7 @@
 </tr>
 </tbody>
 </table>
-<h4>stochastic.wat — Stochastic oscillator (4 atoms)</h4>
+<h4 id="stochasticwat-stochastic-oscillator-4-atoms"><a class="heading-anchor" href="#stochasticwat-stochastic-oscillator-4-atoms" aria-hidden="true">#</a>stochastic.wat — Stochastic oscillator (4 atoms)</h4>
 <p>⚠️ <strong>Module exists but NOT wired</strong> — removed by Proposals 041+042.</p>
 <table>
 <thead>
@@ -671,7 +674,7 @@
 </tr>
 </tbody>
 </table>
-<h4>fibonacci.wat — Retracement levels (8 atoms, all Linear)</h4>
+<h4 id="fibonacciwat-retracement-levels-8-atoms-all-linear"><a class="heading-anchor" href="#fibonacciwat-retracement-levels-8-atoms-all-linear" aria-hidden="true">#</a>fibonacci.wat — Retracement levels (8 atoms, all Linear)</h4>
 <p>✅ Wired — used by WyckoffPosition lens only.</p>
 <table>
 <thead>
@@ -715,7 +718,7 @@
 </tr>
 </tbody>
 </table>
-<h4>keltner.wat — Channel and squeeze (6 atoms)</h4>
+<h4 id="keltnerwat-channel-and-squeeze-6-atoms"><a class="heading-anchor" href="#keltnerwat-channel-and-squeeze-6-atoms" aria-hidden="true">#</a>keltner.wat — Channel and squeeze (6 atoms)</h4>
 <p>✅ Wired.</p>
 <table>
 <thead>
@@ -751,7 +754,7 @@
 </tr>
 </tbody>
 </table>
-<h4>momentum.wat — Trend-relative and MACD (6 atoms)</h4>
+<h4 id="momentumwat-trend-relative-and-macd-6-atoms"><a class="heading-anchor" href="#momentumwat-trend-relative-and-macd-6-atoms" aria-hidden="true">#</a>momentum.wat — Trend-relative and MACD (6 atoms)</h4>
 <p>✅ Wired.</p>
 <table>
 <thead>
@@ -787,7 +790,7 @@
 </tr>
 </tbody>
 </table>
-<h4>price-action.wat — Candlestick anatomy (7 atoms)</h4>
+<h4 id="price-actionwat-candlestick-anatomy-7-atoms"><a class="heading-anchor" href="#price-actionwat-candlestick-anatomy-7-atoms" aria-hidden="true">#</a>price-action.wat — Candlestick anatomy (7 atoms)</h4>
 <p>✅ Wired.</p>
 <table>
 <thead>
@@ -827,7 +830,7 @@
 </tr>
 </tbody>
 </table>
-<h4>timeframe.wat — Inter-timeframe structure (6 atoms, all Linear)</h4>
+<h4 id="timeframewat-inter-timeframe-structure-6-atoms-all-linear"><a class="heading-anchor" href="#timeframewat-inter-timeframe-structure-6-atoms-all-linear" aria-hidden="true">#</a>timeframe.wat — Inter-timeframe structure (6 atoms, all Linear)</h4>
 <p>✅ Wired.</p>
 <table>
 <thead>
@@ -864,16 +867,16 @@
 </tbody>
 </table>
 <hr />
-<h3>exit/ — Exit decision vocabulary (spec vs. Rust divergence)</h3>
+<h3 id="exit-exit-decision-vocabulary-spec-vs-rust-divergence"><a class="heading-anchor" href="#exit-exit-decision-vocabulary-spec-vs-rust-divergence" aria-hidden="true">#</a>exit/ — Exit decision vocabulary (spec vs. Rust divergence)</h3>
 <p>This domain has a <strong>significant spec-vs-implementation split</strong>.</p>
-<h4>WAT spec (3 modules — NOT wired in live Rust)</h4>
+<h4 id="wat-spec-3-modules-not-wired-in-live-rust"><a class="heading-anchor" href="#wat-spec-3-modules-not-wired-in-live-rust" aria-hidden="true">#</a>WAT spec (3 modules — NOT wired in live Rust)</h4>
 <p>The GUIDE describes exit modules <code>volatility.wat</code>, <code>structure.wat</code>, <code>timing.wat</code> with an <code>ExitLens</code> having variants <code>:volatility</code>, <code>:structure</code>, <code>:timing</code>, <code>:generalist</code>. These files exist but <strong>none are called</strong> by the running system.</p>
 <ul>
 <li><strong>volatility.wat</strong> — 6 atoms (atr-ratio, atr-r, atr-roc-6, atr-roc-12, squeeze, bb-width)</li>
 <li><strong>structure.wat</strong> — 5 atoms (trend-consistency-6/12/24, adx, exit-kama-er)</li>
 <li><strong>timing.wat</strong> — 5 atoms (rsi, stoch-k, stoch-kd-spread, macd-hist, cci)</li>
 </ul>
-<h4>Live Rust (3 modules — what actually runs)</h4>
+<h4 id="live-rust-3-modules-what-actually-runs"><a class="heading-anchor" href="#live-rust-3-modules-what-actually-runs" aria-hidden="true">#</a>Live Rust (3 modules — what actually runs)</h4>
 <p>These have <strong>no corresponding wat files</strong>. Comments say &quot;compiled from wat/vocab/exit/{regime,time,phase}.wat&quot; but those wat files do not exist.</p>
 <ul>
 <li><p><strong>exit/regime.rs</strong> — 8 atoms (kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim). Same atom names as market/regime.wat. ✅ Wired in exit Core + Full.</p>
@@ -890,7 +893,7 @@
 </li>
 </ul>
 <hr />
-<h2>Atom Counts Summary</h2>
+<h2 id="atom-counts-summary"><a class="heading-anchor" href="#atom-counts-summary" aria-hidden="true">#</a>Atom Counts Summary</h2>
 <table>
 <thead>
 <tr>
@@ -1025,26 +1028,26 @@
 </table>
 <p><strong>Total unique atom names:</strong> ~99 in live Rust (100 in wat spec, with overlaps between market and exit regime).</p>
 <hr />
-<h2>Design Principles</h2>
-<h3>No zones, no categories — only scalars</h3>
+<h2 id="design-principles"><a class="heading-anchor" href="#design-principles" aria-hidden="true">#</a>Design Principles</h2>
+<h3 id="no-zones-no-categories-only-scalars"><a class="heading-anchor" href="#no-zones-no-categories-only-scalars" aria-hidden="true">#</a>No zones, no categories — only scalars</h3>
 <blockquote>
 <p>&quot;No zones. No categories. Only scalars. 'Overbought' is a human label on a continuous value — a magic number wearing a name. WHO decided 70 was the boundary? The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are.&quot;
 — GUIDE, lines 1398–1405</p>
 </blockquote>
-<h3>Every relationship is a signed scalar</h3>
+<h3 id="every-relationship-is-a-signed-scalar"><a class="heading-anchor" href="#every-relationship-is-a-signed-scalar" aria-hidden="true">#</a>Every relationship is a signed scalar</h3>
 <blockquote>
 <p>&quot;Every relationship is a signed scalar. Not 'close is above SMA20' — the relative distance, with sign. [...] The sign IS the direction. The magnitude IS the distance. No 'above' atom. No 'below' atom. No boolean. Just the number.&quot;
 — GUIDE, lines 1346–1356</p>
 </blockquote>
-<h3>Vocabulary owns encode AND decode</h3>
+<h3 id="vocabulary-owns-encode-and-decode"><a class="heading-anchor" href="#vocabulary-owns-encode-and-decode" aria-hidden="true">#</a>Vocabulary owns encode AND decode</h3>
 <blockquote>
 <p>&quot;The vocabulary owns the encode AND the decode — it put the value on the scalar, it can take it back. That's why scalar accumulators work.&quot;
 — GUIDE, lines 1396–1397</p>
 </blockquote>
-<h3>Conditional emission</h3>
+<h3 id="conditional-emission"><a class="heading-anchor" href="#conditional-emission" aria-hidden="true">#</a>Conditional emission</h3>
 <p>Not all facts fire every candle. Divergence atoms emit only when active (0–3 facts). Phase scalar summaries require ≥2 history records. This honesty — &quot;sometimes there's nothing to say&quot; — is by design.</p>
 <hr />
-<h2>Sources</h2>
+<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
 <ul>
 <li>T2-004 (Vocabulary) — complete atom catalog, domain organization, GUIDE principles, spec-vs-Rust divergence</li>
 <li>T0-004 (&lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;scalar-encoding&lt;/a&gt;) — Linear/Log/Circular encoding algorithms, WAT spec vs Rust implementation</li>
