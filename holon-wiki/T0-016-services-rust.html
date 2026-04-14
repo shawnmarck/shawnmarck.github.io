@@ -1,55 +1,411 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>T0-016 — Services (Rust) — Verification — Holon Wiki</title><style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.6;display:flex;min-height:100vh}
-#sidebar{width:280px;background:#161b22;border-right:1px solid #30363d;padding:20px 0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
-#sidebar h2{color:#58a6ff;padding:0 20px 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #30363d}
-#sidebar a{display:block;padding:6px 20px;color:#8b949e;text-decoration:none;font-size:14px;transition:.15s}
-#sidebar a:hover{color:#c9d1d9;background:#1c2128}
-#sidebar a.active{color:#58a6ff;background:#1c2128;border-right:2px solid #58a6ff}
-#sidebar .tier{padding:10px 20px 4px;font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px}
-#content{margin-left:280px;padding:40px 60px;max-width:900px}
-#content h1{color:#f0f6fc;font-size:2em;margin-bottom:8px}
-#content .tldr{background:#1c2128;border-left:3px solid #58a6ff;padding:16px 20px;margin:20px 0;border-radius:0 6px 6px 0;color:#8b949e;font-size:15px}
-#content h2{color:#58a6ff;margin:32px 0 12px;font-size:1.3em}
-#content h3{color:#79c0ff;margin:24px 0 8px;font-size:1.1em}
-#content p{margin:12px 0}
-#content ul,#content ol{margin:12px 0 12px 24px}
-#content li{margin:4px 0}
-#content code{background:#1c2128;padding:2px 6px;border-radius:3px;font-size:.9em;color:#79c0ff}
-#content pre{background:#1c2128;padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
-#content pre code{background:none;padding:0}
-#content .mermaid{background:#161b22;padding:20px;border-radius:6px;margin:16px 0;text-align:center}
-#content blockquote{border-left:3px solid #30363d;padding-left:16px;margin:16px 0;color:#8b949e}
-#content table{border-collapse:collapse;margin:16px 0;width:100%}
-#content th,#content td{border:1px solid #30363d;padding:8px 12px;text-align:left}
-#content th{background:#161b22;color:#c9d1d9}
-#content a.wikilink{color:#58a6ff;text-decoration:none}
-#content a.wikilink:hover{text-decoration:underline}
-#content hr{border:none;border-top:1px solid #30363d;margin:32px 0}
-.search-results{display:none;position:absolute;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:256px;margin-left:0}
-.search-results::-webkit-scrollbar{width:4px}
-.search-results::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
-.search-result{display:block;padding:8px 12px;color:#c9d1d9;text-decoration:none;border-bottom:1px solid #21262d;cursor:pointer}
-.search-result:hover,.search-result.active{background:#1c2128}
-.search-title{font-size:13px;font-weight:600;color:#f0f6fc}
-.search-score{font-size:11px;color:#484f58;font-weight:normal;margin-left:6px}
-.search-meta{font-size:11px;color:#484f58;margin-top:2px}
-.search-related{font-size:11px;color:#8b949e;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
-.search-rel-link{color:#58a6ff;text-decoration:none;padding:1px 6px;border:1px solid #30363d;border-radius:3px}
-.search-rel-link:hover{background:#30363d}
-.search-empty{padding:12px;color:#484f58;font-size:13px;text-align:center}
-.badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
-.badge-why{background:#3b1f3b;color:#d8b4fe}.badge-how{background:#1f3b2b;color:#6ee7b7}
-.badge-describe{background:#1f2b3b;color:#93c5fd}.badge-what{background:#3b2b1f;color:#fbbf24}
-.badge-explain{background:#2b1f3b;color:#c4b5fd}
-#banner{background:linear-gradient(135deg,#161b22,#1c2128);border-bottom:1px solid #30363d;padding:30px 60px;margin-left:280px}
-#banner h1{color:#f0f6fc;font-size:1.8em;margin-bottom:4px}
-#banner p{color:#8b949e;font-size:14px}
-@media(max-width:900px){#sidebar{display:none}#content,#banner{margin-left:0}}
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-016 — Services (Rust) — Verification — Holon Wiki</title><style>
+:root {
+  --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --color-bg: #0c0e12;
+  --color-surface: #141820;
+  --color-surface-raised: #1c2128;
+  --color-border: #2d333b;
+  --color-text: #c9d1d9;
+  --color-text-muted: #6e7681;
+  --color-text-bright: #e6edf3;
+  --color-heading: #e6edf3;
+  --color-accent: #58a6ff;
+  --color-provenance: #d29922;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 48px;
+  --radius: 6px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.65;
+  display: flex;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === SIDEBAR === */
+#sidebar {
+  width: 300px;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+#sidebar h2 {
+  color: var(--color-accent);
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+}
+
+#sidebar .tier {
+  padding: var(--space-lg) var(--space-lg) var(--space-xs);
+  font-size: 10px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+#sidebar a {
+  display: block;
+  padding: 5px var(--space-lg) 5px calc(var(--space-lg) + var(--space-sm));
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: color 0.1s, background 0.1s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#sidebar a:hover {
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+}
+
+#sidebar a.active {
+  color: var(--color-accent);
+  background: var(--color-surface-raised);
+  border-right: 2px solid var(--color-accent);
+}
+
+#sidebar #holon-search {
+  width: calc(100% - var(--space-lg) * 2);
+  margin: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#sidebar #holon-search:focus {
+  border-color: var(--color-accent);
+}
+
+#sidebar #holon-search::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* === CONTENT === */
+#content {
+  margin-left: 300px;
+  padding: var(--space-xl) var(--space-2xl);
+  max-width: 1200px;
+  min-height: 100vh;
+}
+
+#content h1 {
+  color: var(--color-text-bright);
+  font-size: 2.25em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-lg);
+  line-height: 1.2;
+}
+
+#content h2 {
+  color: var(--color-heading);
+  margin: var(--space-2xl) 0 var(--space-md);
+  font-size: 1.5em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+#content h3 {
+  color: var(--color-text-bright);
+  margin: var(--space-xl) 0 var(--space-sm);
+  font-size: 1.125em;
+  font-weight: 600;
+}
+
+#content p {
+  margin: 0 0 var(--space-lg);
+}
+
+#content ul, #content ol {
+  margin: 0 0 var(--space-lg) var(--space-xl);
+  padding: 0;
+}
+
+#content li {
+  margin: var(--space-xs) 0;
+  line-height: 1.65;
+}
+
+/* === TL;DR === */
+#content .tldr {
+  background: rgba(210, 153, 34, 0.06);
+  border-left: 3px solid var(--color-provenance);
+  padding: var(--space-md) var(--space-lg);
+  margin: 0 0 var(--space-xl);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* === CODE === */
+#content code {
+  background: var(--color-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.875em;
+  color: #79c0ff;
+  font-family: var(--font-mono);
+}
+
+#content pre {
+  background: var(--color-bg);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin: var(--space-lg) 0;
+  font-size: 13px;
+}
+
+#content pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: var(--color-text);
+}
+
+/* === MERMAID === */
+#content .mermaid {
+  background: var(--color-surface);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin: var(--space-lg) 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* === BLOCKQUOTES === */
+#content blockquote {
+  border-left: 3px solid var(--color-provenance);
+  background: rgba(210, 153, 34, 0.04);
+  padding: var(--space-md) var(--space-lg);
+  margin: var(--space-lg) 0;
+  color: var(--color-text);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* === TABLES === */
+#content table {
+  border-collapse: collapse;
+  margin: var(--space-lg) 0;
+  width: 100%;
+  font-size: 14px;
+}
+
+#content th, #content td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+}
+
+#content th {
+  background: var(--color-surface);
+  color: var(--color-text-bright);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#content tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* === LINKS === */
+#content a.wikilink {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(88, 166, 255, 0.3);
+  transition: border-color 0.15s;
+}
+
+#content a.wikilink:hover {
+  border-bottom-style: solid;
+  border-bottom-color: var(--color-accent);
+}
+
+/* === BADGES === */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.badge-why { background: #3b1f3b; color: #d8b4fe; }
+.badge-how { background: #1f3b2b; color: #6ee7b7; }
+.badge-describe { background: #1f2b3b; color: #93c5fd; }
+.badge-what { background: #3b2b1f; color: #fbbf24; }
+.badge-explain { background: #2b1f3b; color: #c4b5fd; }
+
+/* === SEPARATOR === */
+#content hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-2xl) 0;
+}
+
+/* === FOCUS STYLES (accessibility) === */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* === SEARCH RESULTS === */
+.search-results {
+  display: none;
+  position: absolute;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 100;
+  width: 268px;
+  left: 16px;
+}
+
+.search-results::-webkit-scrollbar { width: 4px; }
+.search-results::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+
+.search-result {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.search-result:hover, .search-result.active {
+  background: var(--color-surface);
+}
+
+.search-title { font-size: 13px; font-weight: 600; color: var(--color-text-bright); }
+.search-score { font-size: 10px; color: var(--color-text-muted); font-weight: normal; margin-left: 6px; }
+.search-meta { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
+
+.search-related {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.search-rel-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  padding: 1px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+}
+
+.search-rel-link:hover { background: var(--color-border); }
+.search-empty { padding: var(--space-md); color: var(--color-text-muted); font-size: 13px; text-align: center; }
+
+/* === BANNER (index page) === */
+#banner {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-xl) var(--space-2xl);
+  margin-left: 300px;
+}
+
+#banner h1 {
+  color: var(--color-text-bright);
+  font-size: 1.8em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-sm);
+}
+
+#banner p { color: var(--color-text-muted); font-size: 14px; }
+
+/* === MOBILE === */
+#menu-toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 60;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 16px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+@media (max-width: 900px) {
+  #menu-toggle { display: block; }
+
+  #sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  #sidebar.open { transform: translateX(0); }
+
+  #content, #banner {
+    margin-left: 0;
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  #content h1 { font-size: 1.75em; }
+  #content h2 { font-size: 1.25em; }
+}
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#58a6ff",lineColor:"#30363d",textColor:"#c9d1d9",fontSize:"14px"}});</script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
 <script src="holon-search.js"></script>
-</head><body><nav id="sidebar"><h2>Holon Wiki</h2>
+</head><body><button id="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button><nav id="sidebar"><h2>Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -124,11 +480,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav>
 
-<div style="padding:8px 12px 4px">
-<input id="holon-search" type="text" placeholder="Search the graph..." 
-  style="width:100%;padding:6px 10px;border:1px solid #30363d;border-radius:6px;
-  background:#0d1117;color:#c9d1d9;font-size:13px;outline:none;box-sizing:border-box"
-  autocomplete="off" />
+<div>
+<input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
 <div id="content"><h1>T0-016 — Services (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><h2>Source Files</h2>
