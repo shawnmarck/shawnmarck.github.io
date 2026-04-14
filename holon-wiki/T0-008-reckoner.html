@@ -418,7 +418,7 @@ pub fn query(&self, vec: &Vector) -> f64
 <tr><td data-label="Method"><code>recalib_count()</code></td><td data-label="Description">How many times discriminants were rebuilt</td></tr>
 <tr><td data-label="Method"><code>is_ready()</code></td><td data-label="Description">Whether at least one recalibration has occurred</td></tr>
 <tr><td data-label="Method"><code>last_cos_raw()</code></td><td data-label="Description">Cosine between first two prototypes (from last recalib)</td></tr>
-<tr><td data-label="Method"><code>last_disc_strength()</code></td><td data-label="Description">`</td><td data-label=""></td><td data-label="">disc</td><td data-label=""></td><td data-label="">/ sqrt(dims)` (from last recalib)</td></tr>
+<tr><td data-label="Method"><code>last_disc_strength()</code></td><td data-label="Description"><code>||disc|| / sqrt(dims)</code> (from last recalib)</td></tr>
 <tr><td data-label="Method"><code>discriminant(label)</code></td><td data-label="Description">The learned separation vector</td></tr>
 <tr><td data-label="Method"><code>predict(vec)</code></td><td data-label="Description">Classification prediction</td></tr>
 <tr><td data-label="Method"><code>resolve(conviction, correct)</code></td><td data-label="Description">Record outcome for self-evaluation</td></tr>

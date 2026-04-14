@@ -217,7 +217,7 @@ if vectors.is_empty() {
 <tr><td data-label="Operation"><code>decay</code></td><td data-label="Signature"><code>(reckoner rate)</code></td><td data-label="Role">Fade old observations (aging function)</td></tr>
 <tr><td data-label="Operation"><code>resolve</code></td><td data-label="Signature"><code>(reckoner conviction correct)</code></td><td data-label="Role">Record prediction outcome</td></tr>
 <tr><td data-label="Operation"><code>recalib-count</code></td><td data-label="Signature"><code>(reckoner) → Integer</code></td><td data-label="Role">Monotonically increasing rebuild count</td></tr>
-<tr><td data-label="Operation"><code>discriminant</code></td><td data-label="Signature">`(reckoner label) → Vector \</td><td data-label="Role">None`</td><td data-label="">Learned separation between prototypes</td></tr>
+<tr><td data-label="Operation"><code>discriminant</code></td><td data-label="Signature"><code>(reckoner label) → Vector \| None</code></td><td data-label="Role">Learned separation between prototypes</td></tr>
 <tr><td data-label="Operation"><code>curve</code></td><td data-label="Signature"><code>(reckoner) → (amplitude, exponent)</code></td><td data-label="Role">Conviction-accuracy curve fit</td></tr>
 </table>
 <p>The conviction-accuracy curve formula is given explicitly:</p>

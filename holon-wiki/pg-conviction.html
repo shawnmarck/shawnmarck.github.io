@@ -193,7 +193,7 @@ accuracy = (1/N) + a × exp(b × conviction)
 <table>
 <thead><tr><th>Claim</th><th>Source</th></tr></thead>
 <tr><td data-label="Claim"><code>Prediction</code> struct with <code>conviction: f64</code> field</td><td data-label="Source">T0-008 §3.2</td></tr>
-<tr><td data-label="Claim">`conviction = \</td><td data-label="Source">best.cosine\</td><td data-label="">` computation</td><td data-label="">T0-008 §3.2</td></tr>
+<tr><td data-label="Claim"><code>conviction = \|best.cosine\|</code> computation</td><td data-label="Source">T0-008 §3.2</td></tr>
 <tr><td data-label="Claim">Sorting by raw cosine, conviction as absolute value</td><td data-label="Source">T0-008 §3.2</td></tr>
 <tr><td data-label="Claim">Curve model: <code>accuracy = 1/N + a·exp(b·conviction)</code></td><td data-label="Source">T0-008 §3.6, <code>primitives.wat</code></td></tr>
 <tr><td data-label="Claim">"The curve IS the proof. Monotonically increasing = real signal."</td><td data-label="Source"><code>primitives.wat</code>, via T0-008 §3.6</td></tr>

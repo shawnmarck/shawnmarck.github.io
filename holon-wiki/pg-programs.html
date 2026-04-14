@@ -235,7 +235,7 @@ flowchart TD
 <tr><td data-label="Concept">Create channel</td><td data-label="wat form"><code>(make-pipe :capacity N :carries T)</code> → <code>(tx rx)</code></td><td data-label="Rust"><code>queue_bounded(N)</code> / <code>queue_unbounded()</code></td></tr>
 <tr><td data-label="Concept">Fan-out</td><td data-label="wat form"><code>(make-topic tx1 tx2 ...)</code></td><td data-label="Rust"><code>topic(capacity, vec![tx1, tx2, ...])</code></td></tr>
 <tr><td data-label="Concept">Fan-in</td><td data-label="wat form"><code>(select rx1 rx2 ...)</code> → <code>(Some (idx value))</code> or <code>:closed</code></td><td data-label="Rust"><code>mailbox(vec![rx1, rx2, ...])</code></td></tr>
-<tr><td data-label="Concept">Spawn program</td><td data-label="wat form"><code>(spawn fn)</code> → <code>Handle</code></td><td data-label="Rust">`std::thread::spawn(move \</td><td data-label="">...)`</td></tr>
+<tr><td data-label="Concept">Spawn program</td><td data-label="wat form"><code>(spawn fn)</code> → <code>Handle</code></td><td data-label="Rust"><code>std::thread::spawn(move \| ...)</code></td></tr>
 <tr><td data-label="Concept">Join programs</td><td data-label="wat form"><code>(join handles)</code> → list of return values</td><td data-label="Rust"><code>handle.join()</code></td></tr>
 <tr><td data-label="Concept">Send</td><td data-label="wat form"><code>(send tx value)</code></td><td data-label="Rust"><code>sender.send(value)</code></td></tr>
 <tr><td data-label="Concept">Receive</td><td data-label="wat form"><code>(recv rx)</code> → value</td><td data-label="Rust"><code>receiver.recv()</code></td></tr>
