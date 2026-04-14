@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,14 +222,14 @@
         wat-vm — the training harness <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
 <p>wat-vm is a standalone Rust binary (846 lines at <code>src/bin/wat-vm.rs</code>) that replays historical candle data through a parallel grid of &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observers&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position observers&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;brokers&lt;/a&gt; so they can learn. It is emphatically <strong>not a live trading system</strong> — its own CLI summary says it best: <em>&quot;Candles in, observers learn, results discarded.&quot;</em> It is the training/learning harness, the &quot;second heartbeat&quot; of the Holon system.</p>
 <hr />
 </div>
       
       <div class="prose prose-invert max-w-none"><p><strong>Composite wiki page.</strong> Sources: T0-017 (wat-vm + chain types), T0-016 (services/messaging), T1-001 (wat language).</p>
 <hr />
-<h2 id="architecture-overview"><a class="heading-anchor" href="#architecture-overview" aria-hidden="true">#</a>Architecture overview</h2>
+<h2 id="architecture-overview">Architecture overview<a class="heading-anchor" href="#architecture-overview" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
     main_thread[&quot;Main thread&quot;] --&gt;|&quot;candles&quot;| market_obs[&quot;N market observers&quot;]
     market_obs --&gt;|&quot;fan-out&quot;| position_obs[&quot;M position observers&quot;]
@@ -243,10 +243,10 @@
 <li><strong>N×M brokers</strong> evaluate position entries, manage trade lifecycle, feed learn signals back.</li>
 <li>Default configuration: N=6 market lenses, M=2 position lenses → <strong>23+ threads</strong> for a single stream.</li>
 </ul>
-<h3 id="thread-budget"><a class="heading-anchor" href="#thread-budget" aria-hidden="true">#</a>Thread budget</h3>
+<h3 id="thread-budget">Thread budget<a class="heading-anchor" href="#thread-budget" aria-hidden="true">#</a></h3>
 <p>N + M + (N×M) brokers + database driver + cache driver + console driver. With defaults (6+2+12+3) = <strong>23 threads minimum</strong>. Multiple streams or internal service threads push it higher — the project docs reference &quot;30+ threads.&quot;</p>
 <hr />
-<h2 id="cli-interface"><a class="heading-anchor" href="#cli-interface" aria-hidden="true">#</a>CLI interface</h2>
+<h2 id="cli-interface">CLI interface<a class="heading-anchor" href="#cli-interface" aria-hidden="true">#</a></h2>
 <pre><code>wat-vm --stream SOURCE:TARGET:PATH [--max-candles N] [--dims D] [--recalib-interval R] [--swap-fee F]
 </code></pre>
 <table>
@@ -289,7 +289,7 @@
 <p><strong>Source:</strong> T0-017, &quot;CLI interface&quot; section.</p>
 </blockquote>
 <hr />
-<h2 id="startup-sequence"><a class="heading-anchor" href="#startup-sequence" aria-hidden="true">#</a>Startup sequence</h2>
+<h2 id="startup-sequence">Startup sequence<a class="heading-anchor" href="#startup-sequence" aria-hidden="true">#</a></h2>
 <ol>
 <li><strong>Parse args.</strong> Derive observer counts from <code>config::MARKET_LENSES</code> and <code>config::POSITION_LENSES</code>. Compute <code>num_brokers = N×M</code>, <code>noise_floor = 5.0 / sqrt(dims)</code>.</li>
 <li><strong>Console pool.</strong> Create N+M+(N×M)+streams+1 handles. Claim main + stream handles.</li>
@@ -308,7 +308,7 @@
 <p><strong>Source:</strong> T0-017, &quot;Startup sequence (main)&quot; section.</p>
 </blockquote>
 <hr />
-<h2 id="main-loop"><a class="heading-anchor" href="#main-loop" aria-hidden="true">#</a>Main loop</h2>
+<h2 id="main-loop">Main loop<a class="heading-anchor" href="#main-loop" aria-hidden="true">#</a></h2>
 <p>Per-stream, sequential candle replay:</p>
 <pre><code class="language-rust">while count &lt; max &amp;&amp; !STOP {
     let candle = pipeline.stream.next();      // raw OHLCV from file
@@ -328,9 +328,9 @@
 <p><strong>Source:</strong> T0-017, &quot;The main loop&quot; section.</p>
 </blockquote>
 <hr />
-<h2 id="data-flow-the-chain-types"><a class="heading-anchor" href="#data-flow-the-chain-types" aria-hidden="true">#</a>Data flow: the chain types</h2>
+<h2 id="data-flow-the-chain-types">Data flow: the chain types<a class="heading-anchor" href="#data-flow-the-chain-types" aria-hidden="true">#</a></h2>
 <p>The grid communicates through two wire types defined in <code>src/programs/chain.rs</code> (40 lines). The module's design principle: <em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em></p>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone"><a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone" aria-hidden="true">#</a>&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; (Clone)</h3>
+<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; (Clone)<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone" aria-hidden="true">#</a></h3>
 <p>Produced by market observers, consumed by position observers via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; fan-out.</p>
 <table>
 <thead>
@@ -383,7 +383,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone"><a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone" aria-hidden="true">#</a>&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; (not Clone)</h3>
+<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; (not Clone)<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone" aria-hidden="true">#</a></h3>
 <p>Produced by position observers, consumed by brokers via unbounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;queues&lt;/a&gt;. <strong>Flattens</strong> all <code>MarketChain</code> fields (duplicated, not borrowed — self-contained, no shared references) and adds position-specific fields:</p>
 <table>
 <thead>
@@ -426,10 +426,10 @@
 <p><strong>Source:</strong> T0-017, &quot;Chain types&quot; section.</p>
 </blockquote>
 <hr />
-<h2 id="signal-handling"><a class="heading-anchor" href="#signal-handling" aria-hidden="true">#</a>Signal handling</h2>
+<h2 id="signal-handling">Signal handling<a class="heading-anchor" href="#signal-handling" aria-hidden="true">#</a></h2>
 <p>A single <code>static AtomicBool</code> named <code>STOP</code>. A C signal handler (via <code>libc::signal</code>) sets it on <code>SIGINT</code>/<code>SIGTERM</code>. The main loop reads it each iteration. Nothing else touches it. Simple, correct, no async machinery.</p>
 <hr />
-<h2 id="shutdown-sequence"><a class="heading-anchor" href="#shutdown-sequence" aria-hidden="true">#</a>Shutdown sequence</h2>
+<h2 id="shutdown-sequence">Shutdown sequence<a class="heading-anchor" href="#shutdown-sequence" aria-hidden="true">#</a></h2>
 <p>Ordered teardown — critical for correctness:</p>
 <ol>
 <li><strong>Drop candle senders</strong> → market observers see disconnect on their input queues.</li>
@@ -445,7 +445,7 @@
 <p><strong>Source:</strong> T0-017, &quot;Shutdown sequence&quot; section.</p>
 </blockquote>
 <hr />
-<h2 id="messaging-primitives"><a class="heading-anchor" href="#messaging-primitives" aria-hidden="true">#</a>Messaging primitives</h2>
+<h2 id="messaging-primitives">Messaging primitives<a class="heading-anchor" href="#messaging-primitives" aria-hidden="true">#</a></h2>
 <p>Three primitives, zero <code>Mutex</code>. All built on <code>crossbeam::channel</code>. Concurrency through message passing alone.</p>
 <table>
 <thead>
@@ -486,7 +486,7 @@
 <p><strong>Source:</strong> T0-016, &quot;Services (Rust) — Verification.&quot;</p>
 </blockquote>
 <hr />
-<h2 id="relationship-to-lta-classquotwikilinkquot-hrefquott1-001-wat-languagehtmlquotgtthe-wat-languageltagt"><a class="heading-anchor" href="#relationship-to-lta-classquotwikilinkquot-hrefquott1-001-wat-languagehtmlquotgtthe-wat-languageltagt" aria-hidden="true">#</a>Relationship to &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;the wat language&lt;/a&gt;</h2>
+<h2 id="relationship-to-lta-classquotwikilinkquot-hrefquott1-001-wat-languagehtmlquotgtthe-wat-languageltagt">Relationship to &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;the wat language&lt;/a&gt;<a class="heading-anchor" href="#relationship-to-lta-classquotwikilinkquot-hrefquott1-001-wat-languagehtmlquotgtthe-wat-languageltagt" aria-hidden="true">#</a></h2>
 <p>wat-vm is implemented in Rust but its architecture is specified in &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat&lt;/a&gt;:</p>
 <ul>
 <li><strong>Concurrency forms</strong> in wat (<code>make-pipe</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>, <code>select</code>) map directly to the Rust &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;, and threading patterns used by wat-vm. The wat spec states: <em>&quot;No defpipe. No defprocess. Pipes are values. Topics are values. Processes are functions.&quot;</em></li>
@@ -498,7 +498,7 @@
 <p><strong>Source:</strong> T1-001, &quot;The wat Language — forms, evaluation, and structural types.&quot;</p>
 </blockquote>
 <hr />
-<h2 id="design-principles-distilled"><a class="heading-anchor" href="#design-principles-distilled" aria-hidden="true">#</a>Design principles distilled</h2>
+<h2 id="design-principles-distilled">Design principles distilled<a class="heading-anchor" href="#design-principles-distilled" aria-hidden="true">#</a></h2>
 <ol>
 <li><strong>Push architecture.</strong> Main thread is the sole candle producer. Fire-and-forget to all observers.</li>
 <li><strong>Ownership over locking.</strong> Zero <code>Mutex</code>. All concurrency through channel message passing.</li>

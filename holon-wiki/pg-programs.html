@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,35 +222,35 @@
         Programs — the concurrent pipeline architecture <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
 <p>A <strong>program</strong> in Holon is a function running on its own thread, communicating exclusively through &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;queues&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;topics&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;mailboxes&lt;/a&gt;. There is no shared mutable state and zero <code>Mutex</code>. The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; expresses this as <code>spawn</code> — &quot;a process is a function&quot; (T1-001, §Threads). At runtime, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-wat-vm.html&quot;&gt;wat-vm&lt;/a&gt; wires N market observers, M position observers, and N×M brokers into a concurrent pipeline grid, where each stage produces a typed chain value that proves which stage produced it. Resource handles (console, cache, database) are pre-allocated into pools; every program thread claims exactly one of each, and orphan detection panics if any go unclaimed.</p>
 <hr />
 </div>
       
       <div class="prose prose-invert max-w-none"><p><strong>Wiki composite · Sources: T0-016 (services-rust), T0-017 (wat-vm-rust), T1-001 (wat-language), T0-013 (market-observer-rust), T0-014 (exit-observer-rust)</strong></p>
 <hr />
-<h2 id="what-a-program-is"><a class="heading-anchor" href="#what-a-program-is" aria-hidden="true">#</a>What a Program Is</h2>
+<h2 id="what-a-program-is">What a Program Is<a class="heading-anchor" href="#what-a-program-is" aria-hidden="true">#</a></h2>
 <p>In wat, a program is a function launched with <code>(spawn fn)</code> → <code>Handle</code>, joined with <code>(join handles)</code> → list of return values. The design principle is stark:</p>
 <blockquote>
 <p>&quot;No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions.&quot; <em>(T1-001, §Design principle)</em></p>
 </blockquote>
 <p>In Rust, this maps to: create input/output &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;queues&lt;/a&gt;, spawn <code>std::thread::spawn</code>, pass senders/receivers by move. The function owns its inputs exclusively; threads communicate by sending messages, not by sharing memory (T0-016, §&quot;How Concurrency Is Achieved Without Mutex&quot;).</p>
 <hr />
-<h2 id="the-three-program-types"><a class="heading-anchor" href="#the-three-program-types" aria-hidden="true">#</a>The Three Program Types</h2>
+<h2 id="the-three-program-types">The Three Program Types<a class="heading-anchor" href="#the-three-program-types" aria-hidden="true">#</a></h2>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-wat-vm.html&quot;&gt;wat-vm&lt;/a&gt; runs exactly three kinds of program threads (T0-017):</p>
-<h3 id="market-observer-market_observer_program"><a class="heading-anchor" href="#market-observer-market_observer_program" aria-hidden="true">#</a>Market Observer (<code>market_observer_program</code>)</h3>
+<h3 id="market-observer-market_observer_program">Market Observer (<code>market_observer_program</code>)<a class="heading-anchor" href="#market-observer-market_observer_program" aria-hidden="true">#</a></h3>
 <p><strong>Role:</strong> Receive candles, encode market features, predict direction.</p>
 <p><strong>Inputs:</strong> One bounded candle queue (capacity 1) from the main thread.
 <strong>Outputs:</strong> N &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;topics&lt;/a&gt; — one per position observer — carrying &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; values.</p>
 <p>Each market observer holds a &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt; struct: a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; for Up/Down prediction, a noise subspace for anomaly detection, a &lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;curve&lt;/a&gt; for conviction calibration, and an engram for gating low-conviction predictions (T0-013). It encodes the candle into a &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt;, sends it to the &lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;Encoding Cache&lt;/a&gt;, receives the thought vector, strips noise, and predicts. Results are fanned out via topics to all position observers.</p>
 <p><strong>Per-stream default:</strong> N = 6 (one per &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;market lens&lt;/a&gt;).</p>
-<h3 id="position-observer-position_observer_program"><a class="heading-anchor" href="#position-observer-position_observer_program" aria-hidden="true">#</a>Position Observer (<code>position_observer_program</code>)</h3>
+<h3 id="position-observer-position_observer_program">Position Observer (<code>position_observer_program</code>)<a class="heading-anchor" href="#position-observer-position_observer_program" aria-hidden="true">#</a></h3>
 <p><strong>Role:</strong> Receive market observations from N market observers, predict exit distances.</p>
 <p><strong>Inputs:</strong> N bounded queues — one from each market observer's topic output — assembled into <code>PositionSlot</code>s.
 <strong>Outputs:</strong> One unbounded queue carrying &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; values, consumed by a downstream broker.</p>
 <p>Each position observer holds a &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;PositionObserver&lt;/a&gt; struct (also called &quot;exit observer&quot;): two continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;s for trailing stop and safety stop distances (T0-014). It receives a &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; from each market observer, encodes its own position-specific features, and produces a &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; that flattens all market fields plus adds position fields.</p>
 <p><strong>Per-stream default:</strong> M = 2 (one per &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;position lens&lt;/a&gt;).</p>
-<h3 id="broker-broker_program"><a class="heading-anchor" href="#broker-broker_program" aria-hidden="true">#</a>Broker (<code>broker_program</code>)</h3>
+<h3 id="broker-broker_program">Broker (<code>broker_program</code>)<a class="heading-anchor" href="#broker-broker_program" aria-hidden="true">#</a></h3>
 <p><strong>Role:</strong> Receive position observations, manage simulated trades, propagate learn signals back.</p>
 <p><strong>Inputs:</strong> One &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; queue from a position observer.
 <strong>Outputs (via unbounded queues → mailboxes):</strong></p>
@@ -262,7 +262,7 @@
 <p>The broker owns the production cascade: it decides when to enter/exit based on predictions and distances, then sends hindsight-optimal observations back through the learn queues so observers improve (T0-014, T0-017).</p>
 <p><strong>Per-stream count:</strong> N × M = 6 × 2 = 12 brokers.</p>
 <hr />
-<h2 id="data-flow-through-the-grid"><a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a>Data Flow Through the Grid</h2>
+<h2 id="data-flow-through-the-grid">Data Flow Through the Grid<a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
     main[&quot;Main thread\nsend ObsInput&quot;] --&gt; mkt_obs[&quot;Market Observer i\n(thread)\nencode → predict&quot;]
     mkt_obs --&gt;|&quot;Topic fan-out\nsend MarketChain&quot;| pos0[&quot;Position Observer 0&quot;]
@@ -278,9 +278,9 @@
 <p><em>(T0-017, §&quot;Data flow through the grid&quot;)</em></p>
 <p>Each arrow is a &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;. The fan-out from market to position observers uses &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; (1→N). The learn-signal aggregation from multiple brokers back to one observer uses &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; (N→1).</p>
 <hr />
-<h2 id="chain-types-values-on-the-wire"><a class="heading-anchor" href="#chain-types-values-on-the-wire" aria-hidden="true">#</a>Chain Types — Values on the Wire</h2>
+<h2 id="chain-types-values-on-the-wire">Chain Types — Values on the Wire<a class="heading-anchor" href="#chain-types-values-on-the-wire" aria-hidden="true">#</a></h2>
 <p>Defined in <code>src/programs/chain.rs</code> (40 lines). The module doc: <em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em> (T0-017, §Chain types)</p>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone"><a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone" aria-hidden="true">#</a>&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; (Clone)</h3>
+<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; (Clone)<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone" aria-hidden="true">#</a></h3>
 <p>What the market observer produces. What the position observer receives.</p>
 <table>
 <thead>
@@ -333,7 +333,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone"><a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone" aria-hidden="true">#</a>&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; (not Clone)</h3>
+<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; (not Clone)<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone" aria-hidden="true">#</a></h3>
 <p>What the position observer produces. What the broker receives. Flattens all <code>MarketChain</code> fields (duplicated, not borrowed) plus position-specific fields:</p>
 <table>
 <thead>
@@ -368,16 +368,16 @@
 </table>
 <p>Self-contained but large — a deliberate &quot;values on the wire&quot; design with no shared references (T0-017).</p>
 <hr />
-<h2 id="resource-pools-and-orphan-detection"><a class="heading-anchor" href="#resource-pools-and-orphan-detection" aria-hidden="true">#</a>Resource Pools and Orphan Detection</h2>
+<h2 id="resource-pools-and-orphan-detection">Resource Pools and Orphan Detection<a class="heading-anchor" href="#resource-pools-and-orphan-detection" aria-hidden="true">#</a></h2>
 <p>Console, cache, and database handles are pre-allocated into <code>HandlePool</code>s. Each program thread claims exactly one of each. Pools assert <code>finish()</code> — if any handle remains unclaimed, the program panics (T0-017, §&quot;Resources allocated from pools&quot;).</p>
 <p>This is orphan detection: if a thread was supposed to be spawned but wasn't (or was wired incorrectly), the unclaimed handle triggers a panic at startup, preventing deadlocks from invisible missing consumers.</p>
 <hr />
-<h2 id="thread-count"><a class="heading-anchor" href="#thread-count" aria-hidden="true">#</a>Thread Count</h2>
+<h2 id="thread-count">Thread Count<a class="heading-anchor" href="#thread-count" aria-hidden="true">#</a></h2>
 <p>For one stream with N market observers, M position observers (T0-017, §Thread count):</p>
 <p><strong>N + M + (N×M) + 3</strong> threads minimum (database + cache + console drivers).</p>
 <p>With defaults (N=6, M=2): <strong>6 + 2 + 12 + 3 = 23 threads.</strong></p>
 <hr />
-<h2 id="shutdown-by-disconnection"><a class="heading-anchor" href="#shutdown-by-disconnection" aria-hidden="true">#</a>Shutdown by Disconnection</h2>
+<h2 id="shutdown-by-disconnection">Shutdown by Disconnection<a class="heading-anchor" href="#shutdown-by-disconnection" aria-hidden="true">#</a></h2>
 <p>Programs do not use explicit shutdown flags. Shutdown cascades through &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; disconnection:</p>
 <ol>
 <li>Main thread drops <code>candle_txs</code> → market observers see <code>Disconnected</code> on input queues.</li>
@@ -391,7 +391,7 @@
 <p>&quot;Dropping a sender/receiver propagates through the channel as a <code>Disconnected</code> error. No explicit coordination, no <code>Arc&lt;Mutex&lt;bool&gt;&gt;</code> shutdown flags.&quot; <em>(T0-016)</em></p>
 </blockquote>
 <hr />
-<h2 id="concurrency-model"><a class="heading-anchor" href="#concurrency-model" aria-hidden="true">#</a>Concurrency Model</h2>
+<h2 id="concurrency-model">Concurrency Model<a class="heading-anchor" href="#concurrency-model" aria-hidden="true">#</a></h2>
 <p>All three primitives — &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; — use <code>crossbeam::channel</code> as their sole concurrency mechanism. The internal implementation uses atomic compare-and-swap operations; no <code>std::sync::Mutex</code> exists anywhere in the messaging layer (T0-016, §&quot;How Concurrency Is Achieved Without Mutex&quot;).</p>
 <p>The pattern:</p>
 <ul>
@@ -401,7 +401,7 @@
 <li><strong>Backpressure via bounded channels</strong> — topics use bounded inputs; mailboxes use unbounded outputs.</li>
 </ul>
 <hr />
-<h2 id="wat-level-correspondence"><a class="heading-anchor" href="#wat-level-correspondence" aria-hidden="true">#</a>wat-Level Correspondence</h2>
+<h2 id="wat-level-correspondence">wat-Level Correspondence<a class="heading-anchor" href="#wat-level-correspondence" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -450,7 +450,7 @@
 </table>
 <p><em>(T1-001, §Concurrency model)</em></p>
 <hr />
-<h2 id="source-files"><a class="heading-anchor" href="#source-files" aria-hidden="true">#</a>Source Files</h2>
+<h2 id="source-files">Source Files<a class="heading-anchor" href="#source-files" aria-hidden="true">#</a></h2>
 <ul>
 <li><code>src/programs/chain.rs</code> — 40 lines — &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt;</li>
 <li><code>src/bin/wat-vm.rs</code> — 846 lines — wiring, startup, main loop, shutdown</li>

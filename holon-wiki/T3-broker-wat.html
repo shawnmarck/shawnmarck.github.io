@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -225,7 +225,7 @@
       <div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/wat/broker.wat</code> (224 lines)
 <strong>Approach:</strong> Context-free ignorant — read only the file, quote what it declares.</p>
 <hr />
-<h2 id="preamble-lines-18"><a class="heading-anchor" href="#preamble-lines-18" aria-hidden="true">#</a>Preamble (lines 1–8)</h2>
+<h2 id="preamble-lines-18">Preamble (lines 1–8)<a class="heading-anchor" href="#preamble-lines-18" aria-hidden="true">#</a></h2>
 <blockquote>
 <p>The accountability primitive. Binds one market observer + one exit observer. N×M brokers total. Holds papers. Propagates resolved outcomes to every observer in the set. Measures Grace or Violence. The broker's identity IS the set of observer names it closes over.</p>
 </blockquote>
@@ -234,7 +234,7 @@
 <li><code>primitives</code>, <code>enums</code>, <code>distances</code>, <code>scalar-accumulator</code>, <code>engram-gate</code>, <code>paper-entry</code>, <code>simulation</code></li>
 </ul>
 <hr />
-<h2 id="struct-resolution-lines-2329"><a class="heading-anchor" href="#struct-resolution-lines-2329" aria-hidden="true">#</a>Struct: <code>resolution</code> (lines 23–29)</h2>
+<h2 id="struct-resolution-lines-2329">Struct: <code>resolution</code> (lines 23–29)<a class="heading-anchor" href="#struct-resolution-lines-2329" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -280,7 +280,7 @@
 <p>A paper has two sides (buy and sell). Each side resolves independently. Each resolved side produces one Resolution with its own direction.</p>
 </blockquote>
 <hr />
-<h2 id="struct-propagation-facts-lines-3339"><a class="heading-anchor" href="#struct-propagation-facts-lines-3339" aria-hidden="true">#</a>Struct: <code>propagation-facts</code> (lines 33–39)</h2>
+<h2 id="struct-propagation-facts-lines-3339">Struct: <code>propagation-facts</code> (lines 33–39)<a class="heading-anchor" href="#struct-propagation-facts-lines-3339" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -323,7 +323,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="struct-broker-lines-4367"><a class="heading-anchor" href="#struct-broker-lines-4367" aria-hidden="true">#</a>Struct: <code>broker</code> (lines 43–67)</h2>
+<h2 id="struct-broker-lines-4367">Struct: <code>broker</code> (lines 43–67)<a class="heading-anchor" href="#struct-broker-lines-4367" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -408,8 +408,8 @@
 <p>Comment on lines 53–54: <em>&quot;The reckoner carries its own curve. resolve() feeds it. edge-at() reads it. No separate curve field.&quot;</em></p>
 <p><strong>13 fields total.</strong></p>
 <hr />
-<h2 id="interface-methods-6-functions"><a class="heading-anchor" href="#interface-methods-6-functions" aria-hidden="true">#</a>Interface: Methods (6 functions)</h2>
-<h3 id="1-make-broker-lines-7195"><a class="heading-anchor" href="#1-make-broker-lines-7195" aria-hidden="true">#</a>1. <code>make-broker</code> (lines 71–95)</h3>
+<h2 id="interface-methods-6-functions">Interface: Methods (6 functions)<a class="heading-anchor" href="#interface-methods-6-functions" aria-hidden="true">#</a></h2>
+<h3 id="1-make-broker-lines-7195">1. <code>make-broker</code> (lines 71–95)<a class="heading-anchor" href="#1-make-broker-lines-7195" aria-hidden="true">#</a></h3>
 <p><strong>Signature:</strong></p>
 <pre><code>(make-broker [observers : Vec&lt;String&gt;]
              [slot-idx : usize]
@@ -420,17 +420,17 @@
   : Broker
 </code></pre>
 <p>Constructor. Creates the reckoner as <code>:discrete</code> with labels <code>(&quot;Grace&quot; &quot;Violence&quot;)</code>. <code>noise-subspace</code> gets k=8, <code>good-state-subspace</code> gets k=4. All accumulators init to zero. Papers init as empty deque.</p>
-<h3 id="2-propose-lines-97104"><a class="heading-anchor" href="#2-propose-lines-97104" aria-hidden="true">#</a>2. <code>propose</code> (lines 97–104)</h3>
+<h3 id="2-propose-lines-97104">2. <code>propose</code> (lines 97–104)<a class="heading-anchor" href="#2-propose-lines-97104" aria-hidden="true">#</a></h3>
 <p><strong>Signature:</strong></p>
 <pre><code>(propose [broker : Broker] [composed : Vector]) : Prediction
 </code></pre>
 <p>Noise update → strip noise → predict Grace/Violence via the reckoner.</p>
-<h3 id="3-edge-lines-106113"><a class="heading-anchor" href="#3-edge-lines-106113" aria-hidden="true">#</a>3. <code>edge</code> (lines 106–113)</h3>
+<h3 id="3-edge-lines-106113">3. <code>edge</code> (lines 106–113)<a class="heading-anchor" href="#3-edge-lines-106113" aria-hidden="true">#</a></h3>
 <p><strong>Signature:</strong></p>
 <pre><code>(edge [broker : Broker]) : f64
 </code></pre>
 <p>Reads from the reckoner's internal curve. Returns conviction→accuracy. <code>0.0 = no edge</code>. Used for proportional treasury funding.</p>
-<h3 id="4-register-paper-lines-115121"><a class="heading-anchor" href="#4-register-paper-lines-115121" aria-hidden="true">#</a>4. <code>register-paper</code> (lines 115–121)</h3>
+<h3 id="4-register-paper-lines-115121">4. <code>register-paper</code> (lines 115–121)<a class="heading-anchor" href="#4-register-paper-lines-115121" aria-hidden="true">#</a></h3>
 <p><strong>Signature:</strong></p>
 <pre><code>(register-paper [broker : Broker]
                 [composed : Vector]
@@ -438,12 +438,12 @@
                 [distances : Distances])
 </code></pre>
 <p>Creates a <code>PaperEntry</code> and pushes onto the papers deque. Called every candle, every broker.</p>
-<h3 id="5-tick-papers-lines-123166"><a class="heading-anchor" href="#5-tick-papers-lines-123166" aria-hidden="true">#</a>5. <code>tick-papers</code> (lines 123–166)</h3>
+<h3 id="5-tick-papers-lines-123166">5. <code>tick-papers</code> (lines 123–166)<a class="heading-anchor" href="#5-tick-papers-lines-123166" aria-hidden="true">#</a></h3>
 <p><strong>Signature:</strong></p>
 <pre><code>(tick-papers [broker : Broker] [current-price : f64]) : Vec&lt;Resolution&gt;
 </code></pre>
 <p>Ticks all papers. Each side (buy/sell) resolves independently. Produces a <code>Resolution</code> the tick a side fires. Paper removed only after both sides resolved. Outcome is <code>:grace</code> if excursion &gt; trail-distance, else <code>:violence</code>.</p>
-<h3 id="6-propagate-lines-168220"><a class="heading-anchor" href="#6-propagate-lines-168220" aria-hidden="true">#</a>6. <code>propagate</code> (lines 168–220)</h3>
+<h3 id="6-propagate-lines-168220">6. <code>propagate</code> (lines 168–220)<a class="heading-anchor" href="#6-propagate-lines-168220" aria-hidden="true">#</a></h3>
 <p><strong>Signature:</strong></p>
 <pre><code>(propagate [broker : Broker]
            [thought : Vector]
@@ -464,13 +464,13 @@
 <li><strong>Engram gate</strong> — check gate state, update recalib counters</li>
 </ol>
 <p>Returns <code>PropagationFacts</code> for the post to apply to its observers. Derives <code>market-idx</code> and <code>exit-idx</code> from <code>slot-idx / exit-count</code> and <code>slot-idx mod exit-count</code>.</p>
-<h3 id="7-paper-count-lines-222224"><a class="heading-anchor" href="#7-paper-count-lines-222224" aria-hidden="true">#</a>7. <code>paper-count</code> (lines 222–224)</h3>
+<h3 id="7-paper-count-lines-222224">7. <code>paper-count</code> (lines 222–224)<a class="heading-anchor" href="#7-paper-count-lines-222224" aria-hidden="true">#</a></h3>
 <p><strong>Signature:</strong></p>
 <pre><code>(paper-count [broker : Broker]) : usize
 </code></pre>
 <p>Returns <code>len</code> of the papers deque.</p>
 <hr />
-<h2 id="summary"><a class="heading-anchor" href="#summary" aria-hidden="true">#</a>Summary</h2>
+<h2 id="summary">Summary<a class="heading-anchor" href="#summary" aria-hidden="true">#</a></h2>
 <p>The wat spec declares:</p>
 <ul>
 <li><strong>3 structs:</strong> <code>resolution</code>, <code>propagation-facts</code>, <code>broker</code></li>

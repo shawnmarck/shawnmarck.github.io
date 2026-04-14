@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -226,10 +226,10 @@
 <p><strong>TL;DR:</strong> ORDER.md is not an order-type specification for trading. It is the <strong>construction order</strong> — a dependency-sorted reading/inscribing sequence for the <code>.wat</code> specification files that implement the trading system. Each file can only depend on files listed above it. The order IS the path from leaves (no dependencies) to root (depends on everything).</p>
 </blockquote>
 <hr />
-<h2 id="source"><a class="heading-anchor" href="#source" aria-hidden="true">#</a>Source</h2>
+<h2 id="source">Source<a class="heading-anchor" href="#source" aria-hidden="true">#</a></h2>
 <p><code>wat/ORDER.md</code> — 109 lines, ~5KB.</p>
 <hr />
-<h2 id="what-it-actually-is"><a class="heading-anchor" href="#what-it-actually-is" aria-hidden="true">#</a>What It Actually Is</h2>
+<h2 id="what-it-actually-is">What It Actually Is<a class="heading-anchor" href="#what-it-actually-is" aria-hidden="true">#</a></h2>
 <p>Despite the filename, this document does <strong>not</strong> define trading order types (market, limit, stop, etc.). It defines:</p>
 <ol>
 <li>A <strong>reading order</strong> for the project documentation</li>
@@ -238,7 +238,7 @@
 </ol>
 <p>The project uses &quot;order&quot; in the sense of <strong>sequence/arrangement</strong>, not in the financial order sense.</p>
 <hr />
-<h2 id="reading-order-section-1"><a class="heading-anchor" href="#reading-order-section-1" aria-hidden="true">#</a>Reading Order (Section 1)</h2>
+<h2 id="reading-order-section-1">Reading Order (Section 1)<a class="heading-anchor" href="#reading-order-section-1" aria-hidden="true">#</a></h2>
 <pre><code>1. GUIDE.md                    — the specification (read first, always)
 2. CIRCUIT.md                  — the visualization (read after the guide)
 3. wat files (leaves to root)  — the implementation
@@ -246,8 +246,8 @@
 </code></pre>
 <p>The guide is the source of truth. The circuit visualizes it. The wat implements it. The Rust compiles it. The market proves it.</p>
 <hr />
-<h2 id="wat-file-dependency-order-section-2"><a class="heading-anchor" href="#wat-file-dependency-order-section-2" aria-hidden="true">#</a>Wat File Dependency Order (Section 2)</h2>
-<h3 id="leaves-depend-on-nothing"><a class="heading-anchor" href="#leaves-depend-on-nothing" aria-hidden="true">#</a>Leaves — depend on nothing</h3>
+<h2 id="wat-file-dependency-order-section-2">Wat File Dependency Order (Section 2)<a class="heading-anchor" href="#wat-file-dependency-order-section-2" aria-hidden="true">#</a></h2>
+<h3 id="leaves-depend-on-nothing">Leaves — depend on nothing<a class="heading-anchor" href="#leaves-depend-on-nothing" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -282,7 +282,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="distances-and-levels-depend-on-nothing"><a class="heading-anchor" href="#distances-and-levels-depend-on-nothing" aria-hidden="true">#</a>Distances and Levels — depend on nothing</h3>
+<h3 id="distances-and-levels-depend-on-nothing">Distances and Levels — depend on nothing<a class="heading-anchor" href="#distances-and-levels-depend-on-nothing" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -297,7 +297,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="indicator-layer"><a class="heading-anchor" href="#indicator-layer" aria-hidden="true">#</a>Indicator Layer</h3>
+<h3 id="indicator-layer">Indicator Layer<a class="heading-anchor" href="#indicator-layer" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -319,7 +319,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="simulation-pure-functions"><a class="heading-anchor" href="#simulation-pure-functions" aria-hidden="true">#</a>Simulation — pure functions</h3>
+<h3 id="simulation-pure-functions">Simulation — pure functions<a class="heading-anchor" href="#simulation-pure-functions" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -336,7 +336,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="vocabulary-layer"><a class="heading-anchor" href="#vocabulary-layer" aria-hidden="true">#</a>Vocabulary Layer</h3>
+<h3 id="vocabulary-layer">Vocabulary Layer<a class="heading-anchor" href="#vocabulary-layer" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -416,7 +416,7 @@
 </tbody>
 </table>
 <p>16 vocabulary modules total: 1 shared, 13 market, 3 exit.</p>
-<h3 id="encoder-and-context"><a class="heading-anchor" href="#encoder-and-context" aria-hidden="true">#</a>Encoder and Context</h3>
+<h3 id="encoder-and-context">Encoder and Context<a class="heading-anchor" href="#encoder-and-context" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -438,7 +438,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="observer-layer"><a class="heading-anchor" href="#observer-layer" aria-hidden="true">#</a>Observer Layer</h3>
+<h3 id="observer-layer">Observer Layer<a class="heading-anchor" href="#observer-layer" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -460,7 +460,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="paper-and-broker"><a class="heading-anchor" href="#paper-and-broker" aria-hidden="true">#</a>Paper and Broker</h3>
+<h3 id="paper-and-broker">Paper and Broker<a class="heading-anchor" href="#paper-and-broker" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -482,7 +482,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="trade-lifecycle"><a class="heading-anchor" href="#trade-lifecycle" aria-hidden="true">#</a>Trade Lifecycle</h3>
+<h3 id="trade-lifecycle">Trade Lifecycle<a class="heading-anchor" href="#trade-lifecycle" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -519,7 +519,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="services"><a class="heading-anchor" href="#services" aria-hidden="true">#</a>Services</h3>
+<h3 id="services">Services<a class="heading-anchor" href="#services" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -541,7 +541,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="root-depends-on-everything"><a class="heading-anchor" href="#root-depends-on-everything" aria-hidden="true">#</a>Root — depends on everything</h3>
+<h3 id="root-depends-on-everything">Root — depends on everything<a class="heading-anchor" href="#root-depends-on-everything" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -574,13 +574,13 @@
 </tbody>
 </table>
 <hr />
-<h2 id="the-inscription-rule"><a class="heading-anchor" href="#the-inscription-rule" aria-hidden="true">#</a>The Inscription Rule</h2>
+<h2 id="the-inscription-rule">The Inscription Rule<a class="heading-anchor" href="#the-inscription-rule" aria-hidden="true">#</a></h2>
 <blockquote>
 <p>Each file is inscribed after its dependencies. Each file is judged by the ignorant against the guide before the next is inscribed.</p>
 </blockquote>
 <p>This is the project's verification discipline — a form of incremental, dependency-ordered review. No file is written until its inputs exist and have been verified.</p>
 <hr />
-<h2 id="external-dependencies-from-holon-rs"><a class="heading-anchor" href="#external-dependencies-from-holon-rs" aria-hidden="true">#</a>External Dependencies (from holon-rs)</h2>
+<h2 id="external-dependencies-from-holon-rs">External Dependencies (from holon-rs)<a class="heading-anchor" href="#external-dependencies-from-holon-rs" aria-hidden="true">#</a></h2>
 <p>The wat files depend on these holon-rs primitives (not defined in the wat layer):</p>
 <ul>
 <li><code>VectorManager</code> — vector storage and operations</li>
@@ -588,7 +588,7 @@
 <li><code>OnlineSubspace</code> — noise reduction for reckoners</li>
 </ul>
 <hr />
-<h2 id="notes"><a class="heading-anchor" href="#notes" aria-hidden="true">#</a>Notes</h2>
+<h2 id="notes">Notes<a class="heading-anchor" href="#notes" aria-hidden="true">#</a></h2>
 <ul>
 <li>The file lists <code>exit-observer.wat</code>; per CLAUDE.md this was renamed to &quot;position observer&quot; in Proposal 050, but ORDER.md has not been updated.</li>
 <li><code>src/</code> is listed as &quot;(future)&quot; in the reading order — the Rust implementation exists but the ordering document was written before it was complete.</li>

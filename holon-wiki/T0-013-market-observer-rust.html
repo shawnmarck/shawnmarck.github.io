@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -225,10 +225,10 @@
       <div class="prose prose-invert max-w-none"><p><strong>File:</strong> <code>holon-lab-trading/src/domain/market_observer.rs</code> (270 lines)<br />
 <strong>Ward:</strong> ignorant — no context, reads as a stranger</p>
 <hr />
-<h2 id="what-is-marketobserver"><a class="heading-anchor" href="#what-is-marketobserver" aria-hidden="true">#</a>What is MarketObserver?</h2>
+<h2 id="what-is-marketobserver">What is MarketObserver?<a class="heading-anchor" href="#what-is-marketobserver" aria-hidden="true">#</a></h2>
 <p>A struct that predicts price direction (Up/Down) from candle-encoded thought vectors. It does <strong>not</strong> label itself — reality labels it via broker propagation. Each observer has a &quot;lens&quot; (vocabulary selection) and is one of N per-asset-pair market observers in the architecture.</p>
 <hr />
-<h2 id="struct-fields"><a class="heading-anchor" href="#struct-fields" aria-hidden="true">#</a>Struct Fields</h2>
+<h2 id="struct-fields">Struct Fields<a class="heading-anchor" href="#struct-fields" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -296,7 +296,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="how-does-predict-observe-work"><a class="heading-anchor" href="#how-does-predict-observe-work" aria-hidden="true">#</a>How does <code>predict()</code> (observe) work?</h2>
+<h2 id="how-does-predict-observe-work">How does <code>predict()</code> (observe) work?<a class="heading-anchor" href="#how-does-predict-observe-work" aria-hidden="true">#</a></h2>
 <p><code>observe()</code> is the prediction path (there is no method literally named <code>predict</code> — prediction lives in <code>observe</code>):</p>
 <ol>
 <li><strong>Clone raw thought</strong> — preserved for consumers who need both raw and cleaned vectors.</li>
@@ -309,7 +309,7 @@
 </ol>
 <p>Key design: prediction and learning are aligned — both operate on the anomaly, not the raw thought.</p>
 <hr />
-<h2 id="how-does-it-learn"><a class="heading-anchor" href="#how-does-it-learn" aria-hidden="true">#</a>How does it learn?</h2>
+<h2 id="how-does-it-learn">How does it learn?<a class="heading-anchor" href="#how-does-it-learn" aria-hidden="true">#</a></h2>
 <p>Learning happens in <code>resolve()</code>, called by broker propagation when a trade settles:</p>
 <ol>
 <li><strong>Map direction to label</strong> — <code>Direction::Up</code> → index 0, <code>Direction::Down</code> → index 1.</li>
@@ -320,7 +320,7 @@
 </ol>
 <p>The observer is described as &quot;its own teacher. The market is the judge.&quot; It self-grades previous predictions when new candles arrive.</p>
 <hr />
-<h2 id="observeresult"><a class="heading-anchor" href="#observeresult" aria-hidden="true">#</a>ObserveResult</h2>
+<h2 id="observeresult">ObserveResult<a class="heading-anchor" href="#observeresult" aria-hidden="true">#</a></h2>
 <p>A second struct returned by <code>observe()</code>:</p>
 <table>
 <thead>
@@ -354,7 +354,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="constructor-new"><a class="heading-anchor" href="#constructor-new" aria-hidden="true">#</a>Constructor (<code>new</code>)</h2>
+<h2 id="constructor-new">Constructor (<code>new</code>)<a class="heading-anchor" href="#constructor-new" aria-hidden="true">#</a></h2>
 <ul>
 <li><code>Reckoner</code>: discrete, two labels (&quot;Up&quot;, &quot;Down&quot;), named <code>&quot;direction-{lens}&quot;</code>.</li>
 <li><code>noise_subspace</code>: 8 principal components.</li>
@@ -363,13 +363,13 @@
 <li>Takes <code>lens</code>, <code>dims</code>, <code>recalib_interval</code>, and <code>window_sampler</code>.</li>
 </ul>
 <hr />
-<h2 id="helper-methods"><a class="heading-anchor" href="#helper-methods" aria-hidden="true">#</a>Helper Methods</h2>
+<h2 id="helper-methods">Helper Methods<a class="heading-anchor" href="#helper-methods" aria-hidden="true">#</a></h2>
 <ul>
 <li><strong><code>strip_noise(thought)</code></strong> — standalone noise-stripping, returns the anomalous component. &quot;The residual IS the signal.&quot;</li>
 <li><strong><code>experience()</code></strong> — delegates to <code>reckoner.experience()</code>. Returns how much the observer has learned.</li>
 </ul>
 <hr />
-<h2 id="tests-6"><a class="heading-anchor" href="#tests-6" aria-hidden="true">#</a>Tests (6)</h2>
+<h2 id="tests-6">Tests (6)<a class="heading-anchor" href="#tests-6" aria-hidden="true">#</a></h2>
 <p>All use 4096-dim vectors from <code>VectorManager</code>, <code>DowTrend</code> lens, recalib interval of 100, <code>WindowSampler::new(42, 10, 500)</code>:</p>
 <ol>
 <li><strong><code>test_market_observer_new</code></strong> — verifies initial state (lens, resolved=0, last_prediction=Down, recalib counters=0).</li>
@@ -382,7 +382,7 @@
 </ol>
 <p>No test validates prediction accuracy, noise stripping quality, or engram gate behavior. Tests are structural, not behavioral.</p>
 <hr />
-<h2 id="dependencies"><a class="heading-anchor" href="#dependencies" aria-hidden="true">#</a>Dependencies</h2>
+<h2 id="dependencies">Dependencies<a class="heading-anchor" href="#dependencies" aria-hidden="true">#</a></h2>
 <ul>
 <li><code>holon::kernel::vector::Vector</code> — the fundamental vector type</li>
 <li><code>holon::memory::{OnlineSubspace, Reckoner, ReckConfig}</code> — learning primitives</li>

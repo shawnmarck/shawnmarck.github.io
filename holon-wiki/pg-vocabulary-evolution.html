@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -224,7 +224,7 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The project's vocabulary grew from ~7 algebraic primitives (bind, bundle, prototype, difference, blend, amplify, negate) forged in a failed Sudoku solver, through domain-specific terms (engram, decay model, residual profile), to a 200+ atom named-thought vocabulary judged by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;. Each naming decision was explicit, often painful, and always measured. Words that produced &lt;a class=&quot;wikilink&quot; href=&quot;pg-grace-and-violence.html&quot;&gt;Grace&lt;/a&gt; survived; words that produced &lt;a class=&quot;wikilink&quot; href=&quot;pg-grace-and-violence.html&quot;&gt;Violence&lt;/a&gt; were reaped. The LLM's bias was recognized as the vocabulary supply — the human's job was naming; the machine's job was judging.</p>
 <hr />
-<h2 id="phase-0-the-primitives-jan-2026"><a class="heading-anchor" href="#phase-0-the-primitives-jan-2026" aria-hidden="true">#</a>Phase 0: The Primitives (Jan 2026)</h2>
+<h2 id="phase-0-the-primitives-jan-2026">Phase 0: The Primitives (Jan 2026)<a class="heading-anchor" href="#phase-0-the-primitives-jan-2026" aria-hidden="true">#</a></h2>
 <p>The first vocabulary was not a vocabulary at all — it was an algebra. Seven operations emerged from Batch 004's failed Sudoku attempt:</p>
 <table>
 <thead>
@@ -270,10 +270,10 @@
 <p>These seven operations constituted the &quot;primitive algebra&quot; — proven across tasks, recipes, graph topology, and text, but structurally incapable of exact combinatorial search. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-wards.html&quot;&gt;NP Wall&lt;/a&gt; was the first lesson: vocabulary has a domain, and honest naming means naming the boundary.</p>
 <p><strong>Source:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 002-001 and 002-002.</p>
 <hr />
-<h2 id="phase-1-production-vocabulary-l4l7-security-feb-628"><a class="heading-anchor" href="#phase-1-production-vocabulary-l4l7-security-feb-628" aria-hidden="true">#</a>Phase 1: Production Vocabulary — L4/L7 Security (Feb 6–28)</h2>
-<h3 id="from-python-ceiling-to-rust-primitives"><a class="heading-anchor" href="#from-python-ceiling-to-rust-primitives" aria-hidden="true">#</a>From Python ceiling to Rust primitives</h3>
+<h2 id="phase-1-production-vocabulary-l4l7-security-feb-628">Phase 1: Production Vocabulary — L4/L7 Security (Feb 6–28)<a class="heading-anchor" href="#phase-1-production-vocabulary-l4l7-security-feb-628" aria-hidden="true">#</a></h2>
+<h3 id="from-python-ceiling-to-rust-primitives">From Python ceiling to Rust primitives<a class="heading-anchor" href="#from-python-ceiling-to-rust-primitives" aria-hidden="true">#</a></h3>
 <p>The Rust port (Feb 6) didn't add vocabulary — it validated it. 239 Python tests served as &quot;Rosetta Stone&quot; behavioral spec. The vocabulary remained the same; the words just ran 10–15× faster.</p>
-<h3 id="domain-words-emerge"><a class="heading-anchor" href="#domain-words-emerge" aria-hidden="true">#</a>Domain words emerge</h3>
+<h3 id="domain-words-emerge">Domain words emerge<a class="heading-anchor" href="#domain-words-emerge" aria-hidden="true">#</a></h3>
 <p>Moving from algebra to production introduced domain-specific vocabulary:</p>
 <table>
 <thead>
@@ -311,7 +311,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="the-expression-tree-feb-2728"><a class="heading-anchor" href="#the-expression-tree-feb-2728" aria-hidden="true">#</a>The expression tree (Feb 27–28)</h3>
+<h3 id="the-expression-tree-feb-2728">The expression tree (Feb 27–28)<a class="heading-anchor" href="#the-expression-tree-feb-2728" aria-hidden="true">#</a></h3>
 <p>The biggest vocabulary shift in the security phase. Rules went from 13 hard-coded <code>FieldDim</code> variants to composable s-expressions over three orthogonal concept families:</p>
 <ul>
 <li><strong>Domain accessors</strong> (26 dimensions): <code>header</code>, <code>path</code>, <code>method</code>, <code>tls-version</code>…</li>
@@ -324,13 +324,13 @@
 <p>The expression tree compiler was dimension-agnostic — new words could be added without touching the evaluation engine. This was the first sign that vocabulary scaling was a first-class design concern.</p>
 <p><strong>Source:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 003-001 through 005-003.</p>
 <hr />
-<h2 id="phase-2-the-market-vocabulary-mar-1528"><a class="heading-anchor" href="#phase-2-the-market-vocabulary-mar-1528" aria-hidden="true">#</a>Phase 2: The Market Vocabulary (Mar 15–28)</h2>
-<h3 id="from-encoding-to-naming"><a class="heading-anchor" href="#from-encoding-to-naming" aria-hidden="true">#</a>From encoding to naming</h3>
+<h2 id="phase-2-the-market-vocabulary-mar-1528">Phase 2: The Market Vocabulary (Mar 15–28)<a class="heading-anchor" href="#phase-2-the-market-vocabulary-mar-1528" aria-hidden="true">#</a></h2>
+<h3 id="from-encoding-to-naming">From encoding to naming<a class="heading-anchor" href="#from-encoding-to-naming" aria-hidden="true">#</a></h3>
 <p>The market phase introduced the most radical vocabulary expansion. The key insight: encoding raw data (pixels, candles) produced noise; encoding <em>named interpretations</em> produced signal.</p>
 <blockquote>
 <p>&quot;Charts don't predict; interpretations of charts predict. Visual engrams are a dead end.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-001</p>
 </blockquote>
-<h3 id="vocabulary-as-model"><a class="heading-anchor" href="#vocabulary-as-model" aria-hidden="true">#</a>Vocabulary as model</h3>
+<h3 id="vocabulary-as-model">Vocabulary as model<a class="heading-anchor" href="#vocabulary-as-model" aria-hidden="true">#</a></h3>
 <p>Named thoughts became a measurable, scalable resource:</p>
 <table>
 <thead>
@@ -372,31 +372,31 @@
 <p>&quot;The discriminant discovers which thoughts predict. The human's job is to name the thoughts.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-002</p>
 </blockquote>
 <p>Twenty-three atoms added → 57% to 62% accuracy, <em>same algorithm</em>. The vocabulary <em>was</em> the model.</p>
-<h3 id="the-llms-bias-as-vocabulary-supply"><a class="heading-anchor" href="#the-llms-bias-as-vocabulary-supply" aria-hidden="true">#</a>The LLM's bias as vocabulary supply</h3>
+<h3 id="the-llms-bias-as-vocabulary-supply">The LLM's bias as vocabulary supply<a class="heading-anchor" href="#the-llms-bias-as-vocabulary-supply" aria-hidden="true">#</a></h3>
 <p>The book makes this explicit: the LLM's training data provides hundreds of indicator concepts. The inscribe agent names them. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; judges them. Natural selection operates on the LLM's bias.</p>
 <blockquote>
 <p>&quot;The LLM's bias IS the vocabulary expansion. LLM training data provides hundreds of indicator concepts. The inscribe agent names them. The Reckoner judges them. Natural selection on the LLM's bias.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-006</p>
 </blockquote>
-<h3 id="fact-interface-mar-29"><a class="heading-anchor" href="#fact-interface-mar-29" aria-hidden="true">#</a>Fact interface (Mar 29)</h3>
+<h3 id="fact-interface-mar-29">Fact interface (Mar 29)<a class="heading-anchor" href="#fact-interface-mar-29" aria-hidden="true">#</a></h3>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-fact.html&quot;&gt;Fact&lt;/a&gt; interface formalized vocabulary as architecture. 13 vocab modules across 1,060 lines, each returning <code>Vec&lt;Fact&gt;</code>. Modules don't touch vectors.</p>
 <blockquote>
 <p>&quot;Adding a new vocabulary module means writing a function that takes candles and returns Vec&lt;Fact&gt;. No vector knowledge required.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-004</p>
 </blockquote>
 <p><strong>Source:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-001 through 006-004.</p>
 <hr />
-<h2 id="phase-3-the-philosophical-vocabulary-mar-31apr-7"><a class="heading-anchor" href="#phase-3-the-philosophical-vocabulary-mar-31apr-7" aria-hidden="true">#</a>Phase 3: The Philosophical Vocabulary (Mar 31–Apr 7)</h2>
-<h3 id="grace-and-violence"><a class="heading-anchor" href="#grace-and-violence" aria-hidden="true">#</a>Grace and Violence</h3>
+<h2 id="phase-3-the-philosophical-vocabulary-mar-31apr-7">Phase 3: The Philosophical Vocabulary (Mar 31–Apr 7)<a class="heading-anchor" href="#phase-3-the-philosophical-vocabulary-mar-31apr-7" aria-hidden="true">#</a></h2>
+<h3 id="grace-and-violence">Grace and Violence<a class="heading-anchor" href="#grace-and-violence" aria-hidden="true">#</a></h3>
 <p>The most consequential naming decision. Labels were &quot;lies&quot; — a trade up 3% then crashed to -1% was &quot;Win&quot; because threshold was crossed first. 91% of candles labeled &quot;Loss&quot; not because the market went down, but because the threshold taxonomy was wrong.</p>
 <p>&lt;a class=&quot;wikilink&quot; href=&quot;pg-grace-and-violence.html&quot;&gt;Grace&lt;/a&gt; and &lt;a class=&quot;wikilink&quot; href=&quot;pg-grace-and-violence.html&quot;&gt;Violence&lt;/a&gt; replaced Win and Lose as accountability labels. These are not value judgments — they are measurements of whether a thought produced prosperity or destruction.</p>
 <blockquote>
 <p>&quot;What was needed was a machine that can only discern: did this thought produce prosperity or violence? Not divination — measurement. Not truth handed down — truth measured from outcomes.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-002-book.html&quot;&gt;T-1-002-book&lt;/a&gt;</p>
 </blockquote>
-<h3 id="booleans-as-premature-measurement"><a class="heading-anchor" href="#booleans-as-premature-measurement" aria-hidden="true">#</a>Booleans as premature measurement</h3>
+<h3 id="booleans-as-premature-measurement">Booleans as premature measurement<a class="heading-anchor" href="#booleans-as-premature-measurement" aria-hidden="true">#</a></h3>
 <p>The boolean was identified as a structural lie. It collapses the wave function at the vocabulary level, before the discriminant has a chance to measure. Scalars preserve the superposition until the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; is ready.</p>
 <blockquote>
 <p>&quot;The boolean collapsed the wave function at the vocabulary. The scalar preserves it until the discriminant.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-002-book.html&quot;&gt;T-1-002-book&lt;/a&gt;</p>
 </blockquote>
-<h3 id="the-reckoner"><a class="heading-anchor" href="#the-reckoner" aria-hidden="true">#</a>The Reckoner</h3>
+<h3 id="the-reckoner">The Reckoner<a class="heading-anchor" href="#the-reckoner" aria-hidden="true">#</a></h3>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary-evolution.html&quot;&gt;Journal&lt;/a&gt; was killed on Easter Sunday. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; was born — a unified primitive with discrete and continuous readout. The final vocabulary consolidation: five primitives total.</p>
 <table>
 <thead>
@@ -431,7 +431,7 @@
 <blockquote>
 <p>&quot;The Journal is killed. The Reckoner is born. On Easter Sunday — the day of resurrection.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-002-book.html&quot;&gt;T-1-002-book&lt;/a&gt;</p>
 </blockquote>
-<h3 id="latin-as-vocabulary-discipline"><a class="heading-anchor" href="#latin-as-vocabulary-discipline" aria-hidden="true">#</a>Latin as vocabulary discipline</h3>
+<h3 id="latin-as-vocabulary-discipline">Latin as vocabulary discipline<a class="heading-anchor" href="#latin-as-vocabulary-discipline" aria-hidden="true">#</a></h3>
 <p>The builder's Latin vocabulary became architectural vocabulary:</p>
 <table>
 <thead>
@@ -471,14 +471,14 @@
 </table>
 <p><strong>Source:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-005 and 006-006; &lt;a class=&quot;wikilink&quot; href=&quot;T-1-002-book.html&quot;&gt;T-1-002-book&lt;/a&gt;, Acts III–IV.</p>
 <hr />
-<h2 id="phase-4-specification-as-vocabulary-apr-47"><a class="heading-anchor" href="#phase-4-specification-as-vocabulary-apr-47" aria-hidden="true">#</a>Phase 4: Specification as Vocabulary (Apr 4–7)</h2>
-<h3 id="the-guide-and-the-disposable-machine"><a class="heading-anchor" href="#the-guide-and-the-disposable-machine" aria-hidden="true">#</a>The Guide and the Disposable Machine</h3>
+<h2 id="phase-4-specification-as-vocabulary-apr-47">Phase 4: Specification as Vocabulary (Apr 4–7)<a class="heading-anchor" href="#phase-4-specification-as-vocabulary-apr-47" aria-hidden="true">#</a></h2>
+<h3 id="the-guide-and-the-disposable-machine">The Guide and the Disposable Machine<a class="heading-anchor" href="#the-guide-and-the-disposable-machine" aria-hidden="true">#</a></h3>
 <p>The &lt;a class=&quot;wikilink&quot; href=&quot;T-1-003-web-guide.html&quot;&gt;Guide&lt;/a&gt; (2,138 lines) became the definitive vocabulary — every struct, every interface, every dependency, every construction order. The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat&lt;/a&gt; specification language (37 files, 4,804 lines) inscribed the guide as executable s-expressions.</p>
 <blockquote>
 <p>&quot;The guide is the DNA. The spells are the ribosomes. The wat is the protein. The Rust is the organism.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-006</p>
 </blockquote>
 <p>The key property: <code>f(guide) = guide</code>. The ignorant ward applied to the guide produces the guide. No changes needed. The vocabulary achieved a fixed point.</p>
-<h3 id="the-wards-as-vocabulary-guardians"><a class="heading-anchor" href="#the-wards-as-vocabulary-guardians" aria-hidden="true">#</a>The Wards as Vocabulary Guardians</h3>
+<h3 id="the-wards-as-vocabulary-guardians">The Wards as Vocabulary Guardians<a class="heading-anchor" href="#the-wards-as-vocabulary-guardians" aria-hidden="true">#</a></h3>
 <p>Eight automated skills police vocabulary honesty:</p>
 <table>
 <thead>
@@ -525,7 +525,7 @@
 <p>213 phantom runes (forms that don't exist in the language) were dissolved to zero. The LLM replaced phantoms with new phantoms (6 new ones) — &quot;fluently, and wrong.&quot;</p>
 <p><strong>Source:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-004 through 006-006; &lt;a class=&quot;wikilink&quot; href=&quot;T-1-002-book.html&quot;&gt;T-1-002-book&lt;/a&gt;, Act IV.</p>
 <hr />
-<h2 id="cross-cutting-pattern-naming-is-architecture"><a class="heading-anchor" href="#cross-cutting-pattern-naming-is-architecture" aria-hidden="true">#</a>Cross-Cutting Pattern: Naming Is Architecture</h2>
+<h2 id="cross-cutting-pattern-naming-is-architecture">Cross-Cutting Pattern: Naming Is Architecture<a class="heading-anchor" href="#cross-cutting-pattern-naming-is-architecture" aria-hidden="true">#</a></h2>
 <p>The recurring discovery across all phases: <em>the vocabulary is not a layer on top of the system — it IS the system</em>.</p>
 <ul>
 <li><strong>Phase 0:</strong> Seven primitives defined what the algebra could express</li>
@@ -539,7 +539,7 @@
 <p>&quot;Honest architecture produces honest results.&quot; — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-004</p>
 </blockquote>
 <hr />
-<h2 id="timeline"><a class="heading-anchor" href="#timeline" aria-hidden="true">#</a>Timeline</h2>
+<h2 id="timeline">Timeline<a class="heading-anchor" href="#timeline" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>

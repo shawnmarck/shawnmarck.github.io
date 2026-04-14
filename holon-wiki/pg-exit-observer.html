@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -224,7 +224,7 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>PositionObserver</code> (also called &quot;exit observer&quot;) predicts two continuous values — <strong>trailing stop distance</strong> and <strong>safety stop distance</strong> — from a position thought vector using two independent continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;s. It learns from hindsight-optimal distances determined by simulation. Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt; that selects its trade-state vocabulary. It has a &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;noise subspace&lt;/a&gt; for anomaly detection despite its own docstring claiming it doesn't. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; owns the production cascade (reckoner → accumulator → default); the observer only exposes raw reckoner queries. M per trading system; N×M brokers total.</p>
 <hr />
-<h2 id="anatomy"><a class="heading-anchor" href="#anatomy" aria-hidden="true">#</a>Anatomy</h2>
+<h2 id="anatomy">Anatomy<a class="heading-anchor" href="#anatomy" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -270,7 +270,7 @@
 <p><em>&quot;Intentionally simpler than MarketObserver.&quot;</em> — module docstring (though the struct <em>does</em> include a noise subspace, contradicting this claim — see <a href="#discrepancies">Discrepancies</a>).</p>
 </blockquote>
 <hr />
-<h2 id="prediction-reckoner_distances"><a class="heading-anchor" href="#prediction-reckoner_distances" aria-hidden="true">#</a>Prediction (<code>reckoner_distances</code>)</h2>
+<h2 id="prediction-reckoner_distances">Prediction (<code>reckoner_distances</code>)<a class="heading-anchor" href="#prediction-reckoner_distances" aria-hidden="true">#</a></h2>
 <p>One public prediction method: <code>reckoner_distances(position_thought: &amp;Vector) -&gt; Option&lt;Distances&gt;</code>.</p>
 <ol>
 <li><strong>Check experience</strong> — if either reckoner has zero experience, return <code>None</code>.</li>
@@ -310,7 +310,7 @@
 <p><em>&quot;The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned.&quot;</em> — T0-018</p>
 </blockquote>
 <hr />
-<h2 id="learning-observe_distances"><a class="heading-anchor" href="#learning-observe_distances" aria-hidden="true">#</a>Learning (<code>observe_distances</code>)</h2>
+<h2 id="learning-observe_distances">Learning (<code>observe_distances</code>)<a class="heading-anchor" href="#learning-observe_distances" aria-hidden="true">#</a></h2>
 <p>One learning method: <code>observe_distances(position_thought: &amp;Vector, optimal: &amp;Distances) -&gt; (f64, f64, f64, f64, f64, f64)</code>.</p>
 <ol>
 <li><strong>Pre-learning prediction</strong> — query each reckoner for what it <em>would</em> predict given current state. If no experience, use default.</li>
@@ -319,7 +319,7 @@
 <li><strong>Return</strong> — <code>(trail_error, stop_error, predicted_trail, predicted_stop, optimal_trail, optimal_stop)</code>.</li>
 </ol>
 <p>The &quot;optimal&quot; distances come from <strong>hindsight</strong> — the simulation module sweeps candidate trail/stop values against actual price histories to determine what would have been ideal.</p>
-<h3 id="how-the-continuous-reckoner-learns"><a class="heading-anchor" href="#how-the-continuous-reckoner-learns" aria-hidden="true">#</a>How the Continuous Reckoner Learns</h3>
+<h3 id="how-the-continuous-reckoner-learns">How the Continuous Reckoner Learns<a class="heading-anchor" href="#how-the-continuous-reckoner-learns" aria-hidden="true">#</a></h3>
 <p>Each continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; uses bucketed nearest-neighbor regression:</p>
 <ul>
 <li><strong>10 buckets</strong> span the discovered value range. The first observation seeds a tiny range (±0.001); out-of-range values expand it; every 100 observations the range contracts to where alive weight lives (<em>&quot;breathing range&quot;</em>).</li>
@@ -328,10 +328,10 @@
 <li><strong>Range is data-driven</strong> — <em>&quot;No magic min/max. The data teaches the range. K is the only parameter.&quot;</em> — T0-008</li>
 </ul>
 <hr />
-<h2 id="noise-stripping"><a class="heading-anchor" href="#noise-stripping" aria-hidden="true">#</a>Noise Stripping</h2>
+<h2 id="noise-stripping">Noise Stripping<a class="heading-anchor" href="#noise-stripping" aria-hidden="true">#</a></h2>
 <p><code>strip_noise(thought: &amp;Vector) -&gt; Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as the &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observer&lt;/a&gt;.</p>
 <hr />
-<h2 id="the-lens-what-the-observer-sees"><a class="heading-anchor" href="#the-lens-what-the-observer-sees" aria-hidden="true">#</a>The Lens — What the Observer Sees</h2>
+<h2 id="the-lens-what-the-observer-sees">The Lens — What the Observer Sees<a class="heading-anchor" href="#the-lens-what-the-observer-sees" aria-hidden="true">#</a></h2>
 <p>Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt; that determines its trade-state vocabulary (T0-005):</p>
 <table>
 <thead>
@@ -360,11 +360,11 @@
 </blockquote>
 <p>N is the number of market observers (one per &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; variant); M is the number of exit observers (one per &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;PositionLens&lt;/a&gt; variant). N×M brokers bind every market observer to every exit observer.</p>
 <hr />
-<h2 id="discrepancies"><a class="heading-anchor" href="#discrepancies" aria-hidden="true">#</a>Discrepancies</h2>
+<h2 id="discrepancies">Discrepancies<a class="heading-anchor" href="#discrepancies" aria-hidden="true">#</a></h2>
 <p>The module docstring (lines 1–5) states: <em>&quot;Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating.&quot;</em></p>
 <p>The struct <strong>does</strong> have a <code>noise_subspace</code> field and a <code>strip_noise</code> method. The docstring contradicts the code. All 7 tests confirm the noise subspace is initialized and functional.</p>
 <hr />
-<h2 id="comparison-exit-observer-vs-market-observer"><a class="heading-anchor" href="#comparison-exit-observer-vs-market-observer" aria-hidden="true">#</a>Comparison — Exit Observer vs. Market Observer</h2>
+<h2 id="comparison-exit-observer-vs-market-observer">Comparison — Exit Observer vs. Market Observer<a class="heading-anchor" href="#comparison-exit-observer-vs-market-observer" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -412,7 +412,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="construction"><a class="heading-anchor" href="#construction" aria-hidden="true">#</a>Construction</h2>
+<h2 id="construction">Construction<a class="heading-anchor" href="#construction" aria-hidden="true">#</a></h2>
 <pre><code class="language-rust">PositionObserver::new(lens: PositionLens, dims: usize, recalib_interval: usize,
                       default_trail: f64, default_stop: f64)
 
@@ -422,7 +422,7 @@
 <li>Test constants: <code>DIMS=4096</code>, <code>RECALIB=100</code>, <code>DEFAULT_TRAIL=0.02</code>, <code>DEFAULT_STOP=0.05</code>.</li>
 </ul>
 <hr />
-<h2 id="position-in-the-pipeline"><a class="heading-anchor" href="#position-in-the-pipeline" aria-hidden="true">#</a>Position in the Pipeline</h2>
+<h2 id="position-in-the-pipeline">Position in the Pipeline<a class="heading-anchor" href="#position-in-the-pipeline" aria-hidden="true">#</a></h2>
 <p>The exit observer sits between market observers and brokers in the concurrent pipeline:</p>
 <pre class="mermaid">flowchart TD
     market_obs[&quot;Market Observer&quot;] --&gt;|&quot;Topic\n(MarketChain)&quot;| position_obs[&quot;Position Observer&quot;]
@@ -437,7 +437,7 @@
 </ul>
 <p>Each arrow is a &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;. The fan-out uses &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; (1→N). The learn-signal aggregation uses &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; (N→1).</p>
 <hr />
-<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
+<h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>

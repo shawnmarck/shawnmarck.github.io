@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -224,7 +224,7 @@
       
       <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Wards are automated verification skills — named, invoked, and discarded. They are how the holon system enforces architectural honesty without accumulating permanent process. Each ward is a <em>cognitive scope</em>: it receives a specific task, executes against the codebase, reports findings, and is dissolved. The system that polices the specification is itself disposable — the guide is the DNA, the wards are the immune response.</p>
 <hr />
-<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What it is</h2>
+<h2 id="what-it-is">What it is<a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a></h2>
 <blockquote>
 <p><em>&quot;The wards: /sever, /reap, /scry, /gaze, /forge — five automated skills. Runes for conscious suppression.&quot;</em> — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-004</p>
 </blockquote>
@@ -234,7 +234,7 @@
 </blockquote>
 <p>The word &quot;ward&quot; carries deliberate meaning: a ward is a protective boundary — temporary, activated for purpose, removed when no longer needed. This maps directly to the &lt;a class=&quot;wikilink&quot; href=&quot;T-1-002-book.html&quot;&gt;disposable machine&lt;/a&gt; meta-architecture: the entire system is designed to be thrown away and regenerated from the guide. Wards are no exception.</p>
 <hr />
-<h2 id="the-eight-wards"><a class="heading-anchor" href="#the-eight-wards" aria-hidden="true">#</a>The Eight Wards</h2>
+<h2 id="the-eight-wards">The Eight Wards<a class="heading-anchor" href="#the-eight-wards" aria-hidden="true">#</a></h2>
 <p>The system grew from five to eight wards across Series 006-004 through 006-006:</p>
 <table>
 <thead>
@@ -289,7 +289,7 @@
 </table>
 <p><strong>Source:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-004 through 006-006; &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary-evolution.html&quot;&gt;pg-vocabulary-evolution&lt;/a&gt;</p>
 <hr />
-<h2 id="scoped-cognition"><a class="heading-anchor" href="#scoped-cognition" aria-hidden="true">#</a>Scoped Cognition</h2>
+<h2 id="scoped-cognition">Scoped Cognition<a class="heading-anchor" href="#scoped-cognition" aria-hidden="true">#</a></h2>
 <p>Wards embody a key architectural principle: <em>cognition should be scoped and disposable</em>, not accumulated.</p>
 <p>Each ward invocation creates a fresh cognitive context — an agent that knows exactly what it needs for its task and nothing more. The /ignorant ward is the purest expression of this: it reads the &lt;a class=&quot;wikilink&quot; href=&quot;T-1-003-web-guide.html&quot;&gt;guide&lt;/a&gt; with <strong>zero prior context</strong>, simulating a stranger encountering the system for the first time. If the stranger can reconstruct the system from the document alone, the document is honest.</p>
 <blockquote>
@@ -301,14 +301,14 @@
 </blockquote>
 <p>The principle extends beyond /ignorant. Every ward is instantiated for a purpose, runs, and dissolves. The system's architecture mirrors the &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;scalar&lt;/a&gt; philosophy: premature measurement (keeping permanent state from every verification pass) is a lie. Wards measure honestly and return results as values — they do not accumulate institutional knowledge that corrupts future passes.</p>
 <hr />
-<h2 id="ward-enforced-constraints"><a class="heading-anchor" href="#ward-enforced-constraints" aria-hidden="true">#</a>Ward-Enforced Constraints</h2>
+<h2 id="ward-enforced-constraints">Ward-Enforced Constraints<a class="heading-anchor" href="#ward-enforced-constraints" aria-hidden="true">#</a></h2>
 <p>Wards enforce constraints at the language level, not just through post-hoc review. In the &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat-language&lt;/a&gt;, parallelism constraints are ward-enforced at compile time:</p>
 <blockquote>
 <p><em>&quot;pmap: the mapped function must be pure (no set!, push!, inc!). Ward-enforced at compile time.&quot;</em> — &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;T1-001-wat-language&lt;/a&gt;</p>
 </blockquote>
 <p>This is the pattern: wards are not suggestions or linters. They are structural guarantees. The wat language defines what purity means; the wards verify that code conforms. When code violates the spec, it does not compile.</p>
 <hr />
-<h2 id="quantitative-impact"><a class="heading-anchor" href="#quantitative-impact" aria-hidden="true">#</a>Quantitative Impact</h2>
+<h2 id="quantitative-impact">Quantitative Impact<a class="heading-anchor" href="#quantitative-impact" aria-hidden="true">#</a></h2>
 <p>The ward system produced measurable results during the Forging phase (Series 006-005):</p>
 <ul>
 <li><strong>213 phantom runes</strong> (forms referenced in code that don't exist in the language) dissolved to zero</li>
@@ -322,7 +322,7 @@
 <p><em>&quot;Honest architecture produces honest results.&quot;</em> — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-004</p>
 </blockquote>
 <hr />
-<h2 id="wards-as-vocabulary-guardians"><a class="heading-anchor" href="#wards-as-vocabulary-guardians" aria-hidden="true">#</a>Wards as Vocabulary Guardians</h2>
+<h2 id="wards-as-vocabulary-guardians">Wards as Vocabulary Guardians<a class="heading-anchor" href="#wards-as-vocabulary-guardians" aria-hidden="true">#</a></h2>
 <p>Beyond code verification, wards police vocabulary honesty — ensuring that every named concept in the system actually exists and produces signal. This connects to the broader pattern that &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary-evolution.html&quot;&gt;naming is architecture&lt;/a&gt;:</p>
 <ul>
 <li>/sever removes code that names things that aren't real</li>
@@ -333,7 +333,7 @@
 </ul>
 <p>The 213 phantom runes dissolved by the wards were vocabulary errors: the LLM had written code referencing forms that do not exist in the language. The wards caught every one. The LLM then generated new phantoms when asked to fix them — proving that verification must be mechanical, not interpersonal.</p>
 <hr />
-<h2 id="relationship-to-the-disposable-machine"><a class="heading-anchor" href="#relationship-to-the-disposable-machine" aria-hidden="true">#</a>Relationship to the Disposable Machine</h2>
+<h2 id="relationship-to-the-disposable-machine">Relationship to the Disposable Machine<a class="heading-anchor" href="#relationship-to-the-disposable-machine" aria-hidden="true">#</a></h2>
 <p>Wards are the immune system of the &lt;a class=&quot;wikilink&quot; href=&quot;T-1-002-book.html&quot;&gt;disposable machine&lt;/a&gt;. The guide is the DNA; the spells (LLM invocations) are the ribosomes; the wat is the protein; the Rust is the organism. Wards are the white blood cells — they circulate, detect foreign bodies (phantom runes, dead code, spec contradictions), and are consumed in the process.</p>
 <p>This is not metaphor. The architecture specifies:</p>
 <blockquote>
@@ -341,7 +341,7 @@
 </blockquote>
 <p>If the wat (and by extension the Rust) can be regenerated, then the wards that verify them must also be regenerable. They are not hand-curated tooling — they are skills invoked from the guide's specification of what correctness means. The guide describes the language; the wards verify conformance; both are disposable outputs of the same specification process.</p>
 <hr />
-<h2 id="key-quotes"><a class="heading-anchor" href="#key-quotes" aria-hidden="true">#</a>Key Quotes</h2>
+<h2 id="key-quotes">Key Quotes<a class="heading-anchor" href="#key-quotes" aria-hidden="true">#</a></h2>
 <ol>
 <li><p><em>&quot;The wards: /sever, /reap, /scry, /gaze, /forge — five automated skills. Runes for conscious suppression.&quot;</em> — &lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt;, Series 006-004</p>
 </li>
@@ -355,7 +355,7 @@
 </li>
 </ol>
 <hr />
-<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
+<h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T-1-000-primers.html&quot;&gt;T-1-000-primers&lt;/a&gt; — Wat language overview, ward definitions</li>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T-1-001-story.html&quot;&gt;T-1-001-story&lt;/a&gt; — Series 006-004 (Datamancer), 006-005 (Forging), 006-006 (Guide)</li>

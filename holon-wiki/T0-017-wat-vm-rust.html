@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,9 +222,9 @@
         T0-017: wat-vm + chain types (Rust) — Verification <span class="badge badge-what">WHAT</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2 id="what-the-wat-vm-is"><a class="heading-anchor" href="#what-the-wat-vm-is" aria-hidden="true">#</a>What the wat-vm is</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-the-wat-vm-is">What the wat-vm is<a class="heading-anchor" href="#what-the-wat-vm-is" aria-hidden="true">#</a></h2>
 <p>wat-vm is a standalone binary (<code>src/bin/wat-vm.rs</code>, 846 lines). It is the &quot;second heartbeat&quot; — a process that reads candle data from files, feeds it to a grid of parallel observers and brokers, lets them learn, and then collects them back at shutdown. The CLI summary says it plainly: <strong>&quot;Candles in, observers learn, results discarded.&quot;</strong> It is a training/learning run, not a live trading system.</p>
-<h2 id="cli-interface"><a class="heading-anchor" href="#cli-interface" aria-hidden="true">#</a>CLI interface</h2>
+<h2 id="cli-interface">CLI interface<a class="heading-anchor" href="#cli-interface" aria-hidden="true">#</a></h2>
 <pre><code>wat-vm --stream SOURCE:TARGET:PATH [--max-candles N] [--dims D] [--recalib-interval R] [--swap-fee F]
 
 <ul>
@@ -234,9 +234,9 @@
 <li><code>--recalib-interval</code>: observations between recalibrations (default 500).</li>
 <li><code>--swap-fee</code>: venue fee fraction (default 0.0010 = 10 bps).</li>
 </ul>
-<h2 id="signal-handling"><a class="heading-anchor" href="#signal-handling" aria-hidden="true">#</a>Signal handling</h2>
+<h2 id="signal-handling">Signal handling<a class="heading-anchor" href="#signal-handling" aria-hidden="true">#</a></h2>
 <p>A single <code>static AtomicBool</code> named <code>STOP</code>. A C signal handler (via <code>libc::signal</code>) sets it on SIGINT/SIGTERM. The main loop reads it each iteration. Nothing else touches it.</p>
-<h2 id="startup-sequence-main"><a class="heading-anchor" href="#startup-sequence-main" aria-hidden="true">#</a>Startup sequence (main)</h2>
+<h2 id="startup-sequence-main">Startup sequence (main)<a class="heading-anchor" href="#startup-sequence-main" aria-hidden="true">#</a></h2>
 <ol>
 <li><strong>Parse args.</strong> Compute <code>num_market = config::MARKET_LENSES.len()</code>, <code>num_position = config::POSITION_LENSES.len()</code>, <code>noise_floor = 5.0 / sqrt(dims)</code>, <code>num_brokers = num_market * num_position</code>.</li>
 <li><strong>Console.</strong> Create <code>num_console = streams + num_market + num_position + num_brokers + 1</code> console handles. Claim the main handle and stream handles first.</li>
@@ -251,7 +251,7 @@
 <li><strong>Run the main loop</strong> (see below).</li>
 <li><strong>Shutdown</strong> (see below).</li>
 </ol>
-<h2 id="the-main-loop"><a class="heading-anchor" href="#the-main-loop" aria-hidden="true">#</a>The main loop</h2>
+<h2 id="the-main-loop">The main loop<a class="heading-anchor" href="#the-main-loop" aria-hidden="true">#</a></h2>
 <p>Per-stream, sequential:</p>
 <pre><code>while count &lt; max &amp;&amp; !STOP:
     candle = pipeline.stream.next()  // raw OHLCV from file
@@ -266,7 +266,7 @@
 <li><code>ObsInput</code> carries: <code>candle</code> (enriched), <code>window</code> (Arc&lt;Vec&lt;Candle&gt;&gt; — currently always length 1), <code>encode_count</code> (global monotonic counter).</li>
 <li>The <code>IndicatorBank::tick()</code> enriches raw OHLCV into a full <code>Candle</code> struct.</li>
 </ul>
-<h2 id="data-flow-through-the-grid"><a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a>Data flow through the grid</h2>
+<h2 id="data-flow-through-the-grid">Data flow through the grid<a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
     main[&quot;Main thread\nsend ObsInput&quot;] --&gt; mkt_obs[&quot;Market Observer i\n(thread)\nencode → predict&quot;]
     mkt_obs --&gt;|&quot;Topic fan-out\nsend MarketChain&quot;| pos0[&quot;Position Observer 0&quot;]
@@ -285,7 +285,7 @@
 <li><strong>Learn signals</strong> flow back from brokers to observers via unbounded queues merged into mailboxes (fan-in).</li>
 <li><strong>Trade updates</strong> flow from brokers to position observers via unbounded queues merged into mailboxes.</li>
 </ul>
-<h2 id="shutdown-sequence"><a class="heading-anchor" href="#shutdown-sequence" aria-hidden="true">#</a>Shutdown sequence</h2>
+<h2 id="shutdown-sequence">Shutdown sequence<a class="heading-anchor" href="#shutdown-sequence" aria-hidden="true">#</a></h2>
 <p>Ordered teardown:</p>
 <ol>
 <li>Drop <code>candle_txs</code> — market observers see disconnect on their input queues.</li>
@@ -297,9 +297,9 @@
 <li>Print cache summary (hits/misses/rate).</li>
 <li>Drop stream handles. Join cache driver (must join before db because its emit closure holds a db_tx). Join db driver. Drop main handle. Join console driver.</li>
 </ol>
-<h2 id="chain-types-srcprogramschainrs-40-lines"><a class="heading-anchor" href="#chain-types-srcprogramschainrs-40-lines" aria-hidden="true">#</a>Chain types (<code>src/programs/chain.rs</code>, 40 lines)</h2>
+<h2 id="chain-types-srcprogramschainrs-40-lines">Chain types (<code>src/programs/chain.rs</code>, 40 lines)<a class="heading-anchor" href="#chain-types-srcprogramschainrs-40-lines" aria-hidden="true">#</a></h2>
 <p>Two structs. Pure data. No methods. No behavior. The module doc says: <em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em></p>
-<h3 id="marketchain-clone"><a class="heading-anchor" href="#marketchain-clone" aria-hidden="true">#</a><code>MarketChain</code> (Clone)</h3>
+<h3 id="marketchain-clone"><code>MarketChain</code> (Clone)<a class="heading-anchor" href="#marketchain-clone" aria-hidden="true">#</a></h3>
 <p>What the market observer produces. What the position observer receives.</p>
 <table>
 <thead>
@@ -352,7 +352,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="marketpositionchain"><a class="heading-anchor" href="#marketpositionchain" aria-hidden="true">#</a><code>MarketPositionChain</code></h3>
+<h3 id="marketpositionchain"><code>MarketPositionChain</code><a class="heading-anchor" href="#marketpositionchain" aria-hidden="true">#</a></h3>
 <p>What the position observer produces. What the broker receives. Contains all <code>MarketChain</code> fields (flattened, not composed) plus position-specific fields:</p>
 <table>
 <thead>
@@ -426,16 +426,16 @@
 </tbody>
 </table>
 <p>Note: <code>MarketPositionChain</code> does <strong>not</strong> implement <code>Clone</code>. The market fields are duplicated (not borrowed), making this struct self-contained but large — a deliberate &quot;values on the wire&quot; design with no shared references.</p>
-<h2 id="thread-count"><a class="heading-anchor" href="#thread-count" aria-hidden="true">#</a>Thread count</h2>
+<h2 id="thread-count">Thread count<a class="heading-anchor" href="#thread-count" aria-hidden="true">#</a></h2>
 <p>For one stream with N market observers, M position observers: N + M + (N×M) brokers + database + cache + console = N + M + N×M + 3 threads minimum. With default 6 market lenses and 2 position lenses: 6 + 2 + 12 + 3 = 23 threads. The comment in CLAUDE.md says &quot;30+ threads&quot; — the additional threads likely come from multiple streams or internal service threads.</p>
-<h2 id="messaging-primitives"><a class="heading-anchor" href="#messaging-primitives" aria-hidden="true">#</a>Messaging primitives</h2>
+<h2 id="messaging-primitives">Messaging primitives<a class="heading-anchor" href="#messaging-primitives" aria-hidden="true">#</a></h2>
 <p>Three types, zero Mutex:</p>
 <ul>
 <li><strong><code>queue_bounded</code> / <code>queue_unbounded</code></strong> — point-to-point channels (mpsc via crossbeam-style implementation).</li>
 <li><strong><code>topic</code></strong> — one publisher, multiple subscribers. Fan-out. The topic handle must live until shutdown.</li>
 <li><strong><code>mailbox</code></strong> — merges multiple receivers into one. Fan-in. Used for learn queues (multiple brokers → one observer).</li>
 </ul>
-<h2 id="resources-allocated-from-pools"><a class="heading-anchor" href="#resources-allocated-from-pools" aria-hidden="true">#</a>Resources allocated from pools</h2>
+<h2 id="resources-allocated-from-pools">Resources allocated from pools<a class="heading-anchor" href="#resources-allocated-from-pools" aria-hidden="true">#</a></h2>
 <p>Console, cache, and database handles are pre-allocated into <code>HandlePool</code>s. Each program thread claims exactly one of each. Pools assert <code>finish()</code> — all handles must be claimed or the program panics (orphan detection to prevent deadlocks).</p>
 </div>
     </main>

@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,14 +222,14 @@
         Services — Queue, Topic, and Mailbox <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
 <p>Holon's messaging layer provides three primitives built on &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;crossbeam::channel&lt;/a&gt;: <strong>Queue</strong> (1→1 point-to-point), <strong>Topic</strong> (1→N fan-out), and <strong>Mailbox</strong> (N→1 fan-in). All concurrency is achieved through message passing — zero <code>Mutex</code>. In the &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt;, these appear as values created by <code>make-pipe</code>, <code>make-topic</code>, and <code>select</code>, with no special declarations needed. Shutdown propagates automatically by dropping senders/receivers.</p>
 <hr />
 </div>
       
       <div class="prose prose-invert max-w-none"><p><strong>Wiki composite · Sources: T0-016 (services-rust), T1-001 (wat-language)</strong></p>
 <hr />
-<h2 id="architecture"><a class="heading-anchor" href="#architecture" aria-hidden="true">#</a>Architecture</h2>
+<h2 id="architecture">Architecture<a class="heading-anchor" href="#architecture" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -266,7 +266,7 @@
 </table>
 <p>All three use &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;crossbeam::channel&lt;/a&gt; as their sole concurrency primitive — a lock-free MPSC channel built on atomic compare-and-swap operations (T0-016, §&quot;How Concurrency Is Achieved Without Mutex&quot;).</p>
 <hr />
-<h2 id="queue-point-to-point"><a class="heading-anchor" href="#queue-point-to-point" aria-hidden="true">#</a>Queue — Point-to-Point</h2>
+<h2 id="queue-point-to-point">Queue — Point-to-Point<a class="heading-anchor" href="#queue-point-to-point" aria-hidden="true">#</a></h2>
 <p>The atom of the system. One producer, one consumer.</p>
 <p><strong>Rust types:</strong></p>
 <ul>
@@ -288,7 +288,7 @@
 <p><strong>Error types</strong> (<code>SendError&lt;T&gt;</code>, <code>RecvError</code>) are custom wrappers that decouple the public API from crossbeam's types (T0-016, §Queue).</p>
 <p><strong>wat layer:</strong> <code>(make-pipe :capacity N :carries T)</code> returns <code>(tx rx)</code>. Send via <code>(send tx value)</code>, receive via <code>(recv rx)</code> or <code>(try-recv rx)</code>. &quot;Destructure at creation&quot; (T1-001, §Pipes). Pipes are values — &quot;no defpipe, no defprocess, no defservice&quot; (T1-001, §Design principle).</p>
 <hr />
-<h2 id="topic-fan-out-1n"><a class="heading-anchor" href="#topic-fan-out-1n" aria-hidden="true">#</a>Topic — Fan-Out (1→N)</h2>
+<h2 id="topic-fan-out-1n">Topic — Fan-Out (1→N)<a class="heading-anchor" href="#topic-fan-out-1n" aria-hidden="true">#</a></h2>
 <p>One producer, N consumers. A proxy that writes to N queues by cloning each message.</p>
 <p><strong>How it works (T0-016, §Topic):</strong></p>
 <ol>
@@ -302,7 +302,7 @@
 <p><strong>Backpressure:</strong> Bounded send to each subscriber. One slow subscriber stalls all others — intentional backpressure propagation (T0-016, §Topic).</p>
 <p><strong>wat layer:</strong> <code>(make-topic)</code> wires 1→N fan-out over existing pipes. The wat spec notes this is <em>synchronous, no thread, no queue</em> at the specification level — &quot;The caller's send IS the fan-out&quot; (T1-001, §Topics). The Rust implementation adds the thread and internal queue for execution.</p>
 <hr />
-<h2 id="mailbox-fan-in-n1"><a class="heading-anchor" href="#mailbox-fan-in-n1" aria-hidden="true">#</a>Mailbox — Fan-In (N→1)</h2>
+<h2 id="mailbox-fan-in-n1">Mailbox — Fan-In (N→1)<a class="heading-anchor" href="#mailbox-fan-in-n1" aria-hidden="true">#</a></h2>
 <p>N producers, one consumer. A proxy that reads from N queues via <code>crossbeam::Select</code>.</p>
 <p><strong>How it works (T0-016, §Mailbox):</strong></p>
 <ol>
@@ -322,24 +322,24 @@
 <p><strong><code>MailboxReceiver&lt;T&gt;</code></strong> — wraps <code>QueueReceiver&lt;T&gt;</code> with the same interface: <code>recv()</code>, <code>try_recv()</code>, <code>inner()</code>.</p>
 <p><strong>wat layer:</strong> <code>(select rx1 rx2 ...)</code> multiplexes N receive ends → <code>(Some (idx value))</code> or <code>:closed</code>. &quot;Parks when idle — zero CPU&quot; (T1-001, §Pipes). This is the wat-level expression of what the Rust &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; implements as a dedicated composing thread.</p>
 <hr />
-<h2 id="design-principles"><a class="heading-anchor" href="#design-principles" aria-hidden="true">#</a>Design Principles</h2>
-<h3 id="concurrency-without-mutex"><a class="heading-anchor" href="#concurrency-without-mutex" aria-hidden="true">#</a>Concurrency without Mutex</h3>
+<h2 id="design-principles">Design Principles<a class="heading-anchor" href="#design-principles" aria-hidden="true">#</a></h2>
+<h3 id="concurrency-without-mutex">Concurrency without Mutex<a class="heading-anchor" href="#concurrency-without-mutex" aria-hidden="true">#</a></h3>
 <p>&quot;Threads communicate by sending messages, not by sharing memory&quot; (T0-016). The pattern:</p>
 <ul>
 <li><strong>Ownership transfer via types.</strong> <code>QueueSender</code> and <code>QueueReceiver</code> are separate, moveable types. Rust's type system enforces producer/consumer separation.</li>
 <li><strong>Shutdown by disconnection.</strong> Dropping a sender/receiver propagates as <code>Disconnected</code>. No explicit coordination, no <code>Arc&lt;Mutex&lt;bool&gt;&gt;</code> shutdown flags.</li>
 <li><strong>Backpressure via bounded channels.</strong> Topics use bounded inputs; mailboxes use unbounded outputs (never stall producers).</li>
 </ul>
-<h3 id="everything-is-a-value"><a class="heading-anchor" href="#everything-is-a-value" aria-hidden="true">#</a>Everything is a Value</h3>
+<h3 id="everything-is-a-value">Everything is a Value<a class="heading-anchor" href="#everything-is-a-value" aria-hidden="true">#</a></h3>
 <p>In wat, pipes, topics, and processes are all plain values created by regular functions — not special declarations (T1-001, §Design principle):</p>
 <blockquote>
 <p>&quot;No defpipe. No defprocess. No defservice. Pipes are values. Topics are values. Processes are functions.&quot;</p>
 </blockquote>
 <p>The seven concurrency forms are: <code>make-pipe</code>, <code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>.</p>
-<h3 id="composition-via-inner"><a class="heading-anchor" href="#composition-via-inner" aria-hidden="true">#</a>Composition via <code>inner()</code></h3>
+<h3 id="composition-via-inner">Composition via <code>inner()</code><a class="heading-anchor" href="#composition-via-inner" aria-hidden="true">#</a></h3>
 <p><code>QueueReceiver::inner()</code> and <code>MailboxReceiver::inner()</code> expose the raw crossbeam <code>Receiver</code> as <code>pub(crate)</code>, allowing composing code (e.g., the &lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;cache&lt;/a&gt;) to treat queue receivers and mailbox receivers uniformly in a multi-channel <code>crossbeam::Select</code> — without leaking the internal implementation through the public API (T0-016, §&quot;One subtle design choice&quot;).</p>
 <hr />
-<h2 id="tests"><a class="heading-anchor" href="#tests" aria-hidden="true">#</a>Tests</h2>
+<h2 id="tests">Tests<a class="heading-anchor" href="#tests" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -368,7 +368,7 @@
 </table>
 <p>Total: <strong>11 tests</strong> across the three primitives (T0-016).</p>
 <hr />
-<h2 id="source-files"><a class="heading-anchor" href="#source-files" aria-hidden="true">#</a>Source Files</h2>
+<h2 id="source-files">Source Files<a class="heading-anchor" href="#source-files" aria-hidden="true">#</a></h2>
 <ul>
 <li><code>src/services/queue.rs</code> — 123 lines</li>
 <li><code>src/services/topic.rs</code> — 129 lines</li>

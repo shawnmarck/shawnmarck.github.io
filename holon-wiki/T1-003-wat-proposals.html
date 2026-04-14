@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -226,8 +226,8 @@
 <strong>Source:</strong> <code>/root/projects/holon-workspace/wat/docs/proposals/</code>
 <strong>Correction:</strong> The system contains <strong>18 proposals</strong> (15 in 2026/03, 3 in 2026/04), not 31 as stated in the task. Each proposal has exactly 4 files: <code>PROPOSAL.md</code>, <code>RESOLUTION.md</code>, <code>review-beckman.md</code>, <code>review-hickey.md</code> — 72 files total.</p>
 <hr />
-<h2 id="1-the-proposal-process"><a class="heading-anchor" href="#1-the-proposal-process" aria-hidden="true">#</a>1. The Proposal Process</h2>
-<h3 id="how-a-proposal-is-created"><a class="heading-anchor" href="#how-a-proposal-is-created" aria-hidden="true">#</a>How a proposal is created</h3>
+<h2 id="1-the-proposal-process">1. The Proposal Process<a class="heading-anchor" href="#1-the-proposal-process" aria-hidden="true">#</a></h2>
+<h3 id="how-a-proposal-is-created">How a proposal is created<a class="heading-anchor" href="#how-a-proposal-is-created" aria-hidden="true">#</a></h3>
 <p>A proposal follows a fixed structure in its <code>PROPOSAL.md</code>:</p>
 <ol>
 <li><strong>Scope</strong> — classified as <code>core</code>, <code>structural</code>, or follows from a prior proposal</li>
@@ -238,7 +238,7 @@
 <li><strong>The Simplicity Question</strong> — Hickey's test: &quot;Is this simple or easy?&quot; What is being complected? Could existing primitives solve it?</li>
 <li><strong>Questions for Designers</strong> — specific yes/no and tradeoff questions for the review panel</li>
 </ol>
-<h3 id="how-proposals-are-reviewed"><a class="heading-anchor" href="#how-proposals-are-reviewed" aria-hidden="true">#</a>How proposals are reviewed</h3>
+<h3 id="how-proposals-are-reviewed">How proposals are reviewed<a class="heading-anchor" href="#how-proposals-are-reviewed" aria-hidden="true">#</a></h3>
 <p>Each proposal is reviewed independently by two designers: <strong>Brian Beckman</strong> and <strong>Rich Hickey</strong>. Reviews are written as separate markdown files (<code>review-beckman.md</code>, <code>review-hickey.md</code>). Each review states a <strong>verdict</strong>:</p>
 <ul>
 <li><strong>ACCEPTED</strong> — as proposed</li>
@@ -246,7 +246,7 @@
 <li><strong>REJECTED</strong> — with reasoning</li>
 </ul>
 <p>The reviews are <strong>not rubber stamps</strong>. They have reversed proposals (001), overruled each other, and been overruled by a &quot;datamancer&quot; role that synthesizes final decisions (see 013, 003/003).</p>
-<h3 id="how-proposals-are-resolved"><a class="heading-anchor" href="#how-proposals-are-resolved" aria-hidden="true">#</a>How proposals are resolved</h3>
+<h3 id="how-proposals-are-resolved">How proposals are resolved<a class="heading-anchor" href="#how-proposals-are-resolved" aria-hidden="true">#</a></h3>
 <p>The <code>RESOLUTION.md</code> synthesizes the two reviews into a final decision:</p>
 <ul>
 <li><strong>ACCEPTED</strong> — with specific form syntax, placement, and constraints</li>
@@ -256,26 +256,26 @@
 </ul>
 <p>Resolution often involves <strong>overriding</strong> one designer. The resolution document records who was overridden and why. Beckman tends toward categorical framing (product/coproduct/co-algebra). Hickey tends toward simplicity and &quot;don't add what functions already provide.&quot;</p>
 <hr />
-<h2 id="2-the-panel-system"><a class="heading-anchor" href="#2-the-panel-system" aria-hidden="true">#</a>2. The Panel System</h2>
-<h3 id="brian-beckman"><a class="heading-anchor" href="#brian-beckman" aria-hidden="true">#</a>Brian Beckman</h3>
+<h2 id="2-the-panel-system">2. The Panel System<a class="heading-anchor" href="#2-the-panel-system" aria-hidden="true">#</a></h2>
+<h3 id="brian-beckman">Brian Beckman<a class="heading-anchor" href="#brian-beckman" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>Role:</strong> Algebraic authority. Frames proposals in category theory — monoids, coalgebras, functors, catamorphisms, universal constructions.</li>
 <li><strong>Pattern:</strong> Asks &quot;does this compose?&quot; and &quot;what categorical construction is this?&quot; Tends to see structure where Hickey sees convention.</li>
 <li><strong>Key moves:</strong> Proposed <code>fold</code> as the catamorphism (001 review, accepted as 002). Framed protocols as &quot;type classes — the third construction alongside struct (product) and enum (coproduct)&quot; (014). Argued journal operations are co-generators of a coalgebra and belong in core (004).</li>
 <li><strong>Overridden:</strong> On struct field types (007 — wanted mandatory types, Hickey's untyped won). On <code>defservice</code> (04/003 — the datamancer showed functions + select suffice).</li>
 </ul>
-<h3 id="rich-hickey"><a class="heading-anchor" href="#rich-hickey" aria-hidden="true">#</a>Rich Hickey</h3>
+<h3 id="rich-hickey">Rich Hickey<a class="heading-anchor" href="#rich-hickey" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>Role:</strong> Simplicity authority. Applies &quot;simple made easy&quot; — distinguishes simple (one concept, one job) from easy (familiar, convenient). Protects the six primitives from growth.</li>
 <li><strong>Pattern:</strong> Asks &quot;does this complect?&quot; and &quot;could existing forms do this?&quot; Tends to reject new forms when discipline or data restructuring suffices.</li>
 <li><strong>Key moves:</strong> Rejected <code>defprocessor</code> flatly — &quot;the function shape IS the declaration&quot; (001). Won on untyped struct fields — &quot;types are documentation, not enforcement&quot; (007). Won keyword-as-function access — &quot;keywords read like English&quot; (007). Argued <code>fold</code> is a caller concern, not a callee declaration (002 — partially reversed when <code>fold</code> was accepted as control form).</li>
 <li><strong>Overridden:</strong> On journal operations in stdlib (004 — reversed after opacity argument). On <code>nil</code> (013 — datamancer chose structural absence, no nil value). On channels (003 — channels deleted as contradicting fold-based design).</li>
 </ul>
-<h3 id="the-datamancer"><a class="heading-anchor" href="#the-datamancer" aria-hidden="true">#</a>The Datamancer</h3>
+<h3 id="the-datamancer">The Datamancer<a class="heading-anchor" href="#the-datamancer" aria-hidden="true">#</a></h3>
 <p>Not a formal reviewer but an <strong>arbitrating role</strong> visible in resolutions. Appears when the two designers disagree or when neither option is right. Overruled both designers on boolean/nil (013 — chose &quot;structural absence&quot; with <code>?</code> field convention, neither Clojure truthiness nor Rust separation). Overruled both on <code>defservice</code> (04/003 — showed that <code>select</code> + functions + <code>spawn</code> subsume <code>defprocess</code> and <code>defservice</code> entirely).</p>
 <hr />
-<h2 id="3-key-design-decisions-across-proposals"><a class="heading-anchor" href="#3-key-design-decisions-across-proposals" aria-hidden="true">#</a>3. Key Design Decisions Across Proposals</h2>
-<h3 id="principles-that-emerge"><a class="heading-anchor" href="#principles-that-emerge" aria-hidden="true">#</a>Principles that emerge</h3>
+<h2 id="3-key-design-decisions-across-proposals">3. Key Design Decisions Across Proposals<a class="heading-anchor" href="#3-key-design-decisions-across-proposals" aria-hidden="true">#</a></h2>
+<h3 id="principles-that-emerge">Principles that emerge<a class="heading-anchor" href="#principles-that-emerge" aria-hidden="true">#</a></h3>
 <ol>
 <li><p><strong>Transparency to Rust.</strong> Wat compiles to Rust. Form names should match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax should map obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</p>
 </li>
@@ -290,7 +290,7 @@
 <li><p><strong>The four-layer model</strong> (003): Syntax (compiler builtins), Core (algebra), Stdlib (derived operations), Userland (domain code). Each layer has a boundary rule — stdlib cannot import from userland, core can only be extended by proposal.</p>
 </li>
 </ol>
-<h3 id="forms-added-to-the-language"><a class="heading-anchor" href="#forms-added-to-the-language" aria-hidden="true">#</a>Forms added to the language</h3>
+<h3 id="forms-added-to-the-language">Forms added to the language<a class="heading-anchor" href="#forms-added-to-the-language" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -369,7 +369,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="forms-rejected-or-retired"><a class="heading-anchor" href="#forms-rejected-or-retired" aria-hidden="true">#</a>Forms rejected or retired</h3>
+<h3 id="forms-rejected-or-retired">Forms rejected or retired<a class="heading-anchor" href="#forms-rejected-or-retired" aria-hidden="true">#</a></h3>
 <ul>
 <li><code>defprocessor</code> — rejected (001). The function shape <code>(state, event) → state</code> IS the declaration.</li>
 <li><code>std/channels.wat</code> — deleted (003). Contradicted fold-based design.</li>
@@ -378,8 +378,8 @@
 <li><code>nil</code> — rejected (013). Absence is structural (<code>when</code> not executing), not a value.</li>
 </ul>
 <hr />
-<h2 id="4-scope-proposed-vs-resolved"><a class="heading-anchor" href="#4-scope-proposed-vs-resolved" aria-hidden="true">#</a>4. Scope: Proposed vs Resolved</h2>
-<h3 id="by-status"><a class="heading-anchor" href="#by-status" aria-hidden="true">#</a>By status</h3>
+<h2 id="4-scope-proposed-vs-resolved">4. Scope: Proposed vs Resolved<a class="heading-anchor" href="#4-scope-proposed-vs-resolved" aria-hidden="true">#</a></h2>
+<h3 id="by-status">By status<a class="heading-anchor" href="#by-status" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -407,16 +407,16 @@
 </tbody>
 </table>
 <p>All 18 proposals have resolutions. None are in DRAFT or PROPOSED status at the file level (though 004 and 005 PROPOSAL.md headers say &quot;DRAFT,&quot; their RESOLUTION.md files show acceptance).</p>
-<h3 id="by-scope-area"><a class="heading-anchor" href="#by-scope-area" aria-hidden="true">#</a>By scope area</h3>
+<h3 id="by-scope-area">By scope area<a class="heading-anchor" href="#by-scope-area" aria-hidden="true">#</a></h3>
 <p><strong>Language structure (4):</strong> 001 (stream processor — rejected), 002 (fold — accepted), 003 (language layers — accepted), 005 (compilation plan — accepted)</p>
 <p><strong>Core algebra (2):</strong> 004 (journal operations — core vs stdlib — accepted), 008 (honest gate — type boundary fix — accepted)</p>
 <p><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; (7):</strong> 006 (aggregate types/defrecord — accepted), 007 (struct syntax — accepted), 010 (enum/sum types — accepted), 011 (derived fields — accepted), 012 (multi-field update — accepted), 013 (boolean/nil — accepted), 014 (protocols — accepted)</p>
 <p><strong>Protocol mechanics (1):</strong> 015 (protocol satisfaction — accepted)</p>
 <p><strong>Stdlib (1):</strong> 009 (fact constructors + statistics — accepted)</p>
 <p><strong>Concurrency (3):</strong> 04/001 (parallel map — accepted), 04/002 (pipes — accepted), 04/003 (select — superseded/simplified)</p>
-<h3 id="temporal-pattern"><a class="heading-anchor" href="#temporal-pattern" aria-hidden="true">#</a>Temporal pattern</h3>
+<h3 id="temporal-pattern">Temporal pattern<a class="heading-anchor" href="#temporal-pattern" aria-hidden="true">#</a></h3>
 <p>The March 2026 proposals (001-015) built the language foundation: fold, layers, core boundaries, all of the &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;, and the stdlib seeds. The April 2026 proposals (04/001-003) extended into concurrency — parallelism, pipes, and service patterns. The April proposals show the system maturing: the datamancer overruled both designers on 04/003, finding that the simplest answer (functions + select) was more powerful than either proposed option.</p>
-<h3 id="dependency-chain"><a class="heading-anchor" href="#dependency-chain" aria-hidden="true">#</a>Dependency chain</h3>
+<h3 id="dependency-chain">Dependency chain<a class="heading-anchor" href="#dependency-chain" aria-hidden="true">#</a></h3>
 <p>The proposals form a clear dependency graph:</p>
 <ul>
 <li>001 → 002 (rejected processor → accepted fold)</li>

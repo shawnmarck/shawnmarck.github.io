@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,12 +222,12 @@
         Bind — the self-inverse combinator <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
 <p><strong><code>bind</code></strong> is the core relational primitive of the holon-rs vector algebra. It composes two concept vectors into one via element-wise multiplication over bipolar values <code>{-1, 0, +1}</code>. Its defining property is <strong>self-inverseness</strong>: <code>bind(bind(A, B), A) = B</code> exactly (not approximately). The WAT spec names it one of four generators of the Vector Algebra. In Rust, it is implemented as <code>Primitives::bind</code>, with <code>unbind</code> exposed as a semantic alias. Every structured encoding in the system — from &lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; role-filler pairs to &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; <code>Bind</code> nodes — ultimately reduces to calls to <code>bind</code>.</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2 id="algebraic-definition"><a class="heading-anchor" href="#algebraic-definition" aria-hidden="true">#</a>Algebraic definition</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="algebraic-definition">Algebraic definition<a class="heading-anchor" href="#algebraic-definition" aria-hidden="true">#</a></h2>
 <p>From the WAT spec (<code>wat/core/primitives.wat</code>):</p>
 <blockquote>
 <p>&quot;(bind role filler) → Vector&quot;
@@ -240,7 +240,7 @@
 </blockquote>
 <p>Bind is the <strong>group action</strong> — the operation that creates structure (relationships) out of flat atoms.</p>
 <hr />
-<h2 id="implementation"><a class="heading-anchor" href="#implementation" aria-hidden="true">#</a>Implementation</h2>
+<h2 id="implementation">Implementation<a class="heading-anchor" href="#implementation" aria-hidden="true">#</a></h2>
 <p>The Rust implementation lives in <code>holon-rs/src/kernel/primitives.rs</code>:</p>
 <pre><code class="language-rust">/// Bind two vectors (element-wise multiplication for bipolar).
 ///
@@ -263,7 +263,7 @@ pub fn unbind(bound: &amp;Vector, key: &amp;Vector) -&gt; Vector {
     Self::bind(bound, key)
 }
 </code></pre>
-<h3 id="why-self-inverse-works"><a class="heading-anchor" href="#why-self-inverse-works" aria-hidden="true">#</a>Why self-inverse works</h3>
+<h3 id="why-self-inverse-works">Why self-inverse works<a class="heading-anchor" href="#why-self-inverse-works" aria-hidden="true">#</a></h3>
 <p>For bipolar vectors where each element is <code>{-1, +1}</code>: <code>(a × b) × a = a² × b = 1 × b = b</code>. This is <strong>exact</strong>, not approximate — confirmed by the Rust test:</p>
 <pre><code class="language-rust">#[test]
 fn test_bind_self_inverse() {
@@ -276,8 +276,8 @@ fn test_bind_self_inverse() {
 <p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt;, WAT spec line &quot;Self-inverse: (bind (bind A B) A) = B&quot;, Rust <code>test_bind_self_inverse</code>.</p>
 </blockquote>
 <hr />
-<h2 id="where-bind-appears-in-the-encoding-pipeline"><a class="heading-anchor" href="#where-bind-appears-in-the-encoding-pipeline" aria-hidden="true">#</a>Where bind appears in the encoding pipeline</h2>
-<h3 id="in-the-lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-encoder"><a class="heading-anchor" href="#in-the-lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-encoder" aria-hidden="true">#</a>In the &lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; encoder</h3>
+<h2 id="where-bind-appears-in-the-encoding-pipeline">Where bind appears in the encoding pipeline<a class="heading-anchor" href="#where-bind-appears-in-the-encoding-pipeline" aria-hidden="true">#</a></h2>
+<h3 id="in-the-lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-encoder">In the &lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; encoder<a class="heading-anchor" href="#in-the-lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-encoder" aria-hidden="true">#</a></h3>
 <p>The <code>Walkable</code> trait's <code>encode_walkable</code> recursive traversal uses bind for <strong>role-filler encoding</strong> on every <code>Map</code> node:</p>
 <pre><code>for each (key, value):
     role_vec   = encode_atom(key_path)        // key → vector
@@ -296,7 +296,7 @@ bundle(all bounds)
 <blockquote>
 <p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;T0-006-walkable&lt;/a&gt;, &quot;The key insight is role-filler binding: we bind each value (filler) with its key (role) before bundling.&quot;</p>
 </blockquote>
-<h3 id="in-the-lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-encoder"><a class="heading-anchor" href="#in-the-lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-encoder" aria-hidden="true">#</a>In the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; encoder</h3>
+<h3 id="in-the-lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-encoder">In the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; encoder<a class="heading-anchor" href="#in-the-lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-encoder" aria-hidden="true">#</a></h3>
 <p><code>ThoughtAST::Bind(left, right)</code> maps directly to <code>Primitives::bind</code>:</p>
 <pre><code>Bind(left, right) → l_vec = encode(left)
                      r_vec = encode(right)
@@ -306,7 +306,7 @@ bundle(all bounds)
 <blockquote>
 <p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-011-thought-encoder-rust.html&quot;&gt;T0-011-thought-encoder-rust&lt;/a&gt;, <code>ThoughtEncoder::encode</code> dispatch table: &quot;Recursively encodes left → l_vec, encodes right → r_vec, then Primitives::bind(&amp;l_vec, &amp;r_vec).&quot;</p>
 </blockquote>
-<h3 id="extended-rust-operations-using-bind"><a class="heading-anchor" href="#extended-rust-operations-using-bind" aria-hidden="true">#</a>Extended Rust operations using bind</h3>
+<h3 id="extended-rust-operations-using-bind">Extended Rust operations using bind<a class="heading-anchor" href="#extended-rust-operations-using-bind" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -333,7 +333,7 @@ bundle(all bounds)
 <p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt;, extended operations table.</p>
 </blockquote>
 <hr />
-<h2 id="properties-summary"><a class="heading-anchor" href="#properties-summary" aria-hidden="true">#</a>Properties summary</h2>
+<h2 id="properties-summary">Properties summary<a class="heading-anchor" href="#properties-summary" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -377,7 +377,7 @@ bundle(all bounds)
 </tbody>
 </table>
 <hr />
-<h2 id="relationship-to-the-other-generators"><a class="heading-anchor" href="#relationship-to-the-other-generators" aria-hidden="true">#</a>Relationship to the other generators</h2>
+<h2 id="relationship-to-the-other-generators">Relationship to the other generators<a class="heading-anchor" href="#relationship-to-the-other-generators" aria-hidden="true">#</a></h2>
 <p>Bind is one of four generators of the WAT Vector Algebra:</p>
 <table>
 <thead>
@@ -414,14 +414,14 @@ bundle(all bounds)
 <p>Source: &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt;, &quot;Two algebraic structures. Nothing here is derivable from the others.&quot;</p>
 </blockquote>
 <hr />
-<h2 id="divergences-and-caveats"><a class="heading-anchor" href="#divergences-and-caveats" aria-hidden="true">#</a>Divergences and caveats</h2>
+<h2 id="divergences-and-caveats">Divergences and caveats<a class="heading-anchor" href="#divergences-and-caveats" aria-hidden="true">#</a></h2>
 <ul>
 <li><strong>bind vs. unbind</strong>: The WAT spec describes the self-inverse property in terms of bind applied twice. Rust additionally exposes <code>unbind</code> as a named alias for clarity, but it is literally the same function.</li>
 <li><strong>f64 pipeline</strong>: <code>bind_f64</code> exists for extraction/analysis work. It is identical math (element-wise multiply) but operates on floating-point vectors without thresholding.</li>
 <li><strong>No identity element</strong>: Unlike <code>bundle</code> (whose WAT-specified identity is the zero vector), <code>bind</code> has no identity element. Binding with a zero vector produces all zeros.</li>
 </ul>
 <hr />
-<h2 id="related-concepts"><a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a>Related Concepts</h2>
+<h2 id="related-concepts">Related Concepts<a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a></h2>
 <ul>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;T0-002-primitives&lt;/a&gt; — Full primitive specification including bind, bundle, cosine, atom, and the extended Rust algebra</li>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;T0-006-walkable&lt;/a&gt; — The <code>Walkable</code> trait that uses bind for role-filler encoding during structural traversal</li>

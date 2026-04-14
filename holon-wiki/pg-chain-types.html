@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -227,13 +227,13 @@
 <p>TL;DR — Two pure-data structs in <code>src/programs/chain.rs</code> (40 lines) carry all information between pipeline stages. The type name <em>is</em> the proof of which stage produced it. No methods, no behavior, no shared references — just values on the wire.</p>
 </blockquote>
 <hr />
-<h2 id="design-principle"><a class="heading-anchor" href="#design-principle" aria-hidden="true">#</a>Design Principle</h2>
+<h2 id="design-principle">Design Principle<a class="heading-anchor" href="#design-principle" aria-hidden="true">#</a></h2>
 <blockquote>
 <p><em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em> — chain.rs module doc, via &lt;a class=&quot;wikilink&quot; href=&quot;T0-017-wat-vm-rust.html&quot;&gt;T0-017&lt;/a&gt;</p>
 </blockquote>
 <p>Chain types enforce a <strong>linear, typed pipeline</strong> through the &lt;a class=&quot;wikilink&quot; href=&quot;pg-wat-vm.html&quot;&gt;organism&lt;/a&gt;: the main thread produces an enriched candle, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observer&lt;/a&gt; wraps it in a <code>MarketChain</code>, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position observer&lt;/a&gt; flattens that into a <code>MarketPositionChain</code>, and the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; consumes it. At no point does any thread hold a shared mutable reference to another's state — every piece of information is either owned outright or carried behind an <code>Arc</code> that is never written through.</p>
 <hr />
-<h2 id="marketchain-clone"><a class="heading-anchor" href="#marketchain-clone" aria-hidden="true">#</a><code>MarketChain</code> — <code>Clone</code></h2>
+<h2 id="marketchain-clone"><code>MarketChain</code> — <code>Clone</code><a class="heading-anchor" href="#marketchain-clone" aria-hidden="true">#</a></h2>
 <p><strong>Producer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;Market Observer&lt;/a&gt;<br />
 <strong>Consumer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;Position Observers&lt;/a&gt; (via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;fan-out&lt;/a&gt;)<br />
 <strong>Transport:</strong> Bounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; (capacity 1) into market observer; &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; (1→N) out to position observers.</p>
@@ -290,7 +290,7 @@
 </table>
 <p>Implements <code>Clone</code> because a &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; clones the message to every subscriber. This is the only chain type that needs fan-out.</p>
 <hr />
-<h2 id="marketpositionchain-not-clone"><a class="heading-anchor" href="#marketpositionchain-not-clone" aria-hidden="true">#</a><code>MarketPositionChain</code> — <strong>not</strong> <code>Clone</code></h2>
+<h2 id="marketpositionchain-not-clone"><code>MarketPositionChain</code> — <strong>not</strong> <code>Clone</code><a class="heading-anchor" href="#marketpositionchain-not-clone" aria-hidden="true">#</a></h2>
 <p><strong>Producer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;Position Observer&lt;/a&gt;<br />
 <strong>Consumer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;<br />
 <strong>Transport:</strong> Bounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; (point-to-point, one broker per chain).</p>
@@ -379,7 +379,7 @@
 </table>
 <p>Does <strong>not</strong> implement <code>Clone</code>. The deliberate choice to duplicate (rather than borrow) market fields makes this struct self-contained but large — no shared references, no lifetime entanglement, pure ownership transfer through the &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;queue&lt;/a&gt;.</p>
 <hr />
-<h2 id="data-flow-through-the-grid"><a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a>Data Flow Through the Grid</h2>
+<h2 id="data-flow-through-the-grid">Data Flow Through the Grid<a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
     main[&quot;Main thread\nsend ObsInput&quot;] --&gt; mkt_obs[&quot;Market Observer i\n(thread)\nencode → predict&quot;]
     mkt_obs --&gt;|&quot;Topic fan-out\nsend MarketChain&quot;| pos0[&quot;Position Observer 0&quot;]
@@ -394,7 +394,7 @@
 
 <p>See signal-propagation for the full wiring table including &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;ObsLearn&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;PositionLearn&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;TradeUpdate&lt;/a&gt; return-path signals.</p>
 <hr />
-<h2 id="wire-summary"><a class="heading-anchor" href="#wire-summary" aria-hidden="true">#</a>Wire Summary</h2>
+<h2 id="wire-summary">Wire Summary<a class="heading-anchor" href="#wire-summary" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -437,7 +437,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="key-design-choices"><a class="heading-anchor" href="#key-design-choices" aria-hidden="true">#</a>Key Design Choices</h2>
+<h2 id="key-design-choices">Key Design Choices<a class="heading-anchor" href="#key-design-choices" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -469,7 +469,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="source"><a class="heading-anchor" href="#source" aria-hidden="true">#</a>Source</h2>
+<h2 id="source">Source<a class="heading-anchor" href="#source" aria-hidden="true">#</a></h2>
 <ul>
 <li><code>src/programs/chain.rs</code> — 40 lines</li>
 </ul>

@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,7 +222,7 @@
         T0-004 — Scalar Encoding <span class="badge badge-how">HOW</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It Is</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-it-is">What It Is<a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a></h2>
 <p>The scalar encoding subsystem maps continuous numeric values (prices, rates, timestamps, temperatures) into fixed-width bipolar vectors (<code>{−1, 0, +1}^dim</code>) so that <em>similar values produce similar vectors</em>. It lives in two places:</p>
 <ol>
 <li><strong><code>kernel/scalar.rs</code></strong> — standalone <code>ScalarEncoder</code> struct with its own deterministic random base/ortho vectors.</li>
@@ -235,28 +235,28 @@
 </code></pre>
 <p>The WAT is a spec stub only (15 lines, no implementation). All real logic is in Rust.</p>
 <hr />
-<h2 id="two-independent-encoding-systems"><a class="heading-anchor" href="#two-independent-encoding-systems" aria-hidden="true">#</a>Two Independent Encoding Systems</h2>
-<h3 id="system-a-scalarencoder-scalarrs"><a class="heading-anchor" href="#system-a-scalarencoder-scalarrs" aria-hidden="true">#</a>System A: <code>ScalarEncoder</code> (scalar.rs)</h3>
+<h2 id="two-independent-encoding-systems">Two Independent Encoding Systems<a class="heading-anchor" href="#two-independent-encoding-systems" aria-hidden="true">#</a></h2>
+<h3 id="system-a-scalarencoder-scalarrs">System A: <code>ScalarEncoder</code> (scalar.rs)<a class="heading-anchor" href="#system-a-scalarencoder-scalarrs" aria-hidden="true">#</a></h3>
 <p>A standalone struct that generates two random bipolar vectors (base and orthogonal) using ChaCha8Rng seeded via SHA-256. It encodes a scalar as a <strong>rotation</strong> between these two vectors.</p>
 <p><strong>Vector generation</strong> (scalar.rs:79–98):</p>
 <pre><code>seed + name  →  SHA-256  →  first 8 bytes → u64  →  ChaCha8Rng
 each dimension: rng.next_u32() &amp; 1 == 0 ? +1.0 : -1.0
 </code></pre>
 <p>Two vectors are generated: <code>&quot;scalar_base&quot;</code> and <code>&quot;scalar_ortho&quot;</code>.</p>
-<h3 id="system-b-encoder-encoderrs"><a class="heading-anchor" href="#system-b-encoder-encoderrs" aria-hidden="true">#</a>System B: <code>Encoder</code> (encoder.rs)</h3>
+<h3 id="system-b-encoder-encoderrs">System B: <code>Encoder</code> (encoder.rs)<a class="heading-anchor" href="#system-b-encoder-encoderrs" aria-hidden="true">#</a></h3>
 <p>The main encoder delegates scalar encoding to <code>encode_scalar_positional</code>, a <strong>transformer-style sinusoidal</strong> method. It does <strong>not</strong> use random base/ortho vectors — it uses deterministic sin/cos at geometrically spaced frequencies.</p>
 <p>These two systems produce <strong>different vectors for the same input</strong>. They are separate code paths.</p>
 <hr />
-<h2 id="how-each-encoding-works"><a class="heading-anchor" href="#how-each-encoding-works" aria-hidden="true">#</a>How Each Encoding Works</h2>
-<h3 id="1-encode-linear-linear-positional-encoding"><a class="heading-anchor" href="#1-encode-linear-linear-positional-encoding" aria-hidden="true">#</a>1. <code>encode-linear</code> — Linear Positional Encoding</h3>
-<h4 id="in-scalarencoder-scalarrs109132"><a class="heading-anchor" href="#in-scalarencoder-scalarrs109132" aria-hidden="true">#</a>In ScalarEncoder (scalar.rs:109–132)</h4>
+<h2 id="how-each-encoding-works">How Each Encoding Works<a class="heading-anchor" href="#how-each-encoding-works" aria-hidden="true">#</a></h2>
+<h3 id="1-encode-linear-linear-positional-encoding">1. <code>encode-linear</code> — Linear Positional Encoding<a class="heading-anchor" href="#1-encode-linear-linear-positional-encoding" aria-hidden="true">#</a></h3>
+<h4 id="in-scalarencoder-scalarrs109132">In ScalarEncoder (scalar.rs:109–132)<a class="heading-anchor" href="#in-scalarencoder-scalarrs109132" aria-hidden="true">#</a></h4>
 <pre><code class="language-rust">let frac = value / scale;
 let angle = frac * 2π;
 result[i] = sign(base[i] * cos(angle) + ortho[i] * sin(angle))
 </code></pre>
 <p>The value is divided by <code>scale</code> to get a fractional position [0, 1], which is multiplied by 2π to get an angle. The output is a cosine/sine interpolation between <code>base_vector</code> and <code>ortho_vector</code>, thresholded to bipolar.</p>
 <p><strong>Key property</strong>: <code>&quot;scale determines the range: values from 0 to scale map to orthogonal vectors. Values beyond scale wrap.&quot;</code> (scalar.rs:35)</p>
-<h4 id="in-encoder-encoderrs480481"><a class="heading-anchor" href="#in-encoder-encoderrs480481" aria-hidden="true">#</a>In Encoder (encoder.rs:480–481)</h4>
+<h4 id="in-encoder-encoderrs480481">In Encoder (encoder.rs:480–481)<a class="heading-anchor" href="#in-encoder-encoderrs480481" aria-hidden="true">#</a></h4>
 <p><code>encode_scalar_linear</code> is a thin wrapper:</p>
 <pre><code class="language-rust">pub fn encode_scalar_linear(&amp;self, value: f64, scale: f64) -&gt; Vector {
     self.encode_scalar_positional(value, scale)
@@ -270,8 +270,8 @@ result[i] = sign(base[i] * cos(angle) + ortho[i] * sin(angle))
     data[i] = sign(value)   // → {−1, 0, +1}
 </code></pre>
 <p>Each dimension oscillates at a different frequency, geometrically spaced from <code>1/scale</code> down to <code>1/scale</code>. The bipolar thresholding quantizes the continuous sin/cos wave.</p>
-<h3 id="2-encode-log-logarithmic-encoding"><a class="heading-anchor" href="#2-encode-log-logarithmic-encoding" aria-hidden="true">#</a>2. <code>encode-log</code> — Logarithmic Encoding</h3>
-<h4 id="in-scalarencoder-scalarrs174208"><a class="heading-anchor" href="#in-scalarencoder-scalarrs174208" aria-hidden="true">#</a>In ScalarEncoder (scalar.rs:174–208)</h4>
+<h3 id="2-encode-log-logarithmic-encoding">2. <code>encode-log</code> — Logarithmic Encoding<a class="heading-anchor" href="#2-encode-log-logarithmic-encoding" aria-hidden="true">#</a></h3>
+<h4 id="in-scalarencoder-scalarrs174208">In ScalarEncoder (scalar.rs:174–208)<a class="heading-anchor" href="#in-scalarencoder-scalarrs174208" aria-hidden="true">#</a></h4>
 <pre><code class="language-rust">pub fn encode_log(&amp;self, value: f64) -&gt; Vector {
     self.encode_log_base(value, 10.0)
 }
@@ -285,7 +285,7 @@ pub fn encode_log_base(&amp;self, value: f64, base: f64) -&gt; Vector {
 </code></pre>
 <p>Takes log-base-10 of the value, then delegates to the rotational linear encoder with a fixed scale of 10.0. The comment states: <code>&quot;values differing by 10^10 are orthogonal&quot;</code>. The log step means equal <strong>ratios</strong> produce equal similarity drops.</p>
 <p>Non-positive values return a zero vector.</p>
-<h4 id="in-encoder-encoderrs464469"><a class="heading-anchor" href="#in-encoder-encoderrs464469" aria-hidden="true">#</a>In Encoder (encoder.rs:464–469)</h4>
+<h4 id="in-encoder-encoderrs464469">In Encoder (encoder.rs:464–469)<a class="heading-anchor" href="#in-encoder-encoderrs464469" aria-hidden="true">#</a></h4>
 <pre><code class="language-rust">pub fn encode_scalar_log(&amp;self, value: f64, scale: f64) -&gt; Vector {
     if value &lt;= 0.0 { return Vector::zeros(self.dimensions()); }
     let log_value = value.log10();
@@ -293,14 +293,14 @@ pub fn encode_log_base(&amp;self, value: f64, base: f64) -&gt; Vector {
 }
 </code></pre>
 <p>Takes log₁₀, then delegates to the <strong>transformer-style</strong> positional encoder with a caller-specified <code>scale</code> (default 1000.0 from the JSON marker path). Uses a different underlying algorithm than <code>ScalarEncoder::encode_log</code>.</p>
-<h3 id="3-encode-circular-circular-encoding"><a class="heading-anchor" href="#3-encode-circular-circular-encoding" aria-hidden="true">#</a>3. <code>encode-circular</code> — Circular Encoding</h3>
-<h4 id="in-scalarencoder-scalarrs135156"><a class="heading-anchor" href="#in-scalarencoder-scalarrs135156" aria-hidden="true">#</a>In ScalarEncoder (scalar.rs:135–156)</h4>
+<h3 id="3-encode-circular-circular-encoding">3. <code>encode-circular</code> — Circular Encoding<a class="heading-anchor" href="#3-encode-circular-circular-encoding" aria-hidden="true">#</a></h3>
+<h4 id="in-scalarencoder-scalarrs135156">In ScalarEncoder (scalar.rs:135–156)<a class="heading-anchor" href="#in-scalarencoder-scalarrs135156" aria-hidden="true">#</a></h4>
 <pre><code class="language-rust">let normalized = (value % period) / period;
 let angle = normalized * 2π;
 result[i] = sign(base[i] * cos(angle) + ortho[i] * sin(angle))
 </code></pre>
 <p>Nearly identical to <code>encode_linear</code>, but with an explicit modulo wrap: <code>value % period</code> ensures the endpoint wraps to the start. The doc says: <code>&quot;Values wrap at period, so 0 and period are identical.&quot;</code> (scalar.rs:43)</p>
-<h4 id="in-encoder-encoderrs489588-time-encoding"><a class="heading-anchor" href="#in-encoder-encoderrs489588-time-encoding" aria-hidden="true">#</a>In Encoder (encoder.rs:489–588) — Time Encoding</h4>
+<h4 id="in-encoder-encoderrs489588-time-encoding">In Encoder (encoder.rs:489–588) — Time Encoding<a class="heading-anchor" href="#in-encoder-encoderrs489588-time-encoding" aria-hidden="true">#</a></h4>
 <p>The <code>Encoder</code> does not expose a standalone <code>encode_circular</code> method. Instead, circular encoding appears <strong>inside <code>encode_time</code></strong>, which decomposes a Unix timestamp into hour-of-day (period 24), day-of-week (period 7), and approximate month (period 12):</p>
 <pre><code class="language-rust">// encoder.rs:522–540 (inline closure)
 let encode_circular = |value, period, base, ortho| -&gt; Vector {
@@ -312,7 +312,7 @@ let encode_circular = |value, period, base, ortho| -&gt; Vector {
 <p>The time encoder uses <strong>deterministic role vectors</strong> from <code>VectorManager</code> for base/ortho (e.g., <code>&quot;__time_base_hour__&quot;</code>, <code>&quot;__time_ortho_hour__&quot;</code>), not the ChaCha8Rng-based vectors from <code>ScalarEncoder</code>.</p>
 <p>The four components (hour, dow, month, position) are role-bound with named vectors (<code>&quot;__time_role_hour__&quot;</code> etc.), summed as f64, then thresholded to bipolar.</p>
 <hr />
-<h2 id="wat-spec-vs-rust-implementation"><a class="heading-anchor" href="#wat-spec-vs-rust-implementation" aria-hidden="true">#</a>WAT Spec vs Rust Implementation</h2>
+<h2 id="wat-spec-vs-rust-implementation">WAT Spec vs Rust Implementation<a class="heading-anchor" href="#wat-spec-vs-rust-implementation" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -341,14 +341,14 @@ let encode_circular = |value, period, base, ortho| -&gt; Vector {
 </table>
 <p>The WAT signatures match <code>ScalarEncoder</code>'s API more closely than <code>Encoder</code>'s. <code>Encoder</code> adds an extra <code>scale</code> parameter to log encoding and uses a fundamentally different algorithm.</p>
 <hr />
-<h2 id="additional-methods"><a class="heading-anchor" href="#additional-methods" aria-hidden="true">#</a>Additional Methods</h2>
-<h3 id="encode_f64-scalarrs283296"><a class="heading-anchor" href="#encode_f64-scalarrs283296" aria-hidden="true">#</a><code>encode_f64</code> (scalar.rs:283–296)</h3>
+<h2 id="additional-methods">Additional Methods<a class="heading-anchor" href="#additional-methods" aria-hidden="true">#</a></h2>
+<h3 id="encode_f64-scalarrs283296"><code>encode_f64</code> (scalar.rs:283–296)<a class="heading-anchor" href="#encode_f64-scalarrs283296" aria-hidden="true">#</a></h3>
 <p>Returns a <code>Vec&lt;f64&gt;</code> without bipolar thresholding — preserves the continuous rotation. The doc says: <code>&quot;Use for f64-space comparison when extracting scalars from accumulated prototypes.&quot;</code></p>
-<h3 id="decode_log-scalarrs226278"><a class="heading-anchor" href="#decode_log-scalarrs226278" aria-hidden="true">#</a><code>decode_log</code> (scalar.rs:226–278)</h3>
+<h3 id="decode_log-scalarrs226278"><code>decode_log</code> (scalar.rs:226–278)<a class="heading-anchor" href="#decode_log-scalarrs226278" aria-hidden="true">#</a></h3>
 <p>Inverse of <code>encode_log</code> via grid search: coarse pass over log10 space, then refinement around the best candidate. Uses <strong>agreement count</strong> (matching non-zero signs) rather than dot product: <code>&quot;to avoid norm bias from zero dimensions that positional encoding produces&quot;</code> (scalar.rs:218).</p>
-<h3 id="encode_with_seed-scalarrs302311"><a class="heading-anchor" href="#encode_with_seed-scalarrs302311" aria-hidden="true">#</a><code>encode_with_seed</code> (scalar.rs:302–311)</h3>
+<h3 id="encode_with_seed-scalarrs302311"><code>encode_with_seed</code> (scalar.rs:302–311)<a class="heading-anchor" href="#encode_with_seed-scalarrs302311" aria-hidden="true">#</a></h3>
 <p>Creates a per-name seeded encoder for encoding multiple independent scalar types (e.g., temperature vs pressure) without interference.</p>
-<h3 id="json-scalar-markers-encoderrs423453"><a class="heading-anchor" href="#json-scalar-markers-encoderrs423453" aria-hidden="true">#</a>JSON Scalar Markers (encoder.rs:423–453)</h3>
+<h3 id="json-scalar-markers-encoderrs423453">JSON Scalar Markers (encoder.rs:423–453)<a class="heading-anchor" href="#json-scalar-markers-encoderrs423453" aria-hidden="true">#</a></h3>
 <p>The JSON path supports inline scalar markers:</p>
 <ul>
 <li><code>{&quot;$log&quot;: 100}</code> → log10 encoding</li>
@@ -356,7 +356,7 @@ let encode_circular = |value, period, base, ortho| -&gt; Vector {
 <li><code>{&quot;$log&quot;: 100, &quot;$scale&quot;: 5000}</code> → custom scale parameter (default scale is 1000.0)</li>
 </ul>
 <hr />
-<h2 id="key-properties"><a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a>Key Properties</h2>
+<h2 id="key-properties">Key Properties<a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a></h2>
 <ol>
 <li><p><strong>Bipolar output</strong>: All encodings produce <code>{−1, 0, +1}</code> vectors. The zero entries occur at sin/cos zero-crossings (rotational) or exact zero values (positional).</p>
 </li>
@@ -372,7 +372,7 @@ let encode_circular = |value, period, base, ortho| -&gt; Vector {
 </li>
 </ol>
 <hr />
-<h2 id="source-quotes"><a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a>Source Quotes</h2>
+<h2 id="source-quotes">Source Quotes<a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a></h2>
 <blockquote>
 <p>&quot;Linear: Equal absolute differences have equal similarity drops — 100 → 200 has same similarity drop as 1000 → 1100. Use for: temperatures, positions, times.&quot;
 — scalar.rs:9–11</p>

@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,7 +222,7 @@
         Conviction — the strength of a prediction <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
 <p>Conviction is the absolute value of the winning cosine similarity in a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;'s discrete prediction. It measures how strongly the reckoner leans toward one classification direction, on a scale of 0.0 (no preference) to 1.0 (maximum alignment). It is the primary input to the reckoner's self-evaluation mechanism — the &lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;conviction–accuracy curve&lt;/a&gt; — which validates whether the reckoner's confidence is well-calibrated.</p>
 <hr />
 </div>
@@ -231,7 +231,7 @@
 <p><strong>Composite wiki page.</strong> Every claim below is traced to verified source documents.</p>
 </blockquote>
 <hr />
-<h2 id="definition"><a class="heading-anchor" href="#definition" aria-hidden="true">#</a>Definition</h2>
+<h2 id="definition">Definition<a class="heading-anchor" href="#definition" aria-hidden="true">#</a></h2>
 <p>In discrete mode, a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; computes the cosine similarity between the input thought and each label's learned &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;discriminant&lt;/a&gt; direction. The label with the highest raw cosine becomes the predicted <code>direction</code>. The <strong>conviction</strong> is the absolute value of that cosine:</p>
 <pre><code>conviction = |best_raw_cosine|
 </code></pre>
@@ -246,7 +246,7 @@
 <p>— T0-008 §3.2</p>
 <p>Conviction is always non-negative <code>[0.0, 1.0]</code>. A conviction of 0.0 means the thought is orthogonal to all discriminant directions (the reckoner has no opinion). A conviction of 1.0 means perfect alignment with the winning discriminant.</p>
 <hr />
-<h2 id="computation"><a class="heading-anchor" href="#computation" aria-hidden="true">#</a>Computation</h2>
+<h2 id="computation">Computation<a class="heading-anchor" href="#computation" aria-hidden="true">#</a></h2>
 <p>The prediction path in <code>Reckoner::predict()</code>:</p>
 <ol>
 <li>For each label, compute cosine similarity between the (mean-stripped) thought and that label's discriminant vector.</li>
@@ -260,7 +260,7 @@
 — T0-008 §3.2</p>
 </blockquote>
 <hr />
-<h2 id="the-convictionaccuracy-curve"><a class="heading-anchor" href="#the-convictionaccuracy-curve" aria-hidden="true">#</a>The conviction–accuracy curve</h2>
+<h2 id="the-convictionaccuracy-curve">The conviction–accuracy curve<a class="heading-anchor" href="#the-convictionaccuracy-curve" aria-hidden="true">#</a></h2>
 <p>Conviction's deeper purpose is self-evaluation. Through the <code>resolve(conviction, correct)</code> method, the reckoner records a sliding window of <code>(conviction, was_it_right?)</code> pairs. Once enough data accumulates (≥500 resolved predictions), <code>curve()</code> fits the empirical relationship:</p>
 <pre><code>accuracy = (1/N) + a × exp(b × conviction)
 </code></pre>
@@ -276,7 +276,7 @@
 — T0-008 §6.7</p>
 </blockquote>
 <hr />
-<h2 id="relationship-to-cosine-similarity"><a class="heading-anchor" href="#relationship-to-cosine-similarity" aria-hidden="true">#</a>Relationship to cosine similarity</h2>
+<h2 id="relationship-to-cosine-similarity">Relationship to cosine similarity<a class="heading-anchor" href="#relationship-to-cosine-similarity" aria-hidden="true">#</a></h2>
 <p>Conviction is a direct application of &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt; — the singular measurement primitive in the holon system. The WAT spec declares:</p>
 <blockquote>
 <p>&quot;The only measurement. One number.&quot;
@@ -285,7 +285,7 @@
 <p>Cosine returns a value in <code>[-1, 1]</code> measuring the angle between two vectors, independent of magnitude. Conviction folds the sign away to produce a scalar confidence measure: alignment with the discriminant direction, regardless of polarity.</p>
 <p>The cosine similarity in this context operates on the f64 pipeline (<code>cosine_f64</code>), since discriminants are normalized f64 vectors, not the i8 bipolar <code>Vector</code> type used elsewhere.</p>
 <hr />
-<h2 id="role-in-the-system"><a class="heading-anchor" href="#role-in-the-system" aria-hidden="true">#</a>Role in the system</h2>
+<h2 id="role-in-the-system">Role in the system<a class="heading-anchor" href="#role-in-the-system" aria-hidden="true">#</a></h2>
 <p>Conviction appears in three contexts:</p>
 <ol>
 <li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; prediction output</strong> — as <code>Prediction.conviction</code>, the immediate confidence signal accompanying every discrete classification.</li>
@@ -299,7 +299,7 @@
 </blockquote>
 <p>Conviction is how that separation expresses its confidence.</p>
 <hr />
-<h2 id="sources"><a class="heading-anchor" href="#sources" aria-hidden="true">#</a>Sources</h2>
+<h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>

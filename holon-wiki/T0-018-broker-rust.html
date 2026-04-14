@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -227,7 +227,7 @@
 <strong>Compiled from:</strong> <code>wat/broker.wat</code><br />
 <strong>Verdict:</strong> Accountable. Complete. Quoted below.</p>
 <hr />
-<h2 id="1-module-purpose-lines-16"><a class="heading-anchor" href="#1-module-purpose-lines-16" aria-hidden="true">#</a>1. Module Purpose (Lines 1–6)</h2>
+<h2 id="1-module-purpose-lines-16">1. Module Purpose (Lines 1–6)<a class="heading-anchor" href="#1-module-purpose-lines-16" aria-hidden="true">#</a></h2>
 <pre><code>/// broker.rs — The accountability primitive. Binds one market observer + one
 /// position observer. Compiled from wat/broker.wat.
 ///
@@ -236,7 +236,7 @@
 
 <p><strong>What it is:</strong> The broker binds exactly one market observer to one position observer. It is the accountability unit. It owns paper trades, scalar accumulators for distances, and does dollar-P&amp;L reckoning. All outputs flow upward as return values — no shared mutation during parallel phases.</p>
 <hr />
-<h2 id="2-imports-lines-717"><a class="heading-anchor" href="#2-imports-lines-717" aria-hidden="true">#</a>2. Imports (Lines 7–17)</h2>
+<h2 id="2-imports-lines-717">2. Imports (Lines 7–17)<a class="heading-anchor" href="#2-imports-lines-717" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -294,7 +294,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="3-struct-runnerhistory-lines-1926"><a class="heading-anchor" href="#3-struct-runnerhistory-lines-1926" aria-hidden="true">#</a>3. Struct: <code>RunnerHistory</code> (Lines 19–26)</h2>
+<h2 id="3-struct-runnerhistory-lines-1926">3. Struct: <code>RunnerHistory</code> (Lines 19–26)<a class="heading-anchor" href="#3-struct-runnerhistory-lines-1926" aria-hidden="true">#</a></h2>
 <pre><code class="language-rust">pub struct RunnerHistory {
     pub thoughts: Vec&lt;Vector&gt;,
     pub distances: Vec&lt;Distances&gt;,
@@ -304,8 +304,8 @@
 <p><strong>Purpose:</strong> Per-candle accumulated data for a runner paper. Created when a paper signals Grace (trail crossed). Stores three parallel arrays — the composed thought, the distances used, and the actual price — at each candle during the runner phase. Used at runner resolution for deferred batch training of the position observer.</p>
 <p><strong>Lifecycle:</strong> Created empty at signal time (line 343–347). Accumulated each tick while the runner is active (lines 351–357). Consumed at runner resolution via <code>compute_position_batch()</code> (line 374).</p>
 <hr />
-<h2 id="4-struct-resolution-lines-2898"><a class="heading-anchor" href="#4-struct-resolution-lines-2898" aria-hidden="true">#</a>4. Struct: <code>Resolution</code> (Lines 28–98)</h2>
-<h3 id="fields-15-total"><a class="heading-anchor" href="#fields-15-total" aria-hidden="true">#</a>Fields (15 total)</h3>
+<h2 id="4-struct-resolution-lines-2898">4. Struct: <code>Resolution</code> (Lines 28–98)<a class="heading-anchor" href="#4-struct-resolution-lines-2898" aria-hidden="true">#</a></h2>
+<h3 id="fields-15-total">Fields (15 total)<a class="heading-anchor" href="#fields-15-total" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -397,7 +397,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="constructor-resolutionfrom_paper-lines-6798"><a class="heading-anchor" href="#constructor-resolutionfrom_paper-lines-6798" aria-hidden="true">#</a>Constructor: <code>Resolution::from_paper()</code> (Lines 67–98)</h3>
+<h3 id="constructor-resolutionfrom_paper-lines-6798">Constructor: <code>Resolution::from_paper()</code> (Lines 67–98)<a class="heading-anchor" href="#constructor-resolutionfrom_paper-lines-6798" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">fn from_paper(
     paper: &amp;PaperEntry,
     broker_slot_idx: usize,
@@ -414,7 +414,7 @@
 </ul>
 <p>All other fields copied directly from the paper entry or passed through.</p>
 <hr />
-<h2 id="5-struct-propagationfacts-lines-100121"><a class="heading-anchor" href="#5-struct-propagationfacts-lines-100121" aria-hidden="true">#</a>5. Struct: <code>PropagationFacts</code> (Lines 100–121)</h2>
+<h2 id="5-struct-propagationfacts-lines-100121">5. Struct: <code>PropagationFacts</code> (Lines 100–121)<a class="heading-anchor" href="#5-struct-propagationfacts-lines-100121" aria-hidden="true">#</a></h2>
 <pre><code class="language-rust">pub struct PropagationFacts {
     pub market_idx: usize,       // Which market observer should learn
     pub position_idx: usize,     // Which position observer should learn
@@ -428,8 +428,8 @@
 </code></pre>
 <p><strong>Purpose:</strong> The return value of <code>propagate()</code>. The post collects these from all brokers and routes them to the correct observers via mailbox channels. Values up — the broker does not talk to observers directly.</p>
 <hr />
-<h2 id="6-struct-broker-lines-123173"><a class="heading-anchor" href="#6-struct-broker-lines-123173" aria-hidden="true">#</a>6. Struct: <code>Broker</code> (Lines 123–173)</h2>
-<h3 id="fields-24-total"><a class="heading-anchor" href="#fields-24-total" aria-hidden="true">#</a>Fields (24 total)</h3>
+<h2 id="6-struct-broker-lines-123173">6. Struct: <code>Broker</code> (Lines 123–173)<a class="heading-anchor" href="#6-struct-broker-lines-123173" aria-hidden="true">#</a></h2>
+<h3 id="fields-24-total">Fields (24 total)<a class="heading-anchor" href="#fields-24-total" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -587,8 +587,8 @@
 </tbody>
 </table>
 <hr />
-<h2 id="7-methods"><a class="heading-anchor" href="#7-methods" aria-hidden="true">#</a>7. Methods</h2>
-<h3 id="71-brokernew-constructor-lines-178214"><a class="heading-anchor" href="#71-brokernew-constructor-lines-178214" aria-hidden="true">#</a>7.1 <code>Broker::new()</code> — Constructor (Lines 178–214)</h3>
+<h2 id="7-methods">7. Methods<a class="heading-anchor" href="#7-methods" aria-hidden="true">#</a></h2>
+<h3 id="71-brokernew-constructor-lines-178214">7.1 <code>Broker::new()</code> — Constructor (Lines 178–214)<a class="heading-anchor" href="#71-brokernew-constructor-lines-178214" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn new(
     observer_names: Vec&lt;String&gt;,
     slot_idx: usize,
@@ -601,7 +601,7 @@
 </code></pre>
 <p><strong>Contract:</strong> Asserts <code>position_count &gt; 0</code> (divide-by-zero guard). All counters start at zero. No reckoner, no noise subspace — &quot;Pure accounting + gate + log&quot; (Proposal 035).</p>
 <hr />
-<h3 id="72-market_idx-position_idx-grid-derivation-lines-217224"><a class="heading-anchor" href="#72-market_idx-position_idx-grid-derivation-lines-217224" aria-hidden="true">#</a>7.2 <code>market_idx()</code> / <code>position_idx()</code> — Grid Derivation (Lines 217–224)</h3>
+<h3 id="72-market_idx-position_idx-grid-derivation-lines-217224">7.2 <code>market_idx()</code> / <code>position_idx()</code> — Grid Derivation (Lines 217–224)<a class="heading-anchor" href="#72-market_idx-position_idx-grid-derivation-lines-217224" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn market_idx(&amp;self) -&gt; usize {
     self.slot_idx / self.position_count    // integer division
 }
@@ -616,7 +616,7 @@ pub fn position_idx(&amp;self) -&gt; usize {
 </ul>
 <p><strong>Test confirmation (line 615–626):</strong> <code>slot_idx=5, position_count=3</code> → <code>market_idx=1, position_idx=2</code>.</p>
 <hr />
-<h3 id="73-gate_open-the-gate-lines-229232"><a class="heading-anchor" href="#73-gate_open-the-gate-lines-229232" aria-hidden="true">#</a>7.3 <code>gate_open()</code> — The Gate (Lines 229–232)</h3>
+<h3 id="73-gate_open-the-gate-lines-229232">7.3 <code>gate_open()</code> — The Gate (Lines 229–232)<a class="heading-anchor" href="#73-gate_open-the-gate-lines-229232" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn gate_open(&amp;self) -&gt; bool {
     let cold_start = self.grace_count &lt; 50 || self.violence_count &lt; 50;
     cold_start || self.expected_value &gt; 0.0
@@ -629,7 +629,7 @@ pub fn position_idx(&amp;self) -&gt; usize {
 </ol>
 <p><strong>Comment (line 228):</strong> <code>// rune:reap(scaffolding) — awaiting Phase 5 treasury.</code></p>
 <hr />
-<h3 id="74-cascade_distances-the-distance-cascade-lines-236255"><a class="heading-anchor" href="#74-cascade_distances-the-distance-cascade-lines-236255" aria-hidden="true">#</a>7.4 <code>cascade_distances()</code> — The Distance Cascade (Lines 236–255)</h3>
+<h3 id="74-cascade_distances-the-distance-cascade-lines-236255">7.4 <code>cascade_distances()</code> — The Distance Cascade (Lines 236–255)<a class="heading-anchor" href="#74-cascade_distances-the-distance-cascade-lines-236255" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn cascade_distances(&amp;self, reckoner_answer: Option&lt;Distances&gt;, se: &amp;ScalarEncoder) -&gt; Distances
 </code></pre>
 <p><strong>Three-tier fallback:</strong></p>
@@ -662,7 +662,7 @@ pub fn position_idx(&amp;self) -&gt; usize {
 <p><strong>Key detail:</strong> The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned.</p>
 <p><strong>Accumulator extraction:</strong> <code>self.trail_accum.extract(100, (0.001, 0.10), se)</code> — 100 samples, clamped to [0.1%, 10%].</p>
 <hr />
-<h3 id="75-register_paper-paper-creation-lines-260282"><a class="heading-anchor" href="#75-register_paper-paper-creation-lines-260282" aria-hidden="true">#</a>7.5 <code>register_paper()</code> — Paper Creation (Lines 260–282)</h3>
+<h3 id="75-register_paper-paper-creation-lines-260282">7.5 <code>register_paper()</code> — Paper Creation (Lines 260–282)<a class="heading-anchor" href="#75-register_paper-paper-creation-lines-260282" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn register_paper(
     &amp;mut self,
     composed: Vector,
@@ -676,14 +676,14 @@ pub fn position_idx(&amp;self) -&gt; usize {
 </code></pre>
 <p><strong>Called:</strong> Every candle, for every broker. Creates a new <code>PaperEntry</code> with a monotonic <code>paper_id</code>, pushes it onto the <code>papers</code> VecDeque. The paper records the composed thought (market+position), the raw market thought, and the position thought separately (Proposal 026 — position observer learns from its own thought).</p>
 <hr />
-<h3 id="76-close_all_runners-direction-flip-handler-lines-286315"><a class="heading-anchor" href="#76-close_all_runners-direction-flip-handler-lines-286315" aria-hidden="true">#</a>7.6 <code>close_all_runners()</code> — Direction Flip Handler (Lines 286–315)</h3>
+<h3 id="76-close_all_runners-direction-flip-handler-lines-286315">7.6 <code>close_all_runners()</code> — Direction Flip Handler (Lines 286–315)<a class="heading-anchor" href="#76-close_all_runners-direction-flip-handler-lines-286315" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn close_all_runners(&amp;mut self, _current_price: Price) -&gt; Vec&lt;Resolution&gt;
 </code></pre>
 <p><strong>Called when:</strong> The market observer's active direction flips (e.g., was predicting Up, now predicts Down).</p>
 <p><strong>Behavior:</strong> Iterates all papers. Force-resolves any that are <code>signaled &amp;&amp; !resolved</code> (active runners) with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally). Computes optimal distances via <code>simulation::compute_optimal_distances()</code> on the paper's full price history. Computes the position batch from accumulated runner history if available.</p>
 <p><strong>Note:</strong> The <code>_current_price</code> parameter is accepted but unused (prefixed with underscore). The resolution uses the paper's own tracked data.</p>
 <hr />
-<h3 id="77-tick_papers-the-core-tick-lines-320406"><a class="heading-anchor" href="#77-tick_papers-the-core-tick-lines-320406" aria-hidden="true">#</a>7.7 <code>tick_papers()</code> — The Core Tick (Lines 320–406)</h3>
+<h3 id="77-tick_papers-the-core-tick-lines-320406">7.7 <code>tick_papers()</code> — The Core Tick (Lines 320–406)<a class="heading-anchor" href="#77-tick_papers-the-core-tick-lines-320406" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn tick_papers(&amp;mut self, current_price: Price) -&gt; (Vec&lt;Resolution&gt;, Vec&lt;Resolution&gt;)
 </code></pre>
 <p><strong>Returns two vectors:</strong></p>
@@ -748,7 +748,7 @@ pub fn position_idx(&amp;self) -&gt; usize {
 </tbody>
 </table>
 <hr />
-<h3 id="78-propagate-learning-propagation-lines-413483"><a class="heading-anchor" href="#78-propagate-learning-propagation-lines-413483" aria-hidden="true">#</a>7.8 <code>propagate()</code> — Learning Propagation (Lines 413–483)</h3>
+<h3 id="78-propagate-learning-propagation-lines-413483">7.8 <code>propagate()</code> — Learning Propagation (Lines 413–483)<a class="heading-anchor" href="#78-propagate-learning-propagation-lines-413483" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn propagate(
     &amp;mut self,
     thought: &amp;Vector,
@@ -762,19 +762,19 @@ pub fn position_idx(&amp;self) -&gt; usize {
 ) -&gt; PropagationFacts
 </code></pre>
 <p><strong>Three responsibilities:</strong></p>
-<h4 id="step-1-track-record-lines-425435"><a class="heading-anchor" href="#step-1-track-record-lines-425435" aria-hidden="true">#</a>Step 1 — Track Record (Lines 425–435)</h4>
+<h4 id="step-1-track-record-lines-425435">Step 1 — Track Record (Lines 425–435)<a class="heading-anchor" href="#step-1-track-record-lines-425435" aria-hidden="true">#</a></h4>
 <pre><code class="language-rust">match outcome {
     Outcome::Grace =&gt; { self.cumulative_grace += weight; self.grace_count += 1; }
     Outcome::Violence =&gt; { self.cumulative_violence += weight; self.violence_count += 1; }
 }
 self.trade_count += 1;
 </code></pre>
-<h4 id="step-2-scalar-accumulators-learn-lines-437439"><a class="heading-anchor" href="#step-2-scalar-accumulators-learn-lines-437439" aria-hidden="true">#</a>Step 2 — Scalar Accumulators Learn (Lines 437–439)</h4>
+<h4 id="step-2-scalar-accumulators-learn-lines-437439">Step 2 — Scalar Accumulators Learn (Lines 437–439)<a class="heading-anchor" href="#step-2-scalar-accumulators-learn-lines-437439" aria-hidden="true">#</a></h4>
 <pre><code class="language-rust">self.trail_accum.observe(optimal.trail, outcome, weight, scalar_encoder);
 self.stop_accum.observe(optimal.stop, outcome, weight, scalar_encoder);
 </code></pre>
 <p>The accumulators observe the <strong>optimal</strong> (hindsight) distances, weighted by outcome. This teaches the accumulators what trail/stop would have been ideal.</p>
-<h4 id="step-3-dollar-pampl-and-ema-lines-441470"><a class="heading-anchor" href="#step-3-dollar-pampl-and-ema-lines-441470" aria-hidden="true">#</a>Step 3 — Dollar P&amp;L and EMA (Lines 441–470)</h4>
+<h4 id="step-3-dollar-pampl-and-ema-lines-441470">Step 3 — Dollar P&amp;L and EMA (Lines 441–470)<a class="heading-anchor" href="#step-3-dollar-pampl-and-ema-lines-441470" aria-hidden="true">#</a></h4>
 <p><strong>Reference capital:</strong> <code>10_000.0</code> (constant).</p>
 <p><strong>Grace P&amp;L:</strong></p>
 <pre><code>residue_usd = weight × 10_000        // weight IS excursion for Grace
@@ -799,14 +799,14 @@ self.expected_value = gr × avg_grace_net + (1 - gr) × avg_violence_net;
 </code></pre>
 <p><strong>Return:</strong> <code>PropagationFacts</code> containing which observers should learn and with what data.</p>
 <hr />
-<h3 id="79-paper_count-active-papers-lines-486488"><a class="heading-anchor" href="#79-paper_count-active-papers-lines-486488" aria-hidden="true">#</a>7.9 <code>paper_count()</code> — Active Papers (Lines 486–488)</h3>
+<h3 id="79-paper_count-active-papers-lines-486488">7.9 <code>paper_count()</code> — Active Papers (Lines 486–488)<a class="heading-anchor" href="#79-paper_count-active-papers-lines-486488" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn paper_count(&amp;self) -&gt; usize {
     self.papers.len()
 }
 </code></pre>
 <hr />
-<h2 id="8-free-functions"><a class="heading-anchor" href="#8-free-functions" aria-hidden="true">#</a>8. Free Functions</h2>
-<h3 id="81-approximate_optimal_distances-lines-493508"><a class="heading-anchor" href="#81-approximate_optimal_distances-lines-493508" aria-hidden="true">#</a>8.1 <code>approximate_optimal_distances()</code> (Lines 493–508)</h3>
+<h2 id="8-free-functions">8. Free Functions<a class="heading-anchor" href="#8-free-functions" aria-hidden="true">#</a></h2>
+<h3 id="81-approximate_optimal_distances-lines-493508">8.1 <code>approximate_optimal_distances()</code> (Lines 493–508)<a class="heading-anchor" href="#81-approximate_optimal_distances-lines-493508" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">fn approximate_optimal_distances(entry: f64, extreme: f64, prediction: Direction) -&gt; Distances
 </code></pre>
 <p><strong>Used for:</strong> Market signal resolutions (Grace signal, Violence stop). Quick approximation without full simulation.</p>
@@ -818,7 +818,7 @@ trail     = (excursion × 0.5).clamp(0.001, 0.10)  // 50% of excursion, clamped
 stop      = 0.001                                  // bootstrap — always near-zero
 </code></pre>
 <p><strong>Comment (line 503–505):</strong> &quot;Stop is learned independently — near-zero bootstrap. The simulation (compute_optimal_distances) teaches the real value. This approximation doesn't have enough information to derive stop.&quot;</p>
-<h3 id="82-compute_position_batch-lines-513572"><a class="heading-anchor" href="#82-compute_position_batch-lines-513572" aria-hidden="true">#</a>8.2 <code>compute_position_batch()</code> (Lines 513–572)</h3>
+<h3 id="82-compute_position_batch-lines-513572">8.2 <code>compute_position_batch()</code> (Lines 513–572)<a class="heading-anchor" href="#82-compute_position_batch-lines-513572" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">fn compute_position_batch(
     history: &amp;RunnerHistory,
     prediction: Direction,
@@ -853,7 +853,7 @@ optimal_trail = clamp(optimal_trail, 0.001, 0.10)
 </ol>
 <p><strong>Batch entry:</strong> <code>(thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight)</code>.</p>
 <hr />
-<h2 id="9-tests-lines-574887-15-tests"><a class="heading-anchor" href="#9-tests-lines-574887-15-tests" aria-hidden="true">#</a>9. Tests (Lines 574–887, 15 tests)</h2>
+<h2 id="9-tests-lines-574887-15-tests">9. Tests (Lines 574–887, 15 tests)<a class="heading-anchor" href="#9-tests-lines-574887-15-tests" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -956,7 +956,7 @@ optimal_trail = clamp(optimal_trail, 0.001, 0.10)
 </tbody>
 </table>
 <hr />
-<h2 id="10-data-flow-summary"><a class="heading-anchor" href="#10-data-flow-summary" aria-hidden="true">#</a>10. Data Flow Summary</h2>
+<h2 id="10-data-flow-summary">10. Data Flow Summary<a class="heading-anchor" href="#10-data-flow-summary" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
     candle_arrives[&quot;Candle arrives&quot;] --&gt; register_paper[&quot;register_paper()\ncreates PaperEntry with thoughts + distances&quot;]
     register_paper --&gt;|&quot;next candle&quot;| tick_papers[&quot;tick_papers()&quot;]
@@ -976,7 +976,7 @@ optimal_trail = clamp(optimal_trail, 0.001, 0.10)
     gate_open --&gt;|&quot;Warm (≥ 50 of both)&quot;| ev_check[&quot;open iff expected_value &gt; 0&quot;]
 </code></pre>
 <hr />
-<h2 id="11-key-design-decisions-quoted"><a class="heading-anchor" href="#11-key-design-decisions-quoted" aria-hidden="true">#</a>11. Key Design Decisions (Quoted)</h2>
+<h2 id="11-key-design-decisions-quoted">11. Key Design Decisions (Quoted)<a class="heading-anchor" href="#11-key-design-decisions-quoted" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -1039,7 +1039,7 @@ optimal_trail = clamp(optimal_trail, 0.001, 0.10)
 </tbody>
 </table>
 <hr />
-<h2 id="12-findings"><a class="heading-anchor" href="#12-findings" aria-hidden="true">#</a>12. Findings</h2>
+<h2 id="12-findings">12. Findings<a class="heading-anchor" href="#12-findings" aria-hidden="true">#</a></h2>
 <ol>
 <li><strong>Complete.</strong> All 24 fields documented. All 9 methods (including 2 free functions) documented. Every code path traced.</li>
 <li><strong>No hidden mutation.</strong> <code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state. <code>tick_papers()</code> returns <code>Vec&lt;Resolution&gt;</code> — the broker does not call propagate itself.</li>

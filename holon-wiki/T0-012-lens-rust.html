@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -228,8 +228,8 @@
 <li><code>src/types/enums.rs</code> (247 lines)</li>
 </ul>
 <hr />
-<h2 id="enum-definitions-enumsrs"><a class="heading-anchor" href="#enum-definitions-enumsrs" aria-hidden="true">#</a>Enum Definitions (enums.rs)</h2>
-<h3 id="marketlens-11-variants-3-schools"><a class="heading-anchor" href="#marketlens-11-variants-3-schools" aria-hidden="true">#</a>MarketLens — 11 variants, 3 schools</h3>
+<h2 id="enum-definitions-enumsrs">Enum Definitions (enums.rs)<a class="heading-anchor" href="#enum-definitions-enumsrs" aria-hidden="true">#</a></h2>
+<h3 id="marketlens-11-variants-3-schools">MarketLens — 11 variants, 3 schools<a class="heading-anchor" href="#marketlens-11-variants-3-schools" aria-hidden="true">#</a></h3>
 <pre><code>pub enum MarketLens {
     // Dow school
     DowTrend,
@@ -249,7 +249,7 @@
 </code></pre>
 <p>Derives: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code></p>
 <p>Display strings: <code>dow-trend</code>, <code>dow-volume</code>, <code>dow-cycle</code>, <code>dow-generalist</code>, <code>pring-impulse</code>, <code>pring-confirmation</code>, <code>pring-regime</code>, <code>pring-generalist</code>, <code>wyckoff-effort</code>, <code>wyckoff-persistence</code>, <code>wyckoff-position</code></p>
-<h3 id="positionlens-2-variants"><a class="heading-anchor" href="#positionlens-2-variants" aria-hidden="true">#</a>PositionLens — 2 variants</h3>
+<h3 id="positionlens-2-variants">PositionLens — 2 variants<a class="heading-anchor" href="#positionlens-2-variants" aria-hidden="true">#</a></h3>
 <pre><code>pub enum PositionLens {
     Core,   // 5 trade atoms — lean
     Full,   // 13 trade atoms — rich
@@ -258,10 +258,10 @@
 <p>Derives: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code></p>
 <p>Display strings: <code>core</code>, <code>full</code></p>
 <hr />
-<h2 id="lens-wiring-lensrs"><a class="heading-anchor" href="#lens-wiring-lensrs" aria-hidden="true">#</a>Lens Wiring (lens.rs)</h2>
-<h3 id="shared-module-all-market-lenses"><a class="heading-anchor" href="#shared-module-all-market-lenses" aria-hidden="true">#</a>Shared Module (all market lenses)</h3>
+<h2 id="lens-wiring-lensrs">Lens Wiring (lens.rs)<a class="heading-anchor" href="#lens-wiring-lensrs" aria-hidden="true">#</a></h2>
+<h3 id="shared-module-all-market-lenses">Shared Module (all market lenses)<a class="heading-anchor" href="#shared-module-all-market-lenses" aria-hidden="true">#</a></h3>
 <p>Every <code>MarketLens</code> variant includes <code>shared::time</code> (<code>encode_time_facts</code>). This is encoded once before the match, not repeated per arm.</p>
-<h3 id="market-lens-module-map"><a class="heading-anchor" href="#market-lens-module-map" aria-hidden="true">#</a>Market Lens → Module Map</h3>
+<h3 id="market-lens-module-map">Market Lens → Module Map<a class="heading-anchor" href="#market-lens-module-map" aria-hidden="true">#</a></h3>
 <p>All modules are in <code>vocab::market::*</code> unless noted otherwise.</p>
 <table>
 <thead>
@@ -330,7 +330,7 @@
 </tbody>
 </table>
 <p><strong>Generalist property:</strong> Each <code>*Generalist</code> is the union of its school's three specialist lenses (superset of modules).</p>
-<h3 id="position-lens-module-map"><a class="heading-anchor" href="#position-lens-module-map" aria-hidden="true">#</a>Position Lens → Module Map</h3>
+<h3 id="position-lens-module-map">Position Lens → Module Map<a class="heading-anchor" href="#position-lens-module-map" aria-hidden="true">#</a></h3>
 <p>Modules are in <code>vocab::exit::*</code> and <code>vocab::shared::*</code>.</p>
 <table>
 <thead>
@@ -350,7 +350,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="removed-proposals-041042"><a class="heading-anchor" href="#removed-proposals-041042" aria-hidden="true">#</a>Removed (Proposals 041+042)</h3>
+<h3 id="removed-proposals-041042">Removed (Proposals 041+042)<a class="heading-anchor" href="#removed-proposals-041042" aria-hidden="true">#</a></h3>
 <p>Per <code>lens.rs</code> comments:</p>
 <ul>
 <li><code>ichimoku</code> — removed from all lenses</li>
@@ -359,7 +359,7 @@
 <li><code>fibonacci</code> is used only by <code>WyckoffPosition</code></li>
 </ul>
 <hr />
-<h2 id="vocabulary-module-reference"><a class="heading-anchor" href="#vocabulary-module-reference" aria-hidden="true">#</a>Vocabulary Module Reference</h2>
+<h2 id="vocabulary-module-reference">Vocabulary Module Reference<a class="heading-anchor" href="#vocabulary-module-reference" aria-hidden="true">#</a></h2>
 <p>Complete list of modules actually wired into lenses (encoder function → source path):</p>
 <table>
 <thead>
@@ -458,7 +458,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="tests-lensrs-lines-192258"><a class="heading-anchor" href="#tests-lensrs-lines-192258" aria-hidden="true">#</a>Tests (lens.rs, lines 192–258)</h2>
+<h2 id="tests-lensrs-lines-192258">Tests (lens.rs, lines 192–258)<a class="heading-anchor" href="#tests-lensrs-lines-192258" aria-hidden="true">#</a></h2>
 <ol>
 <li><code>test_market_lens_facts_differ_by_lens</code> — asserts DowTrend ≠ WyckoffEffort ≠ PringImpulse by fact count</li>
 <li><code>test_generalists_include_school_modules</code> — asserts DowGeneralist ≥ each Dow specialist, PringGeneralist ≥ each Pring specialist by fact count</li>

@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,12 +222,12 @@
         Atom — the irreducible unit of meaning <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr"><a class="heading-anchor" href="#tldr" aria-hidden="true">#</a>TL;DR</h2>
+      <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
 <p>An <strong>atom</strong> is the smallest named unit of semantic content in the Holon system. It is a string identifier (e.g., <code>rsi</code>, <code>kama-er</code>, <code>phase</code>) that maps deterministically to a high-dimensional bipolar vector via the &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;. Atoms are emitted by &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; modules, carry encoded scalar values through encoding schemes (Linear, Log, Circular), and serve as the fundamental inputs to the thought pipeline. There are approximately 99–100 unique atom names across all live vocabulary domains.</p>
 <hr />
 </div>
       
-      <div class="prose prose-invert max-w-none"><h2 id="what-an-atom-is"><a class="heading-anchor" href="#what-an-atom-is" aria-hidden="true">#</a>What an atom IS</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-an-atom-is">What an atom IS<a class="heading-anchor" href="#what-an-atom-is" aria-hidden="true">#</a></h2>
 <p>An atom is a <strong>name</strong> — nothing more, nothing less. It carries no intrinsic structure beyond its string identity and the encoding scheme that produces its scalar value. The GUIDE is explicit:</p>
 <blockquote>
 <p>&quot;No zones. No categories. Only scalars. 'Overbought' is a human label on a continuous value — a magic number wearing a name. WHO decided 70 was the boundary? The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are.&quot; <em>(T2-004, GUIDE lines 1396–1405)</em></p>
@@ -237,7 +237,7 @@
 <p>&quot;This module provides the core guarantee of Holon: The same atomic value ALWAYS produces the SAME vector.&quot; <em>(T0-005)</em></p>
 </blockquote>
 <hr />
-<h2 id="encoding-schemes-how-atoms-carry-values"><a class="heading-anchor" href="#encoding-schemes-how-atoms-carry-values" aria-hidden="true">#</a>Encoding schemes — how atoms carry values</h2>
+<h2 id="encoding-schemes-how-atoms-carry-values">Encoding schemes — how atoms carry values<a class="heading-anchor" href="#encoding-schemes-how-atoms-carry-values" aria-hidden="true">#</a></h2>
 <p>Atoms are not static symbols. Each atom carries a <strong>scalar value</strong> produced by one of three encoding schemes. The encoding scheme IS the bounding strategy:</p>
 <table>
 <thead>
@@ -280,7 +280,7 @@
 <p>&quot;The sign IS the direction. The magnitude IS the distance. No 'above' atom. No 'below' atom. No boolean. Just the number.&quot; <em>(T2-004, GUIDE lines 1346–1356)</em></p>
 </blockquote>
 <hr />
-<h2 id="atom-anatomy-name-vector-thought"><a class="heading-anchor" href="#atom-anatomy-name-vector-thought" aria-hidden="true">#</a>Atom anatomy: name → vector → thought</h2>
+<h2 id="atom-anatomy-name-vector-thought">Atom anatomy: name → vector → thought<a class="heading-anchor" href="#atom-anatomy-name-vector-thought" aria-hidden="true">#</a></h2>
 <ol>
 <li><strong>Name</strong> — The atom's string identity (e.g., <code>&quot;rsi&quot;</code>, <code>&quot;kama-er&quot;</code>, <code>&quot;phase&quot;</code>).</li>
 <li><strong>Scalar value</strong> — Produced by the vocabulary encoder using the atom's encoding scheme.</li>
@@ -296,8 +296,8 @@
 <p>&quot;Position vectors are seeded with <code>__pos__{position}</code> to match the Python implementation's <code>_position_to_seed()</code>.&quot; <em>(T0-005)</em></p>
 </blockquote>
 <hr />
-<h2 id="atom-taxonomy-by-domain"><a class="heading-anchor" href="#atom-taxonomy-by-domain" aria-hidden="true">#</a>Atom taxonomy by domain</h2>
-<h3 id="shared-universal-temporal-context"><a class="heading-anchor" href="#shared-universal-temporal-context" aria-hidden="true">#</a>shared/ — Universal temporal context</h3>
+<h2 id="atom-taxonomy-by-domain">Atom taxonomy by domain<a class="heading-anchor" href="#atom-taxonomy-by-domain" aria-hidden="true">#</a></h2>
+<h3 id="shared-universal-temporal-context">shared/ — Universal temporal context<a class="heading-anchor" href="#shared-universal-temporal-context" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -317,7 +317,7 @@
 <blockquote>
 <p>&quot;Any observer can use these.&quot; <em>(T2-004, GUIDE line 1256)</em></p>
 </blockquote>
-<h3 id="market-13-modules-79-atoms"><a class="heading-anchor" href="#market-13-modules-79-atoms" aria-hidden="true">#</a>market/ — 13 modules, ~79 atoms</h3>
+<h3 id="market-13-modules-79-atoms">market/ — 13 modules, ~79 atoms<a class="heading-anchor" href="#market-13-modules-79-atoms" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -408,11 +408,11 @@
 </tr>
 </tbody>
 </table>
-<h3 id="exit-two-parallel-realities"><a class="heading-anchor" href="#exit-two-parallel-realities" aria-hidden="true">#</a>exit/ — Two parallel realities</h3>
+<h3 id="exit-two-parallel-realities">exit/ — Two parallel realities<a class="heading-anchor" href="#exit-two-parallel-realities" aria-hidden="true">#</a></h3>
 <p><strong>Wat spec</strong> (not wired): volatility (6), structure (5), timing (5) — 16 atoms total, spec only.</p>
 <p><strong>Live Rust</strong> (what runs): regime (8), time (2), phase (2 fixed + variable series + 0–4 scalar) — approximately 12+ atoms in practice.</p>
 <hr />
-<h2 id="key-properties"><a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a>Key properties</h2>
+<h2 id="key-properties">Key properties<a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -455,7 +455,7 @@
 <p>&quot;Export the atom codebook as a serializable map. Returns atom names mapped to their raw i8 vector data. Useful for persisting the vector cache across process restarts or sharing identical mappings between distributed nodes.&quot; <em>(T0-005)</em></p>
 </blockquote>
 <hr />
-<h2 id="design-philosophy"><a class="heading-anchor" href="#design-philosophy" aria-hidden="true">#</a>Design philosophy</h2>
+<h2 id="design-philosophy">Design philosophy<a class="heading-anchor" href="#design-philosophy" aria-hidden="true">#</a></h2>
 <p>Atoms embody the Holon principle of <strong>pure functions with no state</strong>:</p>
 <blockquote>
 <p>&quot;Pure functions. Something in, facts out. No state. Each domain thinks about different things. Market vocab thinks about candles. Exit vocab thinks about candles and conditions. Risk vocab (future) thinks about portfolio state. The input is whatever the domain needs to form its judgment.&quot; <em>(T2-004, GUIDE lines 1244–1247)</em></p>
@@ -465,7 +465,7 @@
 <p>&quot;The vocabulary owns the encode AND the decode — it put the value on the scalar, it can take it back. That's why scalar accumulators work.&quot; <em>(T2-004, GUIDE lines 1396–1405)</em></p>
 </blockquote>
 <hr />
-<h2 id="related-concepts"><a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a>Related Concepts</h2>
+<h2 id="related-concepts">Related Concepts<a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a></h2>
 <ul>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; — Deterministic atom-to-vector registry. The mechanism that gives every atom its vector identity.</li>
 <li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; — The organized collection of atoms across domains (shared, market, exit). Defines what atoms exist and how they encode values.</li>

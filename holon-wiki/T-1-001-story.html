@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -226,21 +226,21 @@
 <strong>Source:</strong> 20 files under <code>src/content/docs/blog/story/</code>
 <strong>Date verified:</strong> 2026-04-14</p>
 <hr />
-<h2 id="prologue-quotthe-idea-that-wouldnt-leavequot"><a class="heading-anchor" href="#prologue-quotthe-idea-that-wouldnt-leavequot" aria-hidden="true">#</a>Prologue: &quot;The Idea That Wouldn't Leave&quot;</h2>
+<h2 id="prologue-quotthe-idea-that-wouldnt-leavequot">Prologue: &quot;The Idea That Wouldn't Leave&quot;<a class="heading-anchor" href="#prologue-quotthe-idea-that-wouldnt-leavequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> Prologue
 <strong>Problem:</strong> Author spent years at AWS Shield unable to convince leadership that VSA-based anomaly detection could work for DDoS. VSA discovered via Clojure/conj talk. Left AWS to build full-time.
 <strong>Decision:</strong> Solo after-hours project. Two site tracks: primers (fundamentals) and story posts (development arc). Python-first for LLM compatibility despite Clojure preference.
 <strong>Concept produced:</strong> The project itself — Holon. &quot;Build it in Python first, then translate.&quot;
 <strong>Key quote:</strong> No explicit single quote, but the framing establishes the entire project as a bet on algebraic structure over statistical pattern matching.</p>
 <hr />
-<h2 id="series-002-001-quotpython-the-foundationquot"><a class="heading-anchor" href="#series-002-001-quotpython-the-foundationquot" aria-hidden="true">#</a>Series 002-001: &quot;Python: The Foundation&quot;</h2>
+<h2 id="series-002-001-quotpython-the-foundationquot">Series 002-001: &quot;Python: The Foundation&quot;<a class="heading-anchor" href="#series-002-001-quotpython-the-foundationquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 002 (Python Foundation)
 <strong>Problem:</strong> Original goal was a database for structural sub-document queries (DynamoDB/ES alternative), not anomaly detection. Day 1: full HTTP API with FAISS.
 <strong>Decision:</strong> The encoding proved more powerful for pattern recognition than database queries. Pivot to anomaly detection. Python chosen as &quot;Rosetta Stone&quot; despite author's Clojure preference.
 <strong>Concept produced:</strong> The primitive algebra: bind, bundle, prototype, difference, blend, amplify, negate. Proven across tasks, recipes, graph topology, text, and (failed) Sudoku.
 <strong>Key quote:</strong> &quot;Build it in Python first, then translate.&quot;</p>
 <hr />
-<h2 id="series-002-002-quotthe-np-wallquot"><a class="heading-anchor" href="#series-002-002-quotthe-np-wallquot" aria-hidden="true">#</a>Series 002-002: &quot;The NP Wall&quot;</h2>
+<h2 id="series-002-002-quotthe-np-wallquot">Series 002-002: &quot;The NP Wall&quot;<a class="heading-anchor" href="#series-002-002-quotthe-np-wallquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 002 (Python Foundation)
 <strong>Problem:</strong> Batch 004 attempted Sudoku (NP-hard) with VSA. Result: 14× slower than standard backtracking.
 <strong>Decision:</strong> Accepted failure. Mapped the boundary: approximate geometric similarity cannot do exact combinatorial search. Everything on the &quot;approximately correct&quot; side is where the algebra works.
@@ -248,7 +248,7 @@
 <strong>Key quote:</strong> &quot;Approximate geometric similarity cannot do exact combinatorial search.&quot;
 <strong>What was learned:</strong> Token cost acknowledged as expensive. The failure was productive — the primitives became permanent.</p>
 <hr />
-<h2 id="series-002-003-quotscale-detection-and-the-python-ceilingquot"><a class="heading-anchor" href="#series-002-003-quotscale-detection-and-the-python-ceilingquot" aria-hidden="true">#</a>Series 002-003: &quot;Scale, Detection, and the Python Ceiling&quot;</h2>
+<h2 id="series-002-003-quotscale-detection-and-the-python-ceilingquot">Series 002-003: &quot;Scale, Detection, and the Python Ceiling&quot;<a class="heading-anchor" href="#series-002-003-quotscale-detection-and-the-python-ceilingquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 002 (Python Foundation)
 <strong>Problem:</strong> Scaling from experiments to real detection workloads. Batches 006–012.
 <strong>Decision:</strong> Multiple key decisions:</p>
@@ -265,14 +265,14 @@
 <strong>What was learned:</strong> Two-implementation validation strategy (Python + Rust cross-checking) established.</li>
 </ul>
 <hr />
-<h2 id="series-003-001-quotthe-rust-portquot"><a class="heading-anchor" href="#series-003-001-quotthe-rust-portquot" aria-hidden="true">#</a>Series 003-001: &quot;The Rust Port&quot;</h2>
+<h2 id="series-003-001-quotthe-rust-portquot">Series 003-001: &quot;The Rust Port&quot;<a class="heading-anchor" href="#series-003-001-quotthe-rust-portquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 003 (Rust &amp; Production)
 <strong>Problem:</strong> Python ceiling at 3,100 pkt/sec. Needed 10-15× speedup.
 <strong>Decision:</strong> Feb 6: 2,554 lines across 13 files in one evening. Python as &quot;Rosetta Stone&quot; — 239 passing tests as behavioral spec. Flat facade pattern. SIMD from day 1. SHA256+ChaCha8 for deterministic atom hashing.
 <strong>Concept produced:</strong> holon-rs. Two-implementation validation strategy (Python + Rust with independent test suites catching different bug classes).
 <strong>Key quote:</strong> &quot;Python as 'Rosetta Stone' — 239 passing tests as behavioral spec.&quot;</p>
 <hr />
-<h2 id="series-003-002-quotthe-labsquot"><a class="heading-anchor" href="#series-003-002-quotthe-labsquot" aria-hidden="true">#</a>Series 003-002: &quot;The Labs&quot;</h2>
+<h2 id="series-003-002-quotthe-labsquot">Series 003-002: &quot;The Labs&quot;<a class="heading-anchor" href="#series-003-002-quotthe-labsquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 003 (Rust &amp; Production)
 <strong>Problem:</strong> Synthetic challenge data had taken the algebra as far as it could. Needed real packets on real interfaces for DDoS detection.
 <strong>Decision:</strong> Built two labs in one weekend (Feb 7–8):</p>
@@ -284,7 +284,7 @@
 <strong>What was learned:</strong> Raw sockets don't work for spoofed traffic — kernel routing drops them silently. AF_PACKET (layer 2) is the fix. Full-day LLM-assisted development is &quot;genuinely taxing.&quot;</li>
 </ul>
 <hr />
-<h2 id="series-003-003-quot13-million-packets-per-secondquot"><a class="heading-anchor" href="#series-003-003-quot13-million-packets-per-secondquot" aria-hidden="true">#</a>Series 003-003: &quot;1.3 Million Packets Per Second&quot;</h2>
+<h2 id="series-003-003-quot13-million-packets-per-secondquot">Series 003-003: &quot;1.3 Million Packets Per Second&quot;<a class="heading-anchor" href="#series-003-003-quot13-million-packets-per-secondquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 003 (Rust &amp; Production)
 <strong>Problem:</strong> Integrate holon-rs into the DDoS lab sidecar. Validate detection at line rate.
 <strong>Decision:</strong> Feb 9: veth lab — 2,873 lines, 20 files. Sidecar architecture: XDP samples packets → perf buffer → holon-rs encode → drift detection → BPF map rules → XDP enforce.
@@ -299,7 +299,7 @@
 <strong>What was learned:</strong> The tree is self-optimizing — no rule ordering needed. Adding rules that share constraints shares tree nodes.</li>
 </ul>
 <hr />
-<h2 id="series-003-004-quotthe-rule-enginequot"><a class="heading-anchor" href="#series-003-004-quotthe-rule-enginequot" aria-hidden="true">#</a>Series 003-004: &quot;The Rule Engine&quot;</h2>
+<h2 id="series-003-004-quotthe-rule-enginequot">Series 003-004: &quot;The Rule Engine&quot;<a class="heading-anchor" href="#series-003-004-quotthe-rule-enginequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 003 (Rust &amp; Production)
 <strong>Problem:</strong> Rules needed richer predicates. Detection needed to extend beyond equality matching. Windows were too slow for continuous detection.
 <strong>Decision:</strong> Feb 13–16. Four major additions:</p>
@@ -315,7 +315,7 @@
 <strong>What was learned:</strong> Vector-derived rate estimation from batch 013 was rendered structurally inapplicable by the decay model. &quot;Sometimes the better design makes the clever technique irrelevant.&quot; Dashboard surfaced bugs invisible in log files.</li>
 </ul>
 <hr />
-<h2 id="series-003-005-quotengrams-and-the-765ms-3ms-momentquot"><a class="heading-anchor" href="#series-003-005-quotengrams-and-the-765ms-3ms-momentquot" aria-hidden="true">#</a>Series 003-005: &quot;Engrams and the 765ms → 3ms Moment&quot;</h2>
+<h2 id="series-003-005-quotengrams-and-the-765ms-3ms-momentquot">Series 003-005: &quot;Engrams and the 765ms → 3ms Moment&quot;<a class="heading-anchor" href="#series-003-005-quotengrams-and-the-765ms-3ms-momentquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 003 (Rust &amp; Production)
 <strong>Problem:</strong> 750ms detection latency from decay model was the honest baseline. Could remembered patterns be matched faster?
 <strong>Decision:</strong> Feb 17–20. CCIPCA online subspace learning. Engram = durable trace of learned pattern (manifold snapshot). Two-tier matching: eigenvalue pre-filter + full residual scoring. Three-layer architecture refactor (kernel/memory/highlevel) in both Python and Rust.
@@ -329,7 +329,7 @@
 <strong>What was learned:</strong> Experiments 014–018 validated the approach. Speculative drone autopilot application noted in commits.</li>
 </ul>
 <hr />
-<h2 id="series-004-001-quotthe-l7-lab-building-the-http-wafquot"><a class="heading-anchor" href="#series-004-001-quotthe-l7-lab-building-the-http-wafquot" aria-hidden="true">#</a>Series 004-001: &quot;The L7 Lab: Building the HTTP WAF&quot;</h2>
+<h2 id="series-004-001-quotthe-l7-lab-building-the-http-wafquot">Series 004-001: &quot;The L7 Lab: Building the HTTP WAF&quot;<a class="heading-anchor" href="#series-004-001-quotthe-l7-lab-building-the-http-wafquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 004 (L7 WAF)
 <strong>Problem:</strong> Move from L4 packet inspection (veth-lab) to L7 HTTP/TLS inspection. The same detection architecture, one layer up.
 <strong>Decision:</strong> Feb 23–26. TLS-terminating proxy with lossless ClientHello capture (ReplayStream wrapper tees raw bytes before rustls processes them). Dual SubspaceDetector (TLS + REQ) with independent tuning. EDN rules with string keys. Per-IP token bucket rate limiting.
@@ -345,7 +345,7 @@
 <li>&quot;The LLM doesn't have 3 AM. It has training data, and the training data says token buckets are per-IP. The sorcerer still has to review the spellbook.&quot;</li>
 </ul>
 <hr />
-<h2 id="series-004-002-quotno-rules-no-signatures-the-expression-treequot"><a class="heading-anchor" href="#series-004-002-quotno-rules-no-signatures-the-expression-treequot" aria-hidden="true">#</a>Series 004-002: &quot;No Rules, No Signatures: The Expression Tree&quot;</h2>
+<h2 id="series-004-002-quotno-rules-no-signatures-the-expression-treequot">Series 004-002: &quot;No Rules, No Signatures: The Expression Tree&quot;<a class="heading-anchor" href="#series-004-002-quotno-rules-no-signatures-the-expression-treequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 004 (L7 WAF)
 <strong>Problem:</strong> Rules were flat structs with 13 hard-coded FieldDim variants. Couldn't express composition like <code>(first (header &quot;user-agent&quot;))</code> or <code>(count (nth path-parts 2))</code>. Concentration-based detection fails for high-cardinality content (random product IDs).
 <strong>Decision:</strong> Feb 27–28. Complete rewrite of rule language as composable s-expressions over EDN. Three orthogonal concepts: domain accessors (26 dimensions), generic functions (first, last, nth, count, keys, vals, set, lower), operators (=, prefix, suffix, contains, regex, gt, lt, subset, superset). Expression tree compiler dimension-agnostic, O(depth) evaluation.
@@ -363,7 +363,7 @@
 <li>Bug B: Engram fast-path deploying stale rules for geometrically similar but semantically unrelated attacks. Fixed by parallel fresh rule generation alongside engram deployment.</li>
 </ul>
 <hr />
-<h2 id="series-005-001-quotthe-spectral-firewallquot"><a class="heading-anchor" href="#series-005-001-quotthe-spectral-firewallquot" aria-hidden="true">#</a>Series 005-001: &quot;The Spectral Firewall&quot;</h2>
+<h2 id="series-005-001-quotthe-spectral-firewallquot">Series 005-001: &quot;The Spectral Firewall&quot;<a class="heading-anchor" href="#series-005-001-quotthe-spectral-firewallquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 005 (Spectral Firewall)
 <strong>Problem:</strong> The manifold firewall concept doc needed to become working code. Four layers of geometric anomaly detection.
 <strong>Decision:</strong> Mar 1–3. Last Python experiment (batch 018, 16 experiments, 8,152 insertions). Validated four-layer architecture. Built in Rust in one commit (2,457 insertions, 19 files). Live Nikto scan against DVWA.
@@ -380,7 +380,7 @@
 <li>Three problems remained: monolithic encoding (capacity ceiling), magic numbers (sigma_mult=3.5, deny_mult=2.0), single scanner diversity (Nikto only).</li>
 </ul>
 <hr />
-<h2 id="series-005-002-quotself-calibratingquot"><a class="heading-anchor" href="#series-005-002-quotself-calibratingquot" aria-hidden="true">#</a>Series 005-002: &quot;Self-Calibrating&quot;</h2>
+<h2 id="series-005-002-quotself-calibratingquot">Series 005-002: &quot;Self-Calibrating&quot;<a class="heading-anchor" href="#series-005-002-quotself-calibratingquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 005 (Spectral Firewall)
 <strong>Problem:</strong> Magic numbers calibrated by hand against one lab's traffic. Attribution crosstalk from ~100 bindings packed into one 4096-dimensional vector. Nikto-only testing.
 <strong>Decision:</strong> Mar 4–6. Three problems, three solutions:</p>
@@ -400,7 +400,7 @@
 <strong>What was learned:</strong> First run of concurrent lab: 0 denials (attack traffic being learned as normal). Three cascading parameter failures. Run 2 with tightened params: 3,605 denials, 0 FP. Led to eliminating magic numbers entirely.</li>
 </ul>
 <hr />
-<h2 id="series-005-003-quotthe-residual-profilequot"><a class="heading-anchor" href="#series-005-003-quotthe-residual-profilequot" aria-hidden="true">#</a>Series 005-003: &quot;The Residual Profile&quot;</h2>
+<h2 id="series-005-003-quotthe-residual-profilequot">Series 005-003: &quot;The Residual Profile&quot;<a class="heading-anchor" href="#series-005-003-quotthe-residual-profilequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 005 (Spectral Firewall)
 <strong>Problem:</strong> Geometric mean threshold had 99.1% precision but ~48 FP. Minority browsers (WebKit/Firefox) after Chrome-dominated warmup had similar residuals to Nikto scanners — same magnitude, different cause.
 <strong>Decision:</strong> Mar 8. Two efforts:</p>
@@ -419,7 +419,7 @@
 <strong>What was learned:</strong> &quot;The structural ratio didn't work because it was a single-signal approach — one ratio, one threshold, one number. The same pattern as every other failure in this project.&quot; The fix was to stop discarding what was already being computed.</li>
 </ul>
 <hr />
-<h2 id="series-006-001-quotthe-thought-machinequot"><a class="heading-anchor" href="#series-006-001-quotthe-thought-machinequot" aria-hidden="true">#</a>Series 006-001: &quot;The Thought Machine&quot;</h2>
+<h2 id="series-006-001-quotthe-thought-machinequot">Series 006-001: &quot;The Thought Machine&quot;<a class="heading-anchor" href="#series-006-001-quotthe-thought-machinequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 006 (Markets)
 <strong>Problem:</strong> Prove the algebra works beyond network security. Markets chosen as proving ground — &quot;DDoS detection and trading are structurally identical. A DDoS attack is an anomaly on a trend line. A market reversal is the same signal in a different stream.&quot;
 <strong>Decision:</strong> Mar 15–24. Started with pixel obsession (viewport encoding: 48-candle chart as pixel grid, 10,000-dimensional vector). Two weeks of Python bashing, then frustration-driven pivot to Rust. trader → trader2 → trader3. v10 breakthrough: PELT change-point detection on 17 indicator streams producing 120+ compositional facts.
@@ -437,7 +437,7 @@
 <li>Every adaptation experiment failed. Fact pruning hurt by 2.3%. Weighted bundling created positive feedback loop. Higher dimensions showed no improvement.</li>
 </ul>
 <hr />
-<h2 id="series-006-002-quotthe-conviction-curvequot"><a class="heading-anchor" href="#series-006-002-quotthe-conviction-curvequot" aria-hidden="true">#</a>Series 006-002: &quot;The Conviction Curve&quot;</h2>
+<h2 id="series-006-002-quotthe-conviction-curvequot">Series 006-002: &quot;The Conviction Curve&quot;<a class="heading-anchor" href="#series-006-002-quotthe-conviction-curvequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 006 (Markets)
 <strong>Problem:</strong> 57.1% accuracy with zero selectivity — trading every candle. Is there a way to know <em>when</em> the system is right?
 <strong>Decision:</strong> Mar 25–27. trader3 lands. The conviction flip (high confidence about continuation = trend extreme = reversal likely). q99 discovery at 59.7% (from explainability commit, not tuning). Exponential curve fit: <code>accuracy = 0.50 + a × exp(b × conviction)</code>. One economic parameter (min_edge) derives everything. 652k candle validation. Vocabulary expansion to 107 atoms (62.1% at 100k).
@@ -451,7 +451,7 @@
 <strong>Key quote:</strong> &quot;The geometry doesn't care about the regime. It cares about the measurement basis.&quot;</li>
 </ul>
 <hr />
-<h2 id="series-006-003-quotthe-enterprisequot"><a class="heading-anchor" href="#series-006-003-quotthe-enterprisequot" aria-hidden="true">#</a>Series 006-003: &quot;The Enterprise&quot;</h2>
+<h2 id="series-006-003-quotthe-enterprisequot">Series 006-003: &quot;The Enterprise&quot;<a class="heading-anchor" href="#series-006-003-quotthe-enterprisequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 006 (Markets)
 <strong>Problem:</strong> Monolithic trader3.rs needed to become an organization. Visual encoding was dead code degrading throughput. Risk management was unexplored.
 <strong>Decision:</strong> Mar 27–28. 80+ commits.</p>
@@ -473,7 +473,7 @@
 <li>&quot;The instrument that reveals truth&quot; was a SQL query against the run database.</li>
 </ul>
 <hr />
-<h2 id="series-006-004-quotthe-datamancerquot"><a class="heading-anchor" href="#series-006-004-quotthe-datamancerquot" aria-hidden="true">#</a>Series 006-004: &quot;The Datamancer&quot;</h2>
+<h2 id="series-006-004-quotthe-datamancerquot">Series 006-004: &quot;The Datamancer&quot;<a class="heading-anchor" href="#series-006-004-quotthe-datamancerquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 006 (Markets)
 <strong>Problem:</strong> Spec contradiction led to channel architecture, which led to designers, which led to folds, which led to language layers, which led to Journal promotion, which led to the Fact interface.
 <strong>Decision:</strong> Mar 29. 102 commits.</p>
@@ -494,7 +494,7 @@
 <strong>Key quote:</strong> &quot;Honest architecture produces honest results.&quot;</li>
 </ul>
 <hr />
-<h2 id="series-006-005-quotthe-forgingquot"><a class="heading-anchor" href="#series-006-005-quotthe-forgingquot" aria-hidden="true">#</a>Series 006-005: &quot;The Forging&quot;</h2>
+<h2 id="series-006-005-quotthe-forgingquot">Series 006-005: &quot;The Forging&quot;<a class="heading-anchor" href="#series-006-005-quotthe-forgingquot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 006 (Markets)
 <strong>Problem:</strong> Wat files existed but were &quot;descriptions, not programs. S-expression-shaped prose. Comments wearing parentheses.&quot;
 <strong>Decision:</strong> Mar 31 – Apr 3. Four days.</p>
@@ -514,7 +514,7 @@
 <strong>Key quote:</strong> &quot;The sign bug is the one that matters most. Four days of forging [...] and the biggest fix was deleting <code>.abs()</code> from one sort comparator.&quot;</li>
 </ul>
 <hr />
-<h2 id="series-006-006-quotthe-guidequot"><a class="heading-anchor" href="#series-006-006-quotthe-guidequot" aria-hidden="true">#</a>Series 006-006: &quot;The Guide&quot;</h2>
+<h2 id="series-006-006-quotthe-guidequot">Series 006-006: &quot;The Guide&quot;<a class="heading-anchor" href="#series-006-006-quotthe-guidequot" aria-hidden="true">#</a></h2>
 <p><strong>Series:</strong> 006 (Markets)
 <strong>Problem:</strong> Labels were lies. A trade up 3% then crashed to -1% was &quot;Win&quot; because threshold was crossed first. 91% of candles labeled &quot;Loss&quot; — not because market went down, but because threshold was crossed on adverse side first 91% of the time.
 <strong>Decision:</strong> Apr 4–7. Seven proposals in four days.</p>
@@ -536,8 +536,8 @@
 <strong>What was learned:</strong> The LLM's bias IS the vocabulary expansion. LLM training data provides hundreds of indicator concepts. The inscribe agent names them. The Reckoner judges them. Natural selection on the LLM's bias.</li>
 </ul>
 <hr />
-<h2 id="cross-cutting-patterns"><a class="heading-anchor" href="#cross-cutting-patterns" aria-hidden="true">#</a>Cross-Cutting Patterns</h2>
-<h3 id="recurrent-discovery-magnitude-direction"><a class="heading-anchor" href="#recurrent-discovery-magnitude-direction" aria-hidden="true">#</a>Recurrent Discovery: Magnitude + Direction</h3>
+<h2 id="cross-cutting-patterns">Cross-Cutting Patterns<a class="heading-anchor" href="#cross-cutting-patterns" aria-hidden="true">#</a></h2>
+<h3 id="recurrent-discovery-magnitude-direction">Recurrent Discovery: Magnitude + Direction<a class="heading-anchor" href="#recurrent-discovery-magnitude-direction" aria-hidden="true">#</a></h3>
 <p>Proved four times across the project. Every successful discrimination used both signals. Every failure used only one.</p>
 <ul>
 <li>Batch 017: cosine-to-centroid (mag) + reconstruction residual (dir)</li>
@@ -545,7 +545,7 @@
 <li>Spectral firewall pre-filter: spectrum × alignment</li>
 <li>Residual profile: RSS magnitude (mag) + cross-stripe direction (dir)</li>
 </ul>
-<h3 id="recurrent-bug-pattern-lies-revealed-by-instruments"><a class="heading-anchor" href="#recurrent-bug-pattern-lies-revealed-by-instruments" aria-hidden="true">#</a>Recurrent Bug Pattern: Lies Revealed by Instruments</h3>
+<h3 id="recurrent-bug-pattern-lies-revealed-by-instruments">Recurrent Bug Pattern: Lies Revealed by Instruments<a class="heading-anchor" href="#recurrent-bug-pattern-lies-revealed-by-instruments" aria-hidden="true">#</a></h3>
 <ul>
 <li>+228% P&amp;L: <code>peak_abs_pct</code> instead of <code>outcome_pct</code> (DB query caught it)</li>
 <li>SELL P&amp;L: <code>wbtc_held</code> was zero for SELL positions (DB query)</li>
@@ -555,7 +555,7 @@
 <li>14-second stall: RwLock in drain loop (dashboard timing)</li>
 <li>Compound range silently dropping constraints (dashboard visualization)</li>
 </ul>
-<h3 id="honest-caveats-documented-throughout"><a class="heading-anchor" href="#honest-caveats-documented-throughout" aria-hidden="true">#</a>Honest Caveats Documented Throughout</h3>
+<h3 id="honest-caveats-documented-throughout">Honest Caveats Documented Throughout<a class="heading-anchor" href="#honest-caveats-documented-throughout" aria-hidden="true">#</a></h3>
 <ul>
 <li>Per-IP rate limiting is a memory exhaustion DoS at scale</li>
 <li>Synthetic traffic inflates apparent accuracy (&quot;clean boundaries between normal and attack&quot;)</li>
@@ -565,7 +565,7 @@
 <li>Visual encoding was a dead end (weeks wasted)</li>
 <li>Several honest admissions of bias (EDN choice, Clojure preference)</li>
 </ul>
-<h3 id="architecture-evolution"><a class="heading-anchor" href="#architecture-evolution" aria-hidden="true">#</a>Architecture Evolution</h3>
+<h3 id="architecture-evolution">Architecture Evolution<a class="heading-anchor" href="#architecture-evolution" aria-hidden="true">#</a></h3>
 <ol>
 <li>Python experiments → primitive algebra proven</li>
 <li>Rust port (10-15× speedup, SIMD from day 1)</li>
@@ -575,7 +575,7 @@
 <li>Market trading (thought encoding, conviction curve, enterprise architecture)</li>
 <li>Specification language (wat, wards, guide, disposable machine)</li>
 </ol>
-<h3 id="timeline"><a class="heading-anchor" href="#timeline" aria-hidden="true">#</a>Timeline</h3>
+<h3 id="timeline">Timeline<a class="heading-anchor" href="#timeline" aria-hidden="true">#</a></h3>
 <ul>
 <li>Jan 16, 2026: First commit (Python)</li>
 <li>Feb 6: Rust port (2,554 lines, 13 files, one evening)</li>

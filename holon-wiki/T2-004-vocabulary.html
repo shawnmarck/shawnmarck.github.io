@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,9 +222,9 @@
         T2-004 — Vocabulary <span class="badge badge-what">WHAT</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2 id="the-complete-atom-set-and-how-vocabulary-modules-are-organized"><a class="heading-anchor" href="#the-complete-atom-set-and-how-vocabulary-modules-are-organized" aria-hidden="true">#</a>The complete atom set and how vocabulary modules are organized.</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="the-complete-atom-set-and-how-vocabulary-modules-are-organized">The complete atom set and how vocabulary modules are organized.<a class="heading-anchor" href="#the-complete-atom-set-and-how-vocabulary-modules-are-organized" aria-hidden="true">#</a></h2>
 <hr />
-<h2 id="overview"><a class="heading-anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
+<h2 id="overview">Overview<a class="heading-anchor" href="#overview" aria-hidden="true">#</a></h2>
 <p>From the GUIDE (lines 1244–1247):</p>
 <blockquote>
 <p>&quot;Pure functions. Something in, facts out. No state. Each domain thinks about different things. Market vocab thinks about candles. Exit vocab thinks about candles and conditions. Risk vocab (future) thinks about portfolio state. The input is whatever the domain needs to form its judgment.&quot;</p>
@@ -233,7 +233,7 @@
 <blockquote>
 <p>&quot;Three domains. Each domain has scoped subfiles.&quot;</p>
 </blockquote>
-<h3 id="divergence-note-guide-exit-domain-vs-rust-reality"><a class="heading-anchor" href="#divergence-note-guide-exit-domain-vs-rust-reality" aria-hidden="true">#</a>Divergence note: GUIDE exit domain vs Rust reality</h3>
+<h3 id="divergence-note-guide-exit-domain-vs-rust-reality">Divergence note: GUIDE exit domain vs Rust reality<a class="heading-anchor" href="#divergence-note-guide-exit-domain-vs-rust-reality" aria-hidden="true">#</a></h3>
 <p>The GUIDE (lines 1310–1319) describes the exit domain with three wat modules (<code>volatility.wat</code>, <code>structure.wat</code>, <code>timing.wat</code>) and a <code>ExitLens</code> with variants <code>:volatility</code>, <code>:structure</code>, <code>:timing</code>, <code>:generalist</code>. These wat files exist and define atoms as documented below.</p>
 <p>However, the <strong>live Rust</strong> <code>position_lens_facts</code> in <code>src/domain/lens.rs</code> does <strong>not</strong> call any of those three exit wat modules. Instead it calls:</p>
 <ul>
@@ -243,7 +243,7 @@
 </ul>
 <p>The exit wat files (<code>volatility.wat</code>, <code>structure.wat</code>, <code>timing.wat</code>) exist in the spec but are <strong>not wired</strong> into the running system. The Rust exit vocab has diverged from the GUIDE's exit vocabulary design. This is a significant spec-vs-implementation divergence.</p>
 <hr />
-<h2 id="encoding-schemes"><a class="heading-anchor" href="#encoding-schemes" aria-hidden="true">#</a>Encoding Schemes</h2>
+<h2 id="encoding-schemes">Encoding Schemes<a class="heading-anchor" href="#encoding-schemes" aria-hidden="true">#</a></h2>
 <p>From the GUIDE (lines 1376–1395):</p>
 <blockquote>
 <p>&quot;The encoding scheme IS the bounding strategy.&quot;</p>
@@ -280,9 +280,9 @@
 <p>&quot;Some facts are bounded. Some aren't. That's honest. The log doesn't bound — it compresses. The circular doesn't bound — it wraps. Only linear needs bounds, and linear's bounds come from the math.&quot;</p>
 </blockquote>
 <hr />
-<h2 id="complete-atom-catalog"><a class="heading-anchor" href="#complete-atom-catalog" aria-hidden="true">#</a>Complete Atom Catalog</h2>
-<h3 id="domain-shared"><a class="heading-anchor" href="#domain-shared" aria-hidden="true">#</a>Domain: shared/</h3>
-<h4 id="timewat-universal-temporal-context"><a class="heading-anchor" href="#timewat-universal-temporal-context" aria-hidden="true">#</a><code>time.wat</code> — Universal temporal context</h4>
+<h2 id="complete-atom-catalog">Complete Atom Catalog<a class="heading-anchor" href="#complete-atom-catalog" aria-hidden="true">#</a></h2>
+<h3 id="domain-shared">Domain: shared/<a class="heading-anchor" href="#domain-shared" aria-hidden="true">#</a></h3>
+<h4 id="timewat-universal-temporal-context"><code>time.wat</code> — Universal temporal context<a class="heading-anchor" href="#timewat-universal-temporal-context" aria-hidden="true">#</a></h4>
 <blockquote>
 <p>&quot;Any observer can use these.&quot; (GUIDE line 1256)</p>
 </blockquote>
@@ -326,8 +326,8 @@ Interface: <code>(encode-time-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 </table>
 <p><strong>5 atoms. All Circular.</strong></p>
 <hr />
-<h3 id="domain-market"><a class="heading-anchor" href="#domain-market" aria-hidden="true">#</a>Domain: market/</h3>
-<h4 id="standardwat-universal-context-for-all-market-observers"><a class="heading-anchor" href="#standardwat-universal-context-for-all-market-observers" aria-hidden="true">#</a><code>standard.wat</code> — Universal context for all market observers</h4>
+<h3 id="domain-market">Domain: market/<a class="heading-anchor" href="#domain-market" aria-hidden="true">#</a></h3>
+<h4 id="standardwat-universal-context-for-all-market-observers"><code>standard.wat</code> — Universal context for all market observers<a class="heading-anchor" href="#standardwat-universal-context-for-all-market-observers" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/standard.wat</code> (89 lines)
 Interface: <code>(encode-standard-facts candle-window) → Vec&lt;ThoughtAST&gt;</code> — takes a <strong>window</strong> of candles, not a single candle.</p>
 <table>
@@ -382,7 +382,7 @@ Interface: <code>(encode-standard-facts candle-window) → Vec&lt;ThoughtAST&gt;
 </tbody>
 </table>
 <p><strong>8 atoms. 4 Log, 4 Linear.</strong></p>
-<h4 id="oscillatorswat-oscillator-positions-as-scalars"><a class="heading-anchor" href="#oscillatorswat-oscillator-positions-as-scalars" aria-hidden="true">#</a><code>oscillators.wat</code> — Oscillator positions as scalars</h4>
+<h4 id="oscillatorswat-oscillator-positions-as-scalars"><code>oscillators.wat</code> — Oscillator positions as scalars<a class="heading-anchor" href="#oscillatorswat-oscillator-positions-as-scalars" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/oscillators.wat</code> (30 lines)
 Interface: <code>(encode-oscillator-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -437,7 +437,7 @@ Interface: <code>(encode-oscillator-facts candle) → Vec&lt;ThoughtAST&gt;</cod
 </tbody>
 </table>
 <p><strong>8 atoms. 4 Linear, 4 Log.</strong></p>
-<h4 id="flowwat-volume-and-pressure"><a class="heading-anchor" href="#flowwat-volume-and-pressure" aria-hidden="true">#</a><code>flow.wat</code> — Volume and pressure</h4>
+<h4 id="flowwat-volume-and-pressure"><code>flow.wat</code> — Volume and pressure<a class="heading-anchor" href="#flowwat-volume-and-pressure" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/flow.wat</code> (46 lines)
 Interface: <code>(encode-flow-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -482,7 +482,7 @@ Interface: <code>(encode-flow-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 </tbody>
 </table>
 <p><strong>6 atoms. 2 Log, 4 Linear.</strong></p>
-<h4 id="persistencewat-memory-in-the-series"><a class="heading-anchor" href="#persistencewat-memory-in-the-series" aria-hidden="true">#</a><code>persistence.wat</code> — Memory in the series</h4>
+<h4 id="persistencewat-memory-in-the-series"><code>persistence.wat</code> — Memory in the series<a class="heading-anchor" href="#persistencewat-memory-in-the-series" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/persistence.wat</code> (19 lines)
 Interface: <code>(encode-persistence-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -512,7 +512,7 @@ Interface: <code>(encode-persistence-facts candle) → Vec&lt;ThoughtAST&gt;</co
 </tbody>
 </table>
 <p><strong>3 atoms. All Linear.</strong></p>
-<h4 id="regimewat-what-kind-of-market-this-is"><a class="heading-anchor" href="#regimewat-what-kind-of-market-this-is" aria-hidden="true">#</a><code>regime.wat</code> — What KIND of market this is</h4>
+<h4 id="regimewat-what-kind-of-market-this-is"><code>regime.wat</code> — What KIND of market this is<a class="heading-anchor" href="#regimewat-what-kind-of-market-this-is" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/regime.wat</code> (40 lines)
 Interface: <code>(encode-regime-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -567,7 +567,7 @@ Interface: <code>(encode-regime-facts candle) → Vec&lt;ThoughtAST&gt;</code></
 </tbody>
 </table>
 <p><strong>8 atoms. 7 Linear, 1 Log.</strong></p>
-<h4 id="divergencewat-rsi-divergence-via-structural-peaks"><a class="heading-anchor" href="#divergencewat-rsi-divergence-via-structural-peaks" aria-hidden="true">#</a><code>divergence.wat</code> — RSI divergence via structural peaks</h4>
+<h4 id="divergencewat-rsi-divergence-via-structural-peaks"><code>divergence.wat</code> — RSI divergence via structural peaks<a class="heading-anchor" href="#divergencewat-rsi-divergence-via-structural-peaks" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/divergence.wat</code> (30 lines)
 Interface: <code>(encode-divergence-facts candle) → Vec&lt;ThoughtAST&gt;</code>
 Note: <strong>Conditional emission</strong> — atoms only fire when divergence is active (&gt; 0).</p>
@@ -598,7 +598,7 @@ Note: <strong>Conditional emission</strong> — atoms only fire when divergence 
 </tbody>
 </table>
 <p><strong>3 atoms. All Linear. Conditional emission (0–3 facts emitted).</strong></p>
-<h4 id="ichimokuwat-cloud-position-tk-cross-distances"><a class="heading-anchor" href="#ichimokuwat-cloud-position-tk-cross-distances" aria-hidden="true">#</a><code>ichimoku.wat</code> — Cloud position, TK cross, distances</h4>
+<h4 id="ichimokuwat-cloud-position-tk-cross-distances"><code>ichimoku.wat</code> — Cloud position, TK cross, distances<a class="heading-anchor" href="#ichimokuwat-cloud-position-tk-cross-distances" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/ichimoku.wat</code> (54 lines)
 Interface: <code>(encode-ichimoku-facts candle) → Vec&lt;ThoughtAST&gt;</code>
 Note: Per <code>lens.rs</code> line 14–16: &quot;Proposals 041+042: ichimoku, stochastic removed from all lenses. Their modules still exist but are no longer called.&quot;</p>
@@ -644,7 +644,7 @@ Note: Per <code>lens.rs</code> line 14–16: &quot;Proposals 041+042: ichimoku, 
 </tbody>
 </table>
 <p><strong>6 atoms. 5 Linear, 1 Log. ⚠️ Module exists but is NOT wired into any lens.</strong></p>
-<h4 id="stochasticwat-kd-spread-and-crosses"><a class="heading-anchor" href="#stochasticwat-kd-spread-and-crosses" aria-hidden="true">#</a><code>stochastic.wat</code> — %K/%D spread and crosses</h4>
+<h4 id="stochasticwat-kd-spread-and-crosses"><code>stochastic.wat</code> — %K/%D spread and crosses<a class="heading-anchor" href="#stochasticwat-kd-spread-and-crosses" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/stochastic.wat</code> (28 lines)
 Interface: <code>(encode-stochastic-facts candle) → Vec&lt;ThoughtAST&gt;</code>
 Note: Same as ichimoku — &quot;Proposals 041+042: ichimoku, stochastic removed from all lenses.&quot;</p>
@@ -680,7 +680,7 @@ Note: Same as ichimoku — &quot;Proposals 041+042: ichimoku, stochastic removed
 </tbody>
 </table>
 <p><strong>4 atoms. All Linear. ⚠️ Module exists but is NOT wired into any lens.</strong></p>
-<h4 id="fibonacciwat-retracement-level-distances"><a class="heading-anchor" href="#fibonacciwat-retracement-level-distances" aria-hidden="true">#</a><code>fibonacci.wat</code> — Retracement level distances</h4>
+<h4 id="fibonacciwat-retracement-level-distances"><code>fibonacci.wat</code> — Retracement level distances<a class="heading-anchor" href="#fibonacciwat-retracement-level-distances" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/fibonacci.wat</code> (28 lines)
 Interface: <code>(encode-fibonacci-facts candle) → Vec&lt;ThoughtAST&gt;</code>
 Note: Per <code>lens.rs</code> line 16: &quot;fibonacci is used by WyckoffPosition.&quot;</p>
@@ -736,7 +736,7 @@ Note: Per <code>lens.rs</code> line 16: &quot;fibonacci is used by WyckoffPositi
 </tbody>
 </table>
 <p><strong>8 atoms. All Linear.</strong></p>
-<h4 id="keltnerwat-channel-positions-squeeze"><a class="heading-anchor" href="#keltnerwat-channel-positions-squeeze" aria-hidden="true">#</a><code>keltner.wat</code> — Channel positions, squeeze</h4>
+<h4 id="keltnerwat-channel-positions-squeeze"><code>keltner.wat</code> — Channel positions, squeeze<a class="heading-anchor" href="#keltnerwat-channel-positions-squeeze" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/keltner.wat</code> (37 lines)
 Interface: <code>(encode-keltner-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -781,7 +781,7 @@ Interface: <code>(encode-keltner-facts candle) → Vec&lt;ThoughtAST&gt;</code><
 </tbody>
 </table>
 <p><strong>6 atoms. 5 Linear, 1 Log.</strong></p>
-<h4 id="momentumwat-trend-relative-macd-di"><a class="heading-anchor" href="#momentumwat-trend-relative-macd-di" aria-hidden="true">#</a><code>momentum.wat</code> — Trend-relative, MACD, DI</h4>
+<h4 id="momentumwat-trend-relative-macd-di"><code>momentum.wat</code> — Trend-relative, MACD, DI<a class="heading-anchor" href="#momentumwat-trend-relative-macd-di" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/momentum.wat</code> (39 lines)
 Interface: <code>(encode-momentum-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -826,7 +826,7 @@ Interface: <code>(encode-momentum-facts candle) → Vec&lt;ThoughtAST&gt;</code>
 </tbody>
 </table>
 <p><strong>6 atoms. 5 Linear, 1 Log.</strong></p>
-<h4 id="price-actionwat-candlestick-anatomy-range-gaps"><a class="heading-anchor" href="#price-actionwat-candlestick-anatomy-range-gaps" aria-hidden="true">#</a><code>price-action.wat</code> — Candlestick anatomy, range, gaps</h4>
+<h4 id="price-actionwat-candlestick-anatomy-range-gaps"><code>price-action.wat</code> — Candlestick anatomy, range, gaps<a class="heading-anchor" href="#price-actionwat-candlestick-anatomy-range-gaps" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/price-action.wat</code> (50 lines)
 Interface: <code>(encode-price-action-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -876,7 +876,7 @@ Interface: <code>(encode-price-action-facts candle) → Vec&lt;ThoughtAST&gt;</c
 </tbody>
 </table>
 <p><strong>7 atoms. 3 Log, 4 Linear.</strong></p>
-<h4 id="timeframewat-inter-timeframe-structure"><a class="heading-anchor" href="#timeframewat-inter-timeframe-structure" aria-hidden="true">#</a><code>timeframe.wat</code> — Inter-timeframe structure</h4>
+<h4 id="timeframewat-inter-timeframe-structure"><code>timeframe.wat</code> — Inter-timeframe structure<a class="heading-anchor" href="#timeframewat-inter-timeframe-structure" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/market/timeframe.wat</code> (36 lines)
 Interface: <code>(encode-timeframe-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -922,8 +922,8 @@ Interface: <code>(encode-timeframe-facts candle) → Vec&lt;ThoughtAST&gt;</code
 </table>
 <p><strong>6 atoms. All Linear.</strong></p>
 <hr />
-<h3 id="domain-exit-wat-spec-not-wired-in-live-rust"><a class="heading-anchor" href="#domain-exit-wat-spec-not-wired-in-live-rust" aria-hidden="true">#</a>Domain: exit/ (wat spec — NOT wired in live Rust)</h3>
-<h4 id="exitvolatilitywat-atr-regime-squeeze-state"><a class="heading-anchor" href="#exitvolatilitywat-atr-regime-squeeze-state" aria-hidden="true">#</a><code>exit/volatility.wat</code> — ATR regime, squeeze state</h4>
+<h3 id="domain-exit-wat-spec-not-wired-in-live-rust">Domain: exit/ (wat spec — NOT wired in live Rust)<a class="heading-anchor" href="#domain-exit-wat-spec-not-wired-in-live-rust" aria-hidden="true">#</a></h3>
+<h4 id="exitvolatilitywat-atr-regime-squeeze-state"><code>exit/volatility.wat</code> — ATR regime, squeeze state<a class="heading-anchor" href="#exitvolatilitywat-atr-regime-squeeze-state" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/exit/volatility.wat</code> (29 lines)
 Interface: <code>(encode-exit-volatility-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -968,7 +968,7 @@ Interface: <code>(encode-exit-volatility-facts candle) → Vec&lt;ThoughtAST&gt;
 </tbody>
 </table>
 <p><strong>6 atoms. 3 Linear, 3 Log.</strong></p>
-<h4 id="exitstructurewat-trend-consistency-adx-strength"><a class="heading-anchor" href="#exitstructurewat-trend-consistency-adx-strength" aria-hidden="true">#</a><code>exit/structure.wat</code> — Trend consistency, ADX strength</h4>
+<h4 id="exitstructurewat-trend-consistency-adx-strength"><code>exit/structure.wat</code> — Trend consistency, ADX strength<a class="heading-anchor" href="#exitstructurewat-trend-consistency-adx-strength" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/exit/structure.wat</code> (31 lines)
 Interface: <code>(encode-exit-structure-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -1008,7 +1008,7 @@ Interface: <code>(encode-exit-structure-facts candle) → Vec&lt;ThoughtAST&gt;<
 </tbody>
 </table>
 <p><strong>5 atoms. All Linear.</strong></p>
-<h4 id="exittimingwat-momentum-state-reversal-signals"><a class="heading-anchor" href="#exittimingwat-momentum-state-reversal-signals" aria-hidden="true">#</a><code>exit/timing.wat</code> — Momentum state, reversal signals</h4>
+<h4 id="exittimingwat-momentum-state-reversal-signals"><code>exit/timing.wat</code> — Momentum state, reversal signals<a class="heading-anchor" href="#exittimingwat-momentum-state-reversal-signals" aria-hidden="true">#</a></h4>
 <p>Source: <code>wat/vocab/exit/timing.wat</code> (29 lines)
 Interface: <code>(encode-exit-timing-facts candle) → Vec&lt;ThoughtAST&gt;</code></p>
 <table>
@@ -1049,20 +1049,20 @@ Interface: <code>(encode-exit-timing-facts candle) → Vec&lt;ThoughtAST&gt;</co
 </table>
 <p><strong>5 atoms. All Linear.</strong></p>
 <hr />
-<h3 id="domain-exit-live-rust-what-actually-runs"><a class="heading-anchor" href="#domain-exit-live-rust-what-actually-runs" aria-hidden="true">#</a>Domain: exit/ (live Rust — what actually runs)</h3>
+<h3 id="domain-exit-live-rust-what-actually-runs">Domain: exit/ (live Rust — what actually runs)<a class="heading-anchor" href="#domain-exit-live-rust-what-actually-runs" aria-hidden="true">#</a></h3>
 <p>These modules have <strong>no wat spec files</strong>. They exist only in Rust.</p>
-<h4 id="exitregimers-regime-context-for-position-observers"><a class="heading-anchor" href="#exitregimers-regime-context-for-position-observers" aria-hidden="true">#</a><code>exit/regime.rs</code> — Regime context for position observers</h4>
+<h4 id="exitregimers-regime-context-for-position-observers"><code>exit/regime.rs</code> — Regime context for position observers<a class="heading-anchor" href="#exitregimers-regime-context-for-position-observers" aria-hidden="true">#</a></h4>
 <p>Source: <code>src/vocab/exit/regime.rs</code> (83 lines)
 Comment: &quot;compiled from wat/vocab/exit/regime.wat&quot; — but <strong>no such wat file exists</strong>.
 Atoms: kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim</p>
 <p><strong>8 atoms. Same atom names as market/regime.wat. 7 Linear, 1 Log (variance-ratio).</strong></p>
-<h4 id="exittimers-temporal-context-for-exit-observers"><a class="heading-anchor" href="#exittimers-temporal-context-for-exit-observers" aria-hidden="true">#</a><code>exit/time.rs</code> — Temporal context for exit observers</h4>
+<h4 id="exittimers-temporal-context-for-exit-observers"><code>exit/time.rs</code> — Temporal context for exit observers<a class="heading-anchor" href="#exittimers-temporal-context-for-exit-observers" aria-hidden="true">#</a></h4>
 <p>Source: <code>src/vocab/exit/time.rs</code> (79 lines)
 Comment: &quot;compiled from wat/vocab/exit/time.wat&quot; — but <strong>no such wat file exists</strong>.
 Comment: &quot;Subset of shared/time.rs: hour and day-of-week only.&quot;
 Atoms: hour (Circular 24), day-of-week (Circular 7)</p>
 <p><strong>2 atoms. All Circular.</strong></p>
-<h4 id="exitphasers-phase-biography-for-position-observers"><a class="heading-anchor" href="#exitphasers-phase-biography-for-position-observers" aria-hidden="true">#</a><code>exit/phase.rs</code> — Phase biography for position observers</h4>
+<h4 id="exitphasers-phase-biography-for-position-observers"><code>exit/phase.rs</code> — Phase biography for position observers<a class="heading-anchor" href="#exitphasers-phase-biography-for-position-observers" aria-hidden="true">#</a></h4>
 <p>Source: <code>src/vocab/exit/phase.rs</code> (340 lines)
 Three output categories:</p>
 <p><strong>Current phase atoms (always 2 facts):</strong></p>
@@ -1152,7 +1152,7 @@ Each PhaseRecord in phase_history becomes a Bundle of:</p>
 </tbody>
 </table>
 <hr />
-<h2 id="atom-counts"><a class="heading-anchor" href="#atom-counts" aria-hidden="true">#</a>Atom Counts</h2>
+<h2 id="atom-counts">Atom Counts<a class="heading-anchor" href="#atom-counts" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -1288,7 +1288,7 @@ Each PhaseRecord in phase_history becomes a Bundle of:</p>
 <p><strong>Total unique atom names in wat spec (market + shared + exit wat):</strong> 100
 <strong>Total unique atom names in live Rust (market + shared + exit Rust):</strong> ~99 (overlaps between market regime and exit regime share atom names)</p>
 <hr />
-<h2 id="key-guide-principles"><a class="heading-anchor" href="#key-guide-principles" aria-hidden="true">#</a>Key GUIDE Principles</h2>
+<h2 id="key-guide-principles">Key GUIDE Principles<a class="heading-anchor" href="#key-guide-principles" aria-hidden="true">#</a></h2>
 <p>From GUIDE lines 1396–1405:</p>
 <blockquote>
 <p>&quot;The vocabulary owns the encode AND the decode — it put the value on the scalar, it can take it back. That's why scalar accumulators work.&quot;</p>

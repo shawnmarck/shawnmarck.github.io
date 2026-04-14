@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -226,14 +226,14 @@
 <strong>Source:</strong> 6 primer files, series-001, 000–005
 <strong>Read:</strong> 2026-04-14</p>
 <hr />
-<h2 id="what-this-document-is"><a class="heading-anchor" href="#what-this-document-is" aria-hidden="true">#</a>What This Document Is</h2>
+<h2 id="what-this-document-is">What This Document Is<a class="heading-anchor" href="#what-this-document-is" aria-hidden="true">#</a></h2>
 <p>An honest extraction of the conceptual chain from the six primers on the algebraic-intelligence.dev site. These primers explain <em>why</em> the holon-rs primitives exist before the code explains <em>how</em>. They are the conceptual root of the dependency graph.</p>
 <p>Each primer is summarized below with: what it introduces, the key claims/definitions (quoted verbatim where possible), what holon-rs primitive it maps to, and what downstream concept it motivates.</p>
 <hr />
-<h2 id="primer-000-vsahdc-a-working-introduction-162-lines"><a class="heading-anchor" href="#primer-000-vsahdc-a-working-introduction-162-lines" aria-hidden="true">#</a>Primer 000: VSA/HDC — A Working Introduction (162 lines)</h2>
-<h3 id="what-it-introduces"><a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a>What It Introduces</h3>
+<h2 id="primer-000-vsahdc-a-working-introduction-162-lines">Primer 000: VSA/HDC — A Working Introduction (162 lines)<a class="heading-anchor" href="#primer-000-vsahdc-a-working-introduction-162-lines" aria-hidden="true">#</a></h2>
+<h3 id="what-it-introduces">What It Introduces<a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a></h3>
 <p>The foundational mathematical framework: Vector Symbolic Architectures / Hyperdimensional Computing. The minimum you need to understand everything else in the project.</p>
-<h3 id="key-claims-and-definitions"><a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a>Key Claims and Definitions</h3>
+<h3 id="key-claims-and-definitions">Key Claims and Definitions<a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>Hypervector:</strong> &quot;A very large vector of numbers — thousands of dimensions of values in <code>{-1, 0, 1}</code>.&quot;</li>
 <li><strong>Near-orthogonality:</strong> &quot;Random vectors are nearly orthogonal. Two random bipolar vectors have an expected cosine similarity of 0, with standard deviation ~1/√d where d is dimensionality.&quot;</li>
@@ -249,19 +249,19 @@
 <li><strong>Structure over semantics:</strong> &quot;VSA encodes <em>structure</em>: the relationship between a role and a filler, regardless of what those things mean.&quot;</li>
 <li><strong>What Holon adds (preview):</strong> Deterministic atom generation, multiple scalar encoding paths, the algebraic primitives (prototype, difference, negate, amplify, blend), accumulators with decay, engram memory.</li>
 </ul>
-<h3 id="maps-to"><a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a>Maps To</h3>
+<h3 id="maps-to">Maps To<a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a></h3>
 <ul>
 <li><code>holon-rs</code> kernel: <code>VectorManager</code>, <code>bind</code>, <code>bundle</code>, <code>cosine_similarity</code> (core operations)</li>
 </ul>
-<h3 id="motivates"><a class="heading-anchor" href="#motivates" aria-hidden="true">#</a>Motivates</h3>
+<h3 id="motivates">Motivates<a class="heading-anchor" href="#motivates" aria-hidden="true">#</a></h3>
 <ul>
 <li>Everything downstream — all algebra ops, memory layer, encoding stack, the entire project.</li>
 </ul>
 <hr />
-<h2 id="primer-001-atoms-vectors-and-the-encoding-stack-231-lines"><a class="heading-anchor" href="#primer-001-atoms-vectors-and-the-encoding-stack-231-lines" aria-hidden="true">#</a>Primer 001: Atoms, Vectors, and the Encoding Stack (231 lines)</h2>
-<h3 id="what-it-introduces"><a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a>What It Introduces</h3>
+<h2 id="primer-001-atoms-vectors-and-the-encoding-stack-231-lines">Primer 001: Atoms, Vectors, and the Encoding Stack (231 lines)<a class="heading-anchor" href="#primer-001-atoms-vectors-and-the-encoding-stack-231-lines" aria-hidden="true">#</a></h2>
+<h3 id="what-it-introduces">What It Introduces<a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a></h3>
 <p>The complete encoding pipeline: how structured data (JSON, events, documents) becomes a single point in high-dimensional vector space. The stack is atomization → binding → bundling.</p>
-<h3 id="key-claims-and-definitions"><a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a>Key Claims and Definitions</h3>
+<h3 id="key-claims-and-definitions">Key Claims and Definitions<a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>Three scalar encoding paths:</strong><ul>
 <li><strong>String atomization</strong> — &quot;The value is treated as an opaque identifier and mapped to a unique high-dimensional vector called an <em>atom</em>.&quot; No proximity implied between string atoms.</li>
@@ -278,12 +278,12 @@
 <li><strong>Codebook is a cache, not source of truth:</strong> &quot;'Codebook' appears in Holon's source and docs to mean something much narrower: the runtime cache of already-computed atom vectors. Pure performance optimization.&quot;</li>
 <li><strong>Claimed contribution — hash-function codebook:</strong> &quot;Standard VSA systems require a pre-shared codebook. Holon eliminates this entirely by deriving atom vectors deterministically from a hash function. ... We haven't found this approach documented in the VSA literature.&quot;</li>
 </ul>
-<h3 id="maps-to"><a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a>Maps To</h3>
+<h3 id="maps-to">Maps To<a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a></h3>
 <ul>
 <li><code>holon-rs</code>: <code>Encoder</code>, <code>VectorManager</code>, <code>ScalarEncoder</code> (with <code>$linear</code>, <code>$log</code>, <code>$time</code> modes), list encoding strategies</li>
 <li><code>holon-rs</code> XDP sidecar: cold-boot encoder with no codebook file</li>
 </ul>
-<h3 id="motivates"><a class="heading-anchor" href="#motivates" aria-hidden="true">#</a>Motivates</h3>
+<h3 id="motivates">Motivates<a class="heading-anchor" href="#motivates" aria-hidden="true">#</a></h3>
 <ul>
 <li>Primer 002 (algebra ops operate on these encoded vectors)</li>
 <li>Primer 004 (coordination-free deployment depends on deterministic atom generation)</li>
@@ -291,10 +291,10 @@
 <li>Trading lab encoding layers (thought vectors built from this stack)</li>
 </ul>
 <hr />
-<h2 id="primer-002-the-holon-algebra-operations-reference-685-lines"><a class="heading-anchor" href="#primer-002-the-holon-algebra-operations-reference-685-lines" aria-hidden="true">#</a>Primer 002: The Holon Algebra — Operations Reference (685 lines)</h2>
-<h3 id="what-it-introduces"><a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a>What It Introduces</h3>
+<h2 id="primer-002-the-holon-algebra-operations-reference-685-lines">Primer 002: The Holon Algebra — Operations Reference (685 lines)<a class="heading-anchor" href="#primer-002-the-holon-algebra-operations-reference-685-lines" aria-hidden="true">#</a></h2>
+<h3 id="what-it-introduces">What It Introduces<a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a></h3>
 <p>The full set of algebraic primitives Holon provides on top of the VSA foundation (bind, bundle, cosine). Organized into sections: Core Algebra, Pattern Extraction, Extended Algebra, Vector Operations, Streaming Operations, Advanced Operations.</p>
-<h3 id="key-claims-and-definitions"><a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a>Key Claims and Definitions</h3>
+<h3 id="key-claims-and-definitions">Key Claims and Definitions<a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>Motivation:</strong> &quot;The experiments kept running into things the base algebra couldn't express cleanly: extracting the common pattern from a set of examples, detecting what changed between two states, asking 'find this but not that,' maintaining a running sense of normal over a stream.&quot;</li>
 <li><strong>Core operations beyond VSA:</strong><ul>
@@ -324,12 +324,12 @@
 </ul>
 </li>
 </ul>
-<h3 id="maps-to"><a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a>Maps To</h3>
+<h3 id="maps-to">Maps To<a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a></h3>
 <ul>
 <li><code>holon-rs</code> algebra: all named operations in the kernel library — <code>bind</code>, <code>bundle</code>, <code>unbind</code>, <code>prototype</code>, <code>negate</code>, <code>amplify</code>, <code>blend</code>, <code>difference</code>, <code>analogy</code>, <code>attend</code>, <code>project</code>, <code>reject</code>, <code>resonance</code>, <code>cleanup</code>, <code>coherence</code>, <code>drift_rate</code>, etc.</li>
 <li><code>holon-rs</code> streaming: <code>Accumulator</code>, <code>decay</code>, <code>merge_accumulators</code>, <code>capacity</code>, <code>purity</code></li>
 </ul>
-<h3 id="motivates"><a class="heading-anchor" href="#motivates" aria-hidden="true">#</a>Motivates</h3>
+<h3 id="motivates">Motivates<a class="heading-anchor" href="#motivates" aria-hidden="true">#</a></h3>
 <ul>
 <li>Primer 003 (memory layer builds on these ops for learning and persistence)</li>
 <li>DDoS lab (surprise fingerprint via <code>unbind</code>, anomaly detection via <code>reject</code>/<code>residual</code>)</li>
@@ -337,10 +337,10 @@
 <li>Challenge batches 001–018 (every result traces back to composition of these primitives)</li>
 </ul>
 <hr />
-<h2 id="primer-003-holon-memory-subspaces-and-engrams-401-lines"><a class="heading-anchor" href="#primer-003-holon-memory-subspaces-and-engrams-401-lines" aria-hidden="true">#</a>Primer 003: Holon Memory — Subspaces and Engrams (401 lines)</h2>
-<h3 id="what-it-introduces"><a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a>What It Introduces</h3>
+<h2 id="primer-003-holon-memory-subspaces-and-engrams-401-lines">Primer 003: Holon Memory — Subspaces and Engrams (401 lines)<a class="heading-anchor" href="#primer-003-holon-memory-subspaces-and-engrams-401-lines" aria-hidden="true">#</a></h2>
+<h3 id="what-it-introduces">What It Introduces<a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a></h3>
 <p>The memory layer: how Holon learns geometric patterns from streaming data, snapshots them as named portable artifacts called <em>engrams</em>, and matches against them. Three major components: <code>OnlineSubspace</code> (incremental manifold learning), <code>StripedSubspace</code> (crosstalk-free attribution for high-cardinality data), and <code>Reckoner</code> (unified discriminant learner with discrete/continuous modes).</p>
-<h3 id="key-claims-and-definitions"><a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a>Key Claims and Definitions</h3>
+<h3 id="key-claims-and-definitions">Key Claims and Definitions<a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>OnlineSubspace — incremental manifold learning:</strong> &quot;Any stream of encoded vectors occupies a region of the high-dimensional vector space. That region isn't random; it has structure.&quot; Uses CCIPCA (Candid Covariance-free Incremental PCA, Weng et al. 2003). &quot;O(k·dim) cost per update — no matrix inversions, no batch requirements, no stored history.&quot;</li>
 <li><strong>Residual as anomaly signal:</strong> &quot;Low residual = the subspace explains most of the vector = in-distribution. High residual = the subspace can't account for it = anomalous.&quot;</li>
@@ -363,22 +363,22 @@
 </ul>
 </li>
 </ul>
-<h3 id="maps-to"><a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a>Maps To</h3>
+<h3 id="maps-to">Maps To<a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a></h3>
 <ul>
 <li><code>holon-rs</code> memory: <code>OnlineSubspace</code>, <code>StripedSubspace</code>, <code>Engram</code>, <code>EngramLibrary</code>, <code>Reckoner</code></li>
 <li><code>holon-rs</code> f64 pipeline: <code>bind_f64</code>, <code>bundle_f64</code>, <code>negate_f64</code>, <code>cosine_f64</code>, <code>ScalarEncoder::encode_f64</code></li>
 </ul>
-<h3 id="motivates"><a class="heading-anchor" href="#motivates" aria-hidden="true">#</a>Motivates</h3>
+<h3 id="motivates">Motivates<a class="heading-anchor" href="#motivates" aria-hidden="true">#</a></h3>
 <ul>
 <li>Primer 004 (engram distribution requires coordination-free encoding)</li>
 <li>DDoS lab (OnlineSubspace for baselines, StripedSubspace for HTTP, engrams for pattern distribution, surprise fingerprint for rule synthesis)</li>
 <li>Trading lab (Reckoner for direction prediction in discrete mode, stop distance learning in continuous mode, conviction curves for self-evaluation)</li>
 </ul>
 <hr />
-<h2 id="primer-004-coordination-free-at-scale-126-lines"><a class="heading-anchor" href="#primer-004-coordination-free-at-scale-126-lines" aria-hidden="true">#</a>Primer 004: Coordination-Free at Scale (126 lines)</h2>
-<h3 id="what-it-introduces"><a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a>What It Introduces</h3>
+<h2 id="primer-004-coordination-free-at-scale-126-lines">Primer 004: Coordination-Free at Scale (126 lines)<a class="heading-anchor" href="#primer-004-coordination-free-at-scale-126-lines" aria-hidden="true">#</a></h2>
+<h3 id="what-it-introduces">What It Introduces<a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a></h3>
 <p>The distributed systems architecture that falls out of the hash-function codebook decision. How a single early design choice eliminates an entire class of distributed coordination problems.</p>
-<h3 id="key-claims-and-definitions"><a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a>Key Claims and Definitions</h3>
+<h3 id="key-claims-and-definitions">Key Claims and Definitions<a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>No codebook:</strong> &quot;Holon doesn't have a codebook. It never did. That was a deliberate early design decision, and it turns out to have been the right one.&quot;</li>
 <li><strong>The function is the codebook:</strong> &quot;<code>SHA-256(seed || atom_string)</code> seeds an RNG that generates the vector. Same atom, same seed, same implementation: identical vector, every time, on any machine, without coordination.&quot;</li>
@@ -391,22 +391,22 @@
 <li><strong>The broader implication:</strong> &quot;The seed and dimensionality define a coordinate system that exists nowhere physically but is instantiated identically everywhere. ... The space <em>is</em> the network.&quot;</li>
 <li><strong>Stability across time:</strong> &quot;Engrams minted today are valid indefinitely — the geometric relationships they encode don't expire. There's no model to retrain, no vocabulary to version, no stored representations that go stale.&quot;</li>
 </ul>
-<h3 id="maps-to"><a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a>Maps To</h3>
+<h3 id="maps-to">Maps To<a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a></h3>
 <ul>
 <li><code>holon-rs</code> deployment: seed parameter in <code>VectorManager</code>, engram serialization/deserialization, XDP sidecar cold boot</li>
 <li>Architecture: HQ/edge separation in DDoS lab</li>
 </ul>
-<h3 id="motivates"><a class="heading-anchor" href="#motivates" aria-hidden="true">#</a>Motivates</h3>
+<h3 id="motivates">Motivates<a class="heading-anchor" href="#motivates" aria-hidden="true">#</a></h3>
 <ul>
 <li>DDoS lab architecture (HQ learns → engram → edge scores, no coordination)</li>
 <li>Trading lab deployment model (central learning, distributed scoring)</li>
 <li>Primer 005 (Wat language compiles to Rust — single-language constraint)</li>
 </ul>
 <hr />
-<h2 id="primer-005-the-wat-language-193-lines"><a class="heading-anchor" href="#primer-005-the-wat-language-193-lines" aria-hidden="true">#</a>Primer 005: The Wat Language (193 lines)</h2>
-<h3 id="what-it-introduces"><a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a>What It Introduces</h3>
+<h2 id="primer-005-the-wat-language-193-lines">Primer 005: The Wat Language (193 lines)<a class="heading-anchor" href="#primer-005-the-wat-language-193-lines" aria-hidden="true">#</a></h2>
+<h3 id="what-it-introduces">What It Introduces<a class="heading-anchor" href="#what-it-introduces" aria-hidden="true">#</a></h3>
 <p>The specification language for the system: s-expressions that describe programs, with automated verification that Rust implementations match specifications. Two algebras, three structural forms, host language forms, standard library, and compilation path to Rust.</p>
-<h3 id="key-claims-and-definitions"><a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a>Key Claims and Definitions</h3>
+<h3 id="key-claims-and-definitions">Key Claims and Definitions<a class="heading-anchor" href="#key-claims-and-definitions" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>What Wat is:</strong> &quot;Wat is a specification language. It describes programs in s-expression form — what a module reads, what it emits, what it does not read. The wat leads. The Rust follows.&quot;</li>
 <li><strong>Two algebras:</strong><ul>
@@ -421,18 +421,18 @@
 <li><strong>Size:</strong> &quot;8 files. 652 lines. Everything the system needs to specify itself.&quot; Standard library is 128 lines across 4 files.</li>
 <li><strong>Design principle:</strong> &quot;The stdlib enables. The application decides. ... No vocabulary. No encoding conventions. No application patterns. The boundary is the Fact interface: the language knows how to bind and bundle. The application knows what 'RSI divergence' means.&quot;</li>
 </ul>
-<h3 id="maps-to"><a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a>Maps To</h3>
+<h3 id="maps-to">Maps To<a class="heading-anchor" href="#maps-to" aria-hidden="true">#</a></h3>
 <ul>
 <li><code>holon-rs</code> build system: Wat specification files, <code>/scry</code> and <code>/forge</code> wards, compilation to Rust</li>
 <li>Trading lab: <code>examples/enterprise.wat</code> (315 lines reference program), 37 wat files across 4,804 lines</li>
 </ul>
-<h3 id="motivates"><a class="heading-anchor" href="#motivates" aria-hidden="true">#</a>Motivates</h3>
+<h3 id="motivates">Motivates<a class="heading-anchor" href="#motivates" aria-hidden="true">#</a></h3>
 <ul>
 <li>Trading lab enterprise architecture (wat as source of truth, Rust follows)</li>
 <li>Verification methodology across the project (specification-first development)</li>
 </ul>
 <hr />
-<h2 id="the-conceptual-chain"><a class="heading-anchor" href="#the-conceptual-chain" aria-hidden="true">#</a>The Conceptual Chain</h2>
+<h2 id="the-conceptual-chain">The Conceptual Chain<a class="heading-anchor" href="#the-conceptual-chain" aria-hidden="true">#</a></h2>
 <p>The primers form a strict dependency chain, bottom to top:</p>
 <pre><code>000  VSA Primer
  │   Three operations (bind, bundle, cosine). Near-orthogonality of random hypervectors.
@@ -465,7 +465,7 @@
       &quot;The wat leads. The Rust follows.&quot;
       Quote is data. No nil. Protocols are check-only.
 </code></pre>
-<h2 id="recurring-themes"><a class="heading-anchor" href="#recurring-themes" aria-hidden="true">#</a>Recurring Themes</h2>
+<h2 id="recurring-themes">Recurring Themes<a class="heading-anchor" href="#recurring-themes" aria-hidden="true">#</a></h2>
 <ol>
 <li><p><strong>Geometry encodes structure, not semantics.</strong> The algebra doesn't know what the data means. It encodes structural relationships. Similarity falls out of cosine similarity.</p>
 </li>
@@ -480,7 +480,7 @@
 <li><p><strong>Honest claims.</strong> Every &quot;likely contribution&quot; is explicitly caveated: &quot;We haven't done an exhaustive literature survey.&quot; &quot;Not a claim of priority, but a flag.&quot; &quot;If any of this maps to existing published work, we'd genuinely want to know.&quot;</p>
 </li>
 </ol>
-<h2 id="honest-assessment"><a class="heading-anchor" href="#honest-assessment" aria-hidden="true">#</a>Honest Assessment</h2>
+<h2 id="honest-assessment">Honest Assessment<a class="heading-anchor" href="#honest-assessment" aria-hidden="true">#</a></h2>
 <p>The primers are internally consistent and well-structured. The conceptual chain is clear: VSA math → encoding pipeline → algebra operations → memory/learning → deployment architecture → specification language. Each primer builds on exactly the previous ones.</p>
 <p>The claimed contributions are stated with appropriate humility and concrete references to what they enable (specific challenge batch results, specific F1 scores). The writing is unusually transparent about provenance (the VSA foundation came from a conference video + LLM conversations, not paper reading).</p>
 <p>No conflicts or contradictions were found between primers. The only hard constraint stated across the system is the single-language-per-deployment requirement for vector compatibility — which is clearly documented and honestly presented as a non-problem for any sane deployment.</p>

@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -222,7 +222,7 @@
         T0-010: Subspace — Noise Modeling and Thought Projection <span class="badge badge-what">WHAT</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It IS</h2>
+      <div class="prose prose-invert max-w-none"><h2 id="what-it-is">What It IS<a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a></h2>
 <p>The <code>subspace.rs</code> module implements <strong>online subspace learning</strong> via CCIPCA (Candid Covariance-free Incremental PCA, Weng et al. 2003). It provides three structs:</p>
 <ol>
 <li><strong><code>OnlineSubspace</code></strong> — a single incremental PCA learner that tracks k unnormalized eigenvectors, a running mean, and an adaptive anomaly threshold.</li>
@@ -234,9 +234,9 @@
 <p>&quot;Inputs must be <code>&amp;[f64]</code>. Callers convert bipolar <code>Vector</code> with <code>vec.to_f64()</code> before passing in — this keeps the memory layer decoupled from the VSA vector type.&quot;
 — <code>OnlineSubspace</code> struct doc, line 63–65</p>
 </blockquote>
-<h2 id="how-it-works"><a class="heading-anchor" href="#how-it-works" aria-hidden="true">#</a>How It Works</h2>
-<h3 id="onlinesubspace"><a class="heading-anchor" href="#onlinesubspace" aria-hidden="true">#</a>OnlineSubspace</h3>
-<h4 id="core-state"><a class="heading-anchor" href="#core-state" aria-hidden="true">#</a>Core State</h4>
+<h2 id="how-it-works">How It Works<a class="heading-anchor" href="#how-it-works" aria-hidden="true">#</a></h2>
+<h3 id="onlinesubspace">OnlineSubspace<a class="heading-anchor" href="#onlinesubspace" aria-hidden="true">#</a></h3>
+<h4 id="core-state">Core State<a class="heading-anchor" href="#core-state" aria-hidden="true">#</a></h4>
 <table>
 <thead>
 <tr>
@@ -296,7 +296,7 @@
 </tbody>
 </table>
 <p>The component matrix is stored as <code>ndarray::Array2&lt;f64&gt;</code> so that &quot;dot products, projections, and deflations compile down to vectorized (SIMD) loops.&quot;</p>
-<h4 id="ccipca-update-update"><a class="heading-anchor" href="#ccipca-update-update" aria-hidden="true">#</a>CCIPCA Update (<code>update()</code>)</h4>
+<h4 id="ccipca-update-update">CCIPCA Update (<code>update()</code>)<a class="heading-anchor" href="#ccipca-update-update" aria-hidden="true">#</a></h4>
 <p>On each observation <code>x</code>:</p>
 <ol>
 <li><strong>Compute residual before updating</strong> — &quot;ensuring the adaptive threshold is calibrated against the same distribution as test-time scoring.&quot;</li>
@@ -313,34 +313,34 @@
 <li><strong>Reflexive dimensionality</strong>: <code>maybe_grow()</code> or <code>maybe_shrink()</code> (mutually exclusive per update).</li>
 <li><strong>Periodic re-orthogonalization</strong> if <code>reorth_interval &gt; 0</code> and <code>n % reorth_interval == 0</code>.</li>
 </ol>
-<h4 id="scoring-residual"><a class="heading-anchor" href="#scoring-residual" aria-hidden="true">#</a>Scoring (<code>residual()</code>)</h4>
+<h4 id="scoring-residual">Scoring (<code>residual()</code>)<a class="heading-anchor" href="#scoring-residual" aria-hidden="true">#</a></h4>
 <p>Centers the input, then iteratively projects onto each component and deflates. Returns the L2 norm of the remaining (out-of-subspace) residual — the <strong>anomaly score</strong>. Higher = more anomalous.</p>
 <blockquote>
 <p>&quot;Returns the residual norm (anomaly score). Higher = more anomalous.&quot;
 — <code>residual()</code> doc, line 323</p>
 </blockquote>
-<h4 id="adaptive-threshold-threshold"><a class="heading-anchor" href="#adaptive-threshold-threshold" aria-hidden="true">#</a>Adaptive Threshold (<code>threshold()</code>)</h4>
+<h4 id="adaptive-threshold-threshold">Adaptive Threshold (<code>threshold()</code>)<a class="heading-anchor" href="#adaptive-threshold-threshold" aria-hidden="true">#</a></h4>
 <blockquote>
 <p>&quot;Adaptive anomaly threshold: EMA(residual) + sigma_mult * sqrt(variance).&quot;</p>
 </blockquote>
 <p>Returns <code>f64::INFINITY</code> until at least 2 observations have been seen.</p>
-<h4 id="projection-amp-reconstruction"><a class="heading-anchor" href="#projection-amp-reconstruction" aria-hidden="true">#</a>Projection &amp; Reconstruction</h4>
+<h4 id="projection-amp-reconstruction">Projection &amp; Reconstruction<a class="heading-anchor" href="#projection-amp-reconstruction" aria-hidden="true">#</a></h4>
 <ul>
 <li><code>project(x)</code> → k coefficients: the projection onto each unit-normalized component.</li>
 <li><code>reconstruct(x)</code> → dim-dimensional vector: mean + Σ (coeff_i / ||component_i||) × component_i.</li>
 <li><code>anomalous_component(x)</code> → <code>x - reconstruct(x)</code>: the out-of-subspace part.</li>
 </ul>
-<h4 id="approximate-eigenvalues"><a class="heading-anchor" href="#approximate-eigenvalues" aria-hidden="true">#</a>Approximate Eigenvalues</h4>
+<h4 id="approximate-eigenvalues">Approximate Eigenvalues<a class="heading-anchor" href="#approximate-eigenvalues" aria-hidden="true">#</a></h4>
 <blockquote>
 <p>&quot;Approximate eigenvalues: L2 norms of the unnormalized component vectors.&quot;</p>
 </blockquote>
 <p>The L2 norms of the unnormalized component vectors approximate the eigenvalues of the covariance matrix.</p>
-<h4 id="explained-variance-ratio"><a class="heading-anchor" href="#explained-variance-ratio" aria-hidden="true">#</a>Explained Variance Ratio</h4>
+<h4 id="explained-variance-ratio">Explained Variance Ratio<a class="heading-anchor" href="#explained-variance-ratio" aria-hidden="true">#</a></h4>
 <blockquote>
 <p>&quot;Estimated from recent residuals. Only meaningful after ≥10 updates.&quot;</p>
 </blockquote>
 <p>Formula: <code>(1.0 - res_ema² / dim).max(0.0)</code>.</p>
-<h4 id="subspace-alignment-subspace_alignment"><a class="heading-anchor" href="#subspace-alignment-subspace_alignment" aria-hidden="true">#</a>Subspace Alignment (<code>subspace_alignment()</code>)</h4>
+<h4 id="subspace-alignment-subspace_alignment">Subspace Alignment (<code>subspace_alignment()</code>)<a class="heading-anchor" href="#subspace-alignment-subspace_alignment" aria-hidden="true">#</a></h4>
 <p>Measures directional similarity between two subspaces via principal angles:</p>
 <ol>
 <li>Extract active (non-zero-norm) unit basis vectors from both subspaces.</li>
@@ -353,7 +353,7 @@
 <p>&quot;Returns a value in [0, 1]: 1.0 = same directions, 0.0 = orthogonal.&quot;
 &quot;Cost: O(k · dim) for the basis product, O(k²) for the SVD.&quot;</p>
 </blockquote>
-<h4 id="reflexive-dimensionality-grow-shrink-k"><a class="heading-anchor" href="#reflexive-dimensionality-grow-shrink-k" aria-hidden="true">#</a>Reflexive Dimensionality (Grow / Shrink K)</h4>
+<h4 id="reflexive-dimensionality-grow-shrink-k">Reflexive Dimensionality (Grow / Shrink K)<a class="heading-anchor" href="#reflexive-dimensionality-grow-shrink-k" aria-hidden="true">#</a></h4>
 <p>The subspace automatically adjusts its rank based on eigenvalue energy ratios:</p>
 <ul>
 <li><strong><code>maybe_grow()</code></strong>: if <code>k &lt; max_components</code> and <code>||last_component|| / ||first_component|| &gt; grow_threshold</code> (default 0.05), append a zero-initialized row and increment k.</li>
@@ -361,13 +361,13 @@
 <li>Mutually exclusive per update: &quot;a newly grown component starts at zero and would be immediately shrunk if both ran in the same step.&quot;</li>
 <li>Defaults: <code>min_components = initial_k</code>, <code>max_components = max(64, 8*k)</code>.</li>
 </ul>
-<h4 id="re-orthogonalization"><a class="heading-anchor" href="#re-orthogonalization" aria-hidden="true">#</a>Re-orthogonalization</h4>
+<h4 id="re-orthogonalization">Re-orthogonalization<a class="heading-anchor" href="#re-orthogonalization" aria-hidden="true">#</a></h4>
 <p>Modified Gram-Schmidt preserving component norms (eigenvalue estimates):</p>
 <blockquote>
 <p>&quot;Modified Gram-Schmidt re-orthogonalization preserving component norms.&quot;</p>
 </blockquote>
 <p>For each component i, subtract projections onto all prior components, then rescale to restore the original norm.</p>
-<h3 id="stripedsubspace"><a class="heading-anchor" href="#stripedsubspace" aria-hidden="true">#</a>StripedSubspace</h3>
+<h3 id="stripedsubspace">StripedSubspace<a class="heading-anchor" href="#stripedsubspace" aria-hidden="true">#</a></h3>
 <p>&quot;N independent OnlineSubspaces, one per stripe.&quot; Each stripe learns and scores its own portion of encoded data.</p>
 <ul>
 <li><strong>Aggregate residual</strong>: RSS of per-stripe residuals — &quot;preserving the geometric interpretation of anomaly magnitude.&quot;</li>
@@ -375,14 +375,14 @@
 <li><strong>Threshold</strong>: RSS of per-stripe thresholds.</li>
 <li>Used with <code>Encoder::encode_walkable_striped</code> which &quot;distributes leaf bindings across stripes via FQDN path hashing.&quot;</li>
 </ul>
-<h3 id="jacobi-eigenvalues"><a class="heading-anchor" href="#jacobi-eigenvalues" aria-hidden="true">#</a>Jacobi Eigenvalues</h3>
+<h3 id="jacobi-eigenvalues">Jacobi Eigenvalues<a class="heading-anchor" href="#jacobi-eigenvalues" aria-hidden="true">#</a></h3>
 <p>Standalone function for small symmetric matrices (typically k×k where k = 3–128):</p>
 <ul>
 <li>O(k³) convergence, tolerance 1e-12, max iterations 100×k².</li>
 <li>Classic Jacobi rotation: find largest off-diagonal element, compute rotation angle, apply 2×2 rotation to rows/columns.</li>
 <li>Returns eigenvalues sorted descending.</li>
 </ul>
-<h2 id="key-properties"><a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a>Key Properties</h2>
+<h2 id="key-properties">Key Properties<a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -425,7 +425,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="source-quotes"><a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a>Source Quotes</h2>
+<h2 id="source-quotes">Source Quotes<a class="heading-anchor" href="#source-quotes" aria-hidden="true">#</a></h2>
 <blockquote>
 <p>&quot;Tracks k unnormalized eigenvectors whose L2 norms approximate eigenvalues. Each update deflates the input through the learned components, so each component captures a successively smaller slice of variance.&quot;
 — module-level doc, line 8–10</p>
@@ -446,7 +446,7 @@
 <p>&quot;Aggregate residual is the root-sum-of-squares (RSS) of per-stripe residuals, preserving the geometric interpretation of anomaly magnitude.&quot;
 — <code>StripedSubspace</code> struct doc, line 610–611</p>
 </blockquote>
-<h2 id="test-coverage"><a class="heading-anchor" href="#test-coverage" aria-hidden="true">#</a>Test Coverage</h2>
+<h2 id="test-coverage">Test Coverage<a class="heading-anchor" href="#test-coverage" aria-hidden="true">#</a></h2>
 <ul>
 <li><code>test_threshold_infinite_before_training</code>: threshold is <code>∞</code> before any observations</li>
 <li><code>test_threshold_finite_after_training</code>: threshold becomes finite after 50 updates</li>

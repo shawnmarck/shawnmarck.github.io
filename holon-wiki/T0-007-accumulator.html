@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -225,7 +225,7 @@
       <div class="prose prose-invert max-w-none"><p><strong>Weighted vector accumulation used by the Reckoner.</strong></p>
 <p>Source: <code>holon-rs/src/kernel/accumulator.rs</code> (243 lines of production code)</p>
 <hr />
-<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It IS</h2>
+<h2 id="what-it-is">What It IS<a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a></h2>
 <p>A <strong>frequency-preserving streaming accumulator</strong> over bipolar vectors. It maintains a running sum of <code>i8</code>-valued <code>Vector</code> observations in a continuous <code>f64</code> buffer (<code>ndarray::Array1&lt;f64&gt;</code>), along with a count of how many examples have been added.</p>
 <p>The module-level doc states the design intent plainly:</p>
 <blockquote>
@@ -244,7 +244,7 @@ more than a pattern seen once.&quot;</p>
 </blockquote>
 <p>This frequency preservation matters for anomaly detection: &quot;common patterns should dominate the baseline, so rare anomalies have low similarity.&quot;</p>
 <hr />
-<h2 id="internal-structure"><a class="heading-anchor" href="#internal-structure" aria-hidden="true">#</a>Internal Structure</h2>
+<h2 id="internal-structure">Internal Structure<a class="heading-anchor" href="#internal-structure" aria-hidden="true">#</a></h2>
 <pre><code class="language-rust">pub struct Accumulator {
     sums: Array1&lt;f64&gt;,   // Running sum of all vectors (not thresholded)
     count: usize,         // Number of examples accumulated
@@ -252,14 +252,14 @@ more than a pattern seen once.&quot;</p>
 </code></pre>
 <p>Two fields. The <code>sums</code> array lives in <code>ndarray::Array1&lt;f64&gt;</code> so that &quot;decay, merge, and norm operations compile down to vectorized (SIMD) loops.&quot; The <code>count</code> is a plain <code>usize</code>.</p>
 <hr />
-<h2 id="how-it-works"><a class="heading-anchor" href="#how-it-works" aria-hidden="true">#</a>How It Works</h2>
-<h3 id="construction-and-addition"><a class="heading-anchor" href="#construction-and-addition" aria-hidden="true">#</a>Construction and Addition</h3>
+<h2 id="how-it-works">How It Works<a class="heading-anchor" href="#how-it-works" aria-hidden="true">#</a></h2>
+<h3 id="construction-and-addition">Construction and Addition<a class="heading-anchor" href="#construction-and-addition" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong><code>new(dimensions: usize)</code></strong> — creates an accumulator with zero-initialized sums and count zero.</li>
 <li><strong><code>add(&amp;mut self, example: &amp;Vector)</code></strong> — asserts dimension match, then adds each component of the example (cast <code>i8 → f64</code>) into <code>sums</code>. Increments <code>count</code>. The doc notes: &quot;Unlike bundling, this does NOT threshold after each addition, preserving frequency information.&quot;</li>
 <li><strong><code>add_weighted(&amp;mut self, example: &amp;Vector, weight: f64)</code></strong> — same as <code>add</code> but each component is multiplied by <code>weight</code> before accumulating. Still increments <code>count</code> by 1.</li>
 </ul>
-<h3 id="prototype-extraction"><a class="heading-anchor" href="#prototype-extraction" aria-hidden="true">#</a>Prototype Extraction</h3>
+<h3 id="prototype-extraction">Prototype Extraction<a class="heading-anchor" href="#prototype-extraction" aria-hidden="true">#</a></h3>
 <p>Two ways to extract a prototype vector from the accumulated sums:</p>
 <ol>
 <li><p><strong><code>normalize(&amp;self) -&gt; Vector</code></strong> — computes the L2 norm (<code>sqrt(sums · sums)</code>), returns zero vector if norm &lt; 1e-10, otherwise divides each component by norm and thresholds back to bipolar <code>{-1, 0, 1}</code>. The doc: &quot;Returns a continuous f64 vector suitable for cosine similarity.&quot; (Note: despite the doc comment, the actual return type is <code>Vector</code> with <code>i8</code> components — the continuous values are quantized to bipolar via sign thresholding.)</p>
@@ -271,23 +271,23 @@ more than a pattern seen once.&quot;</p>
 <li><p><strong><code>raw_sums(&amp;self) -&gt; &amp;[f64]</code></strong> — direct access to the internal f64 array.</p>
 </li>
 </ol>
-<h3 id="decay"><a class="heading-anchor" href="#decay" aria-hidden="true">#</a>Decay</h3>
+<h3 id="decay">Decay<a class="heading-anchor" href="#decay" aria-hidden="true">#</a></h3>
 <p><strong><code>decay(&amp;mut self, factor: f64)</code></strong> — multiplies every element of <code>sums</code> by <code>factor</code>. This is exponential decay. The doc: &quot;Useful for time-weighted baselines where recent patterns should have more influence.&quot; The test confirms the mechanics: after adding <code>[1,-1,1,-1]</code> twice (sums = <code>[2,-2,2,-2]</code>), a decay of <code>0.5</code> yields <code>[1,-1,1,-1]</code>.</p>
-<h3 id="merge"><a class="heading-anchor" href="#merge" aria-hidden="true">#</a>Merge</h3>
+<h3 id="merge">Merge<a class="heading-anchor" href="#merge" aria-hidden="true">#</a></h3>
 <p><strong><code>merge(&amp;mut self, other: &amp;Accumulator)</code></strong> — adds the other's <code>sums</code> elementwise into <code>self.sums</code> and adds the other's <code>count</code>. The doc: &quot;Useful for parallel processing: accumulate in separate threads, then merge results.&quot;</p>
-<h3 id="clear"><a class="heading-anchor" href="#clear" aria-hidden="true">#</a>Clear</h3>
+<h3 id="clear">Clear<a class="heading-anchor" href="#clear" aria-hidden="true">#</a></h3>
 <p><strong><code>clear(&amp;mut self)</code></strong> — zeros the sums array and resets count to zero.</p>
 <hr />
-<h2 id="diagnostic-methods"><a class="heading-anchor" href="#diagnostic-methods" aria-hidden="true">#</a>Diagnostic Methods</h2>
+<h2 id="diagnostic-methods">Diagnostic Methods<a class="heading-anchor" href="#diagnostic-methods" aria-hidden="true">#</a></h2>
 <p>Three methods provide introspection into the state of the accumulator:</p>
-<h3 id="capacity"><a class="heading-anchor" href="#capacity" aria-hidden="true">#</a>Capacity</h3>
+<h3 id="capacity">Capacity<a class="heading-anchor" href="#capacity" aria-hidden="true">#</a></h3>
 <p><strong><code>capacity(&amp;self, codebook_size: usize) -&gt; f64</code></strong> — estimates remaining capacity as a fraction in <code>[0.0, 1.0]</code> (1.0 = empty, 0.0 = saturated). Uses the capacity bound <code>N ≤ d / (2·ln(k))</code> where <code>d</code> is dimensionality and <code>k</code> is codebook size. The method computes <code>max_items = d / (2·ln(k))</code>, estimates current item count from <code>L2²/d</code>, and returns <code>(1 - estimated/max)</code> clamped to <code>[0, 1]</code>.</p>
-<h3 id="purity"><a class="heading-anchor" href="#purity" aria-hidden="true">#</a>Purity</h3>
+<h3 id="purity">Purity<a class="heading-anchor" href="#purity" aria-hidden="true">#</a></h3>
 <p><strong><code>purity(&amp;self) -&gt; f64</code></strong> — a &quot;quantum-inspired purity measure&quot; analogous to <code>Tr(ρ²)</code>. Computed as <code>min(1.0, d / L2²)</code> where <code>L2²</code> is the squared L2 norm of sums. A single bipolar vector yields purity ≈ 1.0; N dissimilar accumulated vectors yield purity ≈ <code>1/N</code>. The test asserts a single vector in 1024 dims has purity &gt; 0.95, and 50 random vectors have purity &lt; 0.5.</p>
-<h3 id="participation-ratio"><a class="heading-anchor" href="#participation-ratio" aria-hidden="true">#</a>Participation Ratio</h3>
+<h3 id="participation-ratio">Participation Ratio<a class="heading-anchor" href="#participation-ratio" aria-hidden="true">#</a></h3>
 <p><strong><code>participation_ratio(&amp;self) -&gt; f64</code></strong> — computes <code>PR = (Σ vᵢ²)² / Σ vᵢ⁴</code>, a measure of how many dimensions carry significant energy. A single bipolar vector of dimension <code>d</code> yields <code>PR ≈ d</code>; energy concentrated in fewer dimensions reduces PR. Test: single bipolar in 1024 dims gives PR &gt; 900; energy in only 10 dims gives PR &lt; 20.</p>
 <hr />
-<h2 id="usage-in-the-reckoner"><a class="heading-anchor" href="#usage-in-the-reckoner" aria-hidden="true">#</a>Usage in the Reckoner</h2>
+<h2 id="usage-in-the-reckoner">Usage in the Reckoner<a class="heading-anchor" href="#usage-in-the-reckoner" aria-hidden="true">#</a></h2>
 <p>The <code>Accumulator</code> is the core storage primitive inside the Reckoner (both modes):</p>
 <ul>
 <li><strong>Discrete mode</strong>: one <code>Accumulator</code> per label (<code>Vec&lt;Accumulator&gt;</code> in <code>ReckMode::Discrete</code>).</li>
@@ -295,7 +295,7 @@ more than a pattern seen once.&quot;</p>
 </ul>
 <p>The Reckoner's <code>reckoner.rs</code> imports it directly: <code>use crate::kernel::accumulator::Accumulator;</code>.</p>
 <hr />
-<h2 id="what-it-is-not"><a class="heading-anchor" href="#what-it-is-not" aria-hidden="true">#</a>What It Is NOT</h2>
+<h2 id="what-it-is-not">What It Is NOT<a class="heading-anchor" href="#what-it-is-not" aria-hidden="true">#</a></h2>
 <ul>
 <li>It does <strong>not</strong> implement bundling or threshold after each addition — that is the explicit design distinction.</li>
 <li>It does <strong>not</strong> store individual observations — only the running sum and count.</li>

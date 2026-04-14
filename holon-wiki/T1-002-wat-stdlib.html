@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -225,10 +225,10 @@
       <div class="prose prose-invert max-w-none"><p><strong>Verified leaf: T1-002</strong>
 <strong>Sources:</strong> <code>wat/std/vectors.wat</code> (44 lines), <code>wat/std/memory.wat</code> (28 lines), <code>wat/std/scalars.wat</code> (15 lines), <code>wat/std/fields.wat</code> (11 lines), <code>wat/std/statistics.wat</code> (41 lines)</p>
 <hr />
-<h2 id="overview"><a class="heading-anchor" href="#overview" aria-hidden="true">#</a>Overview</h2>
+<h2 id="overview">Overview<a class="heading-anchor" href="#overview" aria-hidden="true">#</a></h2>
 <p>The standard library provides &quot;derived forms built from the corelib.&quot; These are convenience operations, not core algebra primitives. The source categorizes them as &quot;stdlib atoms&quot; required via <code>(require common)</code>.</p>
 <hr />
-<h2 id="stdscalars-scalar-encoding-into-vector-space"><a class="heading-anchor" href="#stdscalars-scalar-encoding-into-vector-space" aria-hidden="true">#</a>std/scalars — scalar encoding into vector space</h2>
+<h2 id="stdscalars-scalar-encoding-into-vector-space">std/scalars — scalar encoding into vector space<a class="heading-anchor" href="#stdscalars-scalar-encoding-into-vector-space" aria-hidden="true">#</a></h2>
 <p><em>&quot;Maps continuous values into the algebra.&quot;</em></p>
 <p>Three encoding functions, each mapping a continuous value to a Vector:</p>
 <table>
@@ -258,9 +258,9 @@
 </tbody>
 </table>
 <hr />
-<h2 id="stdvectors-derived-vector-operations"><a class="heading-anchor" href="#stdvectors-derived-vector-operations" aria-hidden="true">#</a>std/vectors — derived vector operations</h2>
+<h2 id="stdvectors-derived-vector-operations">std/vectors — derived vector operations<a class="heading-anchor" href="#stdvectors-derived-vector-operations" aria-hidden="true">#</a></h2>
 <p><em>&quot;All derivable from the four algebra primitives (atom, bind, bundle, cosine). Stdlib convenience, not core.&quot;</em></p>
-<h3 id="transformation-operations"><a class="heading-anchor" href="#transformation-operations" aria-hidden="true">#</a>Transformation operations</h3>
+<h3 id="transformation-operations">Transformation operations<a class="heading-anchor" href="#transformation-operations" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -292,7 +292,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="pattern-operations"><a class="heading-anchor" href="#pattern-operations" aria-hidden="true">#</a>Pattern operations</h3>
+<h3 id="pattern-operations">Pattern operations<a class="heading-anchor" href="#pattern-operations" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -319,7 +319,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="geometric-operations"><a class="heading-anchor" href="#geometric-operations" aria-hidden="true">#</a>Geometric operations</h3>
+<h3 id="geometric-operations">Geometric operations<a class="heading-anchor" href="#geometric-operations" aria-hidden="true">#</a></h3>
 <p>| Function | Signature | Description |
 |----------|-----------|-------------|
 | <code>coherence</code> | <code>(coherence vectors) → Float</code> | &quot;Mean pairwise similarity of a vector set.&quot; |
@@ -329,10 +329,10 @@
 | <code>blend</code> | <code>(blend a b ratio) → Vector</code> | &quot;Weighted interpolation between two vectors.&quot; <code>ratio=0.0 → a</code>, <code>ratio=1.0 → b</code>, <code>ratio=0.5 → midpoint</code>. |</p>
 <p>Note: <code>LANGUAGE.md</code> also lists <code>zeros</code> as a host language collection form with two behaviors — nullary (zero vector at dims) and <code>(zeros n)</code> (zero-filled array of size n). The stdlib form is the nullary vector-space version.</p>
 <hr />
-<h2 id="stdmemory-learning-beyond-the-journal"><a class="heading-anchor" href="#stdmemory-learning-beyond-the-journal" aria-hidden="true">#</a>std/memory — learning beyond the journal</h2>
+<h2 id="stdmemory-learning-beyond-the-journal">std/memory — learning beyond the journal<a class="heading-anchor" href="#stdmemory-learning-beyond-the-journal" aria-hidden="true">#</a></h2>
 <p><em>&quot;The journal (core) is Template 1: prediction via discriminant. These are Template 2: reaction via learned manifold.&quot;</em></p>
 <p>Implementation: &quot;CCIPCA: incremental PCA without storing the full dataset.&quot;</p>
-<h3 id="constructor"><a class="heading-anchor" href="#constructor" aria-hidden="true">#</a>Constructor</h3>
+<h3 id="constructor">Constructor<a class="heading-anchor" href="#constructor" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -349,7 +349,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="operations"><a class="heading-anchor" href="#operations" aria-hidden="true">#</a>Operations</h3>
+<h3 id="operations">Operations<a class="heading-anchor" href="#operations" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -393,7 +393,7 @@
 </table>
 <p>Note: <code>LANGUAGE.md</code> lists the constructor as <code>(online-subspace dims k)</code> while <code>memory.wat</code> specifies <code>(online-subspace dims n-components)</code>. The stdlib source uses <code>n-components</code>.</p>
 <hr />
-<h2 id="stdstatistics-numeric-helpers-for-the-pre-algebra-layer"><a class="heading-anchor" href="#stdstatistics-numeric-helpers-for-the-pre-algebra-layer" aria-hidden="true">#</a>std/statistics — numeric helpers for the pre-algebra layer</h2>
+<h2 id="stdstatistics-numeric-helpers-for-the-pre-algebra-layer">std/statistics — numeric helpers for the pre-algebra layer<a class="heading-anchor" href="#stdstatistics-numeric-helpers-for-the-pre-algebra-layer" aria-hidden="true">#</a></h2>
 <p><em>&quot;Pure arithmetic over lists. These produce Floats that feed encode-linear or fact/scalar. They do not touch the vector algebra.&quot;</em></p>
 <p><em>&quot;Tempered: multi-moment computation shares a single pass where possible.&quot;</em></p>
 <p>All functions accept a list <code>xs</code> and return a Float (except <code>moments</code> which returns a list of three Floats).</p>
@@ -434,7 +434,7 @@
 </tbody>
 </table>
 <hr />
-<h2 id="stdfields-retired"><a class="heading-anchor" href="#stdfields-retired" aria-hidden="true">#</a>std/fields — RETIRED</h2>
+<h2 id="stdfields-retired">std/fields — RETIRED<a class="heading-anchor" href="#stdfields-retired" aria-hidden="true">#</a></h2>
 <p>This module is entirely retired. The file states:</p>
 <blockquote>
 <p>&quot;(field struct-name field-name computation) has been retired. See proposal 014 (protocols). defprotocol + satisfies subsume it.&quot;</p>
@@ -444,7 +444,7 @@
 <p>&quot;This file is kept for historical reference. Do not use (field ...).&quot;</p>
 </blockquote>
 <hr />
-<h2 id="what-the-stdlib-is-not"><a class="heading-anchor" href="#what-the-stdlib-is-not" aria-hidden="true">#</a>What the stdlib is not</h2>
+<h2 id="what-the-stdlib-is-not">What the stdlib is not<a class="heading-anchor" href="#what-the-stdlib-is-not" aria-hidden="true">#</a></h2>
 <p>The stdlib does not define new algebra primitives. Every operation in <code>vectors.wat</code> is described as &quot;derivable from the four algebra primitives.&quot; The statistics module operates on plain lists of numbers, not vectors. Memory adds a second learning template (manifold learning) complementary to the reckoner's discriminant-based prediction.</p>
 <p>The <code>fields.wat</code> module documents a retired feature — it defines no active operations.</p>
 </div>

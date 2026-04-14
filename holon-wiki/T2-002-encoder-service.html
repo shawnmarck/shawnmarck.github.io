@@ -37,7 +37,7 @@
   .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
   .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
   ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
-  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s}
+  .heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
   .heading-anchor:hover{color:#7170ff!important}
   .prose code::before,.prose code::after{content:none!important}
   a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
@@ -226,7 +226,7 @@
 <strong>Guide reference:</strong> No dedicated GUIDE section found; implied by GUIDE.md lines 1439–1446 (LruCache on ThoughtEncoder)
 <strong>Tier:</strong> 2 — Encoding infrastructure</p>
 <hr />
-<h2 id="what-it-is"><a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a>What It IS</h2>
+<h2 id="what-it-is">What It IS<a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a></h2>
 <p>The EncoderService is a single-threaded pipe loop that owns the LRU composition cache, serving multiple concurrent callers without any mutex. Each caller gets its own <code>EncoderHandle</code> (a set of three pipes). The encoder thread iterates all handles once per loop, draining installs and servicing lookups.</p>
 <blockquote>
 <p>&quot;ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache.&quot;
@@ -234,7 +234,7 @@
 </blockquote>
 <p>It depends on <code>thought-encoder</code> (for the <code>ThoughtAST</code> type) and <code>primitives</code> (for <code>Vector</code>).</p>
 <hr />
-<h2 id="encoderhandle-a-callers-pipe-set"><a class="heading-anchor" href="#encoderhandle-a-callers-pipe-set" aria-hidden="true">#</a>EncoderHandle — A Caller's Pipe Set</h2>
+<h2 id="encoderhandle-a-callers-pipe-set">EncoderHandle — A Caller's Pipe Set<a class="heading-anchor" href="#encoderhandle-a-callers-pipe-set" aria-hidden="true">#</a></h2>
 <pre><code class="language-scheme">(struct encoder-handle
   [lookup  : Sender&lt;ThoughtAST&gt;]          ; bounded 1
   [answer  : Receiver&lt;Option&lt;Vector&gt;&gt;]    ; bounded 1
@@ -271,12 +271,12 @@
 </tr>
 </tbody>
 </table>
-<h3 id="encoder-get-lines-2831"><a class="heading-anchor" href="#encoder-get-lines-2831" aria-hidden="true">#</a><code>encoder-get</code> (lines 28–31)</h3>
+<h3 id="encoder-get-lines-2831"><code>encoder-get</code> (lines 28–31)<a class="heading-anchor" href="#encoder-get-lines-2831" aria-hidden="true">#</a></h3>
 <p>Blocking lookup. Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option&lt;Vector&gt;</code>.</p>
-<h3 id="encoder-set-lines-3436"><a class="heading-anchor" href="#encoder-set-lines-3436" aria-hidden="true">#</a><code>encoder-set</code> (lines 34–36)</h3>
+<h3 id="encoder-set-lines-3436"><code>encoder-set</code> (lines 34–36)<a class="heading-anchor" href="#encoder-set-lines-3436" aria-hidden="true">#</a></h3>
 <p>Fire and forget. Sends <code>(AST, Vector)</code> pair on <code>install</code>. Non-blocking, unbounded.</p>
 <hr />
-<h2 id="encoderservice-struct"><a class="heading-anchor" href="#encoderservice-struct" aria-hidden="true">#</a>EncoderService Struct</h2>
+<h2 id="encoderservice-struct">EncoderService Struct<a class="heading-anchor" href="#encoderservice-struct" aria-hidden="true">#</a></h2>
 <pre><code class="language-scheme">(struct encoder-service
   [handle     : JoinHandle&lt;()&gt;]
   [hits       : Arc&lt;AtomicUsize&gt;]         ; cache hit counter
@@ -290,13 +290,13 @@
 </blockquote>
 <p>Three <code>Arc&lt;AtomicUsize&gt;</code> counters provide lock-free read access to hit/miss/cache-size stats from any thread.</p>
 <hr />
-<h2 id="spawn-encoder-service-spawn"><a class="heading-anchor" href="#spawn-encoder-service-spawn" aria-hidden="true">#</a>Spawn: <code>encoder-service-spawn</code></h2>
+<h2 id="spawn-encoder-service-spawn">Spawn: <code>encoder-service-spawn</code><a class="heading-anchor" href="#spawn-encoder-service-spawn" aria-hidden="true">#</a></h2>
 <pre><code class="language-scheme">(define (encoder-service-spawn [n-callers : usize] [cache-capacity : usize])
   : (EncoderService, Vec&lt;EncoderHandle&gt;)
   ...)
 </code></pre>
 <p>Lines 51–122. Creates the service and N handles.</p>
-<h3 id="pipe-setup-lines-5668"><a class="heading-anchor" href="#pipe-setup-lines-5668" aria-hidden="true">#</a>Pipe Setup (lines 56–68)</h3>
+<h3 id="pipe-setup-lines-5668">Pipe Setup (lines 56–68)<a class="heading-anchor" href="#pipe-setup-lines-5668" aria-hidden="true">#</a></h3>
 <p>For each of <code>n-callers</code>, creates three pipe pairs:</p>
 <ul>
 <li><code>lookup</code>: bounded 1, carries <code>ThoughtAST</code></li>
@@ -304,7 +304,7 @@
 <li><code>install</code>: unbounded, carries <code>(ThoughtAST, Vector)</code></li>
 </ul>
 <p>Sends the <code>Sender</code> halves into the handle; the <code>Receiver</code> halves are collected for the service thread.</p>
-<h3 id="service-thread-loop-lines-78119"><a class="heading-anchor" href="#service-thread-loop-lines-78119" aria-hidden="true">#</a>Service Thread Loop (lines 78–119)</h3>
+<h3 id="service-thread-loop-lines-78119">Service Thread Loop (lines 78–119)<a class="heading-anchor" href="#service-thread-loop-lines-78119" aria-hidden="true">#</a></h3>
 <p>The spawned thread runs an infinite loop with three phases per iteration:</p>
 <p><strong>Pass 1 — Drain installs</strong> (lines 85–90):
 Iterates all install receivers. Drains each one completely (inner <code>loop</code> with <code>try-recv</code>). Each <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates <code>cache-size</code> atomic.</p>
@@ -331,7 +331,7 @@ Uses <code>select</code> over all open <code>get</code> and <code>set</code> pip
 — lines 112–113</p>
 </blockquote>
 <hr />
-<h2 id="protocol-summary"><a class="heading-anchor" href="#protocol-summary" aria-hidden="true">#</a>Protocol Summary</h2>
+<h2 id="protocol-summary">Protocol Summary<a class="heading-anchor" href="#protocol-summary" aria-hidden="true">#</a></h2>
 <p>The comment block (lines 9–12) specifies the full protocol:</p>
 <pre><code>Caller: write AST to lookup pipe -&gt; block on answer pipe -&gt; receive Some/None
 Caller: if None, compute locally, write (AST, Vector) to install pipe (fire and forget)
@@ -339,7 +339,7 @@ Encoder: one pass per iteration — drain installs, service lookups, select, rep
 </code></pre>
 <p>This implements the &quot;values up&quot; principle: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
 <hr />
-<h2 id="shutdown-encoder-service-shutdown"><a class="heading-anchor" href="#shutdown-encoder-service-shutdown" aria-hidden="true">#</a>Shutdown: <code>encoder-service-shutdown</code></h2>
+<h2 id="shutdown-encoder-service-shutdown">Shutdown: <code>encoder-service-shutdown</code><a class="heading-anchor" href="#shutdown-encoder-service-shutdown" aria-hidden="true">#</a></h2>
 <pre><code class="language-scheme">(define (encoder-service-shutdown [svc : EncoderService]) : ()
   (join (:handle svc)))
 </code></pre>
@@ -349,7 +349,7 @@ Encoder: one pass per iteration — drain installs, service lookups, select, rep
 — line 125</p>
 </blockquote>
 <hr />
-<h2 id="accessors"><a class="heading-anchor" href="#accessors" aria-hidden="true">#</a>Accessors</h2>
+<h2 id="accessors">Accessors<a class="heading-anchor" href="#accessors" aria-hidden="true">#</a></h2>
 <p>Three lock-free read functions (lines 135–142):</p>
 <ul>
 <li><code>hit-count</code> → loads <code>Arc&lt;AtomicUsize&gt;</code> for hits</li>
@@ -357,7 +357,7 @@ Encoder: one pass per iteration — drain installs, service lookups, select, rep
 <li><code>cache-len</code> → loads <code>Arc&lt;AtomicUsize&gt;</code> for current cache occupancy</li>
 </ul>
 <hr />
-<h2 id="relationship-to-thoughtencoder"><a class="heading-anchor" href="#relationship-to-thoughtencoder" aria-hidden="true">#</a>Relationship to ThoughtEncoder</h2>
+<h2 id="relationship-to-thoughtencoder">Relationship to ThoughtEncoder<a class="heading-anchor" href="#relationship-to-thoughtencoder" aria-hidden="true">#</a></h2>
 <p>The ThoughtEncoder (thought-encoder.wat) declares its <code>compositions</code> field as <code>&quot;optimistic cache (LRU moved to EncoderService)&quot;</code>. This service IS that LRU cache. The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads.</p>
 <p>The GUIDE (line 1440) declares the compositions field as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> and explains the eventual-consistency model (lines 1441–1446): <em>&quot;miss on candle N, hit on N+1&quot;</em>. The EncoderService implements this: callers install computed values via fire-and-forget pipes, and the service drains installs on its next loop iteration before servicing any new lookups.</p>
 </div>
