@@ -121,7 +121,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <table>
 <tr><th>Tier</th><th>Source</th><th>Condition</th></tr>
 <tr><td>1</td><td>Position observer reckoner</td><td><code>Some(dists)</code></td></tr>
-<tr><td>2</td><td>Broker-owned [[ScalarAccumulator</td><td>scalar accumulators]]</td><td>Trail/stop accum have observations</td></tr>
+<tr><td>2</td><td>Broker-owned <a class="wikilink" href="T0-007-accumulator.html">scalar accumulators</a></td><td>Trail/stop accum have observations</td></tr>
 <tr><td>3</td><td>Constructor-provided <code>default_distances</code></td><td>Cold-start fallback</td></tr>
 </table>
 <hr>
@@ -216,13 +216,13 @@ Candle arrives
 <h2>Architectural Invariants</h2>
 <table>
 <tr><th>Invariant</th><th>Source</th></tr>
-<tr><td>Prediction and learning operate on the anomaly, not raw thought</td><td>Proposal 024 — [[T0-013-market-observer-rust</td><td>§T0-013]]</td></tr>
-<tr><td>Position observer queries and learns on <code>position_thought</code> only</td><td>Proposal 026 — [[T0-018-broker-rust</td><td>§T0-018]]</td></tr>
-<tr><td>Values flow up — brokers return facts, Post routes to observers</td><td>[[T0-018-broker-rust</td><td>§T0-018]]</td></tr>
-<tr><td>No shared mutation during parallel phases</td><td>[[T0-018-broker-rust</td><td>§T0-018]]</td></tr>
-<tr><td>Broker is the accountability unit — owns papers, accumulators, gate, P&L</td><td>[[T0-018-broker-rust</td><td>§T0-018]]</td></tr>
-<tr><td>Stop checked before Grace — Violence wins ties</td><td>[[T0-015-paper-entry-rust</td><td>§T0-015]]</td></tr>
-<tr><td>N×M broker grid maps <code>(market_idx, position_idx)</code> to flat slot</td><td>[[T0-018-broker-rust</td><td>§T0-018]]</td></tr>
+<tr><td>Prediction and learning operate on the anomaly, not raw thought</td><td>Proposal 024 — <a class="wikilink" href="T0-013-market-observer-rust.html">§T0-013</a></td></tr>
+<tr><td>Position observer queries and learns on <code>position_thought</code> only</td><td>Proposal 026 — <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td></tr>
+<tr><td>Values flow up — brokers return facts, Post routes to observers</td><td><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td></tr>
+<tr><td>No shared mutation during parallel phases</td><td><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td></tr>
+<tr><td>Broker is the accountability unit — owns papers, accumulators, gate, P&L</td><td><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td></tr>
+<tr><td>Stop checked before Grace — Violence wins ties</td><td><a class="wikilink" href="T0-015-paper-entry-rust.html">§T0-015</a></td></tr>
+<tr><td>N×M broker grid maps <code>(market_idx, position_idx)</code> to flat slot</td><td><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td></tr>
 </table>
 <hr>
 <h2>Sources</h2></div></body></html>

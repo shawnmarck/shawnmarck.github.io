@@ -111,7 +111,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <tr><td><code>candle</code></td><td><code>Candle</code></td><td>The enriched OHLCV candle that triggered this step</td></tr>
 <tr><td><code>window</code></td><td><code>Arc<Vec<Candle>></code></td><td>Window of recent candles (currently length 1)</td></tr>
 <tr><td><code>encode_count</code></td><td><code>usize</code></td><td>Global monotonic encode counter</td></tr>
-<tr><td><code>market_raw</code></td><td><code>Vector</code></td><td>Raw encoding of market features via [[vector-manager</td><td>VectorManager]]</td></tr>
+<tr><td><code>market_raw</code></td><td><code>Vector</code></td><td>Raw encoding of market features via <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a></td></tr>
 <tr><td><code>market_anomaly</code></td><td><code>Vector</code></td><td>Anomaly component (deviation from noise subspace)</td></tr>
 <tr><td><code>market_ast</code></td><td><code>ThoughtAST</code></td><td>The abstract syntax tree that was encoded</td></tr>
 <tr><td><code>prediction</code></td><td><code>Prediction</code></td><td>Direction prediction (Up / Down)</td></tr>
@@ -138,7 +138,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#c9d1d
 <tr><td><code>position_raw</code></td><td><code>Vector</code></td><td>Position observer's own raw encoding</td></tr>
 <tr><td><code>position_anomaly</code></td><td><code>Vector</code></td><td>Position observer's anomaly vector</td></tr>
 <tr><td><code>position_ast</code></td><td><code>ThoughtAST</code></td><td>Position observer's AST</td></tr>
-<tr><td><code>position_distances</code></td><td><code>Distances</code></td><td>Trailing stop and safety stop distances from [[reckoner</td><td>Reckoner]]</td></tr>
+<tr><td><code>position_distances</code></td><td><code>Distances</code></td><td>Trailing stop and safety stop distances from <a class="wikilink" href="pg-reckoner.html">Reckoner</a></td></tr>
 </table>
 <hr>
 <h2>Data Flow Through the Grid</h2>
@@ -177,9 +177,9 @@ Broker [i, ei] (thread)
 <h2>Key Design Choices</h2>
 <table>
 <tr><th>Choice</th><th>Rationale</th></tr>
-<tr><td><strong>Pure data, no methods</strong></td><td>Types carry information; behavior lives in the [[programs</td><td>program]] functions that produce and consume them.</td></tr>
+<tr><td><strong>Pure data, no methods</strong></td><td>Types carry information; behavior lives in the <a class="wikilink" href="pg-programs.html">program</a> functions that produce and consume them.</td></tr>
 <tr><td><strong>Flattened, not composed</strong></td><td><code>MarketPositionChain</code> duplicates market fields rather than holding a <code>MarketChain</code> field. This avoids lifetime complexity and shared-reference entanglement.</td></tr>
-<tr><td><strong><code>MarketChain</code> clones; <code>MarketPositionChain</code> does not</strong></td><td>Clone is required only for [[Topic</td><td>fan-out]] to multiple position observers. Brokers receive point-to-point, so ownership transfer suffices.</td></tr>
+<tr><td><strong><code>MarketChain</code> clones; <code>MarketPositionChain</code> does not</strong></td><td>Clone is required only for <a class="wikilink" href="pg-services.html">fan-out</a> to multiple position observers. Brokers receive point-to-point, so ownership transfer suffices.</td></tr>
 <tr><td><strong><code>Arc<Vec<Candle>></code> for window</strong></td><td>The one shared allocation — read-only, never mutated after creation.</td></tr>
 <tr><td><strong>Type-is-proof</strong></td><td>The compiler ensures a <code>MarketPositionChain</code> can only be produced by a position observer. Passing the wrong type to the wrong stage is a compile error, not a runtime bug.</td></tr>
 </table>

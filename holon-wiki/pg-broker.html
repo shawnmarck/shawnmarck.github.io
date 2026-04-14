@@ -171,7 +171,7 @@ expected_value = grace_rate × avg_grace_net + (1 − grace_rate) × avg_violenc
 <table>
 <tr><th>Tier</th><th>Source</th><th>Condition</th></tr>
 <tr><td>1</td><td>Reckoner answer (from the position observer's continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>)</td><td><code>Some(dists)</code> → use immediately</td></tr>
-<tr><td>2</td><td>[[ScalarAccumulator</td><td>Scalar accumulators]]</td><td>If the accumulator has observations, extract with 100 samples, clamped to [0.1%, 10%]</td></tr>
+<tr><td>2</td><td><a class="wikilink" href="T0-007-accumulator.html">Scalar accumulators</a></td><td>If the accumulator has observations, extract with 100 samples, clamped to [0.1%, 10%]</td></tr>
 <tr><td>3</td><td><code>default_distances</code></td><td>Constructor-provided default if no learned data exists</td></tr>
 </table>
 <p>The broker owns tiers 2 and 3. Tier 1 comes from outside. (T0-018, §7.4)</p>

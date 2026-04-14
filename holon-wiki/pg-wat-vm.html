@@ -127,7 +127,7 @@ wat-vm --stream SOURCE:TARGET:PATH [--max-candles N] [--dims D] [--recalib-inter
 <tr><td><code>--stream</code></td><td>(required, repeatable)</td><td><code>SOURCE:TARGET:PATH</code> — e.g. <code>binance:BTCUSDT:data/btc.csv</code>. Multiple streams processed sequentially.</td></tr>
 <tr><td><code>--max-candles</code></td><td>per-stream cap</td><td>Each pipeline owns its own limit.</td></tr>
 <tr><td><code>--dims</code></td><td>10000</td><td>Vector dimension for encodings.</td></tr>
-<tr><td><code>--recalib-interval</code></td><td>500</td><td>Observations between recalibrations (see [[the-reckoner</td><td>Reckoner]]).</td></tr>
+<tr><td><code>--recalib-interval</code></td><td>500</td><td>Observations between recalibrations (see <a class="wikilink" href="pg-reckoner.html">Reckoner</a>).</td></tr>
 <tr><td><code>--swap-fee</code></td><td>0.0010 (10 bps)</td><td>Venue fee fraction.</td></tr>
 </table>
 <blockquote><strong>Source:</strong> T0-017, "CLI interface" section.</blockquote>
@@ -175,7 +175,7 @@ while count < max && !STOP {
 <tr><td><code>encode_count</code></td><td><code>usize</code></td><td>Global monotonic counter</td></tr>
 <tr><td><code>market_raw</code></td><td><code>Vector</code></td><td>Raw encoding of market features</td></tr>
 <tr><td><code>market_anomaly</code></td><td><code>Vector</code></td><td>Deviation from noise subspace</td></tr>
-<tr><td><code>market_ast</code></td><td><code>ThoughtAST</code></td><td>The [[ThoughtAST</td><td>AST]] that was encoded</td></tr>
+<tr><td><code>market_ast</code></td><td><code>ThoughtAST</code></td><td>The <a class="wikilink" href="pg-thought-system.html">AST</a> that was encoded</td></tr>
 <tr><td><code>prediction</code></td><td><code>Prediction</code></td><td>Direction (Up/Down)</td></tr>
 <tr><td><code>edge</code></td><td><code>f64</code></td><td>Confidence score</td></tr>
 </table>
