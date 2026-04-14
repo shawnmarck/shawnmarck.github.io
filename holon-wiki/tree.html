@@ -40,7 +40,7 @@ tailwind.config = {
 #sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
 #sidebar.open::after{content:'';position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:-1}
 .search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
-.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:none;height:auto}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
 a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
 #sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
@@ -136,7 +136,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav>
-<main class="max-w-6xl mx-auto px-4 py-8 md:px-8">
+<main class="px-4 py-8 md:px-8 w-full">
 
 <h1 class="text-2xl font-semibold text-[#e5e7eb] mb-2">Site Map</h1>
 <p class="text-[#8a8f98] mb-6 text-base">Construction order: leaves at the top, composites at the bottom. Arrows show what feeds into what. Click any node.</p>
