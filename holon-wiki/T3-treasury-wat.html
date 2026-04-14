@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en" class="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#08090a"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><title>T3 — Treasury (wat spec) — Context-Free Verification — Holon Wiki</title><script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.5.10/dist/typography.min.css">
 <script>
 tailwind.config = {
   darkMode: 'class',
@@ -47,7 +48,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});</script>
 <script src="holon-search.js"></script>
 </head><body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex"><button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button><div class="md:ml-[260px] flex-1 min-w-0">
-<input id="mobile-search" class="block md:hidden w-full py-3 px-4 mb-4 border border-[rgba(255,255,255,0.08)] rounded bg-surface text-[#d0d6e0] text-base font-sans outline-none box-border appearance-none" type="text" placeholder="Search the graph..." autocomplete="off" />
+<input id="mobile-search" class="block md:hidden w-full py-3 pl-14 pr-4 mb-4 border border-[rgba(255,255,255,0.08)] rounded bg-surface text-[#d0d6e0] text-base font-sans outline-none box-border appearance-none" type="text" placeholder="Search the graph..." autocomplete="off" />
 <div id="mobile-results" class="hidden fixed top-28 left-2 right-2 bg-surface-overlay border border-[rgba(255,255,255,0.08)] rounded max-h-[60vh] overflow-y-auto z-[55] shadow-2xl md:hidden"></div>
 <nav id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
 <h2 class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</h2>
@@ -127,7 +128,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <div class="relative hidden md:block">
 <input id="holon-search" class="w-[calc(100%-3rem)] mx-6 mb-4 py-2 px-4 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-[13px] font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
 <div id="holon-results" class="search-results"></div>
-</div><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T3 — Treasury (wat spec) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><div class="prose max-w-none"><p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines)</p>
+</div><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">T3 — Treasury (wat spec) — Context-Free Verification <span class="badge badge-what">WHAT</span></h1><div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines)</p>
 <p><strong>Ward:</strong> ignorant — knows nothing, reads as a stranger.</p>
 <hr>
 <h2>Struct: <code>treasury</code></h2>
