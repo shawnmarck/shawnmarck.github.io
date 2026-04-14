@@ -279,7 +279,7 @@
 <ol>
 <li><p><strong>Transparency to Rust.</strong> Wat compiles to Rust. Form names should match Rust (<code>struct</code>, not <code>defstruct</code>). Access syntax should map obviously (<code>:field record</code> → <code>record.field</code>). The wat spec should be readable alongside the implementation.</p>
 </li>
-<li><p><strong>Protect the algebra.</strong> The six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; (&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;atom, bind, bundle, cosine&lt;/a&gt;) and journal coalgebra (&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;journal, observe, predict, decay, curve&lt;/a&gt;) are the foundation. Proposal 001 was rejected to prevent a seventh primitive. Only <code>fold</code> was added — as a control form, not a primitive.</p>
+<li><p><strong>Protect the algebra.</strong> The six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> (<a class="wikilink" href="T0-002-primitives.html">atom, bind, bundle, cosine</a>) and journal coalgebra (<a class="wikilink" href="T0-002-primitives.html">journal, observe, predict, decay, curve</a>) are the foundation. Proposal 001 was rejected to prevent a seventh primitive. Only <code>fold</code> was added — as a control form, not a primitive.</p>
 </li>
 <li><p><strong>Simple &gt; easy.</strong> Every proposal asks &quot;is this simple or easy?&quot; Convenience is rejected if it complected concerns. Variadic <code>update</code> (012) accepted because it completes an existing form. <code>defprocessor</code> (001) rejected because it packaged four concerns into one form.</p>
 </li>
@@ -310,37 +310,37 @@
 <tr>
   <td data-label=""><code>struct</code></td>
   <td data-label="">007</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td>
   <td data-label="">Product types. Rust's word. Untyped. Named construction.</td>
 </tr>
 <tr>
   <td data-label=""><code>(:field record)</code></td>
   <td data-label="">007</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td>
   <td data-label="">Keyword-as-function projection.</td>
 </tr>
 <tr>
   <td data-label=""><code>(update record :field value)</code></td>
   <td data-label="">006, 012</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td>
   <td data-label="">Functional update. Variadic (parallel semantics) from 012.</td>
 </tr>
 <tr>
   <td data-label=""><code>enum</code></td>
   <td data-label="">010</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td>
   <td data-label="">Sum types. Simple + tagged variants. Keywords as variants.</td>
 </tr>
 <tr>
   <td data-label=""><code>defprotocol</code></td>
   <td data-label="">014</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td>
   <td data-label="">Check-only. No dispatch. Maps to Rust trait.</td>
 </tr>
 <tr>
   <td data-label=""><code>satisfies</code></td>
   <td data-label="">014, 015</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></td>
   <td data-label="">Explicit, exhaustive mapping. One per (struct, protocol).</td>
 </tr>
 <tr>
@@ -410,12 +410,12 @@
 <h3 id="by-scope-area">By scope area<a class="heading-anchor" href="#by-scope-area" aria-hidden="true">#</a></h3>
 <p><strong>Language structure (4):</strong> 001 (stream processor — rejected), 002 (fold — accepted), 003 (language layers — accepted), 005 (compilation plan — accepted)</p>
 <p><strong>Core algebra (2):</strong> 004 (journal operations — core vs stdlib — accepted), 008 (honest gate — type boundary fix — accepted)</p>
-<p><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; (7):</strong> 006 (aggregate types/defrecord — accepted), 007 (struct syntax — accepted), 010 (enum/sum types — accepted), 011 (derived fields — accepted), 012 (multi-field update — accepted), 013 (boolean/nil — accepted), 014 (protocols — accepted)</p>
+<p><strong><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> (7):</strong> 006 (aggregate types/defrecord — accepted), 007 (struct syntax — accepted), 010 (enum/sum types — accepted), 011 (derived fields — accepted), 012 (multi-field update — accepted), 013 (boolean/nil — accepted), 014 (protocols — accepted)</p>
 <p><strong>Protocol mechanics (1):</strong> 015 (protocol satisfaction — accepted)</p>
 <p><strong>Stdlib (1):</strong> 009 (fact constructors + statistics — accepted)</p>
 <p><strong>Concurrency (3):</strong> 04/001 (parallel map — accepted), 04/002 (pipes — accepted), 04/003 (select — superseded/simplified)</p>
 <h3 id="temporal-pattern">Temporal pattern<a class="heading-anchor" href="#temporal-pattern" aria-hidden="true">#</a></h3>
-<p>The March 2026 proposals (001-015) built the language foundation: fold, layers, core boundaries, all of the &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;, and the stdlib seeds. The April 2026 proposals (04/001-003) extended into concurrency — parallelism, pipes, and service patterns. The April proposals show the system maturing: the datamancer overruled both designers on 04/003, finding that the simplest answer (functions + select) was more powerful than either proposed option.</p>
+<p>The March 2026 proposals (001-015) built the language foundation: fold, layers, core boundaries, all of the <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a>, and the stdlib seeds. The April 2026 proposals (04/001-003) extended into concurrency — parallelism, pipes, and service patterns. The April proposals show the system maturing: the datamancer overruled both designers on 04/003, finding that the simplest answer (functions + select) was more powerful than either proposed option.</p>
 <h3 id="dependency-chain">Dependency chain<a class="heading-anchor" href="#dependency-chain" aria-hidden="true">#</a></h3>
 <p>The proposals form a clear dependency graph:</p>
 <ul>

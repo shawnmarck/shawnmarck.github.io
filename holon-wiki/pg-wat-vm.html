@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>wat-vm is a standalone Rust binary (846 lines at <code>src/bin/wat-vm.rs</code>) that replays historical candle data through a parallel grid of &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observers&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position observers&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;brokers&lt;/a&gt; so they can learn. It is emphatically <strong>not a live trading system</strong> — its own CLI summary says it best: <em>&quot;Candles in, observers learn, results discarded.&quot;</em> It is the training/learning harness, the &quot;second heartbeat&quot; of the Holon system.</p>
+<p>wat-vm is a standalone Rust binary (846 lines at <code>src/bin/wat-vm.rs</code>) that replays historical candle data through a parallel grid of <a class="wikilink" href="pg-market-observer.html">market observers</a>, <a class="wikilink" href="pg-exit-observer.html">position observers</a>, and <a class="wikilink" href="pg-broker.html">brokers</a> so they can learn. It is emphatically <strong>not a live trading system</strong> — its own CLI summary says it best: <em>&quot;Candles in, observers learn, results discarded.&quot;</em> It is the training/learning harness, the &quot;second heartbeat&quot; of the Holon system.</p>
 <hr />
 </div>
       
@@ -276,7 +276,7 @@
 <tr>
   <td data-label=""><code>--recalib-interval</code></td>
   <td data-label="">500</td>
-  <td data-label="">Observations between recalibrations (see &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;).</td>
+  <td data-label="">Observations between recalibrations (see <a class="wikilink" href="pg-reckoner.html">Reckoner</a>).</td>
 </tr>
 <tr>
   <td data-label=""><code>--swap-fee</code></td>
@@ -293,11 +293,11 @@
 <ol>
 <li><strong>Parse args.</strong> Derive observer counts from <code>config::MARKET_LENSES</code> and <code>config::POSITION_LENSES</code>. Compute <code>num_brokers = N×M</code>, <code>noise_floor = 5.0 / sqrt(dims)</code>.</li>
 <li><strong>Console pool.</strong> Create N+M+(N×M)+streams+1 handles. Claim main + stream handles.</li>
-<li><strong>Database.</strong> SQLite at <code>runs/wat-vm_&lt;timestamp&gt;.db</code>. Unbounded queues merged via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;mailbox&lt;/a&gt;. Batch-insert driver (batch size 100, telemetry every 5s).</li>
-<li><strong>Encoding cache.</strong> &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; + &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; → LRU cache (256K capacity) for <code>ThoughtAST → Vector</code>. Rate-gated telemetry via database sender.</li>
+<li><strong>Database.</strong> SQLite at <code>runs/wat-vm_&lt;timestamp&gt;.db</code>. Unbounded queues merged via <a class="wikilink" href="pg-services.html">mailbox</a>. Batch-insert driver (batch size 100, telemetry every 5s).</li>
+<li><strong>Encoding cache.</strong> <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> + <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> → LRU cache (256K capacity) for <code>ThoughtAST → Vector</code>. Rate-gated telemetry via database sender.</li>
 <li><strong>Reserve handle pools.</strong> Pre-allocate console/cache/db handles for position observers and brokers; market observers get whatever remains. Pools assert <code>finish()</code> — orphan detection prevents deadlocks.</li>
-<li><strong>Learn queues.</strong> N×M <code>ObsLearn</code> queues (fan-in to each market observer's &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;mailbox&lt;/a&gt;), M×N <code>PositionLearn</code> queues, N×M <code>TradeUpdate</code> queues.</li>
-<li><strong>Wire market observers.</strong> For each of N: bounded candle input (capacity 1), M bounded fan-out &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; queues, spawn <code>market_observer_program</code>.</li>
+<li><strong>Learn queues.</strong> N×M <code>ObsLearn</code> queues (fan-in to each market observer's <a class="wikilink" href="pg-services.html">mailbox</a>), M×N <code>PositionLearn</code> queues, N×M <code>TradeUpdate</code> queues.</li>
+<li><strong>Wire market observers.</strong> For each of N: bounded candle input (capacity 1), M bounded fan-out <a class="wikilink" href="pg-services.html">Topic</a> queues, spawn <code>market_observer_program</code>.</li>
 <li><strong>Wire position observers.</strong> Transpose [mi][ei] receiver grid into [ei][mi]. For each of M: build N <code>PositionSlot</code>s, spawn <code>position_observer_program</code>.</li>
 <li><strong>Wire brokers.</strong> Flatten 2D learn-tx grids. For each of N×M: assign output_rx, learn txs, trade tx. Spawn <code>broker_program</code>.</li>
 <li><strong>Build pipelines.</strong> For each <code>--stream</code>: open <code>CandleStream</code>, create <code>IndicatorBank</code>.</li>
@@ -330,8 +330,8 @@
 <hr />
 <h2 id="data-flow-the-chain-types">Data flow: the chain types<a class="heading-anchor" href="#data-flow-the-chain-types" aria-hidden="true">#</a></h2>
 <p>The grid communicates through two wire types defined in <code>src/programs/chain.rs</code> (40 lines). The module's design principle: <em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em></p>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt; (Clone)<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketchainltagt-clone" aria-hidden="true">#</a></h3>
-<p>Produced by market observers, consumed by position observers via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; fan-out.</p>
+<h3 id="marketchain-clone"><a class="wikilink" href="pg-chain-types.html">MarketChain</a> (Clone)<a class="heading-anchor" href="#marketchain-clone" aria-hidden="true">#</a></h3>
+<p>Produced by market observers, consumed by position observers via <a class="wikilink" href="pg-services.html">Topic</a> fan-out.</p>
 <table>
 <thead>
 <tr>
@@ -369,7 +369,7 @@
 <tr>
   <td data-label=""><code>market_ast</code></td>
   <td data-label=""><code>ThoughtAST</code></td>
-  <td data-label="">The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;AST&lt;/a&gt; that was encoded</td>
+  <td data-label="">The <a class="wikilink" href="pg-thought-system.html">AST</a> that was encoded</td>
 </tr>
 <tr>
   <td data-label=""><code>prediction</code></td>
@@ -383,8 +383,8 @@
 </tr>
 </tbody>
 </table>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt; (not Clone)<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-chain-typeshtmlquotgtmarketpositionchainltagt-not-clone" aria-hidden="true">#</a></h3>
-<p>Produced by position observers, consumed by brokers via unbounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;queues&lt;/a&gt;. <strong>Flattens</strong> all <code>MarketChain</code> fields (duplicated, not borrowed — self-contained, no shared references) and adds position-specific fields:</p>
+<h3 id="marketpositionchain-not-clone"><a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> (not Clone)<a class="heading-anchor" href="#marketpositionchain-not-clone" aria-hidden="true">#</a></h3>
+<p>Produced by position observers, consumed by brokers via unbounded <a class="wikilink" href="pg-services.html">queues</a>. <strong>Flattens</strong> all <code>MarketChain</code> fields (duplicated, not borrowed — self-contained, no shared references) and adds position-specific fields:</p>
 <table>
 <thead>
 <tr>
@@ -458,19 +458,19 @@
 </thead>
 <tbody>
 <tr>
-  <td data-label="Primitive">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; (bounded/unbounded)</td>
+  <td data-label="Primitive"><a class="wikilink" href="pg-services.html">Queue</a> (bounded/unbounded)</td>
   <td data-label="Pattern">1→1 point-to-point</td>
   <td data-label="Mechanism"><code>crossbeam::channel</code></td>
   <td data-label="Mutex?">No</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-services.html">Topic</a></td>
   <td data-label="">1→N fan-out</td>
   <td data-label="">Bounded input → spawned thread → <code>clone()</code> to N output queues</td>
   <td data-label="">No</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-services.html">Mailbox</a></td>
   <td data-label="">N→1 fan-in</td>
   <td data-label="">Spawned thread → <code>crossbeam::Select</code> over N inputs → unbounded output</td>
   <td data-label="">No</td>
@@ -486,10 +486,10 @@
 <p><strong>Source:</strong> T0-016, &quot;Services (Rust) — Verification.&quot;</p>
 </blockquote>
 <hr />
-<h2 id="relationship-to-lta-classquotwikilinkquot-hrefquott1-001-wat-languagehtmlquotgtthe-wat-languageltagt">Relationship to &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;the wat language&lt;/a&gt;<a class="heading-anchor" href="#relationship-to-lta-classquotwikilinkquot-hrefquott1-001-wat-languagehtmlquotgtthe-wat-languageltagt" aria-hidden="true">#</a></h2>
-<p>wat-vm is implemented in Rust but its architecture is specified in &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat&lt;/a&gt;:</p>
+<h2 id="relationship-to-the-wat-language">Relationship to <a class="wikilink" href="T1-001-wat-language.html">the wat language</a><a class="heading-anchor" href="#relationship-to-the-wat-language" aria-hidden="true">#</a></h2>
+<p>wat-vm is implemented in Rust but its architecture is specified in <a class="wikilink" href="T1-001-wat-language.html">wat</a>:</p>
 <ul>
-<li><strong>Concurrency forms</strong> in wat (<code>make-pipe</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>, <code>select</code>) map directly to the Rust &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt;, and threading patterns used by wat-vm. The wat spec states: <em>&quot;No defpipe. No defprocess. Pipes are values. Topics are values. Processes are functions.&quot;</em></li>
+<li><strong>Concurrency forms</strong> in wat (<code>make-pipe</code>, <code>make-topic</code>, <code>spawn</code>, <code>join</code>, <code>select</code>) map directly to the Rust <a class="wikilink" href="pg-services.html">Queue</a>, <a class="wikilink" href="pg-services.html">Topic</a>, and threading patterns used by wat-vm. The wat spec states: <em>&quot;No defpipe. No defprocess. Pipes are values. Topics are values. Processes are functions.&quot;</em></li>
 <li><strong>The reckoner coalgebra</strong> (wat's learning construct: <code>observe</code>, <code>predict</code>, <code>resolve</code>, <code>edge-at</code>, <code>proven?</code>) is the learning engine that the observers and brokers run inside their program threads.</li>
 <li><strong>Structural forms</strong> (<code>struct</code>, <code>update</code>, <code>defprotocol</code>) define the chain types and observer/broker records.</li>
 <li>wat is <em>&quot;not interpreted at runtime&quot;</em> — it specifies Rust implementations. wat-vm is one of those implementations.</li>

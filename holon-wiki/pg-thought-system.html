@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; (atoms) or &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where &quot;similar market conditions live near each other.&quot; The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Reckoner Coalgebra&lt;/a&gt; then observes and learns from these thoughts over time.</p>
+<p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> (atoms) or <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where &quot;similar market conditions live near each other.&quot; The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> then observes and learns from these thoughts over time.</p>
 <hr />
 </div>
       
@@ -376,7 +376,7 @@
 <blockquote>
 <p>&quot;Name a concept → deterministic bipolar vector. Same seed + same name = same vector everywhere.&quot;</p>
 </blockquote>
-<p>Implemented by &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;: <code>SHA-256(global_seed ∥ name)[0..8] → ChaCha8Rng → {-1, 0, +1}^dim</code>.</p>
+<p>Implemented by <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>: <code>SHA-256(global_seed ∥ name)[0..8] → ChaCha8Rng → {-1, 0, +1}^dim</code>.</p>
 <h3 id="bind-compose-relationships">bind — compose relationships<a class="heading-anchor" href="#bind-compose-relationships" aria-hidden="true">#</a></h3>
 <p>Element-wise multiplication of bipolar vectors. Self-inverse: <code>bind(bind(A, B), A) = B</code> (exact for bipolar, not approximate).</p>
 <p>This is how &quot;rsi is 0.73&quot; becomes a single vector: <code>bind(atom(&quot;rsi&quot;), encode_linear(0.73, 1.0))</code>.</p>
@@ -532,7 +532,7 @@ if i is odd:  cos(position × freq)
 <li><strong>Bundle preserves similarity</strong>: A bundled thought is similar (by cosine) to each of its constituent facts.</li>
 <li><strong>Cosine is the only measurement</strong>: One number determines similarity. No thresholds, no categories in the encoding itself.</li>
 <li><strong>The vocabulary owns encode AND decode</strong>: &quot;It put the value on the scalar, it can take it back. That's why scalar accumulators work.&quot;</li>
-<li><strong>The Reckoner learns boundaries</strong>: The vocabulary emits raw scalars. The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Reckoner Coalgebra&lt;/a&gt; learns where boundaries are via <code>observe</code>, <code>predict</code>, and <code>resolve</code> — no human-chosen thresholds.</li>
+<li><strong>The Reckoner learns boundaries</strong>: The vocabulary emits raw scalars. The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> learns where boundaries are via <code>observe</code>, <code>predict</code>, and <code>resolve</code> — no human-chosen thresholds.</li>
 </ol>
 <blockquote>
 <p>&quot;The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are.&quot; — T2-004</p>
@@ -540,15 +540,15 @@ if i is odd:  cos(position × freq)
 <hr />
 <h2 id="related-concepts">Related Concepts<a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a></h2>
 <ul>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; — deterministic atom-to-vector registry</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; — mapping continuous values to bipolar vectors</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; — zero-serialization encoding trait for Rust types</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; — the intermediate representation between vocabulary and vector</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt; — efficient streaming bundling across candles</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; — the vector algebra: atom, bind, bundle, cosine</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Reckoner Coalgebra&lt;/a&gt; — the learning subsystem that observes thoughts over time</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; — the complete atom catalog organized by domain</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; — product/coproduct/protocol (orthogonal to vector algebra)</li>
+<li><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> — deterministic atom-to-vector registry</li>
+<li><a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> — mapping continuous values to bipolar vectors</li>
+<li><a class="wikilink" href="T0-006-walkable.html">Walkable</a> — zero-serialization encoding trait for Rust types</li>
+<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — the intermediate representation between vocabulary and vector</li>
+<li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — efficient streaming bundling across candles</li>
+<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the vector algebra: atom, bind, bundle, cosine</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> — the learning subsystem that observes thoughts over time</li>
+<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — the complete atom catalog organized by domain</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — product/coproduct/protocol (orthogonal to vector algebra)</li>
 </ul>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>

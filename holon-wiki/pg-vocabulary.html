@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>The vocabulary is the system's sensorium — a set of ~100 <strong>pure, stateless functions</strong> that map raw market data into &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; nodes, the intermediate representation that becomes vectors. Three encoding schemes (&lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;Linear&lt;/a&gt;, Log, Circular) govern how continuous values become bipolar vectors. Vocabulary modules are organized into three scoped domains — <strong>shared</strong>, <strong>market</strong>, and <strong>exit</strong> — each with its own subfiles. A critical design principle: <em>no zones, no categories, only scalars</em> — the vocabulary emits numbers; the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;discriminant&lt;/a&gt; decides where boundaries are.</p>
+<p>The vocabulary is the system's sensorium — a set of ~100 <strong>pure, stateless functions</strong> that map raw market data into <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> nodes, the intermediate representation that becomes vectors. Three encoding schemes (<a class="wikilink" href="T0-004-encoder.html">Linear</a>, Log, Circular) govern how continuous values become bipolar vectors. Vocabulary modules are organized into three scoped domains — <strong>shared</strong>, <strong>market</strong>, and <strong>exit</strong> — each with its own subfiles. A critical design principle: <em>no zones, no categories, only scalars</em> — the vocabulary emits numbers; the <a class="wikilink" href="pg-reckoner.html">discriminant</a> decides where boundaries are.</p>
 <hr />
 </div>
       
@@ -237,14 +237,14 @@
 <p>&quot;Three domains. Each domain has scoped subfiles.&quot;
 — GUIDE, line 1252</p>
 </blockquote>
-<p>Every vocabulary module produces a <code>Vec&lt;ThoughtAST&gt;</code> — a list of typed facts that are walked into vectors by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;thought-encoder&lt;/a&gt;.</p>
+<p>Every vocabulary module produces a <code>Vec&lt;ThoughtAST&gt;</code> — a list of typed facts that are walked into vectors by the <a class="wikilink" href="pg-thought-encoding.html">thought-encoder</a>.</p>
 <hr />
 <h2 id="the-three-encoding-schemes">The Three Encoding Schemes<a class="heading-anchor" href="#the-three-encoding-schemes" aria-hidden="true">#</a></h2>
 <blockquote>
 <p>&quot;The encoding scheme IS the bounding strategy.&quot;
 — GUIDE, line 1376</p>
 </blockquote>
-<p>The encoding scheme determines how a continuous numeric value becomes a bipolar vector. Each scheme maps to a &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; variant and a &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;scalar-encoding&lt;/a&gt; algorithm.</p>
+<p>The encoding scheme determines how a continuous numeric value becomes a bipolar vector. Each scheme maps to a <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> variant and a <a class="wikilink" href="T0-004-encoder.html">scalar-encoding</a> algorithm.</p>
 <table>
 <thead>
 <tr>
@@ -279,10 +279,10 @@
 <p>&quot;Some facts are bounded. Some aren't. That's honest. The log doesn't bound — it compresses. The circular doesn't bound — it wraps. Only linear needs bounds, and linear's bounds come from the math.&quot;
 — GUIDE, lines 1393–1395</p>
 </blockquote>
-<p>For additional encoding detail (rotational vs positional, determinism, quantization), see &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;scalar-encoding&lt;/a&gt;.</p>
+<p>For additional encoding detail (rotational vs positional, determinism, quantization), see <a class="wikilink" href="T0-004-encoder.html">scalar-encoding</a>.</p>
 <hr />
 <h2 id="thoughtast-the-language-vocabulary-speaks">ThoughtAST — the language vocabulary speaks<a class="heading-anchor" href="#thoughtast-the-language-vocabulary-speaks" aria-hidden="true">#</a></h2>
-<p>Vocabulary modules emit &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; nodes. The seven variants:</p>
+<p>Vocabulary modules emit <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> nodes. The seven variants:</p>
 <table>
 <thead>
 <tr>
@@ -329,12 +329,12 @@
 </tr>
 </tbody>
 </table>
-<p>Key facts about the AST (from &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;thought-encoder&lt;/a&gt; verification):</p>
+<p>Key facts about the AST (from <a class="wikilink" href="pg-thought-encoding.html">thought-encoder</a> verification):</p>
 <ul>
 <li><code>Atom</code> nodes are <strong>not facts</strong> — <code>collect_facts()</code> skips them.</li>
 <li><code>Bind</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code> nodes <strong>are</strong> facts.</li>
-<li><code>round_to()</code> at vocab emission is load-bearing: the AST is used as a HashMap key in &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt;; quantized floats compare reliably via <code>f64::to_bits()</code>.</li>
-<li>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt; evaluates the AST recursively with no caching; production caching is external (LRU in <code>encoding::encode::encode()</code>).</li>
+<li><code>round_to()</code> at vocab emission is load-bearing: the AST is used as a HashMap key in <a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a>; quantized floats compare reliably via <code>f64::to_bits()</code>.</li>
+<li>The <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> evaluates the AST recursively with no caching; production caching is external (LRU in <code>encoding::encode::encode()</code>).</li>
 </ul>
 <hr />
 <h2 id="domain-organization">Domain Organization<a class="heading-anchor" href="#domain-organization" aria-hidden="true">#</a></h2>
@@ -1050,8 +1050,8 @@
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
 <li>T2-004 (Vocabulary) — complete atom catalog, domain organization, GUIDE principles, spec-vs-Rust divergence</li>
-<li>T0-004 (&lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;scalar-encoding&lt;/a&gt;) — Linear/Log/Circular encoding algorithms, WAT spec vs Rust implementation</li>
-<li>T0-011 (&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;thought-encoder&lt;/a&gt;) — ThoughtAST enum, ThoughtEncoder evaluator, IncrementalBundle, collect_facts</li>
+<li>T0-004 (<a class="wikilink" href="T0-004-encoder.html">scalar-encoding</a>) — Linear/Log/Circular encoding algorithms, WAT spec vs Rust implementation</li>
+<li>T0-011 (<a class="wikilink" href="pg-thought-encoding.html">thought-encoder</a>) — ThoughtAST enum, ThoughtEncoder evaluator, IncrementalBundle, collect_facts</li>
 <li>GUIDE lines 1244–1247, 1252, 1256, 1310–1319, 1346–1356, 1376–1405 — design principles and domain spec</li>
 </ul>
 </div>

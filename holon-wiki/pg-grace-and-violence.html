@@ -260,11 +260,11 @@
 <h2 id="the-three-resolution-paths">The Three Resolution Paths<a class="heading-anchor" href="#the-three-resolution-paths" aria-hidden="true">#</a></h2>
 <p>A paper-trade can resolve in exactly three ways:</p>
 <h3 id="path-1-stop-fires-before-trail-crosses-violence">Path 1: Stop fires before trail crosses → Violence<a class="heading-anchor" href="#path-1-stop-fires-before-trail-crosses-violence" aria-hidden="true">#</a></h3>
-<p>The price moves against the prediction and hits the stop distance. The paper emits a Violence resolution into <code>market_signals</code> for &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market-observer&lt;/a&gt; learning. No runner history is created.</p>
+<p>The price moves against the prediction and hits the stop distance. The paper emits a Violence resolution into <code>market_signals</code> for <a class="wikilink" href="pg-market-observer.html">market-observer</a> learning. No runner history is created.</p>
 <h3 id="path-2-trail-crosses-first-time-grace-signal">Path 2: Trail crosses (first time) → Grace signal<a class="heading-anchor" href="#path-2-trail-crosses-first-time-grace-signal" aria-hidden="true">#</a></h3>
-<p>The price moves in the predicted direction and crosses the trail distance. The paper emits a Grace <strong>signal</strong> into <code>market_signals</code>. This does <strong>not</strong> end the paper — it begins the <strong>runner phase</strong>. A &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;RunnerHistory&lt;/a&gt; is created and per-candle accumulation begins.</p>
+<p>The price moves in the predicted direction and crosses the trail distance. The paper emits a Grace <strong>signal</strong> into <code>market_signals</code>. This does <strong>not</strong> end the paper — it begins the <strong>runner phase</strong>. A <a class="wikilink" href="pg-broker.html">RunnerHistory</a> is created and per-candle accumulation begins.</p>
 <h3 id="path-3-runner-trail-fires-grace-resolution">Path 3: Runner trail fires → Grace resolution<a class="heading-anchor" href="#path-3-runner-trail-fires-grace-resolution" aria-hidden="true">#</a></h3>
-<p>The runner's trailing stop is eventually crossed (or the direction flips, triggering <code>close_all_runners()</code>). The paper emits a Grace <strong>resolution</strong> into <code>runner_resolutions</code>. This includes a position batch — deferred training data for the &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position-observer&lt;/a&gt;.</p>
+<p>The runner's trailing stop is eventually crossed (or the direction flips, triggering <code>close_all_runners()</code>). The paper emits a Grace <strong>resolution</strong> into <code>runner_resolutions</code>. This includes a position batch — deferred training data for the <a class="wikilink" href="pg-exit-observer.html">position-observer</a>.</p>
 <table>
 <thead>
 <tr>
@@ -327,7 +327,7 @@ avg_violence_net = (1 - α) × avg_violence_net + α × net   // Violence trades
 <pre><code>grace_rate = grace_count / trade_count
 expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net
 </code></pre>
-<p>This feeds directly into the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker gate&lt;/a&gt;:</p>
+<p>This feeds directly into the <a class="wikilink" href="pg-broker.html">broker gate</a>:</p>
 <ol>
 <li><strong>Cold start</strong> — if either outcome count is below 50, the gate is always open (not enough data to judge)</li>
 <li><strong>Warm</strong> — after ≥50 of both outcomes, the gate opens only when <code>expected_value &gt; 0.0</code></li>
@@ -338,7 +338,7 @@ expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_
 </blockquote>
 <hr />
 <h2 id="direction-flips-and-forced-grace">Direction Flips and Forced Grace<a class="heading-anchor" href="#direction-flips-and-forced-grace" aria-hidden="true">#</a></h2>
-<p>When the &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market-observer&lt;/a&gt;'s active direction flips (e.g., was predicting Up, now predicts Down), <code>close_all_runners()</code> force-resolves all active runners with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip — they'll hit their stop naturally.</p>
+<p>When the <a class="wikilink" href="pg-market-observer.html">market-observer</a>'s active direction flips (e.g., was predicting Up, now predicts Down), <code>close_all_runners()</code> force-resolves all active runners with <code>Outcome::Grace</code>. Non-runner papers that haven't resolved survive the flip — they'll hit their stop naturally.</p>
 <p>Source: T0-018-broker-rust.md, §7.6</p>
 <hr />
 <h2 id="design-history">Design History<a class="heading-anchor" href="#design-history" aria-hidden="true">#</a></h2>
@@ -380,11 +380,11 @@ expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_
 <h2 id="see-also">See Also<a class="heading-anchor" href="#see-also" aria-hidden="true">#</a></h2>
 <ul>
 <li>paper-trade — the instrument that produces Grace and Violence outcomes</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; — the accountability unit that owns papers and accumulates outcomes</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;RunnerHistory&lt;/a&gt; — per-candle accumulated data created when a paper signals Grace</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position-observer&lt;/a&gt; — receives deferred batch training from Grace runner resolutions</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market-observer&lt;/a&gt; — learns from both Grace signals and Violence stops</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker gate&lt;/a&gt; — uses expected value derived from Grace/Violence statistics</li>
+<li><a class="wikilink" href="pg-broker.html">broker</a> — the accountability unit that owns papers and accumulates outcomes</li>
+<li><a class="wikilink" href="pg-broker.html">RunnerHistory</a> — per-candle accumulated data created when a paper signals Grace</li>
+<li><a class="wikilink" href="pg-exit-observer.html">position-observer</a> — receives deferred batch training from Grace runner resolutions</li>
+<li><a class="wikilink" href="pg-market-observer.html">market-observer</a> — learns from both Grace signals and Violence stops</li>
+<li><a class="wikilink" href="pg-broker.html">broker gate</a> — uses expected value derived from Grace/Violence statistics</li>
 </ul>
 </div>
     </main>

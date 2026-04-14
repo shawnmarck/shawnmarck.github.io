@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>A <strong>lens</strong> selects which &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; modules fire for a given &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;observer&lt;/a&gt;. The system has two lens types:</p>
+<p>A <strong>lens</strong> selects which <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> modules fire for a given <a class="wikilink" href="pg-market-observer.html">observer</a>. The system has two lens types:</p>
 <table>
 <thead>
 <tr>
@@ -249,7 +249,7 @@
 </tbody>
 </table>
 <p>Every market lens includes <code>shared/time</code> (5 temporal atoms). Specialist lenses target 3–5 modules (22–39 atoms). Generalist lenses are the union of their school's specialists (48–56 atoms). Position lenses encode exit context (10–13 vocab atoms) with trade atoms arriving separately through the trade pipe.</p>
-<p><strong>Two market modules exist but are unwired:</strong> <code>ichimoku</code> and <code>stochastic</code> (removed per Proposals 041+042). See &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; for the full atom catalog.</p>
+<p><strong>Two market modules exist but are unwired:</strong> <code>ichimoku</code> and <code>stochastic</code> (removed per Proposals 041+042). See <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> for the full atom catalog.</p>
 <hr />
 </div>
       
@@ -263,7 +263,7 @@
 <p>&quot;Proposals 041+042: three schools (Dow, Pring, Wyckoff), 11 lenses.&quot;
 — <code>src/domain/lens.rs</code> line 38</p>
 </blockquote>
-<p>Lenses are the mechanism by which different observers in the same system attend to different subsets of the &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt;. Rather than every observer seeing all ~100 available atoms, each lens wires only the relevant modules — controlling information flow and enabling school-specific reasoning.</p>
+<p>Lenses are the mechanism by which different observers in the same system attend to different subsets of the <a class="wikilink" href="pg-vocabulary.html">vocabulary</a>. Rather than every observer seeing all ~100 available atoms, each lens wires only the relevant modules — controlling information flow and enabling school-specific reasoning.</p>
 <hr />
 <h2 id="marketlens-11-variants-in-3-schools">MarketLens — 11 Variants in 3 Schools<a class="heading-anchor" href="#marketlens-11-variants-in-3-schools" aria-hidden="true">#</a></h2>
 <p>Source: <code>src/types/enums.rs</code> lines 58–93. Traits: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code>.</p>
@@ -644,7 +644,7 @@ assert_eq!(full_facts.len(), 13);  // regime(8) + time(2) + phase(3)
 </tr>
 </tbody>
 </table>
-<p>The exit wat files exist in the spec but are <strong>not wired</strong> into the running system. See &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; for the full spec-vs-implementation details.</p>
+<p>The exit wat files exist in the spec but are <strong>not wired</strong> into the running system. See <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> for the full spec-vs-implementation details.</p>
 <hr />
 <h2 id="removed-modules">Removed Modules<a class="heading-anchor" href="#removed-modules" aria-hidden="true">#</a></h2>
 <p>Per <code>src/domain/lens.rs</code> comments:</p>
@@ -666,8 +666,8 @@ assert_eq!(full_facts.len(), 13);  // regime(8) + time(2) + phase(3)
 </ul>
 <h2 id="see-also">See Also<a class="heading-anchor" href="#see-also" aria-hidden="true">#</a></h2>
 <ul>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary&lt;/a&gt; — the complete atom set and module organization</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;observer&lt;/a&gt; — consumers of lens-selected vocab facts</li>
+<li><a class="wikilink" href="pg-vocabulary.html">vocabulary</a> — the complete atom set and module organization</li>
+<li><a class="wikilink" href="pg-market-observer.html">observer</a> — consumers of lens-selected vocab facts</li>
 </ul>
 </div>
     </main>

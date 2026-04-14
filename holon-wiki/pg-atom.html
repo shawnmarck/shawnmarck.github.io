@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>An <strong>atom</strong> is the smallest named unit of semantic content in the Holon system. It is a string identifier (e.g., <code>rsi</code>, <code>kama-er</code>, <code>phase</code>) that maps deterministically to a high-dimensional bipolar vector via the &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;. Atoms are emitted by &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; modules, carry encoded scalar values through encoding schemes (Linear, Log, Circular), and serve as the fundamental inputs to the thought pipeline. There are approximately 99–100 unique atom names across all live vocabulary domains.</p>
+<p>An <strong>atom</strong> is the smallest named unit of semantic content in the Holon system. It is a string identifier (e.g., <code>rsi</code>, <code>kama-er</code>, <code>phase</code>) that maps deterministically to a high-dimensional bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>. Atoms are emitted by <a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> modules, carry encoded scalar values through encoding schemes (Linear, Log, Circular), and serve as the fundamental inputs to the thought pipeline. There are approximately 99–100 unique atom names across all live vocabulary domains.</p>
 <hr />
 </div>
       
@@ -232,7 +232,7 @@
 <blockquote>
 <p>&quot;No zones. No categories. Only scalars. 'Overbought' is a human label on a continuous value — a magic number wearing a name. WHO decided 70 was the boundary? The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are.&quot; <em>(T2-004, GUIDE lines 1396–1405)</em></p>
 </blockquote>
-<p>Every atom resolves to a vector through the &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;'s deterministic hash pipeline: SHA-256(global_seed ∥ atom)[0..8] → ChaCha8Rng → bipolar vector in {-1, 0, 1} with uniform distribution. This is the foundational guarantee — the same atomic value always produces the same vector.</p>
+<p>Every atom resolves to a vector through the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>'s deterministic hash pipeline: SHA-256(global_seed ∥ atom)[0..8] → ChaCha8Rng → bipolar vector in {-1, 0, 1} with uniform distribution. This is the foundational guarantee — the same atomic value always produces the same vector.</p>
 <blockquote>
 <p>&quot;This module provides the core guarantee of Holon: The same atomic value ALWAYS produces the SAME vector.&quot; <em>(T0-005)</em></p>
 </blockquote>
@@ -284,10 +284,10 @@
 <ol>
 <li><strong>Name</strong> — The atom's string identity (e.g., <code>&quot;rsi&quot;</code>, <code>&quot;kama-er&quot;</code>, <code>&quot;phase&quot;</code>).</li>
 <li><strong>Scalar value</strong> — Produced by the vocabulary encoder using the atom's encoding scheme.</li>
-<li><strong>Vector</strong> — Deterministically derived from the atom's name by the &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;. The scalar value modulates this vector (via scalar accumulation) to produce a thought.</li>
+<li><strong>Vector</strong> — Deterministically derived from the atom's name by the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>. The scalar value modulates this vector (via scalar accumulation) to produce a thought.</li>
 <li><strong>Thought</strong> — The vector representation, ready for composition in the thought pipeline.</li>
 </ol>
-<p>The &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; stores two separate caches:</p>
+<p>The <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> stores two separate caches:</p>
 <ul>
 <li><strong>Atom cache</strong> — keyed by atom name string → vector</li>
 <li><strong>Position cache</strong> — keyed by <code>i64</code> position with synthetic key <code>&quot;__pos__{n}&quot;</code>, kept strictly separate so positional encoding never collides with semantic encoding.</li>
@@ -467,11 +467,11 @@
 <hr />
 <h2 id="related-concepts">Related Concepts<a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a></h2>
 <ul>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; — Deterministic atom-to-vector registry. The mechanism that gives every atom its vector identity.</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; — The organized collection of atoms across domains (shared, market, exit). Defines what atoms exist and how they encode values.</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; — The output format atoms are emitted in; the intermediate representation in the thought pipeline.</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;Lens&lt;/a&gt; — Selects which vocabulary modules (and thus which atoms) are active for a given observer context.</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;Encoding Scheme&lt;/a&gt; — Linear, Log, Circular — the three strategies by which atoms convert raw data into scalar values.</li>
+<li><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> — Deterministic atom-to-vector registry. The mechanism that gives every atom its vector identity.</li>
+<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — The organized collection of atoms across domains (shared, market, exit). Defines what atoms exist and how they encode values.</li>
+<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — The output format atoms are emitted in; the intermediate representation in the thought pipeline.</li>
+<li><a class="wikilink" href="pg-lens.html">Lens</a> — Selects which vocabulary modules (and thus which atoms) are active for a given observer context.</li>
+<li><a class="wikilink" href="pg-thought-encoding.html">Encoding Scheme</a> — Linear, Log, Circular — the three strategies by which atoms convert raw data into scalar values.</li>
 </ul>
 </div>
     </main>

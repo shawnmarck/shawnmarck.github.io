@@ -222,7 +222,7 @@
         Treasury — Bounded Capital Allocation <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The treasury is a capital reservation engine. It receives trade proposals from brokers, funds those that pass an edge gate, and settles them through stop-level triggers. Loss is bounded structurally: reserved capital cannot be double-spent, and the maximum loss per trade equals one swap's venue cost. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; is the accountability gate — it only proposes when its expected dollar-P&amp;L is positive.</p>
+      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The treasury is a capital reservation engine. It receives trade proposals from brokers, funds those that pass an edge gate, and settles them through stop-level triggers. Loss is bounded structurally: reserved capital cannot be double-spent, and the maximum loss per trade equals one swap's venue cost. The <a class="wikilink" href="pg-broker.html">broker</a> is the accountability gate — it only proposes when its expected dollar-P&amp;L is positive.</p>
 <hr />
 <h2 id="architecture-overview">Architecture Overview<a class="heading-anchor" href="#architecture-overview" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
@@ -246,7 +246,7 @@
     active --&gt;|&quot;settle&quot;| available
     pf_return --&gt;|&quot;return&quot;| available
 
-<p>Two units, one loop. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; produces proposals; the treasury consumes and funds them. Settlement results flow back through the broker's &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;PropagationFacts&lt;/a&gt; for learning.</p>
+<p>Two units, one loop. The <a class="wikilink" href="pg-broker.html">broker</a> produces proposals; the treasury consumes and funds them. Settlement results flow back through the broker's <a class="wikilink" href="pg-signal-propagation.html">PropagationFacts</a> for learning.</p>
 <hr />
 <h2 id="the-treasury-struct">The Treasury Struct<a class="heading-anchor" href="#the-treasury-struct" aria-hidden="true">#</a></h2>
 <p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines). 8 fields:</p>
@@ -365,7 +365,7 @@ trade-amount   = actual-reserve / (1.0 + venue-cost-rate)  // back-computed prin
 </blockquote>
 <hr />
 <h2 id="the-brokers-gate">The Broker's Gate<a class="heading-anchor" href="#the-brokers-gate" aria-hidden="true">#</a></h2>
-<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; sits between the market and the treasury. It decides whether proposals are worth submitting.</p>
+<p>The <a class="wikilink" href="pg-broker.html">broker</a> sits between the market and the treasury. It decides whether proposals are worth submitting.</p>
 <h3 id="gate_open-two-phase-gate"><code>gate_open()</code> — Two-Phase Gate<a class="heading-anchor" href="#gate_open-two-phase-gate" aria-hidden="true">#</a></h3>
 <pre><code>cold_start = grace_count &lt; 50 || violence_count &lt; 50
 cold_start || expected_value &gt; 0.0

@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&amp;L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is &quot;hypothetical accountability.&quot;</p>
+<p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by <a class="wikilink" href="pg-broker.html">Broker</a> instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&amp;L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is &quot;hypothetical accountability.&quot;</p>
 <hr />
 </div>
       
@@ -305,7 +305,7 @@
 <tr>
   <td data-label="Field"><code>paper_id</code></td>
   <td data-label="Type"><code>usize</code></td>
-  <td data-label="Purpose">Unique ID assigned by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;.</td>
+  <td data-label="Purpose">Unique ID assigned by the <a class="wikilink" href="pg-broker.html">Broker</a>.</td>
 </tr>
 <tr>
   <td data-label=""><code>composed_thought</code></td>
@@ -396,7 +396,7 @@
 <hr />
 <h2 id="broker-integration">Broker Integration<a class="heading-anchor" href="#broker-integration" aria-hidden="true">#</a></h2>
 <h3 id="creation">Creation<a class="heading-anchor" href="#creation" aria-hidden="true">#</a></h3>
-<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; creates a paper every candle via <code>register_paper()</code>, which assigns a monotonic <code>paper_id</code> and pushes the paper onto a <code>VecDeque</code>. Three separate thoughts are recorded: composed, market, and position (Proposal 026 — position observer learns from its own thought, not composed).</p>
+<p>The <a class="wikilink" href="pg-broker.html">Broker</a> creates a paper every candle via <code>register_paper()</code>, which assigns a monotonic <code>paper_id</code> and pushes the paper onto a <code>VecDeque</code>. Three separate thoughts are recorded: composed, market, and position (Proposal 026 — position observer learns from its own thought, not composed).</p>
 <blockquote>
 <p>Source: T0-018 § 7.5</p>
 </blockquote>
@@ -406,7 +406,7 @@
 <li><strong><code>market_signals</code></strong> — Grace signals and Violence stops, for market observer learning.</li>
 <li><strong><code>runner_resolutions</code></strong> — completed runners with position batch data, for position observer + broker learning.</li>
 </ol>
-<p>When a paper first signals Grace (trail crosses), a &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;RunnerHistory&lt;/a&gt; is created and the broker begins accumulating per-candle thoughts, distances, and prices. When the runner resolves, <code>compute_position_batch()</code> produces deferred batch training data using a suffix-extremum pass and sparse sampling (only when optimal trail changed by &gt;10% relative).</p>
+<p>When a paper first signals Grace (trail crosses), a <a class="wikilink" href="pg-broker.html">RunnerHistory</a> is created and the broker begins accumulating per-candle thoughts, distances, and prices. When the runner resolves, <code>compute_position_batch()</code> produces deferred batch training data using a suffix-extremum pass and sparse sampling (only when optimal trail changed by &gt;10% relative).</p>
 <blockquote>
 <p>Source: T0-018 § 7.7</p>
 </blockquote>
@@ -456,7 +456,7 @@
 </tr>
 <tr>
   <td data-label="">2</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;ScalarAccumulator&lt;/a&gt; extraction</td>
+  <td data-label=""><a class="wikilink" href="T0-007-accumulator.html">ScalarAccumulator</a> extraction</td>
   <td data-label="">If accumulator has observations. Clamped to [0.1%, 10%].</td>
 </tr>
 <tr>

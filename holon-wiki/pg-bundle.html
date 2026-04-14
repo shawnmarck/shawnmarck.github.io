@@ -222,7 +222,7 @@
         Bundle — the lossy consensus operator <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Bundle superimposes multiple vectors into one by element-wise majority vote. It is the commutative monoid identity of the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-space.html&quot;&gt;Vector Algebra&lt;/a&gt;: associative, commutative, and lossy. Every structured encoding in holon terminates with a bundle. It is how thoughts become single vectors.</p>
+      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Bundle superimposes multiple vectors into one by element-wise majority vote. It is the commutative monoid identity of the <a class="wikilink" href="pg-thought-space.html">Vector Algebra</a>: associative, commutative, and lossy. Every structured encoding in holon terminates with a bundle. It is how thoughts become single vectors.</p>
 <hr />
 <h2 id="algebraic-role">Algebraic role<a class="heading-anchor" href="#algebraic-role" aria-hidden="true">#</a></h2>
 <p>The WAT spec defines the Vector Algebra as:</p>
@@ -297,9 +297,9 @@ pub fn bundle(vectors: &amp;[&amp;Vector]) -&gt; Vector {
 </blockquote>
 <h2 id="lossiness-why-its-called-quotlossy-consensusquot">Lossiness — why it's called &quot;lossy consensus&quot;<a class="heading-anchor" href="#lossiness-why-its-called-quotlossy-consensusquot" aria-hidden="true">#</a></h2>
 <p>Bundle is <strong>not</strong> invertible. Given <code>bundle(A, B) = C</code>, there is no operation that recovers A and B from C alone. Information is destroyed by the sign threshold. This is by design: a bundled thought is a <strong>consensus</strong> — the dimensions where most inputs agree survive; where they conflict, the majority wins and the minority is erased.</p>
-<p>This makes bundle fundamentally different from &lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt; (which is exact and self-inverse). Bind creates structure; bundle destroys structure to produce summary.</p>
+<p>This makes bundle fundamentally different from <a class="wikilink" href="pg-bind.html">bind</a> (which is exact and self-inverse). Bind creates structure; bundle destroys structure to produce summary.</p>
 <h2 id="where-bundle-appears-in-the-encoding-pipeline">Where bundle appears in the encoding pipeline<a class="heading-anchor" href="#where-bundle-appears-in-the-encoding-pipeline" aria-hidden="true">#</a></h2>
-<h3 id="lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-map-encoding">&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; map encoding<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-map-encoding" aria-hidden="true">#</a></h3>
+<h3 id="walkable-map-encoding"><a class="wikilink" href="T0-006-walkable.html">Walkable</a> map encoding<a class="heading-anchor" href="#walkable-map-encoding" aria-hidden="true">#</a></h3>
 <p>Every <code>Map</code>-typed Walkable encodes as role-filler bindings, then bundles:</p>
 <pre><code>for each (key, value):
     bound = bind(role_vector(key), encode(value))
@@ -308,20 +308,20 @@ bundle(all bounds)
 </code></pre>
 <p>The final bundle is the single vector that represents the entire map. Removing any binding degrades but does not destroy the vector — it still partially matches all remaining keys.</p>
 <p><strong>Source:</strong> T0-006, <code>holon-rs/src/kernel/encoder.rs</code>.</p>
-<h3 id="lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-list-and-set-encoding">&lt;a class=&quot;wikilink&quot; href=&quot;T0-006-walkable.html&quot;&gt;Walkable&lt;/a&gt; list and set encoding<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquott0-006-walkablehtmlquotgtwalkableltagt-list-and-set-encoding" aria-hidden="true">#</a></h3>
+<h3 id="walkable-list-and-set-encoding"><a class="wikilink" href="T0-006-walkable.html">Walkable</a> list and set encoding<a class="heading-anchor" href="#walkable-list-and-set-encoding" aria-hidden="true">#</a></h3>
 <ul>
 <li><strong>List</strong>: position-encode each element (<code>bind(pos_vec, item_vec)</code>), then bundle.</li>
 <li><strong>Set</strong>: bundle items directly, then bind with a <code>&quot;set_indicator&quot;</code> role vector to distinguish sets from random bundles.</li>
 <li><strong>Spread</strong>: position-encode each element, but each becomes an <strong>independent</strong> leaf binding (fan-out), not a single bundle.</li>
 </ul>
 <p><strong>Source:</strong> T0-006.</p>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-bundle-node">&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; bundle node<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-bundle-node" aria-hidden="true">#</a></h3>
+<h3 id="thoughtast-bundle-node"><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> bundle node<a class="heading-anchor" href="#thoughtast-bundle-node" aria-hidden="true">#</a></h3>
 <p>The <code>ThoughtAST::Bundle(children)</code> variant maps <code>encode()</code> over all children, then calls <code>Primitives::bundle</code>. If empty, returns <code>Vector::zeros(dims)</code>.</p>
 <p><strong>Source:</strong> T0-011, <code>holon-lab-trading/src/encoding/thought_encoder.rs</code>.</p>
-<h3 id="lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-sequential-node">&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; sequential node<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquotpg-thought-systemhtmlquotgtthoughtastltagt-sequential-node" aria-hidden="true">#</a></h3>
+<h3 id="thoughtast-sequential-node"><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> sequential node<a class="heading-anchor" href="#thoughtast-sequential-node" aria-hidden="true">#</a></h3>
 <p><code>Sequential(items)</code> encodes each item, permutes it by its positional index (<code>Primitives::permute(v, i)</code>), then bundles all permuted vectors. The permutation breaks symmetry so <code>[A, B] ≠ [B, A]</code>.</p>
 <p><strong>Source:</strong> T0-011.</p>
-<h2 id="lta-classquotwikilinkquot-hrefquott0-002-primitiveshtmlquotgtincrementalbundleltagt-streaming-optimization">&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt; — streaming optimization<a class="heading-anchor" href="#lta-classquotwikilinkquot-hrefquott0-002-primitiveshtmlquotgtincrementalbundleltagt-streaming-optimization" aria-hidden="true">#</a></h2>
+<h2 id="incrementalbundle-streaming-optimization"><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — streaming optimization<a class="heading-anchor" href="#incrementalbundle-streaming-optimization" aria-hidden="true">#</a></h2>
 <p><code>IncrementalBundle</code> maintains a running <code>sums: Vec&lt;i32&gt;</code> buffer across candles (time steps). Instead of re-encoding and re-bundling every fact each tick, it diffs the new fact set against <code>last_facts</code>, subtracts removed contributions, adds new ones, and re-thresholds.</p>
 <blockquote>
 <p>&quot;Incremental bundling — maintains sums across candles. Optimization, not cognition. Can be reconstructed from one full encode.&quot;
@@ -364,19 +364,19 @@ bundle(all bounds)
 </thead>
 <tbody>
 <tr>
-  <td data-label="Operation">&lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;</td>
+  <td data-label="Operation"><a class="wikilink" href="pg-bind.html">bind</a></td>
   <td data-label="Relationship to bundle">Bundle destroys information; bind preserves it (self-inverse).</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-003-cosine.html">cosine</a></td>
   <td data-label="">Cosine measures how much a bundled thought still resembles its constituents.</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-atom.html&quot;&gt;atom&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-atom.html">atom</a></td>
   <td data-label="">Atoms are the inputs that get bundled into composite thoughts.</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;negate&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-002-primitives.html">negate</a></td>
   <td data-label="">Removes a component's influence from a superposition (approximate inverse of bundling).</td>
 </tr>
 <tr>

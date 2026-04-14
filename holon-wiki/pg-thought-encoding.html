@@ -223,13 +223,13 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>Thought encoding transforms structured observations (ASTs emitted by &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;vocabulary-modules&lt;/a&gt;) into high-dimensional vectors. The pipeline has three layers:</p>
+<p>Thought encoding transforms structured observations (ASTs emitted by <a class="wikilink" href="pg-vocabulary.html">vocabulary-modules</a>) into high-dimensional vectors. The pipeline has three layers:</p>
 <ol>
-<li><strong>Vocabulary emission</strong> — modules emit &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; trees (<code>Atom</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code>, <code>Bundle</code>, <code>Sequential</code>) with <code>round_to</code> quantization at emission time to make float keys cache-safe.</li>
-<li><strong>ThoughtEncoder</strong> — a stateless recursive AST walker that evaluates each node into a &lt;a class=&quot;wikilink&quot; href=&quot;T0-001-vector.html&quot;&gt;Vector&lt;/a&gt; using &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; for scalars, &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt; for atoms, and &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; (<code>bind</code>, <code>bundle</code>, <code>permute</code>) for composition. Zero internal cache.</li>
+<li><strong>Vocabulary emission</strong> — modules emit <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> trees (<code>Atom</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code>, <code>Bundle</code>, <code>Sequential</code>) with <code>round_to</code> quantization at emission time to make float keys cache-safe.</li>
+<li><strong>ThoughtEncoder</strong> — a stateless recursive AST walker that evaluates each node into a <a class="wikilink" href="T0-001-vector.html">Vector</a> using <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> for scalars, <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> for atoms, and <a class="wikilink" href="T0-002-primitives.html">Primitives</a> (<code>bind</code>, <code>bundle</code>, <code>permute</code>) for composition. Zero internal cache.</li>
 <li><strong>EncoderService</strong> — a single-threaded pipe loop that owns the persistent LRU composition cache, serving N concurrent callers via per-caller pipe sets. Callers compute on miss and fire-and-forget install back. &quot;Values up, not queues down.&quot;</li>
 </ol>
-<p>An optimization layer — &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt; — avoids re-encoding unchanged facts between candles via running element-wise sums with sign-threshold, proven bit-identical to full re-bundle. Downstream, &lt;a class=&quot;wikilink&quot; href=&quot;T2-003-engram-gate.html&quot;&gt;EngramGate&lt;/a&gt; gates reckoner quality by snapshotting discriminant vectors into a good-state subspace after periods of accurate prediction.</p>
+<p>An optimization layer — <a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — avoids re-encoding unchanged facts between candles via running element-wise sums with sign-threshold, proven bit-identical to full re-bundle. Downstream, <a class="wikilink" href="T2-003-engram-gate.html">EngramGate</a> gates reckoner quality by snapshotting discriminant vectors into a good-state subspace after periods of accurate prediction.</p>
 <hr />
 </div>
       
@@ -252,12 +252,12 @@
 <tr>
   <td data-label="Variant"><code>Atom(name)</code></td>
   <td data-label="Fields"><code>String</code></td>
-  <td data-label="Strategy">Direct dictionary lookup from &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;. Never misses.</td>
+  <td data-label="Strategy">Direct dictionary lookup from <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>. Never misses.</td>
 </tr>
 <tr>
   <td data-label=""><code>Linear { value, scale }</code></td>
   <td data-label=""><code>f64, f64</code></td>
-  <td data-label="">Encode scalar via &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;ScalarEncoder&lt;/a&gt; with <code>ScalarMode::Linear { scale }</code>.</td>
+  <td data-label="">Encode scalar via <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> with <code>ScalarMode::Linear { scale }</code>.</td>
 </tr>
 <tr>
   <td data-label=""><code>Log { value }</code></td>
@@ -295,7 +295,7 @@
 <pre><code class="language-rust">let factor = 10f64.powi(digits as i32);
 (v * factor).round() / factor
 </code></pre>
-<p>Called at <strong>vocabulary emission time</strong>, not at encode time. The &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; carries the rounded value. This is load-bearing: without quantization, floating-point drift would cause false &quot;changed&quot; detections in incremental bundle diffing, degrading to full recompute.</p>
+<p>Called at <strong>vocabulary emission time</strong>, not at encode time. The <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> carries the rounded value. This is load-bearing: without quantization, floating-point drift would cause false &quot;changed&quot; detections in incremental bundle diffing, degrading to full recompute.</p>
 <blockquote>
 <p>&quot;The cache key IS the exact AST. The rounding happens at emission, not evaluation.&quot;
 — thought-encoder.wat, lines 30–32</p>
@@ -328,7 +328,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>ThoughtEncoder is stateless — zero cache.</strong> Production caching goes through <code>encoding::encode::encode()</code> which checks the LRU. This struct exists for tests and &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt;.</p>
+<p><strong>ThoughtEncoder is stateless — zero cache.</strong> Production caching goes through <code>encoding::encode::encode()</code> which checks the LRU. This struct exists for tests and <a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a>.</p>
 <blockquote>
 <p>&quot;ThoughtEncoder is stateless — no cache. Production encoding goes through encoding::encode::encode() which checks the LRU. This struct exists for tests and IncrementalBundle.&quot;
 — T0-011, module doc</p>
@@ -404,7 +404,7 @@
   <td data-label="Pipe"><code>lookup</code></td>
   <td data-label="Capacity">bounded 1</td>
   <td data-label="Direction">caller → service</td>
-  <td data-label="Purpose">Send a &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;ThoughtAST&lt;/a&gt; for cache lookup</td>
+  <td data-label="Purpose">Send a <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> for cache lookup</td>
 </tr>
 <tr>
   <td data-label=""><code>answer</code></td>
@@ -488,7 +488,7 @@ Encoder: one pass per iteration — drain installs, service lookups, select, rep
 <p><code>s &gt; 0 → 1</code>, <code>s &lt; 0 → -1</code>, <code>s == 0 → 0</code>. Converts integer sums back to the bundled binary vector space {-1, 0, +1}.</p>
 <hr />
 <h2 id="engramgate-gating-by-subspace-alignment">EngramGate — gating by subspace alignment<a class="heading-anchor" href="#engramgate-gating-by-subspace-alignment" aria-hidden="true">#</a></h2>
-<p>&lt;a class=&quot;wikilink&quot; href=&quot;T2-003-engram-gate.html&quot;&gt;EngramGate&lt;/a&gt; is downstream of encoding. It gates reckoner quality by accumulating discriminant vectors from periods of accurate prediction into a &quot;good-state subspace.&quot;</p>
+<p><a class="wikilink" href="T2-003-engram-gate.html">EngramGate</a> is downstream of encoding. It gates reckoner quality by accumulating discriminant vectors from periods of accurate prediction into a &quot;good-state subspace.&quot;</p>
 <p>After each resolved prediction, the caller increments win/total counters and calls <code>check-engram-gate</code>. When a recalibration boundary is crossed and accuracy exceeds a threshold, the reckoner's discriminant is snapshot into the good-state subspace. The subspace accumulates knowledge of what good discriminants look like over time.</p>
 <blockquote>
 <p>&quot;Tracks wins/total since last recalibration. When recalib-count advances and accuracy exceeds the threshold, snapshots the discriminant into the good-state subspace.&quot;

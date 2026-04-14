@@ -252,7 +252,7 @@
 </ul>
 <p>The result is a <strong>thought vector</strong>, bit-identical to a full (non-incremental) bundle.</p>
 <h3 id="3-the-learning-circuit">3. The Learning Circuit<a class="heading-anchor" href="#3-the-learning-circuit" aria-hidden="true">#</a></h3>
-<p>The feedback loop. A &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; accumulates observations. Grace (correct prediction) strengthens the discriminant; Violence (incorrect) weakens it. The loop is the learning — every tick sharpens the next prediction.</p>
+<p>The feedback loop. A <a class="wikilink" href="pg-reckoner.html">Reckoner</a> accumulates observations. Grace (correct prediction) strengthens the discriminant; Violence (incorrect) weakens it. The loop is the learning — every tick sharpens the next prediction.</p>
 <h3 id="4-the-paper-circuit">4. The Paper Circuit<a class="heading-anchor" href="#4-the-paper-circuit" aria-hidden="true">#</a></h3>
 <p>The fast learning stream. Every candle, every broker, no real capital. Papers play <strong>both sides</strong> (buy and sell) simultaneously. When a side's trailing stop fires, the paper resolves. Direction determined by which side fired first. Papers are how the machine learns before it trades.</p>
 <h3 id="5-the-funding-circuit">5. The Funding Circuit<a class="heading-anchor" href="#5-the-funding-circuit" aria-hidden="true">#</a></h3>
@@ -355,23 +355,23 @@
   <td data-label="Role">Streaming state → enriched Candle (100+ indicators)</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a></td>
   <td data-label="">Pure functions → Vec&lt;ThoughtAST&gt;</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-encoding.html&quot;&gt;ThoughtEncoder&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a></td>
   <td data-label="">ASTs → Vectors (with LRU cache)</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;IncrementalBundle&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a></td>
   <td data-label="">Optimization cache for diff-based encoding</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-encoding-cache.html&quot;&gt;EncoderService&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a></td>
   <td data-label="">Single thread, LRU cache, N client pipes</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt; ×N</td>
+  <td data-label=""><a class="wikilink" href="pg-market-observer.html">MarketObserver</a> ×N</td>
   <td data-label="">Predicts direction (Up/Down) from thought</td>
 </tr>
 <tr>
@@ -379,15 +379,15 @@
   <td data-label="">Predicts distances (trail, stop) from composed thought</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; ×N×M</td>
+  <td data-label=""><a class="wikilink" href="pg-broker.html">Broker</a> ×N×M</td>
   <td data-label="">Composes market + exit predictions, owns papers, proposes trades</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-four-step-loop.html">Post</a></td>
   <td data-label="">Per-asset-pair unit, routes the four-step loop</td>
 </tr>
 <tr>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-treasury.html&quot;&gt;Treasury&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-treasury.html">Treasury</a></td>
   <td data-label="">Capital management (available ↔ reserved)</td>
 </tr>
 <tr>

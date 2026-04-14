@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>Conviction is the absolute value of the winning cosine similarity in a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;'s discrete prediction. It measures how strongly the reckoner leans toward one classification direction, on a scale of 0.0 (no preference) to 1.0 (maximum alignment). It is the primary input to the reckoner's self-evaluation mechanism — the &lt;a class=&quot;wikilink&quot; href=&quot;pg-curve.html&quot;&gt;conviction–accuracy curve&lt;/a&gt; — which validates whether the reckoner's confidence is well-calibrated.</p>
+<p>Conviction is the absolute value of the winning cosine similarity in a <a class="wikilink" href="pg-reckoner.html">Reckoner</a>'s discrete prediction. It measures how strongly the reckoner leans toward one classification direction, on a scale of 0.0 (no preference) to 1.0 (maximum alignment). It is the primary input to the reckoner's self-evaluation mechanism — the <a class="wikilink" href="pg-curve.html">conviction–accuracy curve</a> — which validates whether the reckoner's confidence is well-calibrated.</p>
 <hr />
 </div>
       
@@ -232,7 +232,7 @@
 </blockquote>
 <hr />
 <h2 id="definition">Definition<a class="heading-anchor" href="#definition" aria-hidden="true">#</a></h2>
-<p>In discrete mode, a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; computes the cosine similarity between the input thought and each label's learned &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;discriminant&lt;/a&gt; direction. The label with the highest raw cosine becomes the predicted <code>direction</code>. The <strong>conviction</strong> is the absolute value of that cosine:</p>
+<p>In discrete mode, a <a class="wikilink" href="pg-reckoner.html">Reckoner</a> computes the cosine similarity between the input thought and each label's learned <a class="wikilink" href="pg-reckoner.html">discriminant</a> direction. The label with the highest raw cosine becomes the predicted <code>direction</code>. The <strong>conviction</strong> is the absolute value of that cosine:</p>
 <pre><code>conviction = |best_raw_cosine|
 </code></pre>
 <p>The <code>Prediction</code> struct carries conviction as a first-class field:</p>
@@ -277,7 +277,7 @@
 </blockquote>
 <hr />
 <h2 id="relationship-to-cosine-similarity">Relationship to cosine similarity<a class="heading-anchor" href="#relationship-to-cosine-similarity" aria-hidden="true">#</a></h2>
-<p>Conviction is a direct application of &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt; — the singular measurement primitive in the holon system. The WAT spec declares:</p>
+<p>Conviction is a direct application of <a class="wikilink" href="T0-003-cosine.html">cosine similarity</a> — the singular measurement primitive in the holon system. The WAT spec declares:</p>
 <blockquote>
 <p>&quot;The only measurement. One number.&quot;
 — <code>primitives.wat</code>, quoted in T0-003</p>
@@ -288,7 +288,7 @@
 <h2 id="role-in-the-system">Role in the system<a class="heading-anchor" href="#role-in-the-system" aria-hidden="true">#</a></h2>
 <p>Conviction appears in three contexts:</p>
 <ol>
-<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; prediction output</strong> — as <code>Prediction.conviction</code>, the immediate confidence signal accompanying every discrete classification.</li>
+<li><strong><a class="wikilink" href="pg-reckoner.html">Reckoner</a> prediction output</strong> — as <code>Prediction.conviction</code>, the immediate confidence signal accompanying every discrete classification.</li>
 <li><strong>Self-evaluation input</strong> — via <code>resolve(conviction, correct)</code>, feeding the sliding window that trains the conviction–accuracy curve.</li>
 <li><strong>Calibrated downstream decisions</strong> — via <code>accuracy_at(conviction)</code>, which lets application code use the reckoner's self-assessed reliability rather than raw cosine.</li>
 </ol>

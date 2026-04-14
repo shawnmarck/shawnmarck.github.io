@@ -222,7 +222,7 @@
         Market Observer — Perceiving Market Direction Through Noise <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>MarketObserver</code> takes a candle-encoded thought vector, strips learned background noise via an online PCA subspace, and classifies the residual anomaly as Up or Down using a &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;. It never labels itself — the market is the judge. Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; (vocabulary selection), maintains its own &lt;a class=&quot;wikilink&quot; href=&quot;T0-004-encoder.html&quot;&gt;WindowSampler&lt;/a&gt; time scale, and gates its knowledge into long-term memory via an &lt;a class=&quot;wikilink&quot; href=&quot;T0-009-engram.html&quot;&gt;engram&lt;/a&gt; gate. One per asset-pair; N per trading system.</p>
+      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>MarketObserver</code> takes a candle-encoded thought vector, strips learned background noise via an online PCA subspace, and classifies the residual anomaly as Up or Down using a <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. It never labels itself — the market is the judge. Each observer wears a <a class="wikilink" href="pg-lens.html">MarketLens</a> (vocabulary selection), maintains its own <a class="wikilink" href="T0-004-encoder.html">WindowSampler</a> time scale, and gates its knowledge into long-term memory via an <a class="wikilink" href="T0-009-engram.html">engram</a> gate. One per asset-pair; N per trading system.</p>
 <hr />
 <h2 id="anatomy">Anatomy<a class="heading-anchor" href="#anatomy" aria-hidden="true">#</a></h2>
 <table>
@@ -236,22 +236,22 @@
 <tbody>
 <tr>
   <td data-label="Component"><code>lens</code></td>
-  <td data-label="Type">&lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt;</td>
+  <td data-label="Type"><a class="wikilink" href="pg-lens.html">MarketLens</a></td>
   <td data-label="Role">Which vocabulary modules this observer attends to</td>
 </tr>
 <tr>
   <td data-label=""><code>reckoner</code></td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-reckoner.html">Reckoner</a></td>
   <td data-label="">Discrete Up/Down classifier — the core prediction engine</td>
 </tr>
 <tr>
   <td data-label=""><code>noise_subspace</code></td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a></td>
   <td data-label="">8-component online PCA. Learns the background distribution; strips it to expose anomaly</td>
 </tr>
 <tr>
   <td data-label=""><code>good_state_subspace</code></td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a></td>
   <td data-label="">4-component subspace that learns what good discriminant states look like (for engram gating)</td>
 </tr>
 <tr>
@@ -275,9 +275,9 @@
 <p>There is no method literally named <code>predict</code>. Prediction lives in <code>observe()</code>:</p>
 <ol>
 <li><strong>Clone raw thought</strong> — preserved for downstream consumers who need both raw and cleaned vectors.</li>
-<li><strong>Update noise subspace</strong> — the noise model absorbs the current thought as part of the background distribution (&lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;CCIPCA&lt;/a&gt; incremental PCA).</li>
+<li><strong>Update noise subspace</strong> — the noise model absorbs the current thought as part of the background distribution (<a class="wikilink" href="T0-010-subspace.html">CCIPCA</a> incremental PCA).</li>
 <li><strong>Strip noise</strong> — <code>anomalous_component()</code> projects the thought onto the noise subspace and returns the residual. <em>&quot;The residual IS the signal.&quot;</em> (Proposal 024).</li>
-<li><strong>Classify the anomaly</strong> — &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;<code>.predict()</code> runs on the noise-stripped vector, not the raw one.</li>
+<li><strong>Classify the anomaly</strong> — <a class="wikilink" href="pg-reckoner.html">Reckoner</a><code>.predict()</code> runs on the noise-stripped vector, not the raw one.</li>
 <li><strong>Compute edge</strong> — <code>reckoner.accuracy_at(conviction)</code> yields the predicted accuracy at the current conviction level (0.0 if the conviction→accuracy curve is not yet valid).</li>
 <li><strong>Store <code>last_prediction</code></strong> — maps the reckoner's label index (0→Up, 1→Down) to a <code>Direction</code>.</li>
 <li><strong>Return <code>ObserveResult</code></strong> — containing <code>raw_thought</code>, <code>anomaly</code>, <code>prediction</code> (scores + conviction), and <code>edge</code>.</li>
@@ -302,7 +302,7 @@
 </tr>
 <tr>
   <td data-label=""><code>prediction</code></td>
-  <td data-label="">Scores + conviction from the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;</td>
+  <td data-label="">Scores + conviction from the <a class="wikilink" href="pg-reckoner.html">Reckoner</a></td>
 </tr>
 <tr>
   <td data-label=""><code>edge</code></td>
@@ -322,11 +322,11 @@
 </ol>
 <hr />
 <h2 id="noise-stripping-the-subspace-pipeline">Noise Stripping — The Subspace Pipeline<a class="heading-anchor" href="#noise-stripping-the-subspace-pipeline" aria-hidden="true">#</a></h2>
-<p>The <code>noise_subspace</code> is an &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt; (8 principal components) implementing &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;CCIPCA&lt;/a&gt; (Weng et al., 2003):</p>
+<p>The <code>noise_subspace</code> is an <a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a> (8 principal components) implementing <a class="wikilink" href="T0-010-subspace.html">CCIPCA</a> (Weng et al., 2003):</p>
 <ul>
 <li><strong>Online PCA</strong> — incrementally learns the principal components of incoming thought vectors without storing them.</li>
 <li><strong>Adaptive threshold</strong> — EMA of residuals + σ-multiplier, calibrated <em>before</em> each CCIPCA update to match test-time scoring distribution.</li>
-<li><strong>Anomalous component</strong> — <code>x - reconstruct(x)</code>: whatever the thought contains that the background model does <em>not</em> explain. This residual is what the &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; classifies.</li>
+<li><strong>Anomalous component</strong> — <code>x - reconstruct(x)</code>: whatever the thought contains that the background model does <em>not</em> explain. This residual is what the <a class="wikilink" href="pg-reckoner.html">Reckoner</a> classifies.</li>
 </ul>
 <blockquote>
 <p><em>&quot;Returns the residual norm (anomaly score). Higher = more anomalous.&quot;</em> — <code>subspace.rs</code></p>
@@ -334,7 +334,7 @@
 <p>The result: normal market chatter is projected out. What remains is the signal — structural shifts that the background model hasn't absorbed yet.</p>
 <hr />
 <h2 id="the-reckoner-classification-engine">The Reckoner — Classification Engine<a class="heading-anchor" href="#the-reckoner-classification-engine" aria-hidden="true">#</a></h2>
-<p>The <code>reckoner</code> is a discrete-mode &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; with two labels: &quot;Up&quot; and &quot;Down&quot;.</p>
+<p>The <code>reckoner</code> is a discrete-mode <a class="wikilink" href="pg-reckoner.html">Reckoner</a> with two labels: &quot;Up&quot; and &quot;Down&quot;.</p>
 <ul>
 <li><strong>Accumulation</strong> — maintains running weighted sums of thought vectors per label (not individual observations). Frequency-preserving: patterns seen many times contribute proportionally more.</li>
 <li><strong>Discriminant</strong> — <code>prototype(label) - prototype(other)</code> computed at each recalibration. The classic Fisher-like linear separation direction.</li>
@@ -346,7 +346,7 @@
 </blockquote>
 <hr />
 <h2 id="the-lens-what-the-observer-sees">The Lens — What the Observer Sees<a class="heading-anchor" href="#the-lens-what-the-observer-sees" aria-hidden="true">#</a></h2>
-<p>Each observer wears a &lt;a class=&quot;wikilink&quot; href=&quot;pg-lens.html&quot;&gt;MarketLens&lt;/a&gt; that determines which vocabulary modules are encoded into its thought vector. 11 variants across three schools:</p>
+<p>Each observer wears a <a class="wikilink" href="pg-lens.html">MarketLens</a> that determines which vocabulary modules are encoded into its thought vector. 11 variants across three schools:</p>
 <table>
 <thead>
 <tr>
@@ -392,7 +392,7 @@
 <pre><code class="language-rust">MarketObserver::new(lens, dims, recalib_interval, window_sampler)
 </code></pre>
 <ul>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;: discrete, two labels (&quot;Up&quot;, &quot;Down&quot;), named <code>&quot;direction-{lens}&quot;</code>.</li>
+<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a>: discrete, two labels (&quot;Up&quot;, &quot;Down&quot;), named <code>&quot;direction-{lens}&quot;</code>.</li>
 <li><code>noise_subspace</code>: 8 principal components.</li>
 <li><code>good_state_subspace</code>: 4 principal components.</li>
 <li><code>resolved</code> starts at 0. <code>last_prediction</code> defaults to <code>Down</code> (arbitrary).</li>

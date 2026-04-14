@@ -226,8 +226,8 @@
 <p>Every candle, the system:</p>
 <ol>
 <li><strong>Observe</strong> — Encode the market into thought vectors via vocabulary lenses.</li>
-<li><strong>Predict</strong> — &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt; classifies direction (Up/Down); &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;PositionObserver&lt;/a&gt; estimates trail/stop distances.</li>
-<li><strong>Execute</strong> — The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; creates &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;paper trades&lt;/a&gt; that track live prices against predictions. Papers resolve as Grace (trail crossed, prediction confirmed) or Violence (stop hit, prediction wrong).</li>
+<li><strong>Predict</strong> — <a class="wikilink" href="pg-market-observer.html">MarketObserver</a> classifies direction (Up/Down); <a class="wikilink" href="pg-exit-observer.html">PositionObserver</a> estimates trail/stop distances.</li>
+<li><strong>Execute</strong> — The <a class="wikilink" href="pg-broker.html">Broker</a> creates <a class="wikilink" href="pg-paper-trade.html">paper trades</a> that track live prices against predictions. Papers resolve as Grace (trail crossed, prediction confirmed) or Violence (stop hit, prediction wrong).</li>
 <li><strong>Learn</strong> — Resolutions propagate back: observers update their reckoners and noise subspaces; the broker updates scalar accumulators, dollar-P&amp;L EMAs, and its expected-value gate.</li>
 </ol>
 <p>Values flow <strong>up</strong> — brokers return propagation facts, and the Post routes them to observers via mailbox channels. No shared mutation during parallel phases.</p>
@@ -235,29 +235,29 @@
 </div>
       
       <div class="prose prose-invert max-w-none"><blockquote>
-<p>The Holon trading system runs a continuous four-step loop each candle: <strong>observe</strong> (encode market state), <strong>predict</strong> (direction + distances), <strong>execute</strong> (paper trades), and <strong>learn</strong> (propagate outcomes back). This page traces the loop end-to-end across &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;PositionObserver&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;PaperEntry&lt;/a&gt;.</p>
+<p>The Holon trading system runs a continuous four-step loop each candle: <strong>observe</strong> (encode market state), <strong>predict</strong> (direction + distances), <strong>execute</strong> (paper trades), and <strong>learn</strong> (propagate outcomes back). This page traces the loop end-to-end across <a class="wikilink" href="pg-market-observer.html">MarketObserver</a>, <a class="wikilink" href="pg-exit-observer.html">PositionObserver</a>, <a class="wikilink" href="pg-broker.html">Broker</a>, and <a class="wikilink" href="pg-paper-trade.html">PaperEntry</a>.</p>
 </blockquote>
 <hr />
 <h2 id="step-1-observe">Step 1 — Observe<a class="heading-anchor" href="#step-1-observe" aria-hidden="true">#</a></h2>
 <p>Each observer encodes the current candle into a high-dimensional thought vector using its vocabulary lens.</p>
 <ul>
-<li><p><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;MarketObserver&lt;/a&gt;</strong> uses a <code>MarketLens</code> (e.g., <code>DowTrend</code>) to produce a <code>raw_thought</code>. A &lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;noise subspace&lt;/a&gt; (8 principal components) learns the background distribution; the residual — <code>anomalous_component()</code> — is the signal. <em>&quot;The residual IS the signal.&quot;</em> &lt;a class=&quot;wikilink&quot; href=&quot;T0-013-market-observer-rust.html&quot;&gt;§T0-013&lt;/a&gt;</p>
+<li><p><strong><a class="wikilink" href="pg-market-observer.html">MarketObserver</a></strong> uses a <code>MarketLens</code> (e.g., <code>DowTrend</code>) to produce a <code>raw_thought</code>. A <a class="wikilink" href="T0-010-subspace.html">noise subspace</a> (8 principal components) learns the background distribution; the residual — <code>anomalous_component()</code> — is the signal. <em>&quot;The residual IS the signal.&quot;</em> <a class="wikilink" href="T0-013-market-observer-rust.html">§T0-013</a></p>
 </li>
-<li><p><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;PositionObserver&lt;/a&gt;</strong> uses a <code>PositionLens</code> (<code>Core</code> with 5 trade atoms or <code>Full</code> with 13) to produce a <code>position_thought</code>. Also has a noise subspace, despite its own docstring claiming otherwise. &lt;a class=&quot;wikilink&quot; href=&quot;T0-014-exit-observer-rust.html&quot;&gt;§T0-014&lt;/a&gt;</p>
+<li><p><strong><a class="wikilink" href="pg-exit-observer.html">PositionObserver</a></strong> uses a <code>PositionLens</code> (<code>Core</code> with 5 trade atoms or <code>Full</code> with 13) to produce a <code>position_thought</code>. Also has a noise subspace, despite its own docstring claiming otherwise. <a class="wikilink" href="T0-014-exit-observer-rust.html">§T0-014</a></p>
 </li>
 </ul>
-<p><strong>Key invariant (Proposal 026):</strong> Position observer queries and learns on <code>position_thought</code> only — never composed thought. &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</p>
+<p><strong>Key invariant (Proposal 026):</strong> Position observer queries and learns on <code>position_thought</code> only — never composed thought. <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 <hr />
 <h2 id="step-2-predict">Step 2 — Predict<a class="heading-anchor" href="#step-2-predict" aria-hidden="true">#</a></h2>
 <h3 id="direction-marketobserver">Direction (MarketObserver)<a class="heading-anchor" href="#direction-marketobserver" aria-hidden="true">#</a></h3>
 <p><code>observe()</code> calls <code>reckoner.predict()</code> on the noise-stripped vector. Returns a discrete classification (Up/Down) with conviction and an accuracy edge:</p>
 <blockquote>
-<p>&quot;prediction and learning are aligned — both operate on the anomaly, not the raw thought.&quot; &lt;a class=&quot;wikilink&quot; href=&quot;T0-013-market-observer-rust.html&quot;&gt;§T0-013&lt;/a&gt;</p>
+<p>&quot;prediction and learning are aligned — both operate on the anomaly, not the raw thought.&quot; <a class="wikilink" href="T0-013-market-observer-rust.html">§T0-013</a></p>
 </blockquote>
 <h3 id="distances-positionobserver">Distances (PositionObserver)<a class="heading-anchor" href="#distances-positionobserver" aria-hidden="true">#</a></h3>
-<p><code>reckoner_distances(position_thought)</code> queries two independent continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;reckoners&lt;/a&gt; — one for trailing-stop distance, one for safety-stop distance. Returns <code>None</code> if either has zero experience. &lt;a class=&quot;wikilink&quot; href=&quot;T0-014-exit-observer-rust.html&quot;&gt;§T0-014&lt;/a&gt;</p>
+<p><code>reckoner_distances(position_thought)</code> queries two independent continuous <a class="wikilink" href="pg-reckoner.html">reckoners</a> — one for trailing-stop distance, one for safety-stop distance. Returns <code>None</code> if either has zero experience. <a class="wikilink" href="T0-014-exit-observer-rust.html">§T0-014</a></p>
 <h3 id="the-distance-cascade-broker">The Distance Cascade (Broker)<a class="heading-anchor" href="#the-distance-cascade-broker" aria-hidden="true">#</a></h3>
-<p>The &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt; owns a <strong>three-tier fallback</strong> for when the position observer cannot yet predict:</p>
+<p>The <a class="wikilink" href="pg-broker.html">Broker</a> owns a <strong>three-tier fallback</strong> for when the position observer cannot yet predict:</p>
 <table>
 <thead>
 <tr>
@@ -274,7 +274,7 @@
 </tr>
 <tr>
   <td data-label="">2</td>
-  <td data-label="">Broker-owned &lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;scalar accumulators&lt;/a&gt;</td>
+  <td data-label="">Broker-owned <a class="wikilink" href="T0-007-accumulator.html">scalar accumulators</a></td>
   <td data-label="">Trail/stop accum have observations</td>
 </tr>
 <tr>
@@ -285,16 +285,16 @@
 </tbody>
 </table>
 <blockquote>
-<p>&quot;The broker owns the full cascade because it owns the scalar accumulators.&quot; &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</p>
+<p>&quot;The broker owns the full cascade because it owns the scalar accumulators.&quot; <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 </blockquote>
 <hr />
 <h2 id="step-3-execute-paper-trades">Step 3 — Execute (Paper Trades)<a class="heading-anchor" href="#step-3-execute-paper-trades" aria-hidden="true">#</a></h2>
 <h3 id="paper-creation">Paper Creation<a class="heading-anchor" href="#paper-creation" aria-hidden="true">#</a></h3>
-<p>Every candle, for every broker, <code>register_paper()</code> creates a new &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;PaperEntry&lt;/a&gt; with:</p>
+<p>Every candle, for every broker, <code>register_paper()</code> creates a new <a class="wikilink" href="pg-paper-trade.html">PaperEntry</a> with:</p>
 <ul>
 <li>The composed thought (market + position)</li>
 <li>The raw market thought and position thought separately</li>
-<li>The predicted direction and the (cascaded) trail/stop distances &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</li>
+<li>The predicted direction and the (cascaded) trail/stop distances <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></li>
 </ul>
 <h3 id="paper-lifecycle">Paper Lifecycle<a class="heading-anchor" href="#paper-lifecycle" aria-hidden="true">#</a></h3>
 <p>Each paper tracks live prices against its two triggers:</p>
@@ -319,7 +319,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Stop is checked before Grace on each tick.</strong> If both would fire simultaneously, Violence wins. &lt;a class=&quot;wikilink&quot; href=&quot;T0-015-paper-entry-rust.html&quot;&gt;§T0-015&lt;/a&gt;</p>
+<p><strong>Stop is checked before Grace on each tick.</strong> If both would fire simultaneously, Violence wins. <a class="wikilink" href="T0-015-paper-entry-rust.html">§T0-015</a></p>
 <pre class="mermaid">flowchart TD
     created[&quot;Created&quot;] --&gt;|&quot;Stop fires&quot;| violence[&quot;Violence\n(resolved, never signaled)&quot;]
     created --&gt;|&quot;Trail crosses&quot;| runner[&quot;signaled = true\nbecomes a Runner&quot;]
@@ -328,11 +328,11 @@
     created --&gt;|&quot;Neither fires&quot;| open[&quot;stays open&quot;]
 
 <h3 id="runner-history">Runner History<a class="heading-anchor" href="#runner-history" aria-hidden="true">#</a></h3>
-<p>When a paper signals Grace (becomes a runner), the broker creates a <code>RunnerHistory</code> and accumulates <code>(thought, distances, price)</code> per candle. At runner resolution, <code>compute_position_batch()</code> uses a suffix-extremum pass to produce deferred training data — sparse samples where the optimal trail distance changed by &gt;10%. &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</p>
+<p>When a paper signals Grace (becomes a runner), the broker creates a <code>RunnerHistory</code> and accumulates <code>(thought, distances, price)</code> per candle. At runner resolution, <code>compute_position_batch()</code> uses a suffix-extremum pass to produce deferred training data — sparse samples where the optimal trail distance changed by &gt;10%. <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 <hr />
 <h2 id="step-4-learn">Step 4 — Learn<a class="heading-anchor" href="#step-4-learn" aria-hidden="true">#</a></h2>
 <h3 id="resolution-categories">Resolution Categories<a class="heading-anchor" href="#resolution-categories" aria-hidden="true">#</a></h3>
-<p>The broker's <code>tick_papers()</code> emits two kinds of resolutions: &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</p>
+<p>The broker's <code>tick_papers()</code> emits two kinds of resolutions: <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 <table>
 <thead>
 <tr>
@@ -368,15 +368,15 @@
 </tbody>
 </table>
 <h3 id="broker-propagation">Broker Propagation<a class="heading-anchor" href="#broker-propagation" aria-hidden="true">#</a></h3>
-<p><code>propagate()</code> is called by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt; with each resolution. It does three things: &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</p>
+<p><code>propagate()</code> is called by the <a class="wikilink" href="pg-four-step-loop.html">Post</a> with each resolution. It does three things: <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 <ol>
 <li><strong>Track record</strong> — Updates <code>cumulative_grace</code>, <code>cumulative_violence</code>, <code>trade_count</code>.</li>
 <li><strong>Scalar accumulators learn</strong> — Feeds <em>optimal</em> (hindsight) distances to trail/stop accumulators, weighted by outcome.</li>
 <li><strong>Dollar P&amp;L + EMA</strong> — Computes net P&amp;L against a $10,000 reference capital including swap fees. Updates <code>avg_grace_net</code> and <code>avg_violence_net</code> with EMA alpha = 0.038 (~50-paper half-life). Recomputes <code>expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net</code>.</li>
 </ol>
-<p>Returns <code>PropagationFacts</code> — the Post routes these to the correct observers. <em>&quot;Values up — the broker does not talk to observers directly.&quot;</em> &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</p>
+<p>Returns <code>PropagationFacts</code> — the Post routes these to the correct observers. <em>&quot;Values up — the broker does not talk to observers directly.&quot;</em> <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 <h3 id="marketobserver-learning">MarketObserver Learning<a class="heading-anchor" href="#marketobserver-learning" aria-hidden="true">#</a></h3>
-<p><code>resolve()</code> is called with a labeled direction and weight: &lt;a class=&quot;wikilink&quot; href=&quot;T0-013-market-observer-rust.html&quot;&gt;§T0-013&lt;/a&gt;</p>
+<p><code>resolve()</code> is called with a labeled direction and weight: <a class="wikilink" href="T0-013-market-observer-rust.html">§T0-013</a></p>
 <ol>
 <li>Map direction to label index (Up→0, Down→1).</li>
 <li>Self-grade: compare <code>last_prediction</code> against actual direction.</li>
@@ -385,18 +385,18 @@
 <li>Engram gate check: accumulate wins/total, evaluate whether the observer has proven itself using <code>good_state_subspace</code>.</li>
 </ol>
 <blockquote>
-<p>&quot;Its own teacher. The market is the judge.&quot; &lt;a class=&quot;wikilink&quot; href=&quot;T0-013-market-observer-rust.html&quot;&gt;§T0-013&lt;/a&gt;</p>
+<p>&quot;Its own teacher. The market is the judge.&quot; <a class="wikilink" href="T0-013-market-observer-rust.html">§T0-013</a></p>
 </blockquote>
 <h3 id="positionobserver-learning">PositionObserver Learning<a class="heading-anchor" href="#positionobserver-learning" aria-hidden="true">#</a></h3>
-<p><code>observe_distances(position_thought, optimal_distances)</code> feeds hindsight-optimal distances: &lt;a class=&quot;wikilink&quot; href=&quot;T0-014-exit-observer-rust.html&quot;&gt;§T0-014&lt;/a&gt;</p>
+<p><code>observe_distances(position_thought, optimal_distances)</code> feeds hindsight-optimal distances: <a class="wikilink" href="T0-014-exit-observer-rust.html">§T0-014</a></p>
 <ol>
 <li>Record pre-learning prediction error (diagnostic, read-only).</li>
 <li><code>trail_reckoner.observe_scalar(position_thought, optimal.trail, 1.0)</code> and <code>stop_reckoner.observe_scalar(position_thought, optimal.stop, 1.0)</code>.</li>
 <li>Weight is always 1.0 — each observation counts once.</li>
 </ol>
-<p>The &quot;optimal&quot; distances come from simulation sweeps against actual price histories. &lt;a class=&quot;wikilink&quot; href=&quot;T0-014-exit-observer-rust.html&quot;&gt;§T0-014&lt;/a&gt;</p>
+<p>The &quot;optimal&quot; distances come from simulation sweeps against actual price histories. <a class="wikilink" href="T0-014-exit-observer-rust.html">§T0-014</a></p>
 <h3 id="the-gate">The Gate<a class="heading-anchor" href="#the-gate" aria-hidden="true">#</a></h3>
-<p><code>gate_open()</code> controls whether a broker can propose funded trades: &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</p>
+<p><code>gate_open()</code> controls whether a broker can propose funded trades: <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 <ul>
 <li><strong>Cold start</strong> (&lt;50 of either outcome): always open — not enough data to judge.</li>
 <li><strong>Warm</strong> (≥50 of both): open only when <code>expected_value &gt; 0</code>. Brokers with negative EV are suppressed.</li>
@@ -432,41 +432,41 @@
 <tbody>
 <tr>
   <td data-label="Invariant">Prediction and learning operate on the anomaly, not raw thought</td>
-  <td data-label="Source">Proposal 024 — &lt;a class=&quot;wikilink&quot; href=&quot;T0-013-market-observer-rust.html&quot;&gt;§T0-013&lt;/a&gt;</td>
+  <td data-label="Source">Proposal 024 — <a class="wikilink" href="T0-013-market-observer-rust.html">§T0-013</a></td>
 </tr>
 <tr>
   <td data-label="">Position observer queries and learns on <code>position_thought</code> only</td>
-  <td data-label="">Proposal 026 — &lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</td>
+  <td data-label="">Proposal 026 — <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td>
 </tr>
 <tr>
   <td data-label="">Values flow up — brokers return facts, Post routes to observers</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td>
 </tr>
 <tr>
   <td data-label="">No shared mutation during parallel phases</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td>
 </tr>
 <tr>
   <td data-label="">Broker is the accountability unit — owns papers, accumulators, gate, P&amp;L</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td>
 </tr>
 <tr>
   <td data-label="">Stop checked before Grace — Violence wins ties</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-015-paper-entry-rust.html&quot;&gt;§T0-015&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-015-paper-entry-rust.html">§T0-015</a></td>
 </tr>
 <tr>
   <td data-label="">N×M broker grid maps <code>(market_idx, position_idx)</code> to flat slot</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-013-market-observer-rust.html&quot;&gt;§T0-013&lt;/a&gt; — MarketObserver: observe/predict, resolve/learn, noise subspace, engram gate</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-014-exit-observer-rust.html&quot;&gt;§T0-014&lt;/a&gt; — PositionObserver: distance reckoners, scalar observation, noise subspace</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-015-paper-entry-rust.html&quot;&gt;§T0-015&lt;/a&gt; — PaperEntry: lifecycle, tick mechanics, Grace/Violence classification, runner state</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-018-broker-rust.html&quot;&gt;§T0-018&lt;/a&gt; — Broker: paper registration, ticking, propagation, distance cascade, gate, P&amp;L, runner history</li>
+<li><a class="wikilink" href="T0-013-market-observer-rust.html">§T0-013</a> — MarketObserver: observe/predict, resolve/learn, noise subspace, engram gate</li>
+<li><a class="wikilink" href="T0-014-exit-observer-rust.html">§T0-014</a> — PositionObserver: distance reckoners, scalar observation, noise subspace</li>
+<li><a class="wikilink" href="T0-015-paper-entry-rust.html">§T0-015</a> — PaperEntry: lifecycle, tick mechanics, Grace/Violence classification, runner state</li>
+<li><a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a> — Broker: paper registration, ticking, propagation, distance cascade, gate, P&amp;L, runner history</li>
 </ul>
 </div>
     </main>

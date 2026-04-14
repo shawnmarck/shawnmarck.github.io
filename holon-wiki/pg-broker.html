@@ -222,16 +222,16 @@
         Broker — the accountability and execution primitive <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The broker binds exactly one &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observer&lt;/a&gt; to one &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position observer&lt;/a&gt;, forming a cell in an N×M grid. It owns &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;paper trades&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;scalar accumulators&lt;/a&gt; for trail/stop distances, and a dollar-P&amp;L gate. Every output flows upward as return values — the broker never mutates observer state directly. It is the unit of accountability: it proposes, tracks, resolves, and decides whether it has earned the right to trade.</p>
+      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The broker binds exactly one <a class="wikilink" href="pg-market-observer.html">market observer</a> to one <a class="wikilink" href="pg-exit-observer.html">position observer</a>, forming a cell in an N×M grid. It owns <a class="wikilink" href="pg-paper-trade.html">paper trades</a>, <a class="wikilink" href="T0-007-accumulator.html">scalar accumulators</a> for trail/stop distances, and a dollar-P&amp;L gate. Every output flows upward as return values — the broker never mutates observer state directly. It is the unit of accountability: it proposes, tracks, resolves, and decides whether it has earned the right to trade.</p>
 <hr />
 <h2 id="what-it-is">What it is<a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a></h2>
 <blockquote>
 <p><em>&quot;The broker IS the accountability unit. It owns paper trades, scalar accumulators, and a Grace/Violence reckoner. Values up, not effects down.&quot;</em> — broker.rs</p>
 </blockquote>
-<p>The broker sits at the intersection of a market observer (which predicts direction) and a position observer (which sizes risk). It translates their composed &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-system.html&quot;&gt;thought&lt;/a&gt; into a paper trade, watches that trade against live prices, and propagates outcomes back to both observers via &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;PropagationFacts&lt;/a&gt;. Crucially:</p>
+<p>The broker sits at the intersection of a market observer (which predicts direction) and a position observer (which sizes risk). It translates their composed <a class="wikilink" href="pg-thought-system.html">thought</a> into a paper trade, watches that trade against live prices, and propagates outcomes back to both observers via <a class="wikilink" href="pg-signal-propagation.html">PropagationFacts</a>. Crucially:</p>
 <ul>
 <li>The broker <strong>proposes</strong> but does not execute. Papers are hypothetical.</li>
-<li>The broker <strong>learns</strong> but does not mutate. All learning returns as <code>PropagationFacts</code>; the &lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt; routes them.</li>
+<li>The broker <strong>learns</strong> but does not mutate. All learning returns as <code>PropagationFacts</code>; the <a class="wikilink" href="pg-four-step-loop.html">Post</a> routes them.</li>
 <li>The broker <strong>gates</strong> itself. A broker with negative expected value cannot propose funded trades.</li>
 </ul>
 <hr />
@@ -272,7 +272,7 @@ position_idx = slot_idx % M
 <p>Two phases:</p>
 <ol>
 <li><strong>Cold start</strong> — if either outcome count is below 50, the gate is always open. Not enough data to judge.</li>
-<li><strong>Warm</strong> — after ≥50 of both &lt;a class=&quot;wikilink&quot; href=&quot;pg-grace-and-violence.html&quot;&gt;Grace&lt;/a&gt; and &lt;a class=&quot;wikilink&quot; href=&quot;pg-grace-and-violence.html&quot;&gt;Violence&lt;/a&gt; outcomes, the gate opens only when <code>expected_value &gt; 0.0</code>. A broker that costs money on average is suppressed.</li>
+<li><strong>Warm</strong> — after ≥50 of both <a class="wikilink" href="pg-grace-and-violence.html">Grace</a> and <a class="wikilink" href="pg-grace-and-violence.html">Violence</a> outcomes, the gate opens only when <code>expected_value &gt; 0.0</code>. A broker that costs money on average is suppressed.</li>
 </ol>
 <p>The expected value formula:</p>
 <pre><code>expected_value = grace_rate × avg_grace_net + (1 − grace_rate) × avg_violence_net
@@ -292,12 +292,12 @@ position_idx = slot_idx % M
 <tbody>
 <tr>
   <td data-label="Tier">1</td>
-  <td data-label="Source">Reckoner answer (from the position observer's continuous &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;)</td>
+  <td data-label="Source">Reckoner answer (from the position observer's continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>)</td>
   <td data-label="Condition"><code>Some(dists)</code> → use immediately</td>
 </tr>
 <tr>
   <td data-label="">2</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;T0-007-accumulator.html&quot;&gt;Scalar accumulators&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="T0-007-accumulator.html">Scalar accumulators</a></td>
   <td data-label="">If the accumulator has observations, extract with 100 samples, clamped to [0.1%, 10%]</td>
 </tr>
 <tr>
@@ -310,12 +310,12 @@ position_idx = slot_idx % M
 <p>The broker owns tiers 2 and 3. Tier 1 comes from outside. (T0-018, §7.4)</p>
 <hr />
 <h2 id="paper-trades">Paper Trades<a class="heading-anchor" href="#paper-trades" aria-hidden="true">#</a></h2>
-<p>Each candle, the broker calls <code>register_paper()</code> to create a new &lt;a class=&quot;wikilink&quot; href=&quot;pg-paper-trade.html&quot;&gt;PaperEntry&lt;/a&gt;. The paper:</p>
+<p>Each candle, the broker calls <code>register_paper()</code> to create a new <a class="wikilink" href="pg-paper-trade.html">PaperEntry</a>. The paper:</p>
 <ul>
 <li>Records the composed thought (market + position), the raw market thought, and the position thought separately (Proposal 026: position learns from its own thought, not composed)</li>
 <li>Tracks <code>extreme</code> (best price in predicted direction) and <code>trail_level</code> (trailing stop)</li>
 <li>Has two triggers: <strong>trail</strong> (Grace — prediction confirmed) and <strong>stop</strong> (Violence — prediction wrong)</li>
-<li>Accumulates price history for deferred &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;reckoner&lt;/a&gt; training</li>
+<li>Accumulates price history for deferred <a class="wikilink" href="pg-reckoner.html">reckoner</a> training</li>
 </ul>
 <p>The paper lifecycle (T0-015):</p>
 <pre class="mermaid">flowchart TD
@@ -337,10 +337,10 @@ position_idx = slot_idx % M
 <li><strong>Sparse sampling</strong> — only emit a training sample when optimal trail changed by &gt;10% relative, avoiding redundant samples</li>
 <li>Weight = the optimal trail value (what that distance would capture)</li>
 </ol>
-<p>This batch is included in the <code>Resolution</code> struct as <code>position_batch</code> and routed to the position observer by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt;. (T0-018, §8.2)</p>
+<p>This batch is included in the <code>Resolution</code> struct as <code>position_batch</code> and routed to the position observer by the <a class="wikilink" href="pg-four-step-loop.html">Post</a>. (T0-018, §8.2)</p>
 <hr />
 <h2 id="propagation-and-learning">Propagation and Learning<a class="heading-anchor" href="#propagation-and-learning" aria-hidden="true">#</a></h2>
-<p><code>propagate()</code> is called by the &lt;a class=&quot;wikilink&quot; href=&quot;pg-four-step-loop.html&quot;&gt;Post&lt;/a&gt; with each resolved paper's data. It performs three steps:</p>
+<p><code>propagate()</code> is called by the <a class="wikilink" href="pg-four-step-loop.html">Post</a> with each resolved paper's data. It performs three steps:</p>
 <ol>
 <li><strong>Track record</strong> — increment cumulative grace/violence and trade counts</li>
 <li><strong>Scalar accumulators learn</strong> — feed optimal (hindsight) trail/stop distances, weighted by outcome</li>

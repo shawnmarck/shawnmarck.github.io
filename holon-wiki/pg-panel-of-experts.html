@@ -223,7 +223,7 @@
       </h1>
       
       <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>The &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; uses a <strong>two-reviewer panel</strong> to evaluate every proposal. <strong>Brian Beckman</strong> reviews through the lens of algebraic/category-theory rigor — asking whether a proposal composes with the existing &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;monoid&lt;/a&gt; and what categorical construction it represents. <strong>Rich Hickey</strong> reviews through the lens of simplicity — asking whether a proposal complects concerns and whether existing forms already suffice. Each produces an independent verdict (ACCEPTED / CONDITIONAL / REJECTED). When they disagree, a <strong>datamancer arbitrator</strong> synthesizes a final resolution, sometimes overriding both.</p>
+<p>The <a class="wikilink" href="T1-001-wat-language.html">wat language</a> uses a <strong>two-reviewer panel</strong> to evaluate every proposal. <strong>Brian Beckman</strong> reviews through the lens of algebraic/category-theory rigor — asking whether a proposal composes with the existing <a class="wikilink" href="pg-reckoner.html">monoid</a> and what categorical construction it represents. <strong>Rich Hickey</strong> reviews through the lens of simplicity — asking whether a proposal complects concerns and whether existing forms already suffice. Each produces an independent verdict (ACCEPTED / CONDITIONAL / REJECTED). When they disagree, a <strong>datamancer arbitrator</strong> synthesizes a final resolution, sometimes overriding both.</p>
 <hr />
 </div>
       
@@ -233,7 +233,7 @@
 <p>Beckman frames proposals in category theory: monoids, coalgebras, functors, catamorphisms, universal constructions. He sees mathematical structure where Hickey sees convention.</p>
 <p><strong>Core questions:</strong></p>
 <ul>
-<li><em>Does this compose?</em> — with &lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;/&lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt;, with fold, with existing &lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt;</li>
+<li><em>Does this compose?</em> — with <a class="wikilink" href="pg-bind.html">bind</a>/<a class="wikilink" href="pg-bundle.html">bundle</a>, with fold, with existing <a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a></li>
 <li><em>What categorical construction is this?</em> — product? coproduct? coalgebra? type class?</li>
 <li><em>Does it introduce new algebraic structure?</em> — if yes, is that structure justified?</li>
 </ul>
@@ -253,7 +253,7 @@
 <p><strong>When overridden:</strong> On struct field types (007) and <code>defservice</code> (04/003). In both cases, the simplicity argument prevailed: types as documentation rather than enforcement, and functions + <code>select</code> subsuming a dedicated service form.</p>
 <h3 id="rich-hickey-simplicity-anti-complecting">Rich Hickey — Simplicity / Anti-Complecting<a class="heading-anchor" href="#rich-hickey-simplicity-anti-complecting" aria-hidden="true">#</a></h3>
 <p><strong>Philosophy:</strong> Distinguish <strong>simple</strong> (one concept, one job, interleaving nothing) from <strong>easy</strong> (familiar, convenient, available to hand). Build simple; don't add what discipline or data restructuring already solve.</p>
-<p>Hickey applies the &quot;simple made easy&quot; framework from his Clojure design work. He protects the six &lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; from proliferation and guards against forms that bundle multiple concerns into one interface.</p>
+<p>Hickey applies the &quot;simple made easy&quot; framework from his Clojure design work. He protects the six <a class="wikilink" href="T0-002-primitives.html">Primitives</a> from proliferation and guards against forms that bundle multiple concerns into one interface.</p>
 <p><strong>Core questions:</strong></p>
 <ul>
 <li><em>Does this complect?</em> — does it weave together things that should be separate?</li>
@@ -271,7 +271,7 @@
 <li>Rejected <code>defprocessor</code> flatly: <em>“The function shape <code>(state, event) → state</code> IS the declaration”</em> (001 — won, proposal rejected).</li>
 <li>Won untyped struct fields: <em>“Types are documentation, not enforcement”</em> (007).</li>
 <li>Won keyword-as-function access: <em>“Keywords read like English”</em> (007).</li>
-<li>Argued <code>fold</code> is a caller concern, not a callee declaration (002 — partially reversed when <code>fold</code> was accepted as a &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;control form&lt;/a&gt;).</li>
+<li>Argued <code>fold</code> is a caller concern, not a callee declaration (002 — partially reversed when <code>fold</code> was accepted as a <a class="wikilink" href="pg-vocabulary.html">control form</a>).</li>
 </ul>
 <p><strong>When overridden:</strong> On journal operations (004 — the opacity argument convinced the arbitrator they're core), <code>nil</code>/boolean handling (013 — datamancer chose structural absence), and channels (003 — deleted as contradicting fold-based design).</p>
 <hr />
@@ -338,7 +338,7 @@
 </li>
 <li><p><strong>Synthesize a third option</strong> — the debate reveals a path neither reviewer proposed. Example: proposal 013, the datamancer chose &quot;structural absence&quot; (the <code>?</code> field convention, <code>when</code> not executing produces no value) over both Beckman's Rust-style nil and Hickey's Clojure-style truthiness.</p>
 </li>
-<li><p><strong>Show both are unnecessary</strong> — the simplest answer is that no new form is needed. Example: proposal 04/003, the datamancer demonstrated that &lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;select&lt;/a&gt; + functions + <code>spawn</code> subsume both <code>defprocess</code> and <code>defservice</code>, retiring both proposed forms entirely.</p>
+<li><p><strong>Show both are unnecessary</strong> — the simplest answer is that no new form is needed. Example: proposal 04/003, the datamancer demonstrated that <a class="wikilink" href="pg-vocabulary.html">select</a> + functions + <code>spawn</code> subsume both <code>defprocess</code> and <code>defservice</code>, retiring both proposed forms entirely.</p>
 </li>
 </ol>
 <h3 id="resolution-outcomes">Resolution outcomes<a class="heading-anchor" href="#resolution-outcomes" aria-hidden="true">#</a></h3>
@@ -402,14 +402,14 @@
 <hr />
 <h2 id="related-concepts">Related Concepts<a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a></h2>
 <ul>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-proposal-system.html&quot;&gt;Proposal System&lt;/a&gt; — the formal process that invokes this panel</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;wat language&lt;/a&gt; — the language being designed</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T1-001-wat-language.html&quot;&gt;Structural Forms&lt;/a&gt; — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — forms shaped by panel review</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-vocabulary.html&quot;&gt;Vocabulary&lt;/a&gt; — concurrency forms (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from the April proposals</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;T0-002-primitives.html&quot;&gt;Primitives&lt;/a&gt; — the six foundational forms both reviewers protect from proliferation</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt; — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
+<li><a class="wikilink" href="pg-proposal-system.html">Proposal System</a> — the formal process that invokes this panel</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">wat language</a> — the language being designed</li>
+<li><a class="wikilink" href="T1-001-wat-language.html">Structural Forms</a> — <code>struct</code>, <code>enum</code>, <code>defprotocol</code>, <code>satisfies</code>, <code>update</code> — forms shaped by panel review</li>
+<li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — concurrency forms (<code>send</code>, <code>recv</code>, <code>select</code>, <code>spawn</code>, <code>defpipe</code>) from the April proposals</li>
+<li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the six foundational forms both reviewers protect from proliferation</li>
+<li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
 <li>Four-layer model — Syntax / Core / Stdlib / Userland; the layer system the panel enforces</li>
-<li>&lt;a class=&quot;wikilink&quot; href=&quot;pg-wards.html&quot;&gt;Wards&lt;/a&gt; — automated tools (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) that surface problems proposals must address</li>
+<li><a class="wikilink" href="pg-wards.html">Wards</a> — automated tools (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) that surface problems proposals must address</li>
 </ul>
 </div>
     </main>

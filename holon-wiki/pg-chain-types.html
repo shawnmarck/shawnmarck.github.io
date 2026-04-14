@@ -229,14 +229,14 @@
 <hr />
 <h2 id="design-principle">Design Principle<a class="heading-anchor" href="#design-principle" aria-hidden="true">#</a></h2>
 <blockquote>
-<p><em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em> — chain.rs module doc, via &lt;a class=&quot;wikilink&quot; href=&quot;T0-017-wat-vm-rust.html&quot;&gt;T0-017&lt;/a&gt;</p>
+<p><em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em> — chain.rs module doc, via <a class="wikilink" href="T0-017-wat-vm-rust.html">T0-017</a></p>
 </blockquote>
-<p>Chain types enforce a <strong>linear, typed pipeline</strong> through the &lt;a class=&quot;wikilink&quot; href=&quot;pg-wat-vm.html&quot;&gt;organism&lt;/a&gt;: the main thread produces an enriched candle, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;market observer&lt;/a&gt; wraps it in a <code>MarketChain</code>, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;position observer&lt;/a&gt; flattens that into a <code>MarketPositionChain</code>, and the &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;broker&lt;/a&gt; consumes it. At no point does any thread hold a shared mutable reference to another's state — every piece of information is either owned outright or carried behind an <code>Arc</code> that is never written through.</p>
+<p>Chain types enforce a <strong>linear, typed pipeline</strong> through the <a class="wikilink" href="pg-wat-vm.html">organism</a>: the main thread produces an enriched candle, the <a class="wikilink" href="pg-market-observer.html">market observer</a> wraps it in a <code>MarketChain</code>, the <a class="wikilink" href="pg-exit-observer.html">position observer</a> flattens that into a <code>MarketPositionChain</code>, and the <a class="wikilink" href="pg-broker.html">broker</a> consumes it. At no point does any thread hold a shared mutable reference to another's state — every piece of information is either owned outright or carried behind an <code>Arc</code> that is never written through.</p>
 <hr />
 <h2 id="marketchain-clone"><code>MarketChain</code> — <code>Clone</code><a class="heading-anchor" href="#marketchain-clone" aria-hidden="true">#</a></h2>
-<p><strong>Producer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-market-observer.html&quot;&gt;Market Observer&lt;/a&gt;<br />
-<strong>Consumer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;Position Observers&lt;/a&gt; (via &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;fan-out&lt;/a&gt;)<br />
-<strong>Transport:</strong> Bounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; (capacity 1) into market observer; &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; (1→N) out to position observers.</p>
+<p><strong>Producer:</strong> <a class="wikilink" href="pg-market-observer.html">Market Observer</a><br />
+<strong>Consumer:</strong> <a class="wikilink" href="pg-exit-observer.html">Position Observers</a> (via <a class="wikilink" href="pg-services.html">fan-out</a>)<br />
+<strong>Transport:</strong> Bounded <a class="wikilink" href="pg-services.html">Queue</a> (capacity 1) into market observer; <a class="wikilink" href="pg-services.html">Topic</a> (1→N) out to position observers.</p>
 <table>
 <thead>
 <tr>
@@ -264,7 +264,7 @@
 <tr>
   <td data-label=""><code>market_raw</code></td>
   <td data-label=""><code>Vector</code></td>
-  <td data-label="">Raw encoding of market features via &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;VectorManager&lt;/a&gt;</td>
+  <td data-label="">Raw encoding of market features via <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a></td>
 </tr>
 <tr>
   <td data-label=""><code>market_anomaly</code></td>
@@ -288,12 +288,12 @@
 </tr>
 </tbody>
 </table>
-<p>Implements <code>Clone</code> because a &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; clones the message to every subscriber. This is the only chain type that needs fan-out.</p>
+<p>Implements <code>Clone</code> because a <a class="wikilink" href="pg-services.html">Topic</a> clones the message to every subscriber. This is the only chain type that needs fan-out.</p>
 <hr />
 <h2 id="marketpositionchain-not-clone"><code>MarketPositionChain</code> — <strong>not</strong> <code>Clone</code><a class="heading-anchor" href="#marketpositionchain-not-clone" aria-hidden="true">#</a></h2>
-<p><strong>Producer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-exit-observer.html&quot;&gt;Position Observer&lt;/a&gt;<br />
-<strong>Consumer:</strong> &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;Broker&lt;/a&gt;<br />
-<strong>Transport:</strong> Bounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; (point-to-point, one broker per chain).</p>
+<p><strong>Producer:</strong> <a class="wikilink" href="pg-exit-observer.html">Position Observer</a><br />
+<strong>Consumer:</strong> <a class="wikilink" href="pg-broker.html">Broker</a><br />
+<strong>Transport:</strong> Bounded <a class="wikilink" href="pg-services.html">Queue</a> (point-to-point, one broker per chain).</p>
 <p>Flattens <strong>all</strong> <code>MarketChain</code> fields — duplicated, not borrowed — then adds position-specific fields:</p>
 <table>
 <thead>
@@ -373,11 +373,11 @@
 <tr>
   <td data-label=""><code>position_distances</code></td>
   <td data-label=""><code>Distances</code></td>
-  <td data-label="">Trailing stop and safety stop distances from &lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;</td>
+  <td data-label="">Trailing stop and safety stop distances from <a class="wikilink" href="pg-reckoner.html">Reckoner</a></td>
 </tr>
 </tbody>
 </table>
-<p>Does <strong>not</strong> implement <code>Clone</code>. The deliberate choice to duplicate (rather than borrow) market fields makes this struct self-contained but large — no shared references, no lifetime entanglement, pure ownership transfer through the &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;queue&lt;/a&gt;.</p>
+<p>Does <strong>not</strong> implement <code>Clone</code>. The deliberate choice to duplicate (rather than borrow) market fields makes this struct self-contained but large — no shared references, no lifetime entanglement, pure ownership transfer through the <a class="wikilink" href="pg-services.html">queue</a>.</p>
 <hr />
 <h2 id="data-flow-through-the-grid">Data Flow Through the Grid<a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
@@ -392,7 +392,7 @@
     broker -.-&gt;|&quot;PositionLearn → position observer ei's mailbox&quot;| posM
     broker -.-&gt;|&quot;TradeUpdate → position observer ei's trade mailbox&quot;| posM
 
-<p>See signal-propagation for the full wiring table including &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;ObsLearn&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;PositionLearn&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;pg-broker.html&quot;&gt;TradeUpdate&lt;/a&gt; return-path signals.</p>
+<p>See signal-propagation for the full wiring table including <a class="wikilink" href="pg-signal-propagation.html">ObsLearn</a>, <a class="wikilink" href="pg-signal-propagation.html">PositionLearn</a>, and <a class="wikilink" href="pg-broker.html">TradeUpdate</a> return-path signals.</p>
 <hr />
 <h2 id="wire-summary">Wire Summary<a class="heading-anchor" href="#wire-summary" aria-hidden="true">#</a></h2>
 <table>
@@ -407,32 +407,32 @@
 <tr>
   <td data-label="Stage">Main → Market observer</td>
   <td data-label="Wire type">(input wrapper)</td>
-  <td data-label="Mechanism">Bounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; (capacity 1)</td>
+  <td data-label="Mechanism">Bounded <a class="wikilink" href="pg-services.html">Queue</a> (capacity 1)</td>
 </tr>
 <tr>
   <td data-label="">Market observer → Position observers</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketChain&lt;/a&gt;</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Topic&lt;/a&gt; (1→N fan-out)</td>
+  <td data-label=""><a class="wikilink" href="pg-chain-types.html">MarketChain</a></td>
+  <td data-label=""><a class="wikilink" href="pg-services.html">Topic</a> (1→N fan-out)</td>
 </tr>
 <tr>
   <td data-label="">Position observer → Broker</td>
-  <td data-label="">&lt;a class=&quot;wikilink&quot; href=&quot;pg-chain-types.html&quot;&gt;MarketPositionChain&lt;/a&gt;</td>
-  <td data-label="">Bounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt;</td>
+  <td data-label=""><a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a></td>
+  <td data-label="">Bounded <a class="wikilink" href="pg-services.html">Queue</a></td>
 </tr>
 <tr>
   <td data-label="">Broker → Market observer (learn)</td>
   <td data-label=""><code>ObsLearn</code></td>
-  <td data-label="">Unbounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; → &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; (N→1 fan-in)</td>
+  <td data-label="">Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td>
 </tr>
 <tr>
   <td data-label="">Broker → Position observer (learn)</td>
   <td data-label=""><code>PositionLearn</code></td>
-  <td data-label="">Unbounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; → &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt; (N→1 fan-in)</td>
+  <td data-label="">Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td>
 </tr>
 <tr>
   <td data-label="">Broker → Position observer (trade)</td>
   <td data-label=""><code>TradeUpdate</code></td>
-  <td data-label="">Unbounded &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Queue&lt;/a&gt; → &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;Mailbox&lt;/a&gt;</td>
+  <td data-label="">Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a></td>
 </tr>
 </tbody>
 </table>
@@ -448,7 +448,7 @@
 <tbody>
 <tr>
   <td data-label="Choice"><strong>Pure data, no methods</strong></td>
-  <td data-label="Rationale">Types carry information; behavior lives in the &lt;a class=&quot;wikilink&quot; href=&quot;pg-programs.html&quot;&gt;program&lt;/a&gt; functions that produce and consume them.</td>
+  <td data-label="Rationale">Types carry information; behavior lives in the <a class="wikilink" href="pg-programs.html">program</a> functions that produce and consume them.</td>
 </tr>
 <tr>
   <td data-label=""><strong>Flattened, not composed</strong></td>
@@ -456,7 +456,7 @@
 </tr>
 <tr>
   <td data-label=""><strong><code>MarketChain</code> clones; <code>MarketPositionChain</code> does not</strong></td>
-  <td data-label="">Clone is required only for &lt;a class=&quot;wikilink&quot; href=&quot;pg-services.html&quot;&gt;fan-out&lt;/a&gt; to multiple position observers. Brokers receive point-to-point, so ownership transfer suffices.</td>
+  <td data-label="">Clone is required only for <a class="wikilink" href="pg-services.html">fan-out</a> to multiple position observers. Brokers receive point-to-point, so ownership transfer suffices.</td>
 </tr>
 <tr>
   <td data-label=""><strong><code>Arc&lt;Vec&lt;Candle&gt;&gt;</code> for window</strong></td>
@@ -474,7 +474,7 @@
 <li><code>src/programs/chain.rs</code> — 40 lines</li>
 </ul>
 <hr />
-<p>Sources: &lt;a class=&quot;wikilink&quot; href=&quot;T0-017-wat-vm-rust.html&quot;&gt;T0-017&lt;/a&gt; §Chain types; &lt;a class=&quot;wikilink&quot; href=&quot;T0-016-services-rust.html&quot;&gt;T0-016&lt;/a&gt; §Queue / Topic / Mailbox; &lt;a class=&quot;wikilink&quot; href=&quot;T0-005-vector-manager.html&quot;&gt;T0-005&lt;/a&gt; §VectorManager; &lt;a class=&quot;wikilink&quot; href=&quot;pg-programs.html&quot;&gt;pg-programs&lt;/a&gt; §Chain Types; &lt;a class=&quot;wikilink&quot; href=&quot;pg-signal-propagation.html&quot;&gt;pg-signal-propagation&lt;/a&gt; §The Wire.</p>
+<p>Sources: <a class="wikilink" href="T0-017-wat-vm-rust.html">T0-017</a> §Chain types; <a class="wikilink" href="T0-016-services-rust.html">T0-016</a> §Queue / Topic / Mailbox; <a class="wikilink" href="T0-005-vector-manager.html">T0-005</a> §VectorManager; <a class="wikilink" href="pg-programs.html">pg-programs</a> §Chain Types; <a class="wikilink" href="pg-signal-propagation.html">pg-signal-propagation</a> §The Wire.</p>
 </div>
     </main>
   </div>

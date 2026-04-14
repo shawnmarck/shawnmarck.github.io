@@ -222,10 +222,10 @@
         Thought Space — the vector geometry where meaning lives <span class="badge badge-explain">EXPLAIN</span>
       </h1>
       
-      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Thought space is a high-dimensional vector space (typically 4,096–16,384 dimensions) with bipolar elements {-1, 0, 1}. Meaning lives in geometry: proximity = similarity, orthogonality = unrelatedness, opposition = anti-parallel direction. Every concept, document, and pattern the system handles becomes a single point in this space, constructed from three operations — &lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;, &lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt;, and &lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine similarity&lt;/a&gt; — and queryable by angle alone.</p>
+      <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> Thought space is a high-dimensional vector space (typically 4,096–16,384 dimensions) with bipolar elements {-1, 0, 1}. Meaning lives in geometry: proximity = similarity, orthogonality = unrelatedness, opposition = anti-parallel direction. Every concept, document, and pattern the system handles becomes a single point in this space, constructed from three operations — <a class="wikilink" href="pg-bind.html">bind</a>, <a class="wikilink" href="pg-bundle.html">bundle</a>, and <a class="wikilink" href="T0-003-cosine.html">cosine similarity</a> — and queryable by angle alone.</p>
 <hr />
 <h2 id="the-geometry">The geometry<a class="heading-anchor" href="#the-geometry" aria-hidden="true">#</a></h2>
-<p>Thought space is built on Vector Symbolic Architectures (VSA), specifically the MAP variant. The &lt;a class=&quot;wikilink&quot; href=&quot;T0-001-vector.html&quot;&gt;vector&lt;/a&gt; struct — a <code>Vec&lt;i8&gt;</code> with elements constrained to {-1, 0, 1} — is the atomic unit.</p>
+<p>Thought space is built on Vector Symbolic Architectures (VSA), specifically the MAP variant. The <a class="wikilink" href="T0-001-vector.html">vector</a> struct — a <code>Vec&lt;i8&gt;</code> with elements constrained to {-1, 0, 1} — is the atomic unit.</p>
 <blockquote>
 <p>&quot;A very large vector of numbers — thousands of dimensions of values in <code>{-1, 0, 1}</code>.&quot;
 — Primer 000</p>
@@ -247,7 +247,7 @@
 <p>&quot;The seed and dimensionality define a coordinate system that exists nowhere physically but is instantiated identically everywhere. ... The space <em>is</em> the network.&quot;
 — Primer 004</p>
 </blockquote>
-<p>This determinism is load-bearing — without identical atom vectors on every node, &lt;a class=&quot;wikilink&quot; href=&quot;T0-009-engram.html&quot;&gt;engram&lt;/a&gt;s become geometrically incoherent.</p>
+<p>This determinism is load-bearing — without identical atom vectors on every node, <a class="wikilink" href="T0-009-engram.html">engram</a>s become geometrically incoherent.</p>
 <h2 id="encoding-how-data-enters-the-space">Encoding: how data enters the space<a class="heading-anchor" href="#encoding-how-data-enters-the-space" aria-hidden="true">#</a></h2>
 <p>Structured data (JSON, events, documents) becomes a single point via the encoding stack:</p>
 <ol>
@@ -312,31 +312,31 @@
 </thead>
 <tbody>
 <tr>
-  <td data-label="Operation"><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-bind.html&quot;&gt;bind&lt;/a&gt;</strong></td>
+  <td data-label="Operation"><strong><a class="wikilink" href="pg-bind.html">bind</a></strong></td>
   <td data-label="Mechanism">Element-wise multiplication</td>
   <td data-label="Purpose">Encode role-filler relationships</td>
 </tr>
 <tr>
-  <td data-label=""><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-bundle.html&quot;&gt;bundle&lt;/a&gt;</strong></td>
+  <td data-label=""><strong><a class="wikilink" href="pg-bundle.html">bundle</a></strong></td>
   <td data-label="">Element-wise majority vote</td>
   <td data-label="">Superpose into composite vectors</td>
 </tr>
 <tr>
-  <td data-label=""><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T0-003-cosine.html&quot;&gt;cosine&lt;/a&gt;</strong></td>
+  <td data-label=""><strong><a class="wikilink" href="T0-003-cosine.html">cosine</a></strong></td>
   <td data-label="">Angle measurement</td>
   <td data-label="">Query, probe, search — same operation at every level</td>
 </tr>
 </tbody>
 </table>
 <p>Binding is self-inverse for bipolar vectors: <code>bind(bind(A, B), A) = B</code>, enabling decomposition and explainability.</p>
-<p>Beyond these, the &lt;a class=&quot;wikilink&quot; href=&quot;pg-thought-space.html&quot;&gt;holon algebra&lt;/a&gt; extends the space with <code>prototype</code>, <code>negate</code>, <code>amplify</code>, <code>difference</code>, <code>analogy</code>, <code>attend</code>, <code>project</code>, <code>reject</code>, <code>resonance</code>, <code>cleanup</code>, <code>coherence</code>, and more — plus streaming operations like <code>accumulate</code>/<code>decay</code>.</p>
+<p>Beyond these, the <a class="wikilink" href="pg-thought-space.html">holon algebra</a> extends the space with <code>prototype</code>, <code>negate</code>, <code>amplify</code>, <code>difference</code>, <code>analogy</code>, <code>attend</code>, <code>project</code>, <code>reject</code>, <code>resonance</code>, <code>cleanup</code>, <code>coherence</code>, and more — plus streaming operations like <code>accumulate</code>/<code>decay</code>.</p>
 <h2 id="memory-learning-patterns-in-the-space">Memory: learning patterns in the space<a class="heading-anchor" href="#memory-learning-patterns-in-the-space" aria-hidden="true">#</a></h2>
 <p>Streams of encoded vectors occupy structured regions of thought space. The memory layer learns those structures:</p>
 <ul>
-<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;OnlineSubspace&lt;/a&gt;</strong> — incremental manifold learning via CCIPCA. Captures what normal looks like; residual becomes the anomaly signal.</li>
-<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T0-010-subspace.html&quot;&gt;StripedSubspace&lt;/a&gt;</strong> — distributes bindings across independent sub-subspaces to eliminate crosstalk for high-cardinality data.</li>
-<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;T0-009-engram.html&quot;&gt;Engram&lt;/a&gt;</strong> — a named, serializable snapshot of a trained subspace. The engram <em>is</em> the learned capability.</li>
-<li><strong>&lt;a class=&quot;wikilink&quot; href=&quot;pg-reckoner.html&quot;&gt;Reckoner&lt;/a&gt;</strong> — discriminant learner: discrete classification + continuous regression in vector space.</li>
+<li><strong><a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a></strong> — incremental manifold learning via CCIPCA. Captures what normal looks like; residual becomes the anomaly signal.</li>
+<li><strong><a class="wikilink" href="T0-010-subspace.html">StripedSubspace</a></strong> — distributes bindings across independent sub-subspaces to eliminate crosstalk for high-cardinality data.</li>
+<li><strong><a class="wikilink" href="T0-009-engram.html">Engram</a></strong> — a named, serializable snapshot of a trained subspace. The engram <em>is</em> the learned capability.</li>
+<li><strong><a class="wikilink" href="pg-reckoner.html">Reckoner</a></strong> — discriminant learner: discrete classification + continuous regression in vector space.</li>
 </ul>
 <p>The dual-signal principle pervades: every successful discrimination requires both magnitude (aggregate residual) and direction (residual profile).</p>
 <h2 id="properties">Properties<a class="heading-anchor" href="#properties" aria-hidden="true">#</a></h2>
@@ -353,7 +353,7 @@
 </li>
 </ol>
 <h2 id="implementation-notes">Implementation notes<a class="heading-anchor" href="#implementation-notes" aria-hidden="true">#</a></h2>
-<p>The &lt;a class=&quot;wikilink&quot; href=&quot;T0-001-vector.html&quot;&gt;vector&lt;/a&gt; struct stores data as <code>Vec&lt;i8&gt;</code> for memory efficiency. No bipolar invariant is enforced at rest — only the <code>from_f64</code> constructor guarantees {-1, 0, 1}. Normalization (<code>normalized()</code>) returns <code>Vec&lt;f64&gt;</code>, escaping the bipolar domain. A SIMD path (via <code>simsimd</code>) provides &quot;up to 200x faster similarity computations on supported hardware.&quot;</p>
+<p>The <a class="wikilink" href="T0-001-vector.html">vector</a> struct stores data as <code>Vec&lt;i8&gt;</code> for memory efficiency. No bipolar invariant is enforced at rest — only the <code>from_f64</code> constructor guarantees {-1, 0, 1}. Normalization (<code>normalized()</code>) returns <code>Vec&lt;f64&gt;</code>, escaping the bipolar domain. A SIMD path (via <code>simsimd</code>) provides &quot;up to 200x faster similarity computations on supported hardware.&quot;</p>
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <table>
 <thead>
