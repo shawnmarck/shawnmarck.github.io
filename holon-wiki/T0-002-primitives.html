@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs <span class="badge badge-how">HOW</span></h1><h2>What It Is</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs <span class="badge badge-how">HOW</span></h1><h2>What It Is</h2>
 <p>The holon-rs kernel defines two structures. The WAT spec (<code>wat/core/primitives.wat</code>) declares them as <strong>two algebraic structures</strong>:</p>
 <blockquote>"Two algebraic structures. Nothing here is derivable from the others."</blockquote>
 <ol>
@@ -568,16 +673,16 @@ if vectors.is_empty() {
 <blockquote>"Opaque state. The co-generators produce all observable behavior. Removing any one makes the external characterization incomplete."</blockquote>
 <p>Generators declared:</p>
 <table>
-<tr><th>Operation</th><th>Signature</th><th>Role</th></tr>
-<tr><td><code>reckoner</code></td><td><code>(name dims refit-interval) → Reckoner</code></td><td>Create learning primitive</td></tr>
-<tr><td><code>register</code></td><td><code>(reckoner name) → Label</code></td><td>Register label, get symbol handle</td></tr>
-<tr><td><code>observe</code></td><td><code>(reckoner thought label weight)</code></td><td>Accumulate observation (state transition)</td></tr>
-<tr><td><code>predict</code></td><td><code>(reckoner thought) → Prediction</code></td><td>Query (observation function)</td></tr>
-<tr><td><code>decay</code></td><td><code>(reckoner rate)</code></td><td>Fade old observations (aging function)</td></tr>
-<tr><td><code>resolve</code></td><td><code>(reckoner conviction correct)</code></td><td>Record prediction outcome</td></tr>
-<tr><td><code>recalib-count</code></td><td><code>(reckoner) → Integer</code></td><td>Monotonically increasing rebuild count</td></tr>
-<tr><td><code>discriminant</code></td><td>`(reckoner label) → Vector \</td><td>None`</td><td>Learned separation between prototypes</td></tr>
-<tr><td><code>curve</code></td><td><code>(reckoner) → (amplitude, exponent)</code></td><td>Conviction-accuracy curve fit</td></tr>
+<thead><tr><th>Operation</th><th>Signature</th><th>Role</th></tr></thead>
+<tr><td data-label="Operation"><code>reckoner</code></td><td data-label="Signature"><code>(name dims refit-interval) → Reckoner</code></td><td data-label="Role">Create learning primitive</td></tr>
+<tr><td data-label="Operation"><code>register</code></td><td data-label="Signature"><code>(reckoner name) → Label</code></td><td data-label="Role">Register label, get symbol handle</td></tr>
+<tr><td data-label="Operation"><code>observe</code></td><td data-label="Signature"><code>(reckoner thought label weight)</code></td><td data-label="Role">Accumulate observation (state transition)</td></tr>
+<tr><td data-label="Operation"><code>predict</code></td><td data-label="Signature"><code>(reckoner thought) → Prediction</code></td><td data-label="Role">Query (observation function)</td></tr>
+<tr><td data-label="Operation"><code>decay</code></td><td data-label="Signature"><code>(reckoner rate)</code></td><td data-label="Role">Fade old observations (aging function)</td></tr>
+<tr><td data-label="Operation"><code>resolve</code></td><td data-label="Signature"><code>(reckoner conviction correct)</code></td><td data-label="Role">Record prediction outcome</td></tr>
+<tr><td data-label="Operation"><code>recalib-count</code></td><td data-label="Signature"><code>(reckoner) → Integer</code></td><td data-label="Role">Monotonically increasing rebuild count</td></tr>
+<tr><td data-label="Operation"><code>discriminant</code></td><td data-label="Signature">`(reckoner label) → Vector \</td><td data-label="Role">None`</td><td data-label="">Learned separation between prototypes</td></tr>
+<tr><td data-label="Operation"><code>curve</code></td><td data-label="Signature"><code>(reckoner) → (amplitude, exponent)</code></td><td data-label="Role">Conviction-accuracy curve fit</td></tr>
 </table>
 <p>The conviction-accuracy curve formula is given explicitly:</p>
 <blockquote>"accuracy = (1/N) + a × exp(b × conviction), N = number of labels."</blockquote>
@@ -611,48 +716,48 @@ pub fn weighted_bundle(vectors: &[&Vector], weights: &[f64]) -> Vector
 <p>Same majority-vote semantics but with per-vector weight scaling before thresholding.</p>
 <h3>Other extended operations</h3>
 <table>
-<tr><th>Method</th><th>What it does</th></tr>
-<tr><td><code>amplitude</code> / <code>amplify</code></td><td>Strengthen a component's presence in a superposition</td></tr>
-<tr><td><code>prototype(vectors, threshold)</code></td><td>Keep dimensions where ≥ threshold fraction agree</td></tr>
-<tr><td><code>prototype_add(prototype, example, count)</code></td><td>Incremental prototype update with weight <code>1/(count+1)</code></td></tr>
-<tr><td><code>difference(before, after)</code></td><td>Clamp difference per dimension to <code>[-1, +1]</code></td></tr>
-<tr><td><code>blend(vec1, vec2, alpha)</code></td><td>Weighted interpolation, then threshold</td></tr>
-<tr><td><code>resonance(vec, reference)</code></td><td>Keep only agreeing dimensions</td></tr>
-<tr><td><code>cleanup(noisy, codebook)</code></td><td>Find nearest codebook vector by cosine</td></tr>
-<tr><td><code>similarity_profile(a, b)</code></td><td>Element-wise product (agreement pattern as vector)</td></tr>
-<tr><td><code>attend(query, memory, strength, mode)</code></td><td>Soft attention: Hard/Soft/Amplify modes</td></tr>
-<tr><td><code>analogy(a, b, c)</code></td><td><code>C + difference(B, A)</code> — relational transfer</td></tr>
-<tr><td><code>project(vec, subspace, orthogonalize)</code></td><td>Gram-Schmidt projection onto subspace</td></tr>
-<tr><td><code>reject(vec, subspace, orthogonalize)</code></td><td>Residual after projection (orthogonal complement)</td></tr>
-<tr><td><code>conditional_bind(a, b, gate, mode)</code></td><td>Element-wise bind gated by a third vector</td></tr>
-<tr><td><code>complexity(vec)</code></td><td><code>0.5 <em> density + 0.5 </em> balance</code>, normalized to [0, 1]</td></tr>
-<tr><td><code>invert(vec, codebook, top_k, threshold)</code></td><td>Find top-k codebook matches above threshold</td></tr>
-<tr><td><code>sparsify(vec, k)</code></td><td>Keep only k highest-absolute-value dimensions</td></tr>
-<tr><td><code>centroid(vectors)</code></td><td>Normalize mean, then threshold (vs. majority vote)</td></tr>
-<tr><td><code>flip(vec)</code></td><td>Negate every element (logical NOT)</td></tr>
-<tr><td><code>topk_similar(query, candidates, k)</code></td><td>Generalized cleanup</td></tr>
-<tr><td><code>similarity_matrix(vectors)</code></td><td>All pairwise cosine similarities</td></tr>
-<tr><td><code>entropy(vec)</code></td><td>Shannon entropy of {+1, -1, 0} distribution, normalized</td></tr>
-<tr><td><code>random_project(vec, target_dims, seed)</code></td><td>Sparse random projection (Achlioptas 2003)</td></tr>
-<tr><td><code>power(vec, exponent)</code></td><td>Fractional/exponential power on bipolar values</td></tr>
-<tr><td><code>autocorrelate(stream, max_lag)</code></td><td>Lagged self-similarity</td></tr>
-<tr><td><code>cross_correlate(stream_a, stream_b, max_lag)</code></td><td>Lagged cross-similarity</td></tr>
-<tr><td><code>segment(stream, window, threshold, method)</code></td><td>Breakpoint detection (Diff or Prototype)</td></tr>
-<tr><td><code>bundle_with_confidence(vectors)</code></td><td>Bundle + per-dimension agreement margins</td></tr>
-<tr><td><code>coherence(vectors)</code></td><td>Mean pairwise cosine (cluster tightness)</td></tr>
-<tr><td><code>reflect_about_mean(vec)</code></td><td><code>2*mean - x</code> (Grover's diffusion)</td></tr>
-<tr><td><code>grover_amplify(signal, background, iterations)</code></td><td>Iterative mark + diffuse</td></tr>
-<tr><td><code>drift_rate(stream, window)</code></td><td>Temporal derivative of similarity</td></tr>
+<thead><tr><th>Method</th><th>What it does</th></tr></thead>
+<tr><td data-label="Method"><code>amplitude</code> / <code>amplify</code></td><td data-label="What it does">Strengthen a component's presence in a superposition</td></tr>
+<tr><td data-label="Method"><code>prototype(vectors, threshold)</code></td><td data-label="What it does">Keep dimensions where ≥ threshold fraction agree</td></tr>
+<tr><td data-label="Method"><code>prototype_add(prototype, example, count)</code></td><td data-label="What it does">Incremental prototype update with weight <code>1/(count+1)</code></td></tr>
+<tr><td data-label="Method"><code>difference(before, after)</code></td><td data-label="What it does">Clamp difference per dimension to <code>[-1, +1]</code></td></tr>
+<tr><td data-label="Method"><code>blend(vec1, vec2, alpha)</code></td><td data-label="What it does">Weighted interpolation, then threshold</td></tr>
+<tr><td data-label="Method"><code>resonance(vec, reference)</code></td><td data-label="What it does">Keep only agreeing dimensions</td></tr>
+<tr><td data-label="Method"><code>cleanup(noisy, codebook)</code></td><td data-label="What it does">Find nearest codebook vector by cosine</td></tr>
+<tr><td data-label="Method"><code>similarity_profile(a, b)</code></td><td data-label="What it does">Element-wise product (agreement pattern as vector)</td></tr>
+<tr><td data-label="Method"><code>attend(query, memory, strength, mode)</code></td><td data-label="What it does">Soft attention: Hard/Soft/Amplify modes</td></tr>
+<tr><td data-label="Method"><code>analogy(a, b, c)</code></td><td data-label="What it does"><code>C + difference(B, A)</code> — relational transfer</td></tr>
+<tr><td data-label="Method"><code>project(vec, subspace, orthogonalize)</code></td><td data-label="What it does">Gram-Schmidt projection onto subspace</td></tr>
+<tr><td data-label="Method"><code>reject(vec, subspace, orthogonalize)</code></td><td data-label="What it does">Residual after projection (orthogonal complement)</td></tr>
+<tr><td data-label="Method"><code>conditional_bind(a, b, gate, mode)</code></td><td data-label="What it does">Element-wise bind gated by a third vector</td></tr>
+<tr><td data-label="Method"><code>complexity(vec)</code></td><td data-label="What it does"><code>0.5 <em> density + 0.5 </em> balance</code>, normalized to [0, 1]</td></tr>
+<tr><td data-label="Method"><code>invert(vec, codebook, top_k, threshold)</code></td><td data-label="What it does">Find top-k codebook matches above threshold</td></tr>
+<tr><td data-label="Method"><code>sparsify(vec, k)</code></td><td data-label="What it does">Keep only k highest-absolute-value dimensions</td></tr>
+<tr><td data-label="Method"><code>centroid(vectors)</code></td><td data-label="What it does">Normalize mean, then threshold (vs. majority vote)</td></tr>
+<tr><td data-label="Method"><code>flip(vec)</code></td><td data-label="What it does">Negate every element (logical NOT)</td></tr>
+<tr><td data-label="Method"><code>topk_similar(query, candidates, k)</code></td><td data-label="What it does">Generalized cleanup</td></tr>
+<tr><td data-label="Method"><code>similarity_matrix(vectors)</code></td><td data-label="What it does">All pairwise cosine similarities</td></tr>
+<tr><td data-label="Method"><code>entropy(vec)</code></td><td data-label="What it does">Shannon entropy of {+1, -1, 0} distribution, normalized</td></tr>
+<tr><td data-label="Method"><code>random_project(vec, target_dims, seed)</code></td><td data-label="What it does">Sparse random projection (Achlioptas 2003)</td></tr>
+<tr><td data-label="Method"><code>power(vec, exponent)</code></td><td data-label="What it does">Fractional/exponential power on bipolar values</td></tr>
+<tr><td data-label="Method"><code>autocorrelate(stream, max_lag)</code></td><td data-label="What it does">Lagged self-similarity</td></tr>
+<tr><td data-label="Method"><code>cross_correlate(stream_a, stream_b, max_lag)</code></td><td data-label="What it does">Lagged cross-similarity</td></tr>
+<tr><td data-label="Method"><code>segment(stream, window, threshold, method)</code></td><td data-label="What it does">Breakpoint detection (Diff or Prototype)</td></tr>
+<tr><td data-label="Method"><code>bundle_with_confidence(vectors)</code></td><td data-label="What it does">Bundle + per-dimension agreement margins</td></tr>
+<tr><td data-label="Method"><code>coherence(vectors)</code></td><td data-label="What it does">Mean pairwise cosine (cluster tightness)</td></tr>
+<tr><td data-label="Method"><code>reflect_about_mean(vec)</code></td><td data-label="What it does"><code>2*mean - x</code> (Grover's diffusion)</td></tr>
+<tr><td data-label="Method"><code>grover_amplify(signal, background, iterations)</code></td><td data-label="What it does">Iterative mark + diffuse</td></tr>
+<tr><td data-label="Method"><code>drift_rate(stream, window)</code></td><td data-label="What it does">Temporal derivative of similarity</td></tr>
 </table>
 <h3>f64 Pipeline</h3>
 <p>Rust maintains a parallel pipeline in <code>f64</code> space for "scalar extraction from accumulated prototypes":</p>
 <blockquote>"The i8 pipeline is for encoding and prediction. The f64 pipeline is for extraction and analysis."</blockquote>
 <table>
-<tr><th>i8 method</th><th>f64 equivalent</th><th>Difference</th></tr>
-<tr><td><code>bind</code></td><td><code>bind_f64</code></td><td>Identical (element-wise multiply)</td></tr>
-<tr><td><code>bundle</code></td><td><code>bundle_f64</code></td><td>No thresholding — raw sum</td></tr>
-<tr><td><code>negate</code> (Subtract)</td><td><code>negate_f64</code></td><td>Orthogonal projection instead of clamped subtraction</td></tr>
-<tr><td>—</td><td><code>cosine_f64</code></td><td>Standard dot-product cosine</td></tr>
+<thead><tr><th>i8 method</th><th>f64 equivalent</th><th>Difference</th></tr></thead>
+<tr><td data-label="i8 method"><code>bind</code></td><td data-label="f64 equivalent"><code>bind_f64</code></td><td data-label="Difference">Identical (element-wise multiply)</td></tr>
+<tr><td data-label="i8 method"><code>bundle</code></td><td data-label="f64 equivalent"><code>bundle_f64</code></td><td data-label="Difference">No thresholding — raw sum</td></tr>
+<tr><td data-label="i8 method"><code>negate</code> (Subtract)</td><td data-label="f64 equivalent"><code>negate_f64</code></td><td data-label="Difference">Orthogonal projection instead of clamped subtraction</td></tr>
+<tr><td data-label="i8 method">—</td><td data-label="f64 equivalent"><code>cosine_f64</code></td><td data-label="Difference">Standard dot-product cosine</td></tr>
 </table>
 <hr>
 <h2>Key Properties</h2>
@@ -688,24 +793,24 @@ pub enum NegateMethod { Subtract, Zero, Invert }
 <hr>
 <h2>Summary of WAT ↔ Rust Alignment</h2>
 <table>
-<tr><th>WAT generator</th><th>Rust status</th><th>Notes</th></tr>
-<tr><td><code>atom</code></td><td><strong>Not implemented</strong> in this file</td><td>Lives elsewhere</td></tr>
-<tr><td><code>bind</code></td><td>✅ <code>Primitives::bind</code></td><td>Exact agreement on self-inverse, element-wise multiply</td></tr>
-<tr><td><code>bundle</code></td><td>⚠️ <code>Primitives::bundle</code></td><td>Agree on majority vote / superposition. Disagree on empty-input behavior</td></tr>
-<tr><td><code>cosine</code></td><td>⚠️ <code>crate::similarity::Similarity::cosine</code></td><td>Implemented but not in this file</td></tr>
-<tr><td><code>reckoner</code></td><td><strong>Not implemented</strong> in this file</td><td>Reckoner Coalgebra is a separate module</td></tr>
-<tr><td><code>register</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
-<tr><td><code>observe</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
-<tr><td><code>predict</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
-<tr><td><code>decay</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
-<tr><td><code>resolve</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
-<tr><td><code>recalib-count</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
-<tr><td><code>discriminant</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
-<tr><td><code>curve</code></td><td><strong>Not implemented</strong> in this file</td><td>—</td></tr>
+<thead><tr><th>WAT generator</th><th>Rust status</th><th>Notes</th></tr></thead>
+<tr><td data-label="WAT generator"><code>atom</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">Lives elsewhere</td></tr>
+<tr><td data-label="WAT generator"><code>bind</code></td><td data-label="Rust status">✅ <code>Primitives::bind</code></td><td data-label="Notes">Exact agreement on self-inverse, element-wise multiply</td></tr>
+<tr><td data-label="WAT generator"><code>bundle</code></td><td data-label="Rust status">⚠️ <code>Primitives::bundle</code></td><td data-label="Notes">Agree on majority vote / superposition. Disagree on empty-input behavior</td></tr>
+<tr><td data-label="WAT generator"><code>cosine</code></td><td data-label="Rust status">⚠️ <code>crate::similarity::Similarity::cosine</code></td><td data-label="Notes">Implemented but not in this file</td></tr>
+<tr><td data-label="WAT generator"><code>reckoner</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">Reckoner Coalgebra is a separate module</td></tr>
+<tr><td data-label="WAT generator"><code>register</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
+<tr><td data-label="WAT generator"><code>observe</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
+<tr><td data-label="WAT generator"><code>predict</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
+<tr><td data-label="WAT generator"><code>decay</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
+<tr><td data-label="WAT generator"><code>resolve</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
+<tr><td data-label="WAT generator"><code>recalib-count</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
+<tr><td data-label="WAT generator"><code>discriminant</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
+<tr><td data-label="WAT generator"><code>curve</code></td><td data-label="Rust status"><strong>Not implemented</strong> in this file</td><td data-label="Notes">—</td></tr>
 </table>
 <hr>
 <h2>Source Files</h2>
 <ul>
 <li><code>wat/core/primitives.wat</code> — 83 lines. Canonical specification.</li>
 <li><code>holon-rs/src/kernel/primitives.rs</code> — 1911 lines (1255 code + 656 tests). Implementation.</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

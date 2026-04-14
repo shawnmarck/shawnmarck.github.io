@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Curve — the conviction-to-accuracy mapping — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Curve — the conviction-to-accuracy mapping — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Curve — the conviction-to-accuracy mapping <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> The curve is a self-calibration mechanism inside every discrete <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. It records <code>(conviction, correct)</code> pairs, fits the exponential model <code>accuracy = 1/N + a·exp(b·conviction)</code>, and answers the question: <em>"When this reckoner says it's confident, is it actually right?"</em> A positive <code>b</code> means the reckoner knows what it knows.</p>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Curve — the conviction-to-accuracy mapping <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> The curve is a self-calibration mechanism inside every discrete <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. It records <code>(conviction, correct)</code> pairs, fits the exponential model <code>accuracy = 1/N + a·exp(b·conviction)</code>, and answers the question: <em>"When this reckoner says it's confident, is it actually right?"</em> A positive <code>b</code> means the reckoner knows what it knows.</p>
 <hr>
 <h2>What it IS</h2>
 <p>The curve maps <a class="wikilink" href="pg-conviction.html">conviction</a> (the absolute <a class="wikilink" href="T0-003-cosine.html">cosine similarity</a> of the winning discriminant) to empirical accuracy (fraction of correct predictions). It is an introspection tool — the reckoner's proof that its confidence is calibrated.</p>
@@ -512,10 +617,10 @@ pub fn curve(&mut self) -> Option<(f64, f64)>
 <p>Returns <code>Some((a, b))</code> on success, <code>None</code> if prerequisites aren't met.</p>
 <p><strong>Prerequisites:</strong></p>
 <table>
-<tr><th>Condition</th><th>Default threshold</th></tr>
-<tr><td><code>n_labels >= 2</code></td><td>N/A</td></tr>
-<tr><td><code>resolved.len() >= min_resolved</code></td><td>500 entries</td></tr>
-<tr><td><code>bin_size >= 10</code></td><td>(derived: <code>resolved.len() / n_bins</code>)</td></tr>
+<thead><tr><th>Condition</th><th>Default threshold</th></tr></thead>
+<tr><td data-label="Condition"><code>n_labels >= 2</code></td><td data-label="Default threshold">N/A</td></tr>
+<tr><td data-label="Condition"><code>resolved.len() >= min_resolved</code></td><td data-label="Default threshold">500 entries</td></tr>
+<tr><td data-label="Condition"><code>bin_size >= 10</code></td><td data-label="Default threshold">(derived: <code>resolved.len() / n_bins</code>)</td></tr>
 </table>
 <p><strong>Steps:</strong></p>
 <ol>
@@ -554,10 +659,10 @@ pub fn accuracy_at(&self, conviction: f64) -> Option<f64>
 <h2>Interpretation</h2>
 <h3>What <code>b</code> means</h3>
 <table>
-<tr><th><code>b</code> value</th><th>Interpretation</th></tr>
-<tr><td><code>b > 0</code></td><td>Higher conviction → higher accuracy. The reckoner is <strong>calibrated</strong>. Signal is real.</td></tr>
-<tr><td><code>b ≈ 0</code></td><td>Conviction carries no information about accuracy. The reckoner is <strong>guessing</strong> at all confidence levels.</td></tr>
-<tr><td><code>b < 0</code></td><td>Higher conviction → lower accuracy. The discriminants are <strong>inverted</strong> or misleading.</td></tr>
+<thead><tr><th><code>b</code> value</th><th>Interpretation</th></tr></thead>
+<tr><td data-label="<code>b</code> value"><code>b > 0</code></td><td data-label="Interpretation">Higher conviction → higher accuracy. The reckoner is <strong>calibrated</strong>. Signal is real.</td></tr>
+<tr><td data-label="<code>b</code> value"><code>b ≈ 0</code></td><td data-label="Interpretation">Conviction carries no information about accuracy. The reckoner is <strong>guessing</strong> at all confidence levels.</td></tr>
+<tr><td data-label="<code>b</code> value"><code>b < 0</code></td><td data-label="Interpretation">Higher conviction → lower accuracy. The discriminants are <strong>inverted</strong> or misleading.</td></tr>
 </table>
 <h3>What <code>a</code> means</h3>
 <p><code>a</code> controls the <em>spread</em> between the chance floor (<code>1/N</code>) and the asymptotic ceiling (<code>1/N + a</code>). A larger <code>a</code> means the reckoner has a wider accuracy range — more room for confidence to discriminate good predictions from bad ones.</p>
@@ -573,10 +678,10 @@ Reckoner::new(...)
     .with_curve_params(resolved_cap, min_resolved, n_bins)
 </code></pre>
 <table>
-<tr><th>Parameter</th><th>Default</th><th>Role</th></tr>
-<tr><td><code>resolved_cap</code></td><td>5000</td><td>Sliding window size for <code>(conviction, correct)</code> history</td></tr>
-<tr><td><code>min_resolved</code></td><td>500</td><td>Minimum history before curve fitting is attempted</td></tr>
-<tr><td><code>n_bins</code></td><td>20</td><td>Number of bins for the binned regression</td></tr>
+<thead><tr><th>Parameter</th><th>Default</th><th>Role</th></tr></thead>
+<tr><td data-label="Parameter"><code>resolved_cap</code></td><td data-label="Default">5000</td><td data-label="Role">Sliding window size for <code>(conviction, correct)</code> history</td></tr>
+<tr><td data-label="Parameter"><code>min_resolved</code></td><td data-label="Default">500</td><td data-label="Role">Minimum history before curve fitting is attempted</td></tr>
+<tr><td data-label="Parameter"><code>n_bins</code></td><td data-label="Default">20</td><td data-label="Role">Number of bins for the binned regression</td></tr>
 </table>
 <p>This is discrete-only. The continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a> mode has no curve — it doesn't produce conviction values.</p>
 <p><strong>Source:</strong> T0-008, §2 — <em>"<code>.with_curve_params(resolved_cap, min_resolved, n_bins) -> Self // discrete only, no-op for continuous</code>"</em></p>
@@ -604,8 +709,8 @@ flowchart TD
 <hr>
 <h2>Source documents</h2>
 <table>
-<tr><th>Document</th><th>Relevance</th></tr>
-<tr><td>T0-008 — Reckoner</td><td>Full curve specification: <code>resolve()</code>, <code>curve()</code>, <code>accuracy_at()</code>, fitting algorithm, construction params</td></tr>
-<tr><td><a class="wikilink" href="T0-003-cosine.html">T0-003 — Cosine Similarity</a></td><td>The measurement primitive underlying conviction (`\</td><td>cosine\</td><td>`)</td></tr>
-<tr><td><a class="wikilink" href="pg-broker.html">T0-018 — Broker (Rust)</a></td><td>Downstream consumer: broker evaluates <code>gate_open()</code> based on accumulated outcomes; <code>propagate()</code> returns facts that feed back to reckoners</td></tr>
-</table></div></body></html>
+<thead><tr><th>Document</th><th>Relevance</th></tr></thead>
+<tr><td data-label="Document">T0-008 — Reckoner</td><td data-label="Relevance">Full curve specification: <code>resolve()</code>, <code>curve()</code>, <code>accuracy_at()</code>, fitting algorithm, construction params</td></tr>
+<tr><td data-label="Document"><a class="wikilink" href="T0-003-cosine.html">T0-003 — Cosine Similarity</a></td><td data-label="Relevance">The measurement primitive underlying conviction (`\</td><td data-label="">cosine\</td><td data-label="">`)</td></tr>
+<tr><td data-label="Document"><a class="wikilink" href="pg-broker.html">T0-018 — Broker (Rust)</a></td><td data-label="Relevance">Downstream consumer: broker evaluates <code>gate_open()</code> based on accumulated outcomes; <code>propagate()</code> returns facts that feed back to reckoners</td></tr>
+</table></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

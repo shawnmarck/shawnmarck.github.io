@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Panel of Experts — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Panel of Experts — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Panel of Experts <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Panel of Experts <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <hr></div><h2>The Two Reviewers</h2>
 <h3>Brian Beckman — Algebraic Rigor</h3>
 <p><strong>Philosophy:</strong> Every language form should have a clear algebraic identity. If you can't name the categorical construction, you don't understand what you're adding.</p>
@@ -549,12 +654,12 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h3>The characteristic tension</h3>
 <p>The Beckman-Hickey tension is productive and by design:</p>
 <table>
-<tr><th>Dimension</th><th>Beckman</th><th>Hickey</th></tr>
-<tr><td><strong>Instinct</strong></td><td><em>What's the structure?</em></td><td><em>What's the simplest thing that works?</em></td></tr>
-<tr><td><strong>Growth bias</strong></td><td>Add form if algebraic identity is clear</td><td>Don't add if functions + data suffice</td></tr>
-<tr><td><strong>Type stance</strong></td><td>Types make structure visible and composable</td><td>Types are documentation, not enforcement</td></tr>
-<tr><td><strong>Core expansion</strong></td><td>Justified by opaque types and coalgebra</td><td>Resist unless necessity is proved</td></tr>
-<tr><td><strong>New forms</strong></td><td>Welcome if they complete a categorical pattern</td><td>Reject if they package multiple concerns</td></tr>
+<thead><tr><th>Dimension</th><th>Beckman</th><th>Hickey</th></tr></thead>
+<tr><td data-label="Dimension"><strong>Instinct</strong></td><td data-label="Beckman"><em>What's the structure?</em></td><td data-label="Hickey"><em>What's the simplest thing that works?</em></td></tr>
+<tr><td data-label="Dimension"><strong>Growth bias</strong></td><td data-label="Beckman">Add form if algebraic identity is clear</td><td data-label="Hickey">Don't add if functions + data suffice</td></tr>
+<tr><td data-label="Dimension"><strong>Type stance</strong></td><td data-label="Beckman">Types make structure visible and composable</td><td data-label="Hickey">Types are documentation, not enforcement</td></tr>
+<tr><td data-label="Dimension"><strong>Core expansion</strong></td><td data-label="Beckman">Justified by opaque types and coalgebra</td><td data-label="Hickey">Resist unless necessity is proved</td></tr>
+<tr><td data-label="Dimension"><strong>New forms</strong></td><td data-label="Beckman">Welcome if they complete a categorical pattern</td><td data-label="Hickey">Reject if they package multiple concerns</td></tr>
 </table>
 <hr>
 <h2>Resolution: How Disagreements Are Settled</h2>
@@ -569,21 +674,21 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 </ol>
 <h3>Resolution outcomes</h3>
 <table>
-<tr><th>Verdict</th><th>Meaning</th></tr>
-<tr><td><strong>ACCEPTED</strong></td><td>With specific form syntax, placement, and constraints</td></tr>
-<tr><td><strong>REJECTED</strong></td><td>With open questions forwarded to future proposals</td></tr>
-<tr><td><strong>ACCEPTED with tension</strong></td><td>Accepted, but a specific disagreement is recorded and deferred</td></tr>
-<tr><td><strong>SUPERSEDED</strong></td><td>The debate itself revealed a simpler answer</td></tr>
+<thead><tr><th>Verdict</th><th>Meaning</th></tr></thead>
+<tr><td data-label="Verdict"><strong>ACCEPTED</strong></td><td data-label="Meaning">With specific form syntax, placement, and constraints</td></tr>
+<tr><td data-label="Verdict"><strong>REJECTED</strong></td><td data-label="Meaning">With open questions forwarded to future proposals</td></tr>
+<tr><td data-label="Verdict"><strong>ACCEPTED with tension</strong></td><td data-label="Meaning">Accepted, but a specific disagreement is recorded and deferred</td></tr>
+<tr><td data-label="Verdict"><strong>SUPERSEDED</strong></td><td data-label="Meaning">The debate itself revealed a simpler answer</td></tr>
 </table>
 <p>Every resolution documents <strong>who was overridden and why</strong>. This creates an audit trail of design reasoning — not just what was decided, but <em>whose argument was stronger and why</em>.</p>
 <hr>
 <h2>Historical Record</h2>
 <p>Across 18 resolved proposals (March–April 2026):</p>
 <table>
-<tr><th>Reviewer</th><th>Verdicts accepted</th><th>Times overridden</th></tr>
-<tr><td><strong>Beckman</strong></td><td>fold (002), journal→core (004), protocols (014), compilation plan (005)</td><td>struct types (007), defservice (04/003)</td></tr>
-<tr><td><strong>Hickey</strong></td><td>defprocessor rejected (001), untyped structs (007), keyword access (007), fold-as-caller (002 partial)</td><td>journal→core (004), nil (013), channels (003)</td></tr>
-<tr><td><strong>Datamancer</strong></td><td>Structural absence (013), select+functions over defprocess/defservice (04/003)</td><td>—</td></tr>
+<thead><tr><th>Reviewer</th><th>Verdicts accepted</th><th>Times overridden</th></tr></thead>
+<tr><td data-label="Reviewer"><strong>Beckman</strong></td><td data-label="Verdicts accepted">fold (002), journal→core (004), protocols (014), compilation plan (005)</td><td data-label="Times overridden">struct types (007), defservice (04/003)</td></tr>
+<tr><td data-label="Reviewer"><strong>Hickey</strong></td><td data-label="Verdicts accepted">defprocessor rejected (001), untyped structs (007), keyword access (007), fold-as-caller (002 partial)</td><td data-label="Times overridden">journal→core (004), nil (013), channels (003)</td></tr>
+<tr><td data-label="Reviewer"><strong>Datamancer</strong></td><td data-label="Verdicts accepted">Structural absence (013), select+functions over defprocess/defservice (04/003)</td><td data-label="Times overridden">—</td></tr>
 </table>
 <p>Both reviewers have been overturned roughly equally. The datamancer has intervened only twice, but both interventions shaped fundamental design decisions.</p>
 <hr>
@@ -596,4 +701,4 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the six foundational forms both reviewers protect from proliferation</li>
 <li><a class="wikilink" href="pg-reckoner.html">Reckoner</a> — the algebraic foundation (<code>bind</code>/<code>bundle</code> monoid) every proposal must compose with</li>
 <li><a class="wikilink" href="pg-wards.html">Wards</a> — automated tools (<code>gaze</code>, <code>forge</code>, <code>sever</code>, <code>scry</code>, <code>reap</code>) that surface problems proposals must address</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

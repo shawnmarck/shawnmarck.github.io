@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Atom — the irreducible unit of meaning — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Atom — the irreducible unit of meaning — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Atom — the irreducible unit of meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Atom — the irreducible unit of meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>An <strong>atom</strong> is the smallest named unit of semantic content in the Holon system. It is a string identifier (e.g., <code>rsi</code>, <code>kama-er</code>, <code>phase</code>) that maps deterministically to a high-dimensional bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a>. Atoms are emitted by <a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> modules, carry encoded scalar values through encoding schemes (Linear, Log, Circular), and serve as the fundamental inputs to the thought pipeline. There are approximately 99–100 unique atom names across all live vocabulary domains.</p>
 <hr></div><h2>What an atom IS</h2>
 <p>An atom is a <strong>name</strong> — nothing more, nothing less. It carries no intrinsic structure beyond its string identity and the encoding scheme that produces its scalar value. The GUIDE is explicit:</p>
@@ -495,10 +600,10 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h2>Encoding schemes — how atoms carry values</h2>
 <p>Atoms are not static symbols. Each atom carries a <strong>scalar value</strong> produced by one of three encoding schemes. The encoding scheme IS the bounding strategy:</p>
 <table>
-<tr><th>Scheme</th><th>Behavior</th><th>Use case</th><th>Examples</th></tr>
-<tr><td><code>Linear { scale }</code></td><td>Scaled clamping. Bounds come from the math.</td><td>Naturally bounded scalars</td><td>Bollinger position [-1,1], RSI [0,1]</td></tr>
-<tr><td><code>Log</code></td><td>Logarithmic compression. Compresses, doesn't bound.</td><td>Unbounded positive scalars</td><td>ATR ratio, volume ratio</td></tr>
-<tr><td><code>Circular { period }</code></td><td>Modular wrapping. Wraps, doesn't bound.</td><td>Periodic scalars</td><td>minute (60), hour (24), day-of-week (7)</td></tr>
+<thead><tr><th>Scheme</th><th>Behavior</th><th>Use case</th><th>Examples</th></tr></thead>
+<tr><td data-label="Scheme"><code>Linear { scale }</code></td><td data-label="Behavior">Scaled clamping. Bounds come from the math.</td><td data-label="Use case">Naturally bounded scalars</td><td data-label="Examples">Bollinger position [-1,1], RSI [0,1]</td></tr>
+<tr><td data-label="Scheme"><code>Log</code></td><td data-label="Behavior">Logarithmic compression. Compresses, doesn't bound.</td><td data-label="Use case">Unbounded positive scalars</td><td data-label="Examples">ATR ratio, volume ratio</td></tr>
+<tr><td data-label="Scheme"><code>Circular { period }</code></td><td data-label="Behavior">Modular wrapping. Wraps, doesn't bound.</td><td data-label="Use case">Periodic scalars</td><td data-label="Examples">minute (60), hour (24), day-of-week (7)</td></tr>
 </table>
 <blockquote>"The encoding scheme IS the bounding strategy." <em>(T2-004, GUIDE line 1376)</em></blockquote>
 <blockquote>"Some facts are bounded. Some aren't. That's honest. The log doesn't bound — it compresses. The circular doesn't bound — it wraps. Only linear needs bounds, and linear's bounds come from the math." <em>(T2-004, GUIDE lines 1393–1395)</em></blockquote>
@@ -522,26 +627,26 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h2>Atom taxonomy by domain</h2>
 <h3>shared/ — Universal temporal context</h3>
 <table>
-<tr><th>Module</th><th>Atoms</th><th>Schemes</th></tr>
-<tr><td>time</td><td>5 atoms (minute, hour, day-of-week, day-of-month, month-of-year)</td><td>All Circular</td></tr>
+<thead><tr><th>Module</th><th>Atoms</th><th>Schemes</th></tr></thead>
+<tr><td data-label="Module">time</td><td data-label="Atoms">5 atoms (minute, hour, day-of-week, day-of-month, month-of-year)</td><td data-label="Schemes">All Circular</td></tr>
 </table>
 <blockquote>"Any observer can use these." <em>(T2-004, GUIDE line 1256)</em></blockquote>
 <h3>market/ — 13 modules, ~79 atoms</h3>
 <table>
-<tr><th>Module</th><th>Atoms</th><th>Schemes</th><th>Wired?</th></tr>
-<tr><td>standard</td><td>8</td><td>4 Log, 4 Linear</td><td>✅</td></tr>
-<tr><td>oscillators</td><td>8</td><td>4 Linear, 4 Log</td><td>✅</td></tr>
-<tr><td>flow</td><td>6</td><td>4 Linear, 2 Log</td><td>✅</td></tr>
-<tr><td>persistence</td><td>3</td><td>All Linear</td><td>✅</td></tr>
-<tr><td>regime</td><td>8</td><td>7 Linear, 1 Log</td><td>✅</td></tr>
-<tr><td>divergence</td><td>3 (conditional)</td><td>All Linear</td><td>✅</td></tr>
-<tr><td>fibonacci</td><td>8</td><td>All Linear</td><td>✅ (WyckoffPosition only)</td></tr>
-<tr><td>keltner</td><td>6</td><td>5 Linear, 1 Log</td><td>✅</td></tr>
-<tr><td>momentum</td><td>6</td><td>5 Linear, 1 Log</td><td>✅</td></tr>
-<tr><td>price_action</td><td>7</td><td>4 Linear, 3 Log</td><td>✅</td></tr>
-<tr><td>timeframe</td><td>6</td><td>All Linear</td><td>✅</td></tr>
-<tr><td>ichimoku</td><td>6</td><td>5 Linear, 1 Log</td><td>❌ removed (Proposals 041+042)</td></tr>
-<tr><td>stochastic</td><td>4</td><td>All Linear</td><td>❌ removed (Proposals 041+042)</td></tr>
+<thead><tr><th>Module</th><th>Atoms</th><th>Schemes</th><th>Wired?</th></tr></thead>
+<tr><td data-label="Module">standard</td><td data-label="Atoms">8</td><td data-label="Schemes">4 Log, 4 Linear</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">oscillators</td><td data-label="Atoms">8</td><td data-label="Schemes">4 Linear, 4 Log</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">flow</td><td data-label="Atoms">6</td><td data-label="Schemes">4 Linear, 2 Log</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">persistence</td><td data-label="Atoms">3</td><td data-label="Schemes">All Linear</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">regime</td><td data-label="Atoms">8</td><td data-label="Schemes">7 Linear, 1 Log</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">divergence</td><td data-label="Atoms">3 (conditional)</td><td data-label="Schemes">All Linear</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">fibonacci</td><td data-label="Atoms">8</td><td data-label="Schemes">All Linear</td><td data-label="Wired?">✅ (WyckoffPosition only)</td></tr>
+<tr><td data-label="Module">keltner</td><td data-label="Atoms">6</td><td data-label="Schemes">5 Linear, 1 Log</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">momentum</td><td data-label="Atoms">6</td><td data-label="Schemes">5 Linear, 1 Log</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">price_action</td><td data-label="Atoms">7</td><td data-label="Schemes">4 Linear, 3 Log</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">timeframe</td><td data-label="Atoms">6</td><td data-label="Schemes">All Linear</td><td data-label="Wired?">✅</td></tr>
+<tr><td data-label="Module">ichimoku</td><td data-label="Atoms">6</td><td data-label="Schemes">5 Linear, 1 Log</td><td data-label="Wired?">❌ removed (Proposals 041+042)</td></tr>
+<tr><td data-label="Module">stochastic</td><td data-label="Atoms">4</td><td data-label="Schemes">All Linear</td><td data-label="Wired?">❌ removed (Proposals 041+042)</td></tr>
 </table>
 <h3>exit/ — Two parallel realities</h3>
 <p><strong>Wat spec</strong> (not wired): volatility (6), structure (5), timing (5) — 16 atoms total, spec only.</p>
@@ -549,14 +654,14 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <hr>
 <h2>Key properties</h2>
 <table>
-<tr><th>Property</th><th>Detail</th></tr>
-<tr><td><strong>Determinism</strong></td><td>Same (dimensions, seed, atom) → identical vector, always.</td></tr>
-<tr><td><strong>Seed isolation</strong></td><td>Different seeds → different vectors for the same atom.</td></tr>
-<tr><td><strong>Atom isolation</strong></td><td>Different atoms → different vectors (with overwhelming probability).</td></tr>
-<tr><td><strong>Position isolation</strong></td><td>Positional encoding never collides with semantic atom encoding.</td></tr>
-<tr><td><strong>Conditional emission</strong></td><td>Some atoms only fire when a condition is met (e.g., divergence atoms emit 0–3 facts).</td></tr>
-<tr><td><strong>Name collision</strong></td><td>Same atom names in different modules (e.g., <code>kama-er</code> in market/regime and exit/regime) map to the same vector — they are the <em>same atom</em>.</td></tr>
-<tr><td><strong>Codebook persistence</strong></td><td>Atom-to-vector mappings can be exported/imported for cross-process consistency.</td></tr>
+<thead><tr><th>Property</th><th>Detail</th></tr></thead>
+<tr><td data-label="Property"><strong>Determinism</strong></td><td data-label="Detail">Same (dimensions, seed, atom) → identical vector, always.</td></tr>
+<tr><td data-label="Property"><strong>Seed isolation</strong></td><td data-label="Detail">Different seeds → different vectors for the same atom.</td></tr>
+<tr><td data-label="Property"><strong>Atom isolation</strong></td><td data-label="Detail">Different atoms → different vectors (with overwhelming probability).</td></tr>
+<tr><td data-label="Property"><strong>Position isolation</strong></td><td data-label="Detail">Positional encoding never collides with semantic atom encoding.</td></tr>
+<tr><td data-label="Property"><strong>Conditional emission</strong></td><td data-label="Detail">Some atoms only fire when a condition is met (e.g., divergence atoms emit 0–3 facts).</td></tr>
+<tr><td data-label="Property"><strong>Name collision</strong></td><td data-label="Detail">Same atom names in different modules (e.g., <code>kama-er</code> in market/regime and exit/regime) map to the same vector — they are the <em>same atom</em>.</td></tr>
+<tr><td data-label="Property"><strong>Codebook persistence</strong></td><td data-label="Detail">Atom-to-vector mappings can be exported/imported for cross-process consistency.</td></tr>
 </table>
 <blockquote>"Export the atom codebook as a serializable map. Returns atom names mapped to their raw i8 vector data. Useful for persisting the vector cache across process restarts or sharing identical mappings between distributed nodes." <em>(T0-005)</em></blockquote>
 <hr>
@@ -573,4 +678,4 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — The output format atoms are emitted in; the intermediate representation in the thought pipeline.</li>
 <li><a class="wikilink" href="pg-lens.html">Lens</a> — Selects which vocabulary modules (and thus which atoms) are active for a given observer context.</li>
 <li><a class="wikilink" href="pg-thought-encoding.html">Encoding Scheme</a> — Linear, Log, Circular — the three strategies by which atoms convert raw data into scalar values.</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

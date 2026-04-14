@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T-1-006 — Lab Order (ORDER.md) — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T-1-006 — Lab Order (ORDER.md) — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T-1-006 — Lab Order (ORDER.md) <span class="badge badge-why">WHY</span></h1><blockquote><strong>TL;DR:</strong> ORDER.md is not an order-type specification for trading. It is the <strong>construction order</strong> — a dependency-sorted reading/inscribing sequence for the <code>.wat</code> specification files that implement the trading system. Each file can only depend on files listed above it. The order IS the path from leaves (no dependencies) to root (depends on everything).</blockquote>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T-1-006 — Lab Order (ORDER.md) <span class="badge badge-why">WHY</span></h1><blockquote><strong>TL;DR:</strong> ORDER.md is not an order-type specification for trading. It is the <strong>construction order</strong> — a dependency-sorted reading/inscribing sequence for the <code>.wat</code> specification files that implement the trading system. Each file can only depend on files listed above it. The order IS the path from leaves (no dependencies) to root (depends on everything).</blockquote>
 <hr>
 <h2>Source</h2>
 <p><code>wat/ORDER.md</code> — 109 lines, ~5KB.</p>
@@ -510,92 +615,92 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h2>Wat File Dependency Order (Section 2)</h2>
 <h3>Leaves — depend on nothing</h3>
 <table>
-<tr><th>File</th><th>Exports</th></tr>
-<tr><td><code>raw-candle.wat</code></td><td><code>Asset</code>, <code>RawCandle</code></td></tr>
-<tr><td><code>window-sampler.wat</code></td><td><code>WindowSampler</code></td></tr>
-<tr><td><code>enums.wat</code></td><td><code>Side</code>, <code>Direction</code>, <code>Outcome</code>, <code>TradePhase</code>, <code>reckoner-config</code>, <code>prediction</code>, <code>ScalarEncoding</code></td></tr>
-<tr><td><code>newtypes.wat</code></td><td><code>TradeId</code></td></tr>
-<tr><td><code>scalar-accumulator.wat</code></td><td><code>ScalarAccumulator</code> (requires <code>Outcome</code> from enums)</td></tr>
-<tr><td><code>engram-gate.wat</code></td><td><code>check-engram-gate</code> (requires <code>Outcome</code>, <code>Reckoner+OnlineSubspace</code> from holon-rs)</td></tr>
+<thead><tr><th>File</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>raw-candle.wat</code></td><td data-label="Exports"><code>Asset</code>, <code>RawCandle</code></td></tr>
+<tr><td data-label="File"><code>window-sampler.wat</code></td><td data-label="Exports"><code>WindowSampler</code></td></tr>
+<tr><td data-label="File"><code>enums.wat</code></td><td data-label="Exports"><code>Side</code>, <code>Direction</code>, <code>Outcome</code>, <code>TradePhase</code>, <code>reckoner-config</code>, <code>prediction</code>, <code>ScalarEncoding</code></td></tr>
+<tr><td data-label="File"><code>newtypes.wat</code></td><td data-label="Exports"><code>TradeId</code></td></tr>
+<tr><td data-label="File"><code>scalar-accumulator.wat</code></td><td data-label="Exports"><code>ScalarAccumulator</code> (requires <code>Outcome</code> from enums)</td></tr>
+<tr><td data-label="File"><code>engram-gate.wat</code></td><td data-label="Exports"><code>check-engram-gate</code> (requires <code>Outcome</code>, <code>Reckoner+OnlineSubspace</code> from holon-rs)</td></tr>
 </table>
 <h3>Distances and Levels — depend on nothing</h3>
 <table>
-<tr><th>File</th><th>Exports</th></tr>
-<tr><td><code>distances.wat</code></td><td><code>Distances</code>, <code>Levels</code></td></tr>
+<thead><tr><th>File</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>distances.wat</code></td><td data-label="Exports"><code>Distances</code>, <code>Levels</code></td></tr>
 </table>
 <h3>Indicator Layer</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>indicator-bank.wat</code></td><td>raw-candle</td><td><code>IndicatorBank</code> (streaming primitives, tick takes RawCandle)</td></tr>
-<tr><td><code>candle.wat</code></td><td>indicator-bank</td><td><code>Candle</code> struct (output of tick)</td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>indicator-bank.wat</code></td><td data-label="Depends On">raw-candle</td><td data-label="Exports"><code>IndicatorBank</code> (streaming primitives, tick takes RawCandle)</td></tr>
+<tr><td data-label="File"><code>candle.wat</code></td><td data-label="Depends On">indicator-bank</td><td data-label="Exports"><code>Candle</code> struct (output of tick)</td></tr>
 </table>
 <h3>Simulation — pure functions</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>simulation.wat</code></td><td>distances</td><td><code>compute-optimal-distances</code> + helpers</td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>simulation.wat</code></td><td data-label="Depends On">distances</td><td data-label="Exports"><code>compute-optimal-distances</code> + helpers</td></tr>
 </table>
 <h3>Vocabulary Layer</h3>
 <table>
-<tr><th>File</th><th>Depends On</th></tr>
-<tr><td><code>vocab/shared/time.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/oscillators.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/flow.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/persistence.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/regime.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/divergence.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/ichimoku.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/stochastic.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/fibonacci.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/keltner.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/momentum.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/price-action.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/timeframe.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/market/standard.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/exit/volatility.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/exit/structure.wat</code></td><td>candle</td></tr>
-<tr><td><code>vocab/exit/timing.wat</code></td><td>candle</td></tr>
+<thead><tr><th>File</th><th>Depends On</th></tr></thead>
+<tr><td data-label="File"><code>vocab/shared/time.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/oscillators.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/flow.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/persistence.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/regime.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/divergence.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/ichimoku.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/stochastic.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/fibonacci.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/keltner.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/momentum.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/price-action.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/timeframe.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/market/standard.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/exit/volatility.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/exit/structure.wat</code></td><td data-label="Depends On">candle</td></tr>
+<tr><td data-label="File"><code>vocab/exit/timing.wat</code></td><td data-label="Depends On">candle</td></tr>
 </table>
 <p>16 vocabulary modules total: 1 shared, 13 market, 3 exit.</p>
 <h3>Encoder and Context</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>thought-encoder.wat</code></td><td>VectorManager (holon-rs)</td><td><code>ThoughtAST</code>, <code>ThoughtEncoder</code></td></tr>
-<tr><td><code>ctx.wat</code></td><td>thought-encoder</td><td><code>Ctx</code> (thought-encoder, dims, recalib-interval)</td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>thought-encoder.wat</code></td><td data-label="Depends On">VectorManager (holon-rs)</td><td data-label="Exports"><code>ThoughtAST</code>, <code>ThoughtEncoder</code></td></tr>
+<tr><td data-label="File"><code>ctx.wat</code></td><td data-label="Depends On">thought-encoder</td><td data-label="Exports"><code>Ctx</code> (thought-encoder, dims, recalib-interval)</td></tr>
 </table>
 <h3>Observer Layer</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>market-observer.wat</code></td><td>Reckoner, OnlineSubspace, WindowSampler</td><td>Market observer interface</td></tr>
-<tr><td><code>exit-observer.wat</code></td><td>Reckoner :continuous, Distances</td><td>Exit observer interface</td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>market-observer.wat</code></td><td data-label="Depends On">Reckoner, OnlineSubspace, WindowSampler</td><td data-label="Exports">Market observer interface</td></tr>
+<tr><td data-label="File"><code>exit-observer.wat</code></td><td data-label="Depends On">Reckoner :continuous, Distances</td><td data-label="Exports">Exit observer interface</td></tr>
 </table>
 <h3>Paper and Broker</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>paper-entry.wat</code></td><td>distances</td><td><code>PaperEntry</code> struct</td></tr>
-<tr><td><code>broker.wat</code></td><td>Reckoner, OnlineSubspace, ScalarAccumulator, PaperEntry</td><td><code>Broker</code>, <code>Resolution</code>, <code>PropagationFacts</code></td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>paper-entry.wat</code></td><td data-label="Depends On">distances</td><td data-label="Exports"><code>PaperEntry</code> struct</td></tr>
+<tr><td data-label="File"><code>broker.wat</code></td><td data-label="Depends On">Reckoner, OnlineSubspace, ScalarAccumulator, PaperEntry</td><td data-label="Exports"><code>Broker</code>, <code>Resolution</code>, <code>PropagationFacts</code></td></tr>
 </table>
 <h3>Trade Lifecycle</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>proposal.wat</code></td><td>enums, distances, levels</td><td><code>Proposal</code> struct</td></tr>
-<tr><td><code>trade.wat</code></td><td>enums, distances, levels</td><td><code>Trade</code> struct</td></tr>
-<tr><td><code>settlement.wat</code></td><td>(trade lifecycle)</td><td><code>TreasurySettlement</code></td></tr>
-<tr><td><code>log-entry.wat</code></td><td>(trade lifecycle)</td><td><code>LogEntry</code> enum</td></tr>
-<tr><td><code>trade-origin.wat</code></td><td>(trade lifecycle)</td><td><code>TradeOrigin</code> struct</td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>proposal.wat</code></td><td data-label="Depends On">enums, distances, levels</td><td data-label="Exports"><code>Proposal</code> struct</td></tr>
+<tr><td data-label="File"><code>trade.wat</code></td><td data-label="Depends On">enums, distances, levels</td><td data-label="Exports"><code>Trade</code> struct</td></tr>
+<tr><td data-label="File"><code>settlement.wat</code></td><td data-label="Depends On">(trade lifecycle)</td><td data-label="Exports"><code>TreasurySettlement</code></td></tr>
+<tr><td data-label="File"><code>log-entry.wat</code></td><td data-label="Depends On">(trade lifecycle)</td><td data-label="Exports"><code>LogEntry</code> enum</td></tr>
+<tr><td data-label="File"><code>trade-origin.wat</code></td><td data-label="Depends On">(trade lifecycle)</td><td data-label="Exports"><code>TradeOrigin</code> struct</td></tr>
 </table>
 <h3>Services</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>encoder-service.wat</code></td><td>thought-encoder, log-entry</td><td>LRU cache thread, N client pipes, select loop</td></tr>
-<tr><td><code>log-service.wat</code></td><td>thought-encoder, log-entry</td><td>SQLite writer, batch commits, WAL, drain-on-shutdown</td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>encoder-service.wat</code></td><td data-label="Depends On">thought-encoder, log-entry</td><td data-label="Exports">LRU cache thread, N client pipes, select loop</td></tr>
+<tr><td data-label="File"><code>log-service.wat</code></td><td data-label="Depends On">thought-encoder, log-entry</td><td data-label="Exports">SQLite writer, batch commits, WAL, drain-on-shutdown</td></tr>
 </table>
 <h3>Root — depends on everything</h3>
 <table>
-<tr><th>File</th><th>Depends On</th><th>Exports</th></tr>
-<tr><td><code>post.wat</code></td><td>everything above</td><td><code>Post</code> struct + interface</td></tr>
-<tr><td><code>treasury.wat</code></td><td>proposal, trade, settlement</td><td><code>Treasury</code> struct + interface</td></tr>
-<tr><td><code>enterprise.wat</code></td><td>post, treasury</td><td><code>Enterprise</code> struct + four-step loop</td></tr>
-<tr><td><code>bin/enterprise.wat</code></td><td>everything</td><td>The binary — pipes, threads, the fold, the ledger</td></tr>
+<thead><tr><th>File</th><th>Depends On</th><th>Exports</th></tr></thead>
+<tr><td data-label="File"><code>post.wat</code></td><td data-label="Depends On">everything above</td><td data-label="Exports"><code>Post</code> struct + interface</td></tr>
+<tr><td data-label="File"><code>treasury.wat</code></td><td data-label="Depends On">proposal, trade, settlement</td><td data-label="Exports"><code>Treasury</code> struct + interface</td></tr>
+<tr><td data-label="File"><code>enterprise.wat</code></td><td data-label="Depends On">post, treasury</td><td data-label="Exports"><code>Enterprise</code> struct + four-step loop</td></tr>
+<tr><td data-label="File"><code>bin/enterprise.wat</code></td><td data-label="Depends On">everything</td><td data-label="Exports">The binary — pipes, threads, the fold, the ledger</td></tr>
 </table>
 <hr>
 <h2>The Inscription Rule</h2>
@@ -616,4 +721,4 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <li><code>src/</code> is listed as "(future)" in the reading order — the Rust implementation exists but the ordering document was written before it was complete.</li>
 <li>The dependency graph is a DAG (directed acyclic graph) — the topological sort from leaves to root ensures no circular dependencies.</li>
 <li>Total: ~40+ wat files across all layers.</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

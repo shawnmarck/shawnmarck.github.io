@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-006 · Walkable — the AST traversal trait and thought expression tree — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-006 · Walkable — the AST traversal trait and thought expression tree — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T0-006 · Walkable — the AST traversal trait and thought expression tree <span class="badge badge-how">HOW</span></h1><h2>What it IS</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T0-006 · Walkable — the AST traversal trait and thought expression tree <span class="badge badge-how">HOW</span></h1><h2>What it IS</h2>
 <p>Walkable is the trait that enables <strong>zero-serialization encoding</strong>: any Rust type implementing <code>Walkable</code> can be directly converted into high-dimensional vectors without passing through JSON or EDN. It defines a structural type system (<code>WalkType</code>) that the encoder recursively walks to produce role-filler bindings, which are then bundled into a single vector.</p>
 <p>Source: <code>holon-rs/src/kernel/walkable.rs</code> (1002 lines)</p>
 <p>Also relevant: <code>holon-rs/src/kernel/encoder.rs</code> — contains the <code>encode_walkable</code> recursive traversal.</p>
@@ -492,12 +597,12 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h2>The structural type system — <code>WalkType</code></h2>
 <p>There are five structural types:</p>
 <table>
-<tr><th>WalkType</th><th>Shape</th><th>Encoder semantics</th></tr>
-<tr><td><code>Scalar</code></td><td>Single atomic value</td><td>Looked up via <code>VectorManager</code> or special numeric encoding</td></tr>
-<tr><td><code>Map</code></td><td>Key-value pairs (ordered list of <code>(String, WalkableValue)</code>)</td><td><strong>Role-filler binding</strong>: each field's key (role) is bound to its value's vector (filler), then all bindings are bundled</td></tr>
-<tr><td><code>List</code></td><td>Ordered sequence</td><td>Position-encoded: each element bound to its positional path <code>[0]</code>, <code>[1]</code>, … then bundled</td></tr>
-<tr><td><code>Set</code></td><td>Unordered unique items</td><td>Items bundled directly, then bound with a <code>"set_indicator"</code> role vector</td></tr>
-<tr><td><code>Spread</code></td><td>Ordered sequence with fan-out</td><td>Each element fans out into its own independent leaf binding with its own indexed path. Used when per-element attribution matters.</td></tr>
+<thead><tr><th>WalkType</th><th>Shape</th><th>Encoder semantics</th></tr></thead>
+<tr><td data-label="WalkType"><code>Scalar</code></td><td data-label="Shape">Single atomic value</td><td data-label="Encoder semantics">Looked up via <code>VectorManager</code> or special numeric encoding</td></tr>
+<tr><td data-label="WalkType"><code>Map</code></td><td data-label="Shape">Key-value pairs (ordered list of <code>(String, WalkableValue)</code>)</td><td data-label="Encoder semantics"><strong>Role-filler binding</strong>: each field's key (role) is bound to its value's vector (filler), then all bindings are bundled</td></tr>
+<tr><td data-label="WalkType"><code>List</code></td><td data-label="Shape">Ordered sequence</td><td data-label="Encoder semantics">Position-encoded: each element bound to its positional path <code>[0]</code>, <code>[1]</code>, … then bundled</td></tr>
+<tr><td data-label="WalkType"><code>Set</code></td><td data-label="Shape">Unordered unique items</td><td data-label="Encoder semantics">Items bundled directly, then bound with a <code>"set_indicator"</code> role vector</td></tr>
+<tr><td data-label="WalkType"><code>Spread</code></td><td data-label="Shape">Ordered sequence with fan-out</td><td data-label="Encoder semantics">Each element fans out into its own independent leaf binding with its own indexed path. Used when per-element attribution matters.</td></tr>
 </table>
 <blockquote>"<code>List</code> and <code>Set</code> are <strong>composed</strong>: items are encoded and bundled into a single vector. <code>Spread</code> is <strong>fanned out</strong>: each element becomes an independent leaf binding with its own indexed path (e.g., <code>field.[0]</code>, <code>field.[1]</code>). The Walkable implementation chooses which semantics to use per field."</blockquote>
 <h2><code>WalkableValue</code> — the AST node enum</h2>
@@ -515,15 +620,15 @@ pub enum WalkableValue {
 <h2>Scalar types — <code>ScalarValue</code></h2>
 <p>The leaf nodes of the tree. Eight variants:</p>
 <table>
-<tr><th>Variant</th><th>Encoding path</th></tr>
-<tr><td><code>String(String)</code></td><td>Atom lookup via <code>to_atom()</code> → <code>VectorManager.get_vector()</code></td></tr>
-<tr><td><code>Int(i64)</code></td><td>Atom lookup: <code>i64.to_string()</code></td></tr>
-<tr><td><code>Float(f64)</code></td><td>Atom lookup: <code>f64.to_string()</code></td></tr>
-<tr><td><code>Bool(bool)</code></td><td>Atom lookup: <code>"true"</code> / <code>"false"</code></td></tr>
-<tr><td><code>Null</code></td><td>Atom lookup: <code>"null"</code></td></tr>
-<tr><td><code>LogFloat { value, scale }</code></td><td>Log10(value) → positional encoding. Equal ratios = equal similarity drops.</td></tr>
-<tr><td><code>LinearFloat { value, scale }</code></td><td>Direct positional encoding. Equal differences = equal similarity drops.</td></tr>
-<tr><td><code>TimeFloat { value, resolution }</code></td><td>Circular (hour-of-day, day-of-week, month) + positional. Temporally close events produce similar vectors.</td></tr>
+<thead><tr><th>Variant</th><th>Encoding path</th></tr></thead>
+<tr><td data-label="Variant"><code>String(String)</code></td><td data-label="Encoding path">Atom lookup via <code>to_atom()</code> → <code>VectorManager.get_vector()</code></td></tr>
+<tr><td data-label="Variant"><code>Int(i64)</code></td><td data-label="Encoding path">Atom lookup: <code>i64.to_string()</code></td></tr>
+<tr><td data-label="Variant"><code>Float(f64)</code></td><td data-label="Encoding path">Atom lookup: <code>f64.to_string()</code></td></tr>
+<tr><td data-label="Variant"><code>Bool(bool)</code></td><td data-label="Encoding path">Atom lookup: <code>"true"</code> / <code>"false"</code></td></tr>
+<tr><td data-label="Variant"><code>Null</code></td><td data-label="Encoding path">Atom lookup: <code>"null"</code></td></tr>
+<tr><td data-label="Variant"><code>LogFloat { value, scale }</code></td><td data-label="Encoding path">Log10(value) → positional encoding. Equal ratios = equal similarity drops.</td></tr>
+<tr><td data-label="Variant"><code>LinearFloat { value, scale }</code></td><td data-label="Encoding path">Direct positional encoding. Equal differences = equal similarity drops.</td></tr>
+<tr><td data-label="Variant"><code>TimeFloat { value, resolution }</code></td><td data-label="Encoding path">Circular (hour-of-day, day-of-week, month) + positional. Temporally close events produce similar vectors.</td></tr>
 </table>
 <blockquote>"Numeric scalars don't use atom encoding — handled specially by encoder."</blockquote>
 <p>The three numeric scalars (<code>LogFloat</code>, <code>LinearFloat</code>, <code>TimeFloat</code>) are flagged by <code>is_numeric_scalar()</code> and routed to special encoder methods instead of atom lookup. Their <code>to_atom()</code> methods produce prefixed strings (<code>"$log:…"</code>, <code>"$linear:…"</code>, <code>"$time:…"</code>) but these are informational only — the encoder dispatches on the variant, not on the atom string.</p>
@@ -536,11 +641,11 @@ pub enum WalkableValue {
 <h3><code>TimeResolution</code></h3>
 <p>Controls positional granularity for time encoding:</p>
 <table>
-<tr><th>Variant</th><th>Positional unit</th></tr>
-<tr><td><code>Second</code></td><td><code>timestamp</code></td></tr>
-<tr><td><code>Minute</code></td><td><code>timestamp / 60.0</code></td></tr>
-<tr><td><code>Hour</code> (default)</td><td><code>timestamp / 3600.0</code></td></tr>
-<tr><td><code>Day</code></td><td><code>timestamp / 86400.0</code></td></tr>
+<thead><tr><th>Variant</th><th>Positional unit</th></tr></thead>
+<tr><td data-label="Variant"><code>Second</code></td><td data-label="Positional unit"><code>timestamp</code></td></tr>
+<tr><td data-label="Variant"><code>Minute</code></td><td data-label="Positional unit"><code>timestamp / 60.0</code></td></tr>
+<tr><td data-label="Variant"><code>Hour</code> (default)</td><td data-label="Positional unit"><code>timestamp / 3600.0</code></td></tr>
+<tr><td data-label="Variant"><code>Day</code></td><td data-label="Positional unit"><code>timestamp / 86400.0</code></td></tr>
 </table>
 <h2>The <code>Walkable</code> trait</h2>
 <pre><code>
@@ -617,12 +722,12 @@ encode_walkable_set(walkable, prefix):
 <h3>Recursive <code>WalkableValue</code> encoding</h3>
 <p>The <code>encode_walkable_value_recursive</code> method handles the full tree for nested values:</p>
 <table>
-<tr><th>WalkableValue variant</th><th>Behavior</th></tr>
-<tr><td><code>Scalar(s)</code></td><td><code>encode_scalar_value(s, prefix)</code> — atom lookup or numeric encoding</td></tr>
-<tr><td><code>Map(items)</code></td><td>Role-filler bind each entry, then bundle (same as above)</td></tr>
-<tr><td><code>List(items)</code></td><td>Position-encode each element, then bundle</td></tr>
-<tr><td><code>Set(items)</code></td><td>Bundle items, then bind with <code>set_indicator</code></td></tr>
-<tr><td><code>Spread(items)</code></td><td>Position-encode each element, then bundle (identical to List)</td></tr>
+<thead><tr><th>WalkableValue variant</th><th>Behavior</th></tr></thead>
+<tr><td data-label="WalkableValue variant"><code>Scalar(s)</code></td><td data-label="Behavior"><code>encode_scalar_value(s, prefix)</code> — atom lookup or numeric encoding</td></tr>
+<tr><td data-label="WalkableValue variant"><code>Map(items)</code></td><td data-label="Behavior">Role-filler bind each entry, then bundle (same as above)</td></tr>
+<tr><td data-label="WalkableValue variant"><code>List(items)</code></td><td data-label="Behavior">Position-encode each element, then bundle</td></tr>
+<tr><td data-label="WalkableValue variant"><code>Set(items)</code></td><td data-label="Behavior">Bundle items, then bind with <code>set_indicator</code></td></tr>
+<tr><td data-label="WalkableValue variant"><code>Spread(items)</code></td><td data-label="Behavior">Position-encode each element, then bundle (identical to List)</td></tr>
 </table>
 <h3>Empty container encoding</h3>
 <ul>
@@ -651,10 +756,10 @@ encode_walkable_set(walkable, prefix):
 <p>The <code>wat/core/structural.wat</code> file defines three structural forms orthogonal to the vector algebra:</p>
 <blockquote>"A struct cannot be bound, bundled, or cosined. It holds things that can. An enum variant is an identity, not a geometric object. A protocol is a contract, not a computation."</blockquote>
 <table>
-<tr><th>Form</th><th>wat syntax</th><th>Rust target</th></tr>
-<tr><td>Product (struct)</td><td><code>(struct name field1 field2 …)</code></td><td>Rust struct with named fields. Projection via <code>(:field record)</code>. Functional update via <code>(update record :f1 v1 …)</code>.</td></tr>
-<tr><td>Coproduct (enum)</td><td><code>(enum name variant1 variant2 …)</code></td><td>Rust enum. Exhaustive <code>match</code> required; wildcard <code>_</code> forbidden on closed enums.</td></tr>
-<tr><td>Type class (defprotocol)</td><td><code>(defprotocol name (fn-name [params] …))</code></td><td>Rust trait. Satisfiability via <code>(satisfies struct-name protocol-name :fn1 impl1 …)</code>.</td></tr>
+<thead><tr><th>Form</th><th>wat syntax</th><th>Rust target</th></tr></thead>
+<tr><td data-label="Form">Product (struct)</td><td data-label="wat syntax"><code>(struct name field1 field2 …)</code></td><td data-label="Rust target">Rust struct with named fields. Projection via <code>(:field record)</code>. Functional update via <code>(update record :f1 v1 …)</code>.</td></tr>
+<tr><td data-label="Form">Coproduct (enum)</td><td data-label="wat syntax"><code>(enum name variant1 variant2 …)</code></td><td data-label="Rust target">Rust enum. Exhaustive <code>match</code> required; wildcard <code>_</code> forbidden on closed enums.</td></tr>
+<tr><td data-label="Form">Type class (defprotocol)</td><td data-label="wat syntax"><code>(defprotocol name (fn-name [params] …))</code></td><td data-label="Rust target">Rust trait. Satisfiability via <code>(satisfies struct-name protocol-name :fn1 impl1 …)</code>.</td></tr>
 </table>
 <p>These forms organize programs but do not enter the vector algebra. A Walkable impl bridges between a struct and the encoder, but the struct itself is not a vector object.</p>
 <h2>Source quotes</h2>
@@ -666,4 +771,4 @@ encode_walkable_set(walkable, prefix):
 <blockquote>"Linear positional encoding: equal differences = equal similarity drops. Use for: temperatures, positions, timestamps." — ScalarValue::LinearFloat</blockquote>
 <blockquote>"Time-aware encoding: circular (hour-of-day, day-of-week, month) + positional. Temporally close events produce similar vectors; periodic structure preserved." — ScalarValue::TimeFloat</blockquote>
 <blockquote>"Unordered unique items (like HashSet)" — WalkType::Set</blockquote>
-<blockquote>"These forms are orthogonal to the vector algebra and journal coalgebra." — structural.wat</blockquote></div></body></html>
+<blockquote>"These forms are orthogonal to the vector algebra and journal coalgebra." — structural.wat</blockquote></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

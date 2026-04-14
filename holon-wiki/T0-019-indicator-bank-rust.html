@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-019: indicator_bank.rs — Verified Documentation — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-019: indicator_bank.rs — Verified Documentation — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T0-019: indicator_bank.rs — Verified Documentation <span class="badge badge-what">WHAT</span></h1><div class='tldr'><h2>TL;DR</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T0-019: indicator_bank.rs — Verified Documentation <span class="badge badge-what">WHAT</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p><code>IndicatorBank</code> is a stateful, streaming technical indicator engine. One instance per asset pair ("post"). Each call to <code>tick(&Ohlcv) → Candle</code> advances all internal state machines by one raw candle and returns an enriched <code>Candle</code> struct carrying ~65 computed indicator fields. These enriched candles are the sole input to the encoding pipeline (<code>ThoughtEncoder</code>). The file is self-contained at 2363 lines: streaming primitives, helper functions, the composed bank, and ~400 lines of tests.</p>
 <hr></div><h2>File Location</h2>
 <pre><code>
@@ -650,29 +755,29 @@ pub struct IchimokuState {
 <h2>Helper Functions (Lines 753–1239)</h2>
 <p>Pure functions operating on slices/buffers. No state.</p>
 <table>
-<tr><th>Function</th><th>Purpose</th></tr>
-<tr><td><code>linreg_slope(ys)</code></td><td>OLS slope treating index as x-axis</td></tr>
-<tr><td><code>obv_slope_12(vals)</code></td><td>Linreg slope of OBV history</td></tr>
-<tr><td><code>hurst_exponent(values)</code></td><td>R/S analysis on log returns; returns 0.5 for degenerate cases</td></tr>
-<tr><td><code>autocorrelation_lag1(values)</code></td><td>Lag-1 autocorrelation coefficient</td></tr>
-<tr><td><code>dfa_fluctuation(cum_dev, seg_len)</code></td><td>DFA windowed fluctuation</td></tr>
-<tr><td><code>linear_detrend(xs)</code></td><td>Subtract best-fit line</td></tr>
-<tr><td><code>dfa_alpha(values)</code></td><td>DFA exponent from two scales (4, 8); min 16 points</td></tr>
-<tr><td><code>variance_of(vals)</code></td><td>Population variance</td></tr>
-<tr><td><code>variance_ratio(values)</code></td><td>VR = var(5-step returns) / (5 × var(1-step returns)); min 10 points</td></tr>
-<tr><td><code>entropy_rate(values)</code></td><td>Shannon entropy of discretized returns (5 bins: {-2,-1,0,1,2})</td></tr>
-<tr><td><code>kama_efficiency_ratio(values)</code></td><td>Net direction / gross path length; 1.0 for constant or pure trend</td></tr>
-<tr><td><code>choppiness_index(atr_sum, high_buf, low_buf)</code></td><td>Log(ATR sum / range) / log(14)</td></tr>
-<tr><td><code>aroon_up/down(vals)</code></td><td>Most-recent-index of max/min × 100/(n-1)</td></tr>
-<tr><td><code>fractal_dimension(values)</code></td><td>Higuchi method; clamped [1.0, 2.0]; min 10 points</td></tr>
-<tr><td><code>detect_divergence(prices, rsis)</code></td><td>Splits into halves, checks for price/RSI divergence</td></tr>
-<tr><td><code>compute_roc(buf, n)</code></td><td>Rate of change at lag n</td></tr>
-<tr><td><code>compute_range_pos(high_buf, low_buf, close)</code></td><td>(close - lowest) / (highest - lowest)</td></tr>
-<tr><td><code>compute_tf_ret(buf)</code></td><td>Return over buffer's full span</td></tr>
-<tr><td><code>compute_tf_body(buf)</code></td><td>Body ratio:</td><td>close - open</td><td>/ range</td></tr>
-<tr><td><code>compute_tf_agreement(prev_close, close, tf_1h, tf_4h)</code></td><td>Pairwise sign agreement across 3 timeframes</td></tr>
-<tr><td><code>compute_williams_r(stoch, close)</code></td><td>-100 × (highest - close) / range</td></tr>
-<tr><td><code>compute_vwap_distance(cum_vol, cum_pv, close)</code></td><td>(close - VWAP) / close</td></tr>
+<thead><tr><th>Function</th><th>Purpose</th></tr></thead>
+<tr><td data-label="Function"><code>linreg_slope(ys)</code></td><td data-label="Purpose">OLS slope treating index as x-axis</td></tr>
+<tr><td data-label="Function"><code>obv_slope_12(vals)</code></td><td data-label="Purpose">Linreg slope of OBV history</td></tr>
+<tr><td data-label="Function"><code>hurst_exponent(values)</code></td><td data-label="Purpose">R/S analysis on log returns; returns 0.5 for degenerate cases</td></tr>
+<tr><td data-label="Function"><code>autocorrelation_lag1(values)</code></td><td data-label="Purpose">Lag-1 autocorrelation coefficient</td></tr>
+<tr><td data-label="Function"><code>dfa_fluctuation(cum_dev, seg_len)</code></td><td data-label="Purpose">DFA windowed fluctuation</td></tr>
+<tr><td data-label="Function"><code>linear_detrend(xs)</code></td><td data-label="Purpose">Subtract best-fit line</td></tr>
+<tr><td data-label="Function"><code>dfa_alpha(values)</code></td><td data-label="Purpose">DFA exponent from two scales (4, 8); min 16 points</td></tr>
+<tr><td data-label="Function"><code>variance_of(vals)</code></td><td data-label="Purpose">Population variance</td></tr>
+<tr><td data-label="Function"><code>variance_ratio(values)</code></td><td data-label="Purpose">VR = var(5-step returns) / (5 × var(1-step returns)); min 10 points</td></tr>
+<tr><td data-label="Function"><code>entropy_rate(values)</code></td><td data-label="Purpose">Shannon entropy of discretized returns (5 bins: {-2,-1,0,1,2})</td></tr>
+<tr><td data-label="Function"><code>kama_efficiency_ratio(values)</code></td><td data-label="Purpose">Net direction / gross path length; 1.0 for constant or pure trend</td></tr>
+<tr><td data-label="Function"><code>choppiness_index(atr_sum, high_buf, low_buf)</code></td><td data-label="Purpose">Log(ATR sum / range) / log(14)</td></tr>
+<tr><td data-label="Function"><code>aroon_up/down(vals)</code></td><td data-label="Purpose">Most-recent-index of max/min × 100/(n-1)</td></tr>
+<tr><td data-label="Function"><code>fractal_dimension(values)</code></td><td data-label="Purpose">Higuchi method; clamped [1.0, 2.0]; min 10 points</td></tr>
+<tr><td data-label="Function"><code>detect_divergence(prices, rsis)</code></td><td data-label="Purpose">Splits into halves, checks for price/RSI divergence</td></tr>
+<tr><td data-label="Function"><code>compute_roc(buf, n)</code></td><td data-label="Purpose">Rate of change at lag n</td></tr>
+<tr><td data-label="Function"><code>compute_range_pos(high_buf, low_buf, close)</code></td><td data-label="Purpose">(close - lowest) / (highest - lowest)</td></tr>
+<tr><td data-label="Function"><code>compute_tf_ret(buf)</code></td><td data-label="Purpose">Return over buffer's full span</td></tr>
+<tr><td data-label="Function"><code>compute_tf_body(buf)</code></td><td data-label="Purpose">Body ratio:</td><td data-label="">close - open</td><td data-label="">/ range</td></tr>
+<tr><td data-label="Function"><code>compute_tf_agreement(prev_close, close, tf_1h, tf_4h)</code></td><td data-label="Purpose">Pairwise sign agreement across 3 timeframes</td></tr>
+<tr><td data-label="Function"><code>compute_williams_r(stoch, close)</code></td><td data-label="Purpose">-100 × (highest - close) / range</td></tr>
+<tr><td data-label="Function"><code>compute_vwap_distance(cum_vol, cum_pv, close)</code></td><td data-label="Purpose">(close - VWAP) / close</td></tr>
 </table>
 <h3>Time Parsing (Lines 1243–1290)</h3>
 <p>Pure string parsing of ISO timestamps (<code>"YYYY-MM-DDTHH:MM:SS"</code> format):</p>
@@ -823,19 +928,19 @@ let candle = pipeline.bank.tick(&ohlcv);
 <h2>Warm-up Requirements</h2>
 <p>Different indicators become valid at different candle counts:</p>
 <table>
-<tr><th>Indicator</th><th>Minimum candles</th></tr>
-<tr><td>SMA20 / BB / CCI</td><td>20</td></tr>
-<tr><td>EMA20 / Keltner</td><td>20</td></tr>
-<tr><td>RSI / ATR / DMI / Stoch / MFI</td><td>15 (14-period + 1 seed)</td></tr>
-<tr><td>MACD</td><td>~35 (slow_ema=26 + signal=9)</td></tr>
-<tr><td>SMA50</td><td>50</td></tr>
-<tr><td>SMA200</td><td>200</td></tr>
-<tr><td>Ichimoku</td><td>52</td></tr>
-<tr><td>Choppiness / Aroon</td><td>14 (ATR ready) + buffer fill</td></tr>
-<tr><td>DFA alpha</td><td>48</td></tr>
-<tr><td>Variance ratio</td><td>30</td></tr>
-<tr><td>Entropy rate</td><td>30</td></tr>
-<tr><td>Fractal dim</td><td>30</td></tr>
+<thead><tr><th>Indicator</th><th>Minimum candles</th></tr></thead>
+<tr><td data-label="Indicator">SMA20 / BB / CCI</td><td data-label="Minimum candles">20</td></tr>
+<tr><td data-label="Indicator">EMA20 / Keltner</td><td data-label="Minimum candles">20</td></tr>
+<tr><td data-label="Indicator">RSI / ATR / DMI / Stoch / MFI</td><td data-label="Minimum candles">15 (14-period + 1 seed)</td></tr>
+<tr><td data-label="Indicator">MACD</td><td data-label="Minimum candles">~35 (slow_ema=26 + signal=9)</td></tr>
+<tr><td data-label="Indicator">SMA50</td><td data-label="Minimum candles">50</td></tr>
+<tr><td data-label="Indicator">SMA200</td><td data-label="Minimum candles">200</td></tr>
+<tr><td data-label="Indicator">Ichimoku</td><td data-label="Minimum candles">52</td></tr>
+<tr><td data-label="Indicator">Choppiness / Aroon</td><td data-label="Minimum candles">14 (ATR ready) + buffer fill</td></tr>
+<tr><td data-label="Indicator">DFA alpha</td><td data-label="Minimum candles">48</td></tr>
+<tr><td data-label="Indicator">Variance ratio</td><td data-label="Minimum candles">30</td></tr>
+<tr><td data-label="Indicator">Entropy rate</td><td data-label="Minimum candles">30</td></tr>
+<tr><td data-label="Indicator">Fractal dim</td><td data-label="Minimum candles">30</td></tr>
 </table>
 <p>Before warm-up, indicators return neutral defaults (0.0, 0.5, 50.0, etc. — see <code>Candle::default()</code>). The test <code>test_tick_produces_finite_after_warmup</code> verifies all fields are finite after 300 candles.</p>
 <hr>
@@ -872,4 +977,4 @@ let candle = pipeline.bank.tick(&ohlcv);
 </ol>
 <ol>
 <li><strong><code>prev_tf_1h_ret</code> and <code>prev_tf_4h_ret</code> are stored but never read</strong> within <code>tick()</code>. They appear to be vestigial fields — the timeframe agreement computation uses <code>compute_tf_ret</code> directly rather than stored previous values.</li>
-</ol></div></body></html>
+</ol></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

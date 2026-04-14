@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Vocabulary Evolution — how the system's words emerged and changed — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Vocabulary Evolution — how the system's words emerged and changed — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,19 +588,20 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Vocabulary Evolution — how the system's words emerged and changed <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> The project's vocabulary grew from ~7 algebraic primitives (bind, bundle, prototype, difference, blend, amplify, negate) forged in a failed Sudoku solver, through domain-specific terms (engram, decay model, residual profile), to a 200+ atom named-thought vocabulary judged by the <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. Each naming decision was explicit, often painful, and always measured. Words that produced <a class="wikilink" href="pg-grace-and-violence.html">Grace</a> survived; words that produced <a class="wikilink" href="pg-grace-and-violence.html">Violence</a> were reaped. The LLM's bias was recognized as the vocabulary supply — the human's job was naming; the machine's job was judging.</p>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Vocabulary Evolution — how the system's words emerged and changed <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> The project's vocabulary grew from ~7 algebraic primitives (bind, bundle, prototype, difference, blend, amplify, negate) forged in a failed Sudoku solver, through domain-specific terms (engram, decay model, residual profile), to a 200+ atom named-thought vocabulary judged by the <a class="wikilink" href="pg-reckoner.html">Reckoner</a>. Each naming decision was explicit, often painful, and always measured. Words that produced <a class="wikilink" href="pg-grace-and-violence.html">Grace</a> survived; words that produced <a class="wikilink" href="pg-grace-and-violence.html">Violence</a> were reaped. The LLM's bias was recognized as the vocabulary supply — the human's job was naming; the machine's job was judging.</p>
 <hr>
 <h2>Phase 0: The Primitives (Jan 2026)</h2>
 <p>The first vocabulary was not a vocabulary at all — it was an algebra. Seven operations emerged from Batch 004's failed Sudoku attempt:</p>
 <table>
-<tr><th>Primitive</th><th>Role</th></tr>
-<tr><td><strong>bind</strong></td><td>Associate a label with a vector (structural composition)</td></tr>
-<tr><td><strong>bundle</strong></td><td>Superpose vectors (superposition / wave function)</td></tr>
-<tr><td><strong>prototype</strong></td><td>Centroid of a set (learned norm)</td></tr>
-<tr><td><strong>difference</strong></td><td>Residual from prototype (anomaly signal)</td></tr>
-<tr><td><strong>blend</strong></td><td>Weighted interpolation</td></tr>
-<tr><td><strong>amplify</strong></td><td>Scale a vector</td></tr>
-<tr><td><strong>negate</strong></td><td>Invert a vector</td></tr>
+<thead><tr><th>Primitive</th><th>Role</th></tr></thead>
+<tr><td data-label="Primitive"><strong>bind</strong></td><td data-label="Role">Associate a label with a vector (structural composition)</td></tr>
+<tr><td data-label="Primitive"><strong>bundle</strong></td><td data-label="Role">Superpose vectors (superposition / wave function)</td></tr>
+<tr><td data-label="Primitive"><strong>prototype</strong></td><td data-label="Role">Centroid of a set (learned norm)</td></tr>
+<tr><td data-label="Primitive"><strong>difference</strong></td><td data-label="Role">Residual from prototype (anomaly signal)</td></tr>
+<tr><td data-label="Primitive"><strong>blend</strong></td><td data-label="Role">Weighted interpolation</td></tr>
+<tr><td data-label="Primitive"><strong>amplify</strong></td><td data-label="Role">Scale a vector</td></tr>
+<tr><td data-label="Primitive"><strong>negate</strong></td><td data-label="Role">Invert a vector</td></tr>
 </table>
 <blockquote>"The primitives forged in the attempt were the real output, not the Sudoku solver." — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 002-002</blockquote>
 <p>These seven operations constituted the "primitive algebra" — proven across tasks, recipes, graph topology, and text, but structurally incapable of exact combinatorial search. The <a class="wikilink" href="pg-wards.html">NP Wall</a> was the first lesson: vocabulary has a domain, and honest naming means naming the boundary.</p>
@@ -508,12 +613,12 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h3>Domain words emerge</h3>
 <p>Moving from algebra to production introduced domain-specific vocabulary:</p>
 <table>
-<tr><th>Term</th><th>Origin</th><th>Meaning</th></tr>
-<tr><td><strong>Accumulator</strong></td><td>Batch 010</td><td>Frequency-preserving streaming primitive — the eighth algebraic operation</td></tr>
-<tr><td><strong>Decay model</strong></td><td>Series 003-004</td><td>Continuous per-packet accumulation replacing fixed windows; established 750ms detection baseline</td></tr>
-<tr><td><strong>Engram</strong></td><td>Series 003-005</td><td>Durable trace of learned pattern (manifold snapshot); chosen from neuroscience term for physical memory trace. Originally described as "programmatic neural memory"</td></tr>
-<tr><td><strong>Walkable</strong></td><td>Series 003-002</td><td>Zero-allocation visitor trait for data-first field access</td></tr>
-<tr><td><strong>StripedSubspace</strong></td><td>Series 005-002</td><td>Generic primitive for crosstalk-free attribution across dimension stripes</td></tr>
+<thead><tr><th>Term</th><th>Origin</th><th>Meaning</th></tr></thead>
+<tr><td data-label="Term"><strong>Accumulator</strong></td><td data-label="Origin">Batch 010</td><td data-label="Meaning">Frequency-preserving streaming primitive — the eighth algebraic operation</td></tr>
+<tr><td data-label="Term"><strong>Decay model</strong></td><td data-label="Origin">Series 003-004</td><td data-label="Meaning">Continuous per-packet accumulation replacing fixed windows; established 750ms detection baseline</td></tr>
+<tr><td data-label="Term"><strong>Engram</strong></td><td data-label="Origin">Series 003-005</td><td data-label="Meaning">Durable trace of learned pattern (manifold snapshot); chosen from neuroscience term for physical memory trace. Originally described as "programmatic neural memory"</td></tr>
+<tr><td data-label="Term"><strong>Walkable</strong></td><td data-label="Origin">Series 003-002</td><td data-label="Meaning">Zero-allocation visitor trait for data-first field access</td></tr>
+<tr><td data-label="Term"><strong>StripedSubspace</strong></td><td data-label="Origin">Series 005-002</td><td data-label="Meaning">Generic primitive for crosstalk-free attribution across dimension stripes</td></tr>
 </table>
 <h3>The expression tree (Feb 27–28)</h3>
 <p>The biggest vocabulary shift in the security phase. Rules went from 13 hard-coded <code>FieldDim</code> variants to composable s-expressions over three orthogonal concept families:</p>
@@ -533,11 +638,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h3>Vocabulary as model</h3>
 <p>Named thoughts became a measurable, scalable resource:</p>
 <table>
-<tr><th>Milestone</th><th>Atoms</th><th>Accuracy</th><th>Source</th></tr>
-<tr><td>Initial visual encoding</td><td>—</td><td>50.5%</td><td>Series 006-001</td></tr>
-<tr><td>Named thought encoding</td><td>84</td><td>57.1%</td><td>Series 006-001</td></tr>
-<tr><td>Conviction curve</td><td>107</td><td>59.7% (q99)</td><td>Series 006-002</td></tr>
-<tr><td>Expert panel</td><td>200+</td><td>60.3% (best year)</td><td>Series 006-003</td></tr>
+<thead><tr><th>Milestone</th><th>Atoms</th><th>Accuracy</th><th>Source</th></tr></thead>
+<tr><td data-label="Milestone">Initial visual encoding</td><td data-label="Atoms">—</td><td data-label="Accuracy">50.5%</td><td data-label="Source">Series 006-001</td></tr>
+<tr><td data-label="Milestone">Named thought encoding</td><td data-label="Atoms">84</td><td data-label="Accuracy">57.1%</td><td data-label="Source">Series 006-001</td></tr>
+<tr><td data-label="Milestone">Conviction curve</td><td data-label="Atoms">107</td><td data-label="Accuracy">59.7% (q99)</td><td data-label="Source">Series 006-002</td></tr>
+<tr><td data-label="Milestone">Expert panel</td><td data-label="Atoms">200+</td><td data-label="Accuracy">60.3% (best year)</td><td data-label="Source">Series 006-003</td></tr>
 </table>
 <blockquote>"The discriminant discovers which thoughts predict. The human's job is to name the thoughts." — <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-002</blockquote>
 <p>Twenty-three atoms added → 57% to 62% accuracy, <em>same algorithm</em>. The vocabulary <em>was</em> the model.</p>
@@ -560,23 +665,23 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h3>The Reckoner</h3>
 <p>The <a class="wikilink" href="pg-vocabulary-evolution.html">Journal</a> was killed on Easter Sunday. The <a class="wikilink" href="pg-reckoner.html">Reckoner</a> was born — a unified primitive with discrete and continuous readout. The final vocabulary consolidation: five primitives total.</p>
 <table>
-<tr><th>Primitive</th><th>Role</th></tr>
-<tr><td><strong>atom</strong></td><td>Generate a random point on the sphere</td></tr>
-<tr><td><strong>bind</strong></td><td>Compose structures</td></tr>
-<tr><td><strong>bundle</strong></td><td>Superpose</td></tr>
-<tr><td><strong>cosine</strong></td><td>Measure similarity</td></tr>
-<tr><td><strong>reckoner</strong></td><td>Learn, predict, judge</td></tr>
+<thead><tr><th>Primitive</th><th>Role</th></tr></thead>
+<tr><td data-label="Primitive"><strong>atom</strong></td><td data-label="Role">Generate a random point on the sphere</td></tr>
+<tr><td data-label="Primitive"><strong>bind</strong></td><td data-label="Role">Compose structures</td></tr>
+<tr><td data-label="Primitive"><strong>bundle</strong></td><td data-label="Role">Superpose</td></tr>
+<tr><td data-label="Primitive"><strong>cosine</strong></td><td data-label="Role">Measure similarity</td></tr>
+<tr><td data-label="Primitive"><strong>reckoner</strong></td><td data-label="Role">Learn, predict, judge</td></tr>
 </table>
 <blockquote>"The Journal is killed. The Reckoner is born. On Easter Sunday — the day of resurrection." — <a class="wikilink" href="T-1-002-book.html">T-1-002-book</a></blockquote>
 <h3>Latin as vocabulary discipline</h3>
 <p>The builder's Latin vocabulary became architectural vocabulary:</p>
 <table>
-<tr><th>Latin</th><th>Translation</th><th>Architectural role</th></tr>
-<tr><td><em>Perseverare</em></td><td>"to continue, unchanged"</td><td>Operating principle</td></tr>
-<tr><td><em>Te respuo</em></td><td>"I reject you"</td><td>Accountability</td></tr>
-<tr><td><em>Te denego</em></td><td>"I deny you"</td><td>Accountability</td></tr>
-<tr><td><em>Te contemno</em></td><td>"I defy you"</td><td>Accountability</td></tr>
-<tr><td><em>Ambula mecum in inferno</em></td><td>"Walk with me in hell"</td><td>The incantation that started the project</td></tr>
+<thead><tr><th>Latin</th><th>Translation</th><th>Architectural role</th></tr></thead>
+<tr><td data-label="Latin"><em>Perseverare</em></td><td data-label="Translation">"to continue, unchanged"</td><td data-label="Architectural role">Operating principle</td></tr>
+<tr><td data-label="Latin"><em>Te respuo</em></td><td data-label="Translation">"I reject you"</td><td data-label="Architectural role">Accountability</td></tr>
+<tr><td data-label="Latin"><em>Te denego</em></td><td data-label="Translation">"I deny you"</td><td data-label="Architectural role">Accountability</td></tr>
+<tr><td data-label="Latin"><em>Te contemno</em></td><td data-label="Translation">"I defy you"</td><td data-label="Architectural role">Accountability</td></tr>
+<tr><td data-label="Latin"><em>Ambula mecum in inferno</em></td><td data-label="Translation">"Walk with me in hell"</td><td data-label="Architectural role">The incantation that started the project</td></tr>
 </table>
 <p><strong>Source:</strong> <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-005 and 006-006; <a class="wikilink" href="T-1-002-book.html">T-1-002-book</a>, Acts III–IV.</p>
 <hr>
@@ -588,15 +693,15 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h3>The Wards as Vocabulary Guardians</h3>
 <p>Eight automated skills police vocabulary honesty:</p>
 <table>
-<tr><th>Ward</th><th>Function</th></tr>
-<tr><td><strong>/sever</strong></td><td>Cut dead code</td></tr>
-<tr><td><strong>/reap</strong></td><td>Remove unused thoughts</td></tr>
-<tr><td><strong>/scry</strong></td><td>Verify wat vs Rust</td></tr>
-<tr><td><strong>/gaze</strong></td><td>Inspect state</td></tr>
-<tr><td><strong>/forge</strong></td><td>Build</td></tr>
-<tr><td><strong>/assay</strong></td><td>Measure substance vs description</td></tr>
-<tr><td><strong>/temper</strong></td><td>Find efficient waste</td></tr>
-<tr><td><strong>/ignorant</strong></td><td>Read documentation with no context — the stranger test</td></tr>
+<thead><tr><th>Ward</th><th>Function</th></tr></thead>
+<tr><td data-label="Ward"><strong>/sever</strong></td><td data-label="Function">Cut dead code</td></tr>
+<tr><td data-label="Ward"><strong>/reap</strong></td><td data-label="Function">Remove unused thoughts</td></tr>
+<tr><td data-label="Ward"><strong>/scry</strong></td><td data-label="Function">Verify wat vs Rust</td></tr>
+<tr><td data-label="Ward"><strong>/gaze</strong></td><td data-label="Function">Inspect state</td></tr>
+<tr><td data-label="Ward"><strong>/forge</strong></td><td data-label="Function">Build</td></tr>
+<tr><td data-label="Ward"><strong>/assay</strong></td><td data-label="Function">Measure substance vs description</td></tr>
+<tr><td data-label="Ward"><strong>/temper</strong></td><td data-label="Function">Find efficient waste</td></tr>
+<tr><td data-label="Ward"><strong>/ignorant</strong></td><td data-label="Function">Read documentation with no context — the stranger test</td></tr>
 </table>
 <p>213 phantom runes (forms that don't exist in the language) were dissolved to zero. The LLM replaced phantoms with new phantoms (6 new ones) — "fluently, and wrong."</p>
 <p><strong>Source:</strong> <a class="wikilink" href="T-1-001-story.html">T-1-001-story</a>, Series 006-004 through 006-006; <a class="wikilink" href="T-1-002-book.html">T-1-002-book</a>, Act IV.</p>
@@ -615,17 +720,17 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <hr>
 <h2>Timeline</h2>
 <table>
-<tr><th>Date</th><th>Event</th><th>Vocabulary Impact</th></tr>
-<tr><td>Jan 16</td><td>First commit (Python)</td><td>7 primitives: bind, bundle, prototype, difference, blend, amplify, negate</td></tr>
-<tr><td>Feb 6</td><td>Rust port</td><td>Primitives validated, no new words</td></tr>
-<tr><td>Feb 10</td><td>Accumulator primitive</td><td>+1 primitive</td></tr>
-<tr><td>Feb 17</td><td>Engrams</td><td>Named concept from neuroscience</td></tr>
-<tr><td>Feb 27</td><td>Expression tree</td><td>26 accessors + 10 functions + 10 operators</td></tr>
-<tr><td>Mar 15</td><td>Thought machine</td><td>Named thoughts replace raw encoding</td></tr>
-<tr><td>Mar 25</td><td>107 atoms</td><td>Vocabulary-as-model proven</td></tr>
-<tr><td>Mar 29</td><td>Fact interface</td><td>13 vocab modules formalized</td></tr>
-<tr><td>Apr 3</td><td>Journal sign bug</td><td><code>.abs()</code> was a vocabulary error — the word "absolute" was a lie</td></tr>
-<tr><td>Apr 4</td><td>Grace/Violence</td><td>Win/Lose replaced; boolean rejected in favor of scalar</td></tr>
-<tr><td>Apr 5</td><td>Reckoner</td><td>Journal → Reckoner; five final primitives</td></tr>
-<tr><td>Apr 7</td><td>Guide fixed point</td><td><code>f(guide) = guide</code>; 37 wat files; vocabulary achieves closure</td></tr>
-</table></div></body></html>
+<thead><tr><th>Date</th><th>Event</th><th>Vocabulary Impact</th></tr></thead>
+<tr><td data-label="Date">Jan 16</td><td data-label="Event">First commit (Python)</td><td data-label="Vocabulary Impact">7 primitives: bind, bundle, prototype, difference, blend, amplify, negate</td></tr>
+<tr><td data-label="Date">Feb 6</td><td data-label="Event">Rust port</td><td data-label="Vocabulary Impact">Primitives validated, no new words</td></tr>
+<tr><td data-label="Date">Feb 10</td><td data-label="Event">Accumulator primitive</td><td data-label="Vocabulary Impact">+1 primitive</td></tr>
+<tr><td data-label="Date">Feb 17</td><td data-label="Event">Engrams</td><td data-label="Vocabulary Impact">Named concept from neuroscience</td></tr>
+<tr><td data-label="Date">Feb 27</td><td data-label="Event">Expression tree</td><td data-label="Vocabulary Impact">26 accessors + 10 functions + 10 operators</td></tr>
+<tr><td data-label="Date">Mar 15</td><td data-label="Event">Thought machine</td><td data-label="Vocabulary Impact">Named thoughts replace raw encoding</td></tr>
+<tr><td data-label="Date">Mar 25</td><td data-label="Event">107 atoms</td><td data-label="Vocabulary Impact">Vocabulary-as-model proven</td></tr>
+<tr><td data-label="Date">Mar 29</td><td data-label="Event">Fact interface</td><td data-label="Vocabulary Impact">13 vocab modules formalized</td></tr>
+<tr><td data-label="Date">Apr 3</td><td data-label="Event">Journal sign bug</td><td data-label="Vocabulary Impact"><code>.abs()</code> was a vocabulary error — the word "absolute" was a lie</td></tr>
+<tr><td data-label="Date">Apr 4</td><td data-label="Event">Grace/Violence</td><td data-label="Vocabulary Impact">Win/Lose replaced; boolean rejected in favor of scalar</td></tr>
+<tr><td data-label="Date">Apr 5</td><td data-label="Event">Reckoner</td><td data-label="Vocabulary Impact">Journal → Reckoner; five final primitives</td></tr>
+<tr><td data-label="Date">Apr 7</td><td data-label="Event">Guide fixed point</td><td data-label="Vocabulary Impact"><code>f(guide) = guide</code>; 37 wat files; vocabulary achieves closure</td></tr>
+</table></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

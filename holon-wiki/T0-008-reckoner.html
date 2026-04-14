@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-008 — Reckoner: The Learning Primitive — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-008 — Reckoner: The Learning Primitive — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T0-008 — Reckoner: The Learning Primitive <span class="badge badge-how">HOW</span></h1><blockquote><strong>Verified against source.</strong> Every claim below is traceable to <code>reckoner.rs</code> (1107 lines), <code>core/primitives.wat</code> (lines 28–83), and <code>std/memory.wat</code> (28 lines). Nothing is fabricated.</blockquote>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T0-008 — Reckoner: The Learning Primitive <span class="badge badge-how">HOW</span></h1><blockquote><strong>Verified against source.</strong> Every claim below is traceable to <code>reckoner.rs</code> (1107 lines), <code>core/primitives.wat</code> (lines 28–83), and <code>std/memory.wat</code> (28 lines). Nothing is fabricated.</blockquote>
 <hr>
 <h2>1. What It IS</h2>
 <p>The Reckoner is <strong>one primitive, two readout modes</strong>:</p>
@@ -500,14 +605,14 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <blockquote><em>"Opaque state. The co-generators produce all observable behavior. Removing any one makes the external characterization incomplete."</em> — <code>primitives.wat</code></blockquote>
 <p>It defines four operations + three introspection functions:</p>
 <table>
-<tr><th>WAT operation</th><th>Rust equivalent</th><th>Role</th></tr>
-<tr><td><code>(observe reckoner thought label weight)</code></td><td><code>Reckoner::observe()</code></td><td>State transition</td></tr>
-<tr><td><code>(predict reckoner thought)</code></td><td><code>Reckoner::predict()</code></td><td>Observation (query)</td></tr>
-<tr><td><code>(decay reckoner rate)</code></td><td><code>Reckoner::decay()</code></td><td>Aging</td></tr>
-<tr><td><code>(resolve reckoner conviction correct)</code></td><td><code>Reckoner::resolve()</code></td><td>Curve fitting input</td></tr>
-<tr><td><code>(recalib-count reckoner)</code></td><td><code>Reckoner::recalib_count()</code></td><td>Introspection: how many recalibrations</td></tr>
-<tr><td><code>(discriminant reckoner label)</code></td><td><code>Reckoner::discriminant()</code></td><td>Introspection: learned separation vector</td></tr>
-<tr><td><code>(curve reckoner)</code></td><td><code>Reckoner::curve()</code></td><td>Introspection: self-evaluation curve</td></tr>
+<thead><tr><th>WAT operation</th><th>Rust equivalent</th><th>Role</th></tr></thead>
+<tr><td data-label="WAT operation"><code>(observe reckoner thought label weight)</code></td><td data-label="Rust equivalent"><code>Reckoner::observe()</code></td><td data-label="Role">State transition</td></tr>
+<tr><td data-label="WAT operation"><code>(predict reckoner thought)</code></td><td data-label="Rust equivalent"><code>Reckoner::predict()</code></td><td data-label="Role">Observation (query)</td></tr>
+<tr><td data-label="WAT operation"><code>(decay reckoner rate)</code></td><td data-label="Rust equivalent"><code>Reckoner::decay()</code></td><td data-label="Role">Aging</td></tr>
+<tr><td data-label="WAT operation"><code>(resolve reckoner conviction correct)</code></td><td data-label="Rust equivalent"><code>Reckoner::resolve()</code></td><td data-label="Role">Curve fitting input</td></tr>
+<tr><td data-label="WAT operation"><code>(recalib-count reckoner)</code></td><td data-label="Rust equivalent"><code>Reckoner::recalib_count()</code></td><td data-label="Role">Introspection: how many recalibrations</td></tr>
+<tr><td data-label="WAT operation"><code>(discriminant reckoner label)</code></td><td data-label="Rust equivalent"><code>Reckoner::discriminant()</code></td><td data-label="Role">Introspection: learned separation vector</td></tr>
+<tr><td data-label="WAT operation"><code>(curve reckoner)</code></td><td data-label="Rust equivalent"><code>Reckoner::curve()</code></td><td data-label="Role">Introspection: self-evaluation curve</td></tr>
 </table>
 <hr>
 <h2>2. Construction</h2>
@@ -674,18 +779,18 @@ pub fn accuracy_at(&self, conviction: f64) -> Option<f64>
 <p>Formula: <code>min(base + curve_a × exp(curve_b × conviction), 0.99)</code> — capped at 99%.</p>
 <h3>3.8 Other Discrete Accessors</h3>
 <table>
-<tr><th>Method</th><th>Returns</th></tr>
-<tr><td><code>discriminant(label)</code></td><td><code>Option<&[f64]></code> — the learned separation vector</td></tr>
-<tr><td><code>labels()</code></td><td><code>Vec<Label></code> — all registered label handles</td></tr>
-<tr><td><code>label_name(label)</code></td><td><code>Option<&str></code> — resolve handle to name</td></tr>
-<tr><td><code>label_count(label)</code></td><td><code>usize</code> — observations for this label</td></tr>
-<tr><td><code>prototype(label)</code></td><td><code>Option<Vec<f64>></code> — normalized accumulator as f64</td></tr>
-<tr><td><code>raw_prototype(label)</code></td><td><code>Option<&[f64]></code> — raw accumulated sums</td></tr>
-<tr><td><code>prototype_health()</code></td><td><code>Option<(norm_0, norm_1, cos)></code> — for labels 0 and 1</td></tr>
-<tr><td><code>is_ready()</code></td><td><code>bool</code> — <code>recalib_count > 0</code></td></tr>
-<tr><td><code>curve_valid()</code></td><td><code>bool</code> — whether curve has been fitted</td></tr>
-<tr><td><code>curve_params()</code></td><td><code>Option<(f64, f64)></code> — cached <code>(a, b)</code></td></tr>
-<tr><td><code>resolved_count()</code></td><td><code>usize</code> — number of resolved predictions</td></tr>
+<thead><tr><th>Method</th><th>Returns</th></tr></thead>
+<tr><td data-label="Method"><code>discriminant(label)</code></td><td data-label="Returns"><code>Option<&[f64]></code> — the learned separation vector</td></tr>
+<tr><td data-label="Method"><code>labels()</code></td><td data-label="Returns"><code>Vec<Label></code> — all registered label handles</td></tr>
+<tr><td data-label="Method"><code>label_name(label)</code></td><td data-label="Returns"><code>Option<&str></code> — resolve handle to name</td></tr>
+<tr><td data-label="Method"><code>label_count(label)</code></td><td data-label="Returns"><code>usize</code> — observations for this label</td></tr>
+<tr><td data-label="Method"><code>prototype(label)</code></td><td data-label="Returns"><code>Option<Vec<f64>></code> — normalized accumulator as f64</td></tr>
+<tr><td data-label="Method"><code>raw_prototype(label)</code></td><td data-label="Returns"><code>Option<&[f64]></code> — raw accumulated sums</td></tr>
+<tr><td data-label="Method"><code>prototype_health()</code></td><td data-label="Returns"><code>Option<(norm_0, norm_1, cos)></code> — for labels 0 and 1</td></tr>
+<tr><td data-label="Method"><code>is_ready()</code></td><td data-label="Returns"><code>bool</code> — <code>recalib_count > 0</code></td></tr>
+<tr><td data-label="Method"><code>curve_valid()</code></td><td data-label="Returns"><code>bool</code> — whether curve has been fitted</td></tr>
+<tr><td data-label="Method"><code>curve_params()</code></td><td data-label="Returns"><code>Option<(f64, f64)></code> — cached <code>(a, b)</code></td></tr>
+<tr><td data-label="Method"><code>resolved_count()</code></td><td data-label="Returns"><code>usize</code> — number of resolved predictions</td></tr>
 </table>
 <hr>
 <h2>4. Continuous Mode</h2>
@@ -754,52 +859,52 @@ pub fn query(&self, vec: &Vector) -> f64
 <p>The interpolation means: <em>"interpolate, don't argmax"</em> — the reckoner returns a blend of the three closest bucket centers, weighted by how well the thought matches each bucket's prototype direction.</p>
 <h3>4.4 Other Continuous Accessors</h3>
 <table>
-<tr><th>Method</th><th>Returns</th></tr>
-<tr><td><code>observation_count()</code></td><td><code>usize</code> — total observations ever (permanent, not decayed)</td></tr>
-<tr><td><code>experience()</code></td><td><code>f64</code> — <code>total_observations</code> (continuous) or <code>updates</code> (discrete)</td></tr>
+<thead><tr><th>Method</th><th>Returns</th></tr></thead>
+<tr><td data-label="Method"><code>observation_count()</code></td><td data-label="Returns"><code>usize</code> — total observations ever (permanent, not decayed)</td></tr>
+<tr><td data-label="Method"><code>experience()</code></td><td data-label="Returns"><code>f64</code> — <code>total_observations</code> (continuous) or <code>updates</code> (discrete)</td></tr>
 </table>
 <hr>
 <h2>5. Introspection — The Full API Surface</h2>
 <h3>Both modes</h3>
 <table>
-<tr><th>Method</th><th>Description</th></tr>
-<tr><td><code>name()</code></td><td>Human-readable name</td></tr>
-<tr><td><code>dims()</code></td><td>Vector dimensionality</td></tr>
-<tr><td><code>total_updates()</code></td><td>Total <code>observe()</code> / <code>observe_scalar()</code> calls</td></tr>
-<tr><td><code>experience()</code></td><td>Total observations as f64</td></tr>
-<tr><td><code>decay(factor)</code></td><td>Age all accumulators</td></tr>
-<tr><td><code>is_discrete()</code></td><td>Mode check</td></tr>
-<tr><td><code>is_continuous()</code></td><td>Mode check</td></tr>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tr><td data-label="Method"><code>name()</code></td><td data-label="Description">Human-readable name</td></tr>
+<tr><td data-label="Method"><code>dims()</code></td><td data-label="Description">Vector dimensionality</td></tr>
+<tr><td data-label="Method"><code>total_updates()</code></td><td data-label="Description">Total <code>observe()</code> / <code>observe_scalar()</code> calls</td></tr>
+<tr><td data-label="Method"><code>experience()</code></td><td data-label="Description">Total observations as f64</td></tr>
+<tr><td data-label="Method"><code>decay(factor)</code></td><td data-label="Description">Age all accumulators</td></tr>
+<tr><td data-label="Method"><code>is_discrete()</code></td><td data-label="Description">Mode check</td></tr>
+<tr><td data-label="Method"><code>is_continuous()</code></td><td data-label="Description">Mode check</td></tr>
 </table>
 <h3>Discrete-only</h3>
 <table>
-<tr><th>Method</th><th>Description</th></tr>
-<tr><td><code>recalib_count()</code></td><td>How many times discriminants were rebuilt</td></tr>
-<tr><td><code>is_ready()</code></td><td>Whether at least one recalibration has occurred</td></tr>
-<tr><td><code>last_cos_raw()</code></td><td>Cosine between first two prototypes (from last recalib)</td></tr>
-<tr><td><code>last_disc_strength()</code></td><td>`</td><td></td><td>disc</td><td></td><td>/ sqrt(dims)` (from last recalib)</td></tr>
-<tr><td><code>discriminant(label)</code></td><td>The learned separation vector</td></tr>
-<tr><td><code>predict(vec)</code></td><td>Classification prediction</td></tr>
-<tr><td><code>resolve(conviction, correct)</code></td><td>Record outcome for self-evaluation</td></tr>
-<tr><td><code>curve()</code></td><td>Fit conviction-accuracy curve → <code>(a, b)</code></td></tr>
-<tr><td><code>accuracy_at(conviction)</code></td><td>Predicted accuracy at a conviction level</td></tr>
-<tr><td><code>curve_valid()</code></td><td>Whether curve has been fitted</td></tr>
-<tr><td><code>curve_params()</code></td><td>Cached <code>(a, b)</code> if valid</td></tr>
-<tr><td><code>resolved_count()</code></td><td>Resolved predictions in the window</td></tr>
-<tr><td><code>labels()</code></td><td>All label handles</td></tr>
-<tr><td><code>label_name(label)</code></td><td>String name for a handle</td></tr>
-<tr><td><code>n_labels()</code></td><td>Number of labels</td></tr>
-<tr><td><code>label_count(label)</code></td><td>Observation count per label</td></tr>
-<tr><td><code>prototype(label)</code></td><td>Normalized prototype (f64)</td></tr>
-<tr><td><code>raw_prototype(label)</code></td><td>Raw accumulated sums</td></tr>
-<tr><td><code>prototype_health()</code></td><td><code>(norm_0, norm_1, cos_between)</code> for labels 0 and 1</td></tr>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tr><td data-label="Method"><code>recalib_count()</code></td><td data-label="Description">How many times discriminants were rebuilt</td></tr>
+<tr><td data-label="Method"><code>is_ready()</code></td><td data-label="Description">Whether at least one recalibration has occurred</td></tr>
+<tr><td data-label="Method"><code>last_cos_raw()</code></td><td data-label="Description">Cosine between first two prototypes (from last recalib)</td></tr>
+<tr><td data-label="Method"><code>last_disc_strength()</code></td><td data-label="Description">`</td><td data-label=""></td><td data-label="">disc</td><td data-label=""></td><td data-label="">/ sqrt(dims)` (from last recalib)</td></tr>
+<tr><td data-label="Method"><code>discriminant(label)</code></td><td data-label="Description">The learned separation vector</td></tr>
+<tr><td data-label="Method"><code>predict(vec)</code></td><td data-label="Description">Classification prediction</td></tr>
+<tr><td data-label="Method"><code>resolve(conviction, correct)</code></td><td data-label="Description">Record outcome for self-evaluation</td></tr>
+<tr><td data-label="Method"><code>curve()</code></td><td data-label="Description">Fit conviction-accuracy curve → <code>(a, b)</code></td></tr>
+<tr><td data-label="Method"><code>accuracy_at(conviction)</code></td><td data-label="Description">Predicted accuracy at a conviction level</td></tr>
+<tr><td data-label="Method"><code>curve_valid()</code></td><td data-label="Description">Whether curve has been fitted</td></tr>
+<tr><td data-label="Method"><code>curve_params()</code></td><td data-label="Description">Cached <code>(a, b)</code> if valid</td></tr>
+<tr><td data-label="Method"><code>resolved_count()</code></td><td data-label="Description">Resolved predictions in the window</td></tr>
+<tr><td data-label="Method"><code>labels()</code></td><td data-label="Description">All label handles</td></tr>
+<tr><td data-label="Method"><code>label_name(label)</code></td><td data-label="Description">String name for a handle</td></tr>
+<tr><td data-label="Method"><code>n_labels()</code></td><td data-label="Description">Number of labels</td></tr>
+<tr><td data-label="Method"><code>label_count(label)</code></td><td data-label="Description">Observation count per label</td></tr>
+<tr><td data-label="Method"><code>prototype(label)</code></td><td data-label="Description">Normalized prototype (f64)</td></tr>
+<tr><td data-label="Method"><code>raw_prototype(label)</code></td><td data-label="Description">Raw accumulated sums</td></tr>
+<tr><td data-label="Method"><code>prototype_health()</code></td><td data-label="Description"><code>(norm_0, norm_1, cos_between)</code> for labels 0 and 1</td></tr>
 </table>
 <h3>Continuous-only</h3>
 <table>
-<tr><th>Method</th><th>Description</th></tr>
-<tr><td><code>observe_scalar(vec, value, weight)</code></td><td>Record a (thought, scalar) pair</td></tr>
-<tr><td><code>query(vec)</code></td><td>Predict a scalar from a thought</td></tr>
-<tr><td><code>observation_count()</code></td><td>Total observations (permanent counter)</td></tr>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tr><td data-label="Method"><code>observe_scalar(vec, value, weight)</code></td><td data-label="Description">Record a (thought, scalar) pair</td></tr>
+<tr><td data-label="Method"><code>query(vec)</code></td><td data-label="Description">Predict a scalar from a thought</td></tr>
+<tr><td data-label="Method"><code>observation_count()</code></td><td data-label="Description">Total observations (permanent counter)</td></tr>
 </table>
 <hr>
 <h2>6. Key Properties</h2>
@@ -856,4 +961,4 @@ pub fn query(&self, vec: &Vector) -> f64
 <li>Line 72–73: <em>"discriminant(label) = prototype(label) - prototype(other)."</em></li>
 <li>Line 75: <em>"The discriminant IS the reckoner's learned knowledge, externalized."</em></li>
 <li>Line 80–82: <em>"accuracy = (1/N) + a × exp(b × conviction), N = number of labels. At zero conviction, accuracy = 1/N (random chance among N labels). The curve IS the proof. Monotonically increasing = real signal."</em></li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Disposable Machine — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Disposable Machine — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,14 +588,15 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Disposable Machine <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Disposable Machine <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <hr></div><h2>The DNA/Phenotype Split</h2>
 <p>The architecture enforces a strict separation between <strong>what the system is</strong> and <strong>what it currently looks like</strong>:</p>
 <table>
-<tr><th>Layer</th><th>Role</th><th>Mutability</th></tr>
-<tr><td>T-1-004-lab-guide (GUIDE.md)</td><td>Specification — declares every struct, enum, dependency, and data flow</td><td>Changes only when the <em>thesis</em> changes</td></tr>
-<tr><td>wat files</td><td>Intermediate representation — Scheme-like s-expressions that implement what the guide declares</td><td>Regenerated from guide changes</td></tr>
-<tr><td>Rust implementation</td><td>Phenotype — compiles and runs, but carries no permanent authority</td><td>Disposable. Grown, run, discarded.</td></tr>
+<thead><tr><th>Layer</th><th>Role</th><th>Mutability</th></tr></thead>
+<tr><td data-label="Layer">T-1-004-lab-guide (GUIDE.md)</td><td data-label="Role">Specification — declares every struct, enum, dependency, and data flow</td><td data-label="Mutability">Changes only when the <em>thesis</em> changes</td></tr>
+<tr><td data-label="Layer">wat files</td><td data-label="Role">Intermediate representation — Scheme-like s-expressions that implement what the guide declares</td><td data-label="Mutability">Regenerated from guide changes</td></tr>
+<tr><td data-label="Layer">Rust implementation</td><td data-label="Role">Phenotype — compiles and runs, but carries no permanent authority</td><td data-label="Mutability">Disposable. Grown, run, discarded.</td></tr>
 </table>
 <p>The chain of derivation is one-directional: <strong>Guide → wat → Rust</strong>. The Rust never feeds back into the guide. When layers diverge, the guide is right — by declaration.</p>
 <p>This is stated explicitly: <em>"Each section declares its dependencies. The order of sections IS the build order."</em> The guide is not documentation <em>about</em> the code. The guide is the code's reason to exist.</p>
@@ -539,12 +644,12 @@ f(state, candle) → state
 <hr>
 <h2>Implications</h2>
 <table>
-<tr><th>Principle</th><th>Consequence</th></tr>
-<tr><td>The guide is authoritative</td><td>Implementation bugs are resolved by checking against the guide, not by checking git history</td></tr>
-<tr><td>No accumulated legacy</td><td>Refactoring means regrowing, not patching</td></tr>
-<tr><td>Learning is acquired, not loaded</td><td>The organism's intelligence is <em>earned</em> each run — no pretrained weights, no snapshots to migrate</td></tr>
-<tr><td>Spec-first development</td><td>You cannot implement what the guide doesn't declare. If it's not in the guide, it doesn't exist.</td></tr>
-<tr><td>Directional derivation</td><td>Guide → wat → Rust. Never Rust → guide. The phenotype does not rewrite its DNA.</td></tr>
+<thead><tr><th>Principle</th><th>Consequence</th></tr></thead>
+<tr><td data-label="Principle">The guide is authoritative</td><td data-label="Consequence">Implementation bugs are resolved by checking against the guide, not by checking git history</td></tr>
+<tr><td data-label="Principle">No accumulated legacy</td><td data-label="Consequence">Refactoring means regrowing, not patching</td></tr>
+<tr><td data-label="Principle">Learning is acquired, not loaded</td><td data-label="Consequence">The organism's intelligence is <em>earned</em> each run — no pretrained weights, no snapshots to migrate</td></tr>
+<tr><td data-label="Principle">Spec-first development</td><td data-label="Consequence">You cannot implement what the guide doesn't declare. If it's not in the guide, it doesn't exist.</td></tr>
+<tr><td data-label="Principle">Directional derivation</td><td data-label="Consequence">Guide → wat → Rust. Never Rust → guide. The phenotype does not rewrite its DNA.</td></tr>
 </table>
 <hr>
 <h2>Related Concepts</h2>
@@ -553,4 +658,4 @@ f(state, candle) → state
 <li><a class="wikilink" href="pg-curve.html">Curve</a> — self-evaluation surface, built from lived experience</li>
 <li>Values Up, Not Queues Down — the data-flow principle that keeps the phenotype clean</li>
 <li>No Zones, Only Scalars — emit raw measurements, never accumulate premature abstractions</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

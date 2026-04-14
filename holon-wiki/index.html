@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Holon Wiki — Honest Documentation</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Holon Wiki — Honest Documentation</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,4 +588,5 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="banner"><h1>Holon Wiki</h1><p>Algebraic approach to machine cognition — honest documentation, verified from source code.</p></div><div id="content"><h2>The Approach</h2><p>Holon-lab-trading is built on algebraic primitives — <strong>bind</strong> (structure), <strong>bundle</strong> (consensus), <strong>cosine</strong> (measurement) — composed into cognitive organisms. No neural networks. No gradients. No backpropagation. Only algebra, accumulation, and accountability.</p><h2>How This Wiki Was Built</h2><p>Every page was verified against source code by context-free agents (<em>the ignorant</em>). Each agent read Rust source or wat specs and wrote an honest transcription. Composite pages were built exclusively from verified leaf documents — no fabrication, no interpretation. <strong>The Rust source is the authority.</strong></p><h2>Authority Chain</h2><ol><li><strong>Rust source</strong> — most honest, the living organism</li><li><strong>wat specs</strong> — the contract, catching up</li><li><strong>GUIDE / CIRCUIT / ORDER</strong> — the blueprint, catching up</li><li><strong>Website</strong> — out of date</li></ol><h2>All Pages (66)</h2><h2>WHY <span class="badge badge-why">7</span></h2><ul><li><a class="wikilink" href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a> <span class="badge badge-why">WHY</span></li></ul><h2>HOW — Substrate <span class="badge badge-how">9</span></h2><ul><li><a class="wikilink" href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-004-encoder.html">T0-004 — Scalar Encoding</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-005-vector-manager.html">T0-005 · VectorManager</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-007-accumulator.html">T0-007: Accumulator</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a> <span class="badge badge-how">HOW</span></li></ul><h2>DESCRIBE — Language <span class="badge badge-describe">3</span></h2><ul><li><a class="wikilink" href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a> <span class="badge badge-describe">DESCRIBE</span></li><li><a class="wikilink" href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a> <span class="badge badge-describe">DESCRIBE</span></li><li><a class="wikilink" href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a> <span class="badge badge-describe">DESCRIBE</span></li></ul><h2>WHAT — Enterprise <span class="badge badge-what">17</span></h2><ul><li><a class="wikilink" href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-004-vocabulary.html">T2-004 — Vocabulary</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-005-lens.html">T2-005 — Lens</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a> <span class="badge badge-what">WHAT</span></li></ul><h2>EXPLAIN — Wiki Composites <span class="badge badge-explain">30</span></h2><ul><li><a class="wikilink" href="pg-atom.html">Atom — the irreducible unit of meaning</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-bind.html">Bind — the self-inverse combinator</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-broker.html">Broker — the accountability and execution primitive</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-bundle.html">Bundle — the lossy consensus operator</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-chain-types.html">Chain Types</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-conviction.html">Conviction — the strength of a prediction</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-disposable-machine.html">Disposable Machine</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-lens.html">Lens — the vocabulary subset selector.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-panel-of-experts.html">Panel of Experts</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-programs.html">Programs — the concurrent pipeline architecture</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-proposal-system.html">Proposal System</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-reckoner.html">Reckoner — the geometric learning primitive</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-services.html">Services — Queue, Topic, and Mailbox</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-treasury.html">Treasury — Bounded Capital Allocation</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-wat-vm.html">wat-vm — the training harness</a> <span class="badge badge-explain">EXPLAIN</span></li></ul></div></body></html>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="banner"><h1>Holon Wiki</h1><p>Algebraic approach to machine cognition — honest documentation, verified from source code.</p></div><div id="content"><h2>The Approach</h2><p>Holon-lab-trading is built on algebraic primitives — <strong>bind</strong> (structure), <strong>bundle</strong> (consensus), <strong>cosine</strong> (measurement) — composed into cognitive organisms. No neural networks. No gradients. No backpropagation. Only algebra, accumulation, and accountability.</p><h2>How This Wiki Was Built</h2><p>Every page was verified against source code by context-free agents (<em>the ignorant</em>). Each agent read Rust source or wat specs and wrote an honest transcription. Composite pages were built exclusively from verified leaf documents — no fabrication, no interpretation. <strong>The Rust source is the authority.</strong></p><h2>Authority Chain</h2><ol><li><strong>Rust source</strong> — most honest, the living organism</li><li><strong>wat specs</strong> — the contract, catching up</li><li><strong>GUIDE / CIRCUIT / ORDER</strong> — the blueprint, catching up</li><li><strong>Website</strong> — out of date</li></ol><h2>All Pages (66)</h2><h2>WHY <span class="badge badge-why">7</span></h2><ul><li><a class="wikilink" href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a> <span class="badge badge-why">WHY</span></li><li><a class="wikilink" href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a> <span class="badge badge-why">WHY</span></li></ul><h2>HOW — Substrate <span class="badge badge-how">9</span></h2><ul><li><a class="wikilink" href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-004-encoder.html">T0-004 — Scalar Encoding</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-005-vector-manager.html">T0-005 · VectorManager</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-007-accumulator.html">T0-007: Accumulator</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a> <span class="badge badge-how">HOW</span></li><li><a class="wikilink" href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a> <span class="badge badge-how">HOW</span></li></ul><h2>DESCRIBE — Language <span class="badge badge-describe">3</span></h2><ul><li><a class="wikilink" href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a> <span class="badge badge-describe">DESCRIBE</span></li><li><a class="wikilink" href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a> <span class="badge badge-describe">DESCRIBE</span></li><li><a class="wikilink" href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a> <span class="badge badge-describe">DESCRIBE</span></li></ul><h2>WHAT — Enterprise <span class="badge badge-what">17</span></h2><ul><li><a class="wikilink" href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-004-vocabulary.html">T2-004 — Vocabulary</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-005-lens.html">T2-005 — Lens</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a> <span class="badge badge-what">WHAT</span></li><li><a class="wikilink" href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a> <span class="badge badge-what">WHAT</span></li></ul><h2>EXPLAIN — Wiki Composites <span class="badge badge-explain">30</span></h2><ul><li><a class="wikilink" href="pg-atom.html">Atom — the irreducible unit of meaning</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-bind.html">Bind — the self-inverse combinator</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-broker.html">Broker — the accountability and execution primitive</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-bundle.html">Bundle — the lossy consensus operator</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-chain-types.html">Chain Types</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-conviction.html">Conviction — the strength of a prediction</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-disposable-machine.html">Disposable Machine</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-lens.html">Lens — the vocabulary subset selector.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-panel-of-experts.html">Panel of Experts</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-programs.html">Programs — the concurrent pipeline architecture</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-proposal-system.html">Proposal System</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-reckoner.html">Reckoner — the geometric learning primitive</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-services.html">Services — Queue, Topic, and Mailbox</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-treasury.html">Treasury — Bounded Capital Allocation</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a> <span class="badge badge-explain">EXPLAIN</span></li><li><a class="wikilink" href="pg-wat-vm.html">wat-vm — the training harness</a> <span class="badge badge-explain">EXPLAIN</span></li></ul></div></body></html>

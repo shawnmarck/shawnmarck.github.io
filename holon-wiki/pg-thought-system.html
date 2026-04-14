@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Thought System — how candles become thoughts and thoughts become meaning — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Thought System — how candles become thoughts and thoughts become meaning — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Thought System — how candles become thoughts and thoughts become meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Thought System — how candles become thoughts and thoughts become meaning <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> (atoms) or <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where "similar market conditions live near each other." The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> then observes and learns from these thoughts over time.</p>
 <hr></div><h2>1. The Pipeline: Candle → Facts → AST → Vector → Thought</h2>
 <pre class="mermaid">
@@ -499,10 +604,10 @@ flowchart TD
 <blockquote>"Pure functions. Something in, facts out. No state. Each domain thinks about different things." — T2-004</blockquote>
 <p>Each fact is a <code>ThoughtAST</code> node carrying an encoding scheme:</p>
 <table>
-<tr><th>Scheme</th><th>When to use</th><th>Examples</th></tr>
-<tr><td><code>Linear { scale }</code></td><td>Naturally bounded scalars</td><td>RSI [0,1], Bollinger position [-1,1]</td></tr>
-<tr><td><code>Log</code></td><td>Unbounded positive scalars</td><td>ATR ratio, volume ratio</td></tr>
-<tr><td><code>Circular { period }</code></td><td>Periodic scalars</td><td>minute (60), hour (24), day-of-week (7)</td></tr>
+<thead><tr><th>Scheme</th><th>When to use</th><th>Examples</th></tr></thead>
+<tr><td data-label="Scheme"><code>Linear { scale }</code></td><td data-label="When to use">Naturally bounded scalars</td><td data-label="Examples">RSI [0,1], Bollinger position [-1,1]</td></tr>
+<tr><td data-label="Scheme"><code>Log</code></td><td data-label="When to use">Unbounded positive scalars</td><td data-label="Examples">ATR ratio, volume ratio</td></tr>
+<tr><td data-label="Scheme"><code>Circular { period }</code></td><td data-label="When to use">Periodic scalars</td><td data-label="Examples">minute (60), hour (24), day-of-week (7)</td></tr>
 </table>
 <blockquote>"The encoding scheme IS the bounding strategy." — T2-004</blockquote>
 <p>Every relationship is a <strong>signed scalar</strong>, not a boolean. No "above" or "below" atoms — just the number with sign and magnitude.</p>
@@ -510,28 +615,28 @@ flowchart TD
 <h3>Step 2: ThoughtAST — the thought expression tree</h3>
 <p>The <code>ThoughtAST</code> enum (T0-011) is the intermediate representation between vocabulary and vector:</p>
 <table>
-<tr><th>Variant</th><th>Purpose</th><th>Example</th></tr>
-<tr><td><code>Atom(String)</code></td><td>Named symbol, no scalar</td><td><code>"rsi"</code></td></tr>
-<tr><td><code>Linear { value, scale }</code></td><td>Bounded scalar</td><td><code>Linear { value: 0.73, scale: 1.0 }</code></td></tr>
-<tr><td><code>Log { value }</code></td><td>Unbounded positive scalar</td><td><code>Log { value: 1.5 }</code></td></tr>
-<tr><td><code>Circular { value, period }</code></td><td>Wrapping periodic scalar</td><td><code>Circular { value: 14.0, period: 24.0 }</code></td></tr>
-<tr><td><code>Bind(Box, Box)</code></td><td>Two concepts composed into a relationship</td><td><code>Bind(Atom("rsi"), Log(1.5))</code></td></tr>
-<tr><td><code>Bundle(Vec)</code></td><td>Superposition of multiple relationships</td><td><code>Bundle([fact1, fact2, fact3])</code></td></tr>
-<tr><td><code>Sequential(Vec)</code></td><td>Position-sensitive sequence</td><td><code>[A, B] ≠ [B, A]</code></td></tr>
+<thead><tr><th>Variant</th><th>Purpose</th><th>Example</th></tr></thead>
+<tr><td data-label="Variant"><code>Atom(String)</code></td><td data-label="Purpose">Named symbol, no scalar</td><td data-label="Example"><code>"rsi"</code></td></tr>
+<tr><td data-label="Variant"><code>Linear { value, scale }</code></td><td data-label="Purpose">Bounded scalar</td><td data-label="Example"><code>Linear { value: 0.73, scale: 1.0 }</code></td></tr>
+<tr><td data-label="Variant"><code>Log { value }</code></td><td data-label="Purpose">Unbounded positive scalar</td><td data-label="Example"><code>Log { value: 1.5 }</code></td></tr>
+<tr><td data-label="Variant"><code>Circular { value, period }</code></td><td data-label="Purpose">Wrapping periodic scalar</td><td data-label="Example"><code>Circular { value: 14.0, period: 24.0 }</code></td></tr>
+<tr><td data-label="Variant"><code>Bind(Box, Box)</code></td><td data-label="Purpose">Two concepts composed into a relationship</td><td data-label="Example"><code>Bind(Atom("rsi"), Log(1.5))</code></td></tr>
+<tr><td data-label="Variant"><code>Bundle(Vec)</code></td><td data-label="Purpose">Superposition of multiple relationships</td><td data-label="Example"><code>Bundle([fact1, fact2, fact3])</code></td></tr>
+<tr><td data-label="Variant"><code>Sequential(Vec)</code></td><td data-label="Purpose">Position-sensitive sequence</td><td data-label="Example"><code>[A, B] ≠ [B, A]</code></td></tr>
 </table>
 <p>A typical market candle might produce ~60–80 individual facts across all vocabulary modules, bundled into a single thought vector.</p>
 <p><code>collect_facts()</code> recursively flattens nested Bundles/Sequentials, skipping bare Atoms (names without values are not facts).</p>
 <h3>Step 3: ThoughtEncoder walks the AST</h3>
 <p>The <code>ThoughtEncoder</code> (T0-011) is <strong>stateless</strong> — no cache. It holds only a <code>ScalarEncoder</code> and a <code>VectorManager</code>. Each <code>encode()</code> call re-evaluates the entire subtree:</p>
 <table>
-<tr><th>AST variant</th><th>Encoding action</th></tr>
-<tr><td><code>Atom(name)</code></td><td><code>VectorManager.get_vector(name)</code> — SHA-256 → ChaCha8Rng → bipolar vector</td></tr>
-<tr><td><code>Linear { value, scale }</code></td><td><code>ScalarEncoder.encode(value, Linear { scale })</code> — rotational interpolation</td></tr>
-<tr><td><code>Log { value }</code></td><td><code>ScalarEncoder.encode_log(value)</code> — log₁₀ then rotational</td></tr>
-<tr><td><code>Circular { value, period }</code></td><td><code>ScalarEncoder.encode(value, Circular { period })</code> — modulo wrap</td></tr>
-<tr><td><code>Bind(left, right)</code></td><td>Recursively encode both, then <code>Primitives::bind(&l, &r)</code></td></tr>
-<tr><td><code>Bundle(children)</code></td><td>Encode all children, then <code>Primitives::bundle(&refs)</code></td></tr>
-<tr><td><code>Sequential(items)</code></td><td>Encode each item, <code>permute</code> by position index, then <code>bundle</code></td></tr>
+<thead><tr><th>AST variant</th><th>Encoding action</th></tr></thead>
+<tr><td data-label="AST variant"><code>Atom(name)</code></td><td data-label="Encoding action"><code>VectorManager.get_vector(name)</code> — SHA-256 → ChaCha8Rng → bipolar vector</td></tr>
+<tr><td data-label="AST variant"><code>Linear { value, scale }</code></td><td data-label="Encoding action"><code>ScalarEncoder.encode(value, Linear { scale })</code> — rotational interpolation</td></tr>
+<tr><td data-label="AST variant"><code>Log { value }</code></td><td data-label="Encoding action"><code>ScalarEncoder.encode_log(value)</code> — log₁₀ then rotational</td></tr>
+<tr><td data-label="AST variant"><code>Circular { value, period }</code></td><td data-label="Encoding action"><code>ScalarEncoder.encode(value, Circular { period })</code> — modulo wrap</td></tr>
+<tr><td data-label="AST variant"><code>Bind(left, right)</code></td><td data-label="Encoding action">Recursively encode both, then <code>Primitives::bind(&l, &r)</code></td></tr>
+<tr><td data-label="AST variant"><code>Bundle(children)</code></td><td data-label="Encoding action">Encode all children, then <code>Primitives::bundle(&refs)</code></td></tr>
+<tr><td data-label="AST variant"><code>Sequential(items)</code></td><td data-label="Encoding action">Encode each item, <code>permute</code> by position index, then <code>bundle</code></td></tr>
 </table>
 <blockquote>"Production encoding goes through <code>encoding::encode::encode()</code> which checks the LRU. This struct exists for tests and IncrementalBundle." — T0-011</blockquote>
 <hr>
@@ -580,12 +685,12 @@ if i is odd:  cos(position × freq)
 <h2>4. Walkable — zero-serialization encoding</h2>
 <p>The <code>Walkable</code> trait (T0-006) enables any Rust type to be directly encoded into vectors <strong>without JSON/EDN serialization</strong>. It defines a structural type system (<code>WalkType</code>) that the encoder recursively walks:</p>
 <table>
-<tr><th>WalkType</th><th>Encoding semantics</th></tr>
-<tr><td><code>Scalar</code></td><td>Atom lookup or special numeric encoding</td></tr>
-<tr><td><code>Map</code></td><td>Role-filler binding: each key bound to its value's vector, then all bundled</td></tr>
-<tr><td><code>List</code></td><td>Position-encoded: each element bound to its indexed path, then bundled</td></tr>
-<tr><td><code>Set</code></td><td>Items bundled directly, then bound with <code>"set_indicator"</code> role</td></tr>
-<tr><td><code>Spread</code></td><td>Fan-out: each element becomes an independent leaf binding</td></tr>
+<thead><tr><th>WalkType</th><th>Encoding semantics</th></tr></thead>
+<tr><td data-label="WalkType"><code>Scalar</code></td><td data-label="Encoding semantics">Atom lookup or special numeric encoding</td></tr>
+<tr><td data-label="WalkType"><code>Map</code></td><td data-label="Encoding semantics">Role-filler binding: each key bound to its value's vector, then all bundled</td></tr>
+<tr><td data-label="WalkType"><code>List</code></td><td data-label="Encoding semantics">Position-encoded: each element bound to its indexed path, then bundled</td></tr>
+<tr><td data-label="WalkType"><code>Set</code></td><td data-label="Encoding semantics">Items bundled directly, then bound with <code>"set_indicator"</code> role</td></tr>
+<tr><td data-label="WalkType"><code>Spread</code></td><td data-label="Encoding semantics">Fan-out: each element becomes an independent leaf binding</td></tr>
 </table>
 <blockquote>"The key insight is <strong>role-filler binding</strong>: we bind each value (filler) with its key (role) before bundling." — T0-006</blockquote>
 <p>This is an alternative path to <code>ThoughtAST</code> — both produce the same vector algebra operations, but Walkable works on native Rust types while ThoughtAST works on the explicit tree.</p>
@@ -603,10 +708,10 @@ if i is odd:  cos(position × freq)
 <h2>6. The Full Vocabulary Landscape</h2>
 <p>Three domains, scoped subfiles (T2-004):</p>
 <table>
-<tr><th>Domain</th><th>Modules</th><th>Live atoms</th></tr>
-<tr><td><strong>shared/</strong></td><td>time (5 atoms)</td><td>5 — all wired</td></tr>
-<tr><td><strong>market/</strong></td><td>standard (8), oscillators (8), flow (6), persistence (3), regime (8), divergence (3), fibonacci (8), keltner (6), momentum (6), price_action (7), timeframe (6)</td><td>~69 — ichimoku & stochastic removed</td></tr>
-<tr><td><strong>exit/</strong> (Rust)</td><td>regime (8), time (2), phase (2+variable)</td><td>~12+ — wat spec exit modules not wired</td></tr>
+<thead><tr><th>Domain</th><th>Modules</th><th>Live atoms</th></tr></thead>
+<tr><td data-label="Domain"><strong>shared/</strong></td><td data-label="Modules">time (5 atoms)</td><td data-label="Live atoms">5 — all wired</td></tr>
+<tr><td data-label="Domain"><strong>market/</strong></td><td data-label="Modules">standard (8), oscillators (8), flow (6), persistence (3), regime (8), divergence (3), fibonacci (8), keltner (6), momentum (6), price_action (7), timeframe (6)</td><td data-label="Live atoms">~69 — ichimoku & stochastic removed</td></tr>
+<tr><td data-label="Domain"><strong>exit/</strong> (Rust)</td><td data-label="Modules">regime (8), time (2), phase (2+variable)</td><td data-label="Live atoms">~12+ — wat spec exit modules not wired</td></tr>
 </table>
 <p><strong>~86+ atoms fire per candle</strong> across a typical lens configuration. Each atom becomes one <code>ThoughtAST</code> leaf. All leaves are bundled into one thought vector.</p>
 <h3>Known divergences</h3>
@@ -618,10 +723,10 @@ if i is odd:  cos(position × freq)
 <h2>7. Caching Architecture</h2>
 <p>Three distinct caching layers:</p>
 <table>
-<tr><th>Layer</th><th>Location</th><th>Purpose</th></tr>
-<tr><td><strong>VectorManager cache</strong></td><td><code>Arc<RwLock<HashMap<String, Vector>>></code></td><td>Atom → vector mapping. Persistent across all encodes. Shared via <code>Arc</code>.</td></tr>
-<tr><td><strong>Production LRU</strong></td><td><code>encoding::encode::encode()</code></td><td>Avoids re-evaluating identical <code>ThoughtAST</code> subtrees on hot paths.</td></tr>
-<tr><td><strong>IncrementalBundle facts cache</strong></td><td><code>HashMap<ThoughtAST, Vector></code></td><td>Avoids re-encoding unchanged facts between candles. Depends on <code>round_to</code>.</td></tr>
+<thead><tr><th>Layer</th><th>Location</th><th>Purpose</th></tr></thead>
+<tr><td data-label="Layer"><strong>VectorManager cache</strong></td><td data-label="Location"><code>Arc<RwLock<HashMap<String, Vector>>></code></td><td data-label="Purpose">Atom → vector mapping. Persistent across all encodes. Shared via <code>Arc</code>.</td></tr>
+<tr><td data-label="Layer"><strong>Production LRU</strong></td><td data-label="Location"><code>encoding::encode::encode()</code></td><td data-label="Purpose">Avoids re-evaluating identical <code>ThoughtAST</code> subtrees on hot paths.</td></tr>
+<tr><td data-label="Layer"><strong>IncrementalBundle facts cache</strong></td><td data-label="Location"><code>HashMap<ThoughtAST, Vector></code></td><td data-label="Purpose">Avoids re-encoding unchanged facts between candles. Depends on <code>round_to</code>.</td></tr>
 </table>
 <p><code>ThoughtEncoder</code> itself holds <strong>zero caching</strong> — it is a pure evaluator.</p>
 <hr>
@@ -657,4 +762,4 @@ if i is odd:  cos(position × freq)
 <li>T0-006 (Walkable) — structural type system and recursive tree walking</li>
 <li>T0-011 (ThoughtEncoder) — ThoughtAST enum, encoder evaluation, IncrementalBundle</li>
 <li>T2-004 (Vocabulary) — complete atom catalog, domain organization, encoding schemes</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Fact — a scalar claim about the world, encoded as a vector. — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Fact — a scalar claim about the world, encoded as a vector. — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Fact — a scalar claim about the world, encoded as a vector. <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR</strong>: A fact is a named scalar value emitted by a <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> module, represented as a <a href="#thoughtast-representation"><code>ThoughtAST</code></a> leaf node, and encoded into a fixed-width bipolar vector via the <a class="wikilink" href="T0-004-encoder.html">scalar encoder</a>. Facts are the atomic inputs to <a class="wikilink" href="pg-thought-space.html">holonic cognition</a> — no booleans, no categories, only signed scalars. The discriminant learns where the boundaries are.</p>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Fact — a scalar claim about the world, encoded as a vector. <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR</strong>: A fact is a named scalar value emitted by a <a class="wikilink" href="pg-vocabulary.html">vocabulary</a> module, represented as a <a href="#thoughtast-representation"><code>ThoughtAST</code></a> leaf node, and encoded into a fixed-width bipolar vector via the <a class="wikilink" href="T0-004-encoder.html">scalar encoder</a>. Facts are the atomic inputs to <a class="wikilink" href="pg-thought-space.html">holonic cognition</a> — no booleans, no categories, only signed scalars. The discriminant learns where the boundaries are.</p>
 <hr>
 <h2>What a fact is</h2>
 <p>From the GUIDE:</p>
@@ -494,21 +599,21 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <blockquote>— T2-004 (vocabulary), GUIDE lines 1346–1356</blockquote>
 <p>A fact has three components:</p>
 <table>
-<tr><th>Component</th><th>Example</th><th>Role</th></tr>
-<tr><td><strong>Name</strong></td><td><code>rsi</code>, <code>dist-from-sma200</code>, <code>phase</code></td><td>Identifies what is being measured</td></tr>
-<tr><td><strong>Scalar value</strong></td><td><code>0.73</code>, <code>-0.023</code>, <code>peak</code></td><td>The quantitative claim</td></tr>
-<tr><td><strong>Encoding scheme</strong></td><td><code>Linear { scale: 1.0 }</code>, <code>Log</code>, <code>Circular { period: 24 }</code></td><td>Determines how value maps to vector space</td></tr>
+<thead><tr><th>Component</th><th>Example</th><th>Role</th></tr></thead>
+<tr><td data-label="Component"><strong>Name</strong></td><td data-label="Example"><code>rsi</code>, <code>dist-from-sma200</code>, <code>phase</code></td><td data-label="Role">Identifies what is being measured</td></tr>
+<tr><td data-label="Component"><strong>Scalar value</strong></td><td data-label="Example"><code>0.73</code>, <code>-0.023</code>, <code>peak</code></td><td data-label="Role">The quantitative claim</td></tr>
+<tr><td data-label="Component"><strong>Encoding scheme</strong></td><td data-label="Example"><code>Linear { scale: 1.0 }</code>, <code>Log</code>, <code>Circular { period: 24 }</code></td><td data-label="Role">Determines how value maps to vector space</td></tr>
 </table>
 <p>Vocabulary modules are "pure functions. Something in, facts out. No state." (T2-004, GUIDE line 1245).</p>
 <hr>
 <h2>ThoughtAST representation</h2>
 <p>Facts are represented as leaf nodes in the <a href="T0-011-thought-encoder-rust.md"><code>ThoughtAST</code></a> enum. The four factual variants are:</p>
 <table>
-<tr><th>AST Variant</th><th>Fields</th><th>Meaning</th><th>Example</th></tr>
-<tr><td><code>Linear { value: f64, scale: f64 }</code></td><td>value, scale</td><td>Naturally bounded scalar</td><td><code>Linear { value: 0.73, scale: 1.0 }</code></td></tr>
-<tr><td><code>Log { value: f64 }</code></td><td>value</td><td>Unbounded positive scalar (log-compressed)</td><td><code>Log { value: 5.2 }</code></td></tr>
-<tr><td><code>Circular { value: f64, period: f64 }</code></td><td>value, period</td><td>Periodic/wrapping scalar</td><td><code>Circular { value: 14.0, period: 24.0 }</code></td></tr>
-<tr><td><code>Bind(Atom, …)</code></td><td>left, right</td><td>A named scalar fact (name bound to value)</td><td><code>Bind(Atom("rsi"), Linear { … })</code></td></tr>
+<thead><tr><th>AST Variant</th><th>Fields</th><th>Meaning</th><th>Example</th></tr></thead>
+<tr><td data-label="AST Variant"><code>Linear { value: f64, scale: f64 }</code></td><td data-label="Fields">value, scale</td><td data-label="Meaning">Naturally bounded scalar</td><td data-label="Example"><code>Linear { value: 0.73, scale: 1.0 }</code></td></tr>
+<tr><td data-label="AST Variant"><code>Log { value: f64 }</code></td><td data-label="Fields">value</td><td data-label="Meaning">Unbounded positive scalar (log-compressed)</td><td data-label="Example"><code>Log { value: 5.2 }</code></td></tr>
+<tr><td data-label="AST Variant"><code>Circular { value: f64, period: f64 }</code></td><td data-label="Fields">value, period</td><td data-label="Meaning">Periodic/wrapping scalar</td><td data-label="Example"><code>Circular { value: 14.0, period: 24.0 }</code></td></tr>
+<tr><td data-label="AST Variant"><code>Bind(Atom, …)</code></td><td data-label="Fields">left, right</td><td data-label="Meaning">A named scalar fact (name bound to value)</td><td data-label="Example"><code>Bind(Atom("rsi"), Linear { … })</code></td></tr>
 </table>
 <p>Bare <code>Atom(name)</code> nodes are <strong>not</strong> facts — they are names without values. The <code>collect_facts</code> function explicitly skips them: "name without value — not a fact" (T0-011, line 174).</p>
 <p>All four factual variants — <code>Linear</code>, <code>Log</code>, <code>Circular</code>, and <code>Bind</code> — are returned as-is by <code>collect_facts</code>, while <code>Bundle</code> and <code>Sequential</code> containers are transparently flattened (T0-011, lines 341–352).</p>
@@ -517,10 +622,10 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>The encoding scheme determines how a scalar value maps into vector space. Three schemes exist (T2-004, GUIDE lines 1376–1395):</p>
 <blockquote>"The encoding scheme IS the bounding strategy."</blockquote>
 <table>
-<tr><th>Scheme</th><th>Use case</th><th>Key property</th><th>Examples</th></tr>
-<tr><td><strong><code>Linear { scale }</code></strong></td><td>Naturally bounded scalars</td><td>Equal absolute differences → equal similarity drops</td><td>RSI <code>[0,1]</code>, Bollinger position <code>[-1,1]</code>, distances <code>scale: 0.1</code></td></tr>
-<tr><td><strong><code>Log</code></strong></td><td>Unbounded positive scalars</td><td>Equal ratios → equal similarity drops</td><td>Volume ratio, ATR ratio, band widths</td></tr>
-<tr><td><strong><code>Circular { period }</code></strong></td><td>Periodic scalars</td><td>Endpoint wraps to start</td><td>Hour (24), day-of-week (7), minute (60)</td></tr>
+<thead><tr><th>Scheme</th><th>Use case</th><th>Key property</th><th>Examples</th></tr></thead>
+<tr><td data-label="Scheme"><strong><code>Linear { scale }</code></strong></td><td data-label="Use case">Naturally bounded scalars</td><td data-label="Key property">Equal absolute differences → equal similarity drops</td><td data-label="Examples">RSI <code>[0,1]</code>, Bollinger position <code>[-1,1]</code>, distances <code>scale: 0.1</code></td></tr>
+<tr><td data-label="Scheme"><strong><code>Log</code></strong></td><td data-label="Use case">Unbounded positive scalars</td><td data-label="Key property">Equal ratios → equal similarity drops</td><td data-label="Examples">Volume ratio, ATR ratio, band widths</td></tr>
+<tr><td data-label="Scheme"><strong><code>Circular { period }</code></strong></td><td data-label="Use case">Periodic scalars</td><td data-label="Key property">Endpoint wraps to start</td><td data-label="Examples">Hour (24), day-of-week (7), minute (60)</td></tr>
 </table>
 <blockquote>"Linear: Equal absolute differences have equal similarity drops — 100 → 200 has same similarity drop as 1000 → 1100."</blockquote>
 <blockquote>— T0-004 (scalar encoding), scalar.rs:9–11</blockquote>
@@ -563,10 +668,10 @@ Downstream: lens observers, discriminants, accumulators
 <h2>The full fact catalog</h2>
 <p>~99 unique atom names exist in the live Rust system across three domains (T2-004):</p>
 <table>
-<tr><th>Domain</th><th>Modules</th><th>Atom count</th><th>Notes</th></tr>
-<tr><td><strong>shared</strong></td><td>time</td><td>5</td><td>Universal temporal context</td></tr>
-<tr><td><strong>market</strong></td><td>standard, oscillators, flow, persistence, regime, divergence, fibonacci, keltner, momentum, price-action, timeframe</td><td>~73</td><td>Core market observation</td></tr>
-<tr><td><strong>exit</strong></td><td>regime, time, phase</td><td>~18</td><td>Position management context</td></tr>
+<thead><tr><th>Domain</th><th>Modules</th><th>Atom count</th><th>Notes</th></tr></thead>
+<tr><td data-label="Domain"><strong>shared</strong></td><td data-label="Modules">time</td><td data-label="Atom count">5</td><td data-label="Notes">Universal temporal context</td></tr>
+<tr><td data-label="Domain"><strong>market</strong></td><td data-label="Modules">standard, oscillators, flow, persistence, regime, divergence, fibonacci, keltner, momentum, price-action, timeframe</td><td data-label="Atom count">~73</td><td data-label="Notes">Core market observation</td></tr>
+<tr><td data-label="Domain"><strong>exit</strong></td><td data-label="Modules">regime, time, phase</td><td data-label="Atom count">~18</td><td data-label="Notes">Position management context</td></tr>
 </table>
 <p>Two additional market modules (ichimoku, stochastic) exist in the wat spec but were removed from live wiring via Proposals 041+042.</p>
 <hr>
@@ -584,4 +689,4 @@ Downstream: lens observers, discriminants, accumulators
 <li>T0-004 — Scalar Encoding: bipolar vector representations, rotational and positional algorithms, encoding properties</li>
 <li>T0-011 — ThoughtEncoder (Rust): AST representation, <code>collect_facts</code>, <code>IncrementalBundle</code>, encoding walk</li>
 <li>T2-004 — Vocabulary: atom catalog, encoding schemes, GUIDE design principles, domain organization</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

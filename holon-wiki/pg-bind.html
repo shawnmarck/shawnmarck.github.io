@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Bind — the self-inverse combinator — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Bind — the self-inverse combinator — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Bind — the self-inverse combinator <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Bind — the self-inverse combinator <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
 <p><strong><code>bind</code></strong> is the core relational primitive of the holon-rs vector algebra. It composes two concept vectors into one via element-wise multiplication over bipolar values <code>{-1, 0, +1}</code>. Its defining property is <strong>self-inverseness</strong>: <code>bind(bind(A, B), A) = B</code> exactly (not approximately). The WAT spec names it one of four generators of the Vector Algebra. In Rust, it is implemented as <code>Primitives::bind</code>, with <code>unbind</code> exposed as a semantic alias. Every structured encoding in the system — from <a class="wikilink" href="T0-006-walkable.html">Walkable</a> role-filler pairs to <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> <code>Bind</code> nodes — ultimately reduces to calls to <code>bind</code>.</p>
 <hr></div><h2>Algebraic definition</h2>
 <p>From the WAT spec (<code>wat/core/primitives.wat</code>):</p>
@@ -563,34 +668,34 @@ Bind(left, right) → l_vec = encode(left)
 <blockquote>Source: <a class="wikilink" href="T0-011-thought-encoder-rust.html">T0-011-thought-encoder-rust</a>, <code>ThoughtEncoder::encode</code> dispatch table: "Recursively encodes left → l_vec, encodes right → r_vec, then Primitives::bind(&l_vec, &r_vec)."</blockquote>
 <h3>Extended Rust operations using bind</h3>
 <table>
-<tr><th>Method</th><th>Description</th></tr>
-<tr><td><code>conditional_bind(a, b, gate, mode)</code></td><td>Element-wise bind gated by a third vector</td></tr>
-<tr><td><code>analogy(a, b, c)</code></td><td><code>C + difference(B, A)</code> — relational transfer (uses bind internally)</td></tr>
-<tr><td><code>similarity_profile(a, b)</code></td><td>Element-wise product (agreement pattern as vector) — same math as bind</td></tr>
+<thead><tr><th>Method</th><th>Description</th></tr></thead>
+<tr><td data-label="Method"><code>conditional_bind(a, b, gate, mode)</code></td><td data-label="Description">Element-wise bind gated by a third vector</td></tr>
+<tr><td data-label="Method"><code>analogy(a, b, c)</code></td><td data-label="Description"><code>C + difference(B, A)</code> — relational transfer (uses bind internally)</td></tr>
+<tr><td data-label="Method"><code>similarity_profile(a, b)</code></td><td data-label="Description">Element-wise product (agreement pattern as vector) — same math as bind</td></tr>
 </table>
 <blockquote>Source: <a class="wikilink" href="T0-002-primitives.html">T0-002-primitives</a>, extended operations table.</blockquote>
 <hr>
 <h2>Properties summary</h2>
 <table>
-<tr><th>Property</th><th>Value</th></tr>
-<tr><td>Operation</td><td>Element-wise multiplication over bipolar <code>{-1, 0, +1}</code></td></tr>
-<tr><td>Signature</td><td><code>(bind role filler) → Vector</code></td></tr>
-<tr><td>Self-inverse</td><td>Exact: <code>bind(bind(A, B), A) = B</code></td></tr>
-<tr><td>Identity element</td><td>None (bind has no identity — it destroys similarity to inputs)</td></tr>
-<tr><td>Commutative</td><td>Yes: <code>bind(A, B) = bind(B, A)</code></td></tr>
-<tr><td>Dissimilar to inputs</td><td>The result is dissimilar to both <code>A</code> and <code>B</code> by cosine</td></tr>
-<tr><td>WAT generator</td><td>Yes — one of four Vector Algebra generators</td></tr>
-<tr><td>Rust location</td><td><code>Primitives::bind</code> in <code>holon-rs/src/kernel/primitives.rs</code></td></tr>
+<thead><tr><th>Property</th><th>Value</th></tr></thead>
+<tr><td data-label="Property">Operation</td><td data-label="Value">Element-wise multiplication over bipolar <code>{-1, 0, +1}</code></td></tr>
+<tr><td data-label="Property">Signature</td><td data-label="Value"><code>(bind role filler) → Vector</code></td></tr>
+<tr><td data-label="Property">Self-inverse</td><td data-label="Value">Exact: <code>bind(bind(A, B), A) = B</code></td></tr>
+<tr><td data-label="Property">Identity element</td><td data-label="Value">None (bind has no identity — it destroys similarity to inputs)</td></tr>
+<tr><td data-label="Property">Commutative</td><td data-label="Value">Yes: <code>bind(A, B) = bind(B, A)</code></td></tr>
+<tr><td data-label="Property">Dissimilar to inputs</td><td data-label="Value">The result is dissimilar to both <code>A</code> and <code>B</code> by cosine</td></tr>
+<tr><td data-label="Property">WAT generator</td><td data-label="Value">Yes — one of four Vector Algebra generators</td></tr>
+<tr><td data-label="Property">Rust location</td><td data-label="Value"><code>Primitives::bind</code> in <code>holon-rs/src/kernel/primitives.rs</code></td></tr>
 </table>
 <hr>
 <h2>Relationship to the other generators</h2>
 <p>Bind is one of four generators of the WAT Vector Algebra:</p>
 <table>
-<tr><th>Generator</th><th>Role</th><th>Relationship to bind</th></tr>
-<tr><td><a class="wikilink" href="pg-atom.html">atom</a></td><td>Ground truth — names concepts → vectors</td><td>Produces the vectors that bind composes</td></tr>
-<tr><td><strong>bind</strong></td><td>Group action — composes relationships</td><td>This primitive</td></tr>
-<tr><td><a class="wikilink" href="pg-bundle.html">bundle</a></td><td>Commutative monoid — superimposes relationships</td><td>Bundles the products of bind (role-filler pairs)</td></tr>
-<tr><td><a class="wikilink" href="T0-003-cosine.html">cosine</a></td><td>Measurement homomorphism — measures similarity</td><td>The only way to inspect what bind produced</td></tr>
+<thead><tr><th>Generator</th><th>Role</th><th>Relationship to bind</th></tr></thead>
+<tr><td data-label="Generator"><a class="wikilink" href="pg-atom.html">atom</a></td><td data-label="Role">Ground truth — names concepts → vectors</td><td data-label="Relationship to bind">Produces the vectors that bind composes</td></tr>
+<tr><td data-label="Generator"><strong>bind</strong></td><td data-label="Role">Group action — composes relationships</td><td data-label="Relationship to bind">This primitive</td></tr>
+<tr><td data-label="Generator"><a class="wikilink" href="pg-bundle.html">bundle</a></td><td data-label="Role">Commutative monoid — superimposes relationships</td><td data-label="Relationship to bind">Bundles the products of bind (role-filler pairs)</td></tr>
+<tr><td data-label="Generator"><a class="wikilink" href="T0-003-cosine.html">cosine</a></td><td data-label="Role">Measurement homomorphism — measures similarity</td><td data-label="Relationship to bind">The only way to inspect what bind produced</td></tr>
 </table>
 <blockquote>Source: <a class="wikilink" href="T0-002-primitives.html">T0-002-primitives</a>, "Two algebraic structures. Nothing here is derivable from the others."</blockquote>
 <hr>
@@ -611,4 +716,4 @@ Bind(left, right) → l_vec = encode(left)
 <li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — The AST enum whose <code>Bind</code> variant maps directly to <code>Primitives::bind</code></li>
 <li><a class="wikilink" href="T0-006-walkable.html">Walkable</a> — The trait whose encoder produces role-filler bindings via bind</li>
 <li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — Optimization that maintains running sums of bound vectors across time steps</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

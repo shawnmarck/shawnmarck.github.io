@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-015 — PaperEntry (Rust) — Verification — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T0-015 — PaperEntry (Rust) — Verification — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T0-015 — PaperEntry (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><p><strong>Source:</strong> <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines)</p>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T0-015 — PaperEntry (Rust) — Verification <span class="badge badge-what">WHAT</span></h1><p><strong>Source:</strong> <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines)</p>
 <p><strong>Method:</strong> Context-free ignorant — read only the file and its immediate type dependencies.</p>
 <p><strong>Derived from:</strong> <code>wat/paper-entry.wat</code></p>
 <hr>
@@ -497,22 +602,22 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <hr>
 <h2>Fields</h2>
 <table>
-<tr><th>Field</th><th>Type</th><th>Purpose</th></tr>
-<tr><td><code>paper_id</code></td><td><code>usize</code></td><td>Unique identifier assigned by the broker.</td></tr>
-<tr><td><code>composed_thought</code></td><td><code>Vector</code></td><td>The composed thought at entry (market + position combined).</td></tr>
-<tr><td><code>market_thought</code></td><td><code>Vector</code></td><td>Raw market thought (for market observer learning at resolution).</td></tr>
-<tr><td><code>position_thought</code></td><td><code>Vector</code></td><td>Position observer's own encoded facts (for position observer learning at resolution). Proposal 026: position learns from <code>position_thought</code>, not <code>composed_thought</code>.</td></tr>
-<tr><td><code>prediction</code></td><td><code>Direction</code></td><td><code>Up</code> or <code>Down</code> — what the market observer predicted.</td></tr>
-<tr><td><code>entry_price</code></td><td><code>Price</code></td><td>Price at creation.</td></tr>
-<tr><td><code>distances</code></td><td><code>Distances</code></td><td><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td></tr>
-<tr><td><code>extreme</code></td><td><code>f64</code></td><td>Best price in the predicted direction seen so far. Starts at entry. Monotonically favorable (higher for Up, lower for Down).</td></tr>
-<tr><td><code>trail_level</code></td><td><code>Price</code></td><td>Trailing stop level. Follows <code>extreme</code> with <code>trail</code> gap. Starts at entry price.</td></tr>
-<tr><td><code>stop_level</code></td><td><code>Price</code></td><td>Fixed stop loss. Set at creation: <code>entry ± entry * stop</code>. Never moves.</td></tr>
-<tr><td><code>signaled</code></td><td><code>bool</code></td><td>Has the trail trigger crossed (Grace signal sent)?</td></tr>
-<tr><td><code>resolved</code></td><td><code>bool</code></td><td>Has any trigger fired (paper is done)?</td></tr>
-<tr><td><code>age</code></td><td><code>usize</code></td><td>How many <code>tick()</code> calls this paper has survived.</td></tr>
-<tr><td><code>entry_candle</code></td><td><code>usize</code></td><td>Candle number at creation (for phase biography).</td></tr>
-<tr><td><code>price_history</code></td><td><code>Vec<f64></code></td><td>Every tick's price, starting with entry price.</td></tr>
+<thead><tr><th>Field</th><th>Type</th><th>Purpose</th></tr></thead>
+<tr><td data-label="Field"><code>paper_id</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Unique identifier assigned by the broker.</td></tr>
+<tr><td data-label="Field"><code>composed_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">The composed thought at entry (market + position combined).</td></tr>
+<tr><td data-label="Field"><code>market_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Raw market thought (for market observer learning at resolution).</td></tr>
+<tr><td data-label="Field"><code>position_thought</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Purpose">Position observer's own encoded facts (for position observer learning at resolution). Proposal 026: position learns from <code>position_thought</code>, not <code>composed_thought</code>.</td></tr>
+<tr><td data-label="Field"><code>prediction</code></td><td data-label="Type"><code>Direction</code></td><td data-label="Purpose"><code>Up</code> or <code>Down</code> — what the market observer predicted.</td></tr>
+<tr><td data-label="Field"><code>entry_price</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Price at creation.</td></tr>
+<tr><td data-label="Field"><code>distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Purpose"><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td></tr>
+<tr><td data-label="Field"><code>extreme</code></td><td data-label="Type"><code>f64</code></td><td data-label="Purpose">Best price in the predicted direction seen so far. Starts at entry. Monotonically favorable (higher for Up, lower for Down).</td></tr>
+<tr><td data-label="Field"><code>trail_level</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Trailing stop level. Follows <code>extreme</code> with <code>trail</code> gap. Starts at entry price.</td></tr>
+<tr><td data-label="Field"><code>stop_level</code></td><td data-label="Type"><code>Price</code></td><td data-label="Purpose">Fixed stop loss. Set at creation: <code>entry ± entry * stop</code>. Never moves.</td></tr>
+<tr><td data-label="Field"><code>signaled</code></td><td data-label="Type"><code>bool</code></td><td data-label="Purpose">Has the trail trigger crossed (Grace signal sent)?</td></tr>
+<tr><td data-label="Field"><code>resolved</code></td><td data-label="Type"><code>bool</code></td><td data-label="Purpose">Has any trigger fired (paper is done)?</td></tr>
+<tr><td data-label="Field"><code>age</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">How many <code>tick()</code> calls this paper has survived.</td></tr>
+<tr><td data-label="Field"><code>entry_candle</code></td><td data-label="Type"><code>usize</code></td><td data-label="Purpose">Candle number at creation (for phase biography).</td></tr>
+<tr><td data-label="Field"><code>price_history</code></td><td data-label="Type"><code>Vec<f64></code></td><td data-label="Purpose">Every tick's price, starting with entry price.</td></tr>
 </table>
 <hr>
 <h2>Construction (<code>new</code>)</h2>
@@ -550,10 +655,10 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <hr>
 <h2>Resolution Classifications</h2>
 <table>
-<tr><th>Method</th><th>Condition</th><th>Meaning</th></tr>
-<tr><td><code>is_grace()</code></td><td><code>signaled</code> (regardless of resolved)</td><td>Market confirmed the prediction. Trail crossed at some point.</td></tr>
-<tr><td><code>is_violence()</code></td><td><code>resolved && !signaled</code></td><td>Stop fired before trail ever crossed. Prediction was wrong.</td></tr>
-<tr><td><code>is_runner()</code></td><td><code>signaled && !resolved</code></td><td>Trail crossed, still running. Not yet resolved.</td></tr>
+<thead><tr><th>Method</th><th>Condition</th><th>Meaning</th></tr></thead>
+<tr><td data-label="Method"><code>is_grace()</code></td><td data-label="Condition"><code>signaled</code> (regardless of resolved)</td><td data-label="Meaning">Market confirmed the prediction. Trail crossed at some point.</td></tr>
+<tr><td data-label="Method"><code>is_violence()</code></td><td data-label="Condition"><code>resolved && !signaled</code></td><td data-label="Meaning">Stop fired before trail ever crossed. Prediction was wrong.</td></tr>
+<tr><td data-label="Method"><code>is_runner()</code></td><td data-label="Condition"><code>signaled && !resolved</code></td><td data-label="Meaning">Trail crossed, still running. Not yet resolved.</td></tr>
 </table>
 <p>These three are not mutually exhaustive across all states but are mutually exclusive in any given state:</p>
 <ul>
@@ -572,19 +677,19 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h2>Tests (12 total)</h2>
 <p>All tests use <code>Distances::new(0.05, 0.10)</code> (trail=5%, stop=10%) and <code>Price(100.0)</code> unless noted.</p>
 <table>
-<tr><th>Test</th><th>What it verifies</th></tr>
-<tr><td><code>test_paper_entry_new_up</code></td><td>Up construction: stop=90, trail=100, not signaled, not resolved.</td></tr>
-<tr><td><code>test_paper_entry_new_down</code></td><td>Down construction: stop=110, trail=100.</td></tr>
-<tr><td><code>test_tick_up_grace_signal</code></td><td>Price 106 → extreme=106, signaled=true, not resolved. <code>is_runner()=true</code>.</td></tr>
-<tr><td><code>test_tick_up_violence</code></td><td>Price 89 (≤ stop 90) → resolved, not signaled. <code>is_violence()=true</code>.</td></tr>
-<tr><td><code>test_tick_up_runner_then_resolved</code></td><td>Price 110 (signaled, trail=104.5), then 104 (≤ trail) → resolved. <code>is_violence()=false</code>.</td></tr>
-<tr><td><code>test_tick_down_grace_signal</code></td><td>Price 94 → signaled=true, not resolved. <code>is_runner()=true</code>.</td></tr>
-<tr><td><code>test_tick_down_violence</code></td><td>Price 111 (≥ stop 110) → resolved, not signaled. <code>is_violence()=true</code>.</td></tr>
-<tr><td><code>test_tick_down_runner_then_resolved</code></td><td>Price 90 (signaled, trail=94.5), then 95 (≥ trail) → resolved.</td></tr>
-<tr><td><code>test_excursion_up</code></td><td>Price 110 on Up entry 100 → excursion = 0.10.</td></tr>
-<tr><td><code>test_excursion_down</code></td><td>Price 90 on Down entry 100 → excursion = 0.10.</td></tr>
-<tr><td><code>test_resolved_stops_tracking</code></td><td>After violence at 89, tick(120.0) does not update extreme.</td></tr>
-<tr><td><code>test_initial_excursion_zero</code></td><td>New paper → excursion = 0.0.</td></tr>
+<thead><tr><th>Test</th><th>What it verifies</th></tr></thead>
+<tr><td data-label="Test"><code>test_paper_entry_new_up</code></td><td data-label="What it verifies">Up construction: stop=90, trail=100, not signaled, not resolved.</td></tr>
+<tr><td data-label="Test"><code>test_paper_entry_new_down</code></td><td data-label="What it verifies">Down construction: stop=110, trail=100.</td></tr>
+<tr><td data-label="Test"><code>test_tick_up_grace_signal</code></td><td data-label="What it verifies">Price 106 → extreme=106, signaled=true, not resolved. <code>is_runner()=true</code>.</td></tr>
+<tr><td data-label="Test"><code>test_tick_up_violence</code></td><td data-label="What it verifies">Price 89 (≤ stop 90) → resolved, not signaled. <code>is_violence()=true</code>.</td></tr>
+<tr><td data-label="Test"><code>test_tick_up_runner_then_resolved</code></td><td data-label="What it verifies">Price 110 (signaled, trail=104.5), then 104 (≤ trail) → resolved. <code>is_violence()=false</code>.</td></tr>
+<tr><td data-label="Test"><code>test_tick_down_grace_signal</code></td><td data-label="What it verifies">Price 94 → signaled=true, not resolved. <code>is_runner()=true</code>.</td></tr>
+<tr><td data-label="Test"><code>test_tick_down_violence</code></td><td data-label="What it verifies">Price 111 (≥ stop 110) → resolved, not signaled. <code>is_violence()=true</code>.</td></tr>
+<tr><td data-label="Test"><code>test_tick_down_runner_then_resolved</code></td><td data-label="What it verifies">Price 90 (signaled, trail=94.5), then 95 (≥ trail) → resolved.</td></tr>
+<tr><td data-label="Test"><code>test_excursion_up</code></td><td data-label="What it verifies">Price 110 on Up entry 100 → excursion = 0.10.</td></tr>
+<tr><td data-label="Test"><code>test_excursion_down</code></td><td data-label="What it verifies">Price 90 on Down entry 100 → excursion = 0.10.</td></tr>
+<tr><td data-label="Test"><code>test_resolved_stops_tracking</code></td><td data-label="What it verifies">After violence at 89, tick(120.0) does not update extreme.</td></tr>
+<tr><td data-label="Test"><code>test_initial_excursion_zero</code></td><td data-label="What it verifies">New paper → excursion = 0.0.</td></tr>
 </table>
 <hr>
 <h2>Lifecycle Summary</h2>
@@ -595,4 +700,4 @@ flowchart TD
     runner -->|"price reverses\ncrosses trailing stop"| grace["resolved = true\n(Grace resolution — was signaled)"]
     runner -->|"price continues favorably"| ratchet["extreme/trail ratchet\nkeeps running"]
     created -->|"price never moves enough\nin either direction"| open["stays open indefinitely\n(neither signaled nor resolved)"]
-</code></pre></div></body></html>
+</code></pre></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

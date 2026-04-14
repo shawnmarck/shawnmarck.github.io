@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Exit Observer — Perceiving When to Leave a Position — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Exit Observer — Perceiving When to Leave a Position — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,17 +588,18 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Exit Observer — Perceiving When to Leave a Position <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> A <code>PositionObserver</code> (also called "exit observer") predicts two continuous values — <strong>trailing stop distance</strong> and <strong>safety stop distance</strong> — from a position thought vector using two independent continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s. It learns from hindsight-optimal distances determined by simulation. Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that selects its trade-state vocabulary. It has a <a class="wikilink" href="T0-010-subspace.html">noise subspace</a> for anomaly detection despite its own docstring claiming it doesn't. The <a class="wikilink" href="pg-broker.html">broker</a> owns the production cascade (reckoner → accumulator → default); the observer only exposes raw reckoner queries. M per trading system; N×M brokers total.</p>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Exit Observer — Perceiving When to Leave a Position <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>TL;DR:</strong> A <code>PositionObserver</code> (also called "exit observer") predicts two continuous values — <strong>trailing stop distance</strong> and <strong>safety stop distance</strong> — from a position thought vector using two independent continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s. It learns from hindsight-optimal distances determined by simulation. Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that selects its trade-state vocabulary. It has a <a class="wikilink" href="T0-010-subspace.html">noise subspace</a> for anomaly detection despite its own docstring claiming it doesn't. The <a class="wikilink" href="pg-broker.html">broker</a> owns the production cascade (reckoner → accumulator → default); the observer only exposes raw reckoner queries. M per trading system; N×M brokers total.</p>
 <hr>
 <h2>Anatomy</h2>
 <table>
-<tr><th>Component</th><th>Type</th><th>Role</th></tr>
-<tr><td><code>lens</code></td><td><a class="wikilink" href="pg-lens.html">PositionLens</a></td><td>Which trade-state vocabulary this observer uses: <code>Core</code> (5 trade atoms) or <code>Full</code> (13 trade atoms)</td></tr>
-<tr><td><code>trail_reckoner</code></td><td><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td><td>Predicts trailing stop distance. Named <code>"trail-{lens}"</code>. 10 buckets.</td></tr>
-<tr><td><code>stop_reckoner</code></td><td><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td><td>Predicts safety stop distance. Named <code>"stop-{lens}"</code>. 10 buckets.</td></tr>
-<tr><td><code>default_distances</code></td><td><code>Distances</code></td><td>Fallback <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free. Returned when reckoners have no experience.</td></tr>
-<tr><td><code>noise_subspace</code></td><td><a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a></td><td>8 principal components. Learns the background distribution for this exit lens. The anomaly is what the subspace cannot explain.</td></tr>
-<tr><td><code>incremental</code></td><td><code>IncrementalBundle</code></td><td>Optimization cache — running element-wise sums + last-facts cache for incremental encoding. Not cognition.</td></tr>
+<thead><tr><th>Component</th><th>Type</th><th>Role</th></tr></thead>
+<tr><td data-label="Component"><code>lens</code></td><td data-label="Type"><a class="wikilink" href="pg-lens.html">PositionLens</a></td><td data-label="Role">Which trade-state vocabulary this observer uses: <code>Core</code> (5 trade atoms) or <code>Full</code> (13 trade atoms)</td></tr>
+<tr><td data-label="Component"><code>trail_reckoner</code></td><td data-label="Type"><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td><td data-label="Role">Predicts trailing stop distance. Named <code>"trail-{lens}"</code>. 10 buckets.</td></tr>
+<tr><td data-label="Component"><code>stop_reckoner</code></td><td data-label="Type"><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td><td data-label="Role">Predicts safety stop distance. Named <code>"stop-{lens}"</code>. 10 buckets.</td></tr>
+<tr><td data-label="Component"><code>default_distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Role">Fallback <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free. Returned when reckoners have no experience.</td></tr>
+<tr><td data-label="Component"><code>noise_subspace</code></td><td data-label="Type"><a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a></td><td data-label="Role">8 principal components. Learns the background distribution for this exit lens. The anomaly is what the subspace cannot explain.</td></tr>
+<tr><td data-label="Component"><code>incremental</code></td><td data-label="Type"><code>IncrementalBundle</code></td><td data-label="Role">Optimization cache — running element-wise sums + last-facts cache for incremental encoding. Not cognition.</td></tr>
 </table>
 <blockquote><em>"Intentionally simpler than MarketObserver."</em> — module docstring (though the struct <em>does</em> include a noise subspace, contradicting this claim — see <a href="#discrepancies">Discrepancies</a>).</blockquote>
 <hr>
@@ -508,10 +613,10 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 </ol>
 <p><strong>Tier 1 only</strong> — raw reckoner output with no fallback. The broker owns the full three-tier cascade:</p>
 <table>
-<tr><th>Tier</th><th>Source</th><th>Owner</th></tr>
-<tr><td>1</td><td>Reckoner query (this method)</td><td>Position observer</td></tr>
-<tr><td>2</td><td>Scalar accumulators (per-broker)</td><td>Broker</td></tr>
-<tr><td>3</td><td><code>default_distances</code></td><td>Broker</td></tr>
+<thead><tr><th>Tier</th><th>Source</th><th>Owner</th></tr></thead>
+<tr><td data-label="Tier">1</td><td data-label="Source">Reckoner query (this method)</td><td data-label="Owner">Position observer</td></tr>
+<tr><td data-label="Tier">2</td><td data-label="Source">Scalar accumulators (per-broker)</td><td data-label="Owner">Broker</td></tr>
+<tr><td data-label="Tier">3</td><td data-label="Source"><code>default_distances</code></td><td data-label="Owner">Broker</td></tr>
 </table>
 <p>Per <a class="wikilink" href="pg-signal-propagation.html">Proposal 026</a>, queries operate on <code>position_thought</code> only — no composition with market thought at query time.</p>
 <blockquote><em>"The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned."</em> — T0-018</blockquote>
@@ -539,9 +644,9 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h2>The Lens — What the Observer Sees</h2>
 <p>Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that determines its trade-state vocabulary (T0-005):</p>
 <table>
-<tr><th>Lens</th><th>Trade Atoms</th><th>Description</th></tr>
-<tr><td><code>Core</code></td><td>5</td><td>Excursion, retracement, age, peak-age, signaled. The consensus view.</td></tr>
-<tr><td><code>Full</code></td><td>13</td><td>All Core atoms + 3 phase biography atoms. All three voices plus phase context.</td></tr>
+<thead><tr><th>Lens</th><th>Trade Atoms</th><th>Description</th></tr></thead>
+<tr><td data-label="Lens"><code>Core</code></td><td data-label="Trade Atoms">5</td><td data-label="Description">Excursion, retracement, age, peak-age, signaled. The consensus view.</td></tr>
+<tr><td data-label="Lens"><code>Full</code></td><td data-label="Trade Atoms">13</td><td data-label="Description">All Core atoms + 3 phase biography atoms. All three voices plus phase context.</td></tr>
 </table>
 <blockquote><em>"Core: lean — regime + time. 5 trade atoms downstream."</em> — T0-005</blockquote>
 <blockquote><em>"Full: rich — regime + time + phase series. 13 trade atoms downstream."</em> — T0-005</blockquote>
@@ -553,14 +658,14 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <hr>
 <h2>Comparison — Exit Observer vs. Market Observer</h2>
 <table>
-<tr><th>Property</th><th>Market Observer</th><th>Exit Observer</th></tr>
-<tr><td>Prediction type</td><td>Discrete (Up/Down)</td><td>Continuous (trail distance, stop distance)</td></tr>
-<tr><td>Reckoner mode</td><td>Discrete, 2 labels</td><td>Continuous, 10 buckets each (×2 reckoners)</td></tr>
-<tr><td>Noise subspace</td><td>8 components</td><td>8 components</td></tr>
-<tr><td>Conviction curve</td><td>Yes — self-evaluates accuracy</td><td>No curve mechanism</td></tr>
-<tr><td>Engram gate</td><td>Yes — gates long-term memory</td><td>No engram gating</td></tr>
-<tr><td>Learning source</td><td>Market outcomes (actual direction)</td><td>Hindsight simulation (optimal distances)</td></tr>
-<tr><td>Lens</td><td><a class="wikilink" href="pg-lens.html">MarketLens</a> (11 variants, 3 schools)</td><td><a class="wikilink" href="pg-lens.html">PositionLens</a> (2 variants: Core, Full)</td></tr>
+<thead><tr><th>Property</th><th>Market Observer</th><th>Exit Observer</th></tr></thead>
+<tr><td data-label="Property">Prediction type</td><td data-label="Market Observer">Discrete (Up/Down)</td><td data-label="Exit Observer">Continuous (trail distance, stop distance)</td></tr>
+<tr><td data-label="Property">Reckoner mode</td><td data-label="Market Observer">Discrete, 2 labels</td><td data-label="Exit Observer">Continuous, 10 buckets each (×2 reckoners)</td></tr>
+<tr><td data-label="Property">Noise subspace</td><td data-label="Market Observer">8 components</td><td data-label="Exit Observer">8 components</td></tr>
+<tr><td data-label="Property">Conviction curve</td><td data-label="Market Observer">Yes — self-evaluates accuracy</td><td data-label="Exit Observer">No curve mechanism</td></tr>
+<tr><td data-label="Property">Engram gate</td><td data-label="Market Observer">Yes — gates long-term memory</td><td data-label="Exit Observer">No engram gating</td></tr>
+<tr><td data-label="Property">Learning source</td><td data-label="Market Observer">Market outcomes (actual direction)</td><td data-label="Exit Observer">Hindsight simulation (optimal distances)</td></tr>
+<tr><td data-label="Property">Lens</td><td data-label="Market Observer"><a class="wikilink" href="pg-lens.html">MarketLens</a> (11 variants, 3 schools)</td><td data-label="Exit Observer"><a class="wikilink" href="pg-lens.html">PositionLens</a> (2 variants: Core, Full)</td></tr>
 </table>
 <hr>
 <h2>Construction</h2>
@@ -592,10 +697,10 @@ flowchart TD
 <hr>
 <h2>Sources</h2>
 <table>
-<tr><th>Source</th><th>Key Contribution</th></tr>
-<tr><td>T0-014 (<code>position_observer.rs</code>, 291 lines)</td><td>Struct fields (6), reckoners (trail/stop), prediction, learning, noise subspace, docstring discrepancy, 7 tests</td></tr>
-<tr><td>T0-008 (<code>reckoner.rs</code>, 1107 lines; <code>primitives.wat</code>)</td><td>Continuous mode: bucketed regression, breathing range, soft-weight top-3 interpolation, O(K×D) query</td></tr>
-<tr><td>T0-018 (<code>broker.rs</code>)</td><td>Three-tier cascade (reckoner → accumulator → default), runner resolution, deferred batch training</td></tr>
-<tr><td>T0-005 (<code>lens.rs</code>, <code>enums.rs</code>)</td><td>PositionLens enum: Core (5 atoms) and Full (13 atoms), vocab wiring</td></tr>
-<tr><td>T0-017 (<code>wat-vm.rs</code>)</td><td>Pipeline wiring: topic fan-out to position observers, mailbox fan-in for learning</td></tr>
-</table></div></body></html>
+<thead><tr><th>Source</th><th>Key Contribution</th></tr></thead>
+<tr><td data-label="Source">T0-014 (<code>position_observer.rs</code>, 291 lines)</td><td data-label="Key Contribution">Struct fields (6), reckoners (trail/stop), prediction, learning, noise subspace, docstring discrepancy, 7 tests</td></tr>
+<tr><td data-label="Source">T0-008 (<code>reckoner.rs</code>, 1107 lines; <code>primitives.wat</code>)</td><td data-label="Key Contribution">Continuous mode: bucketed regression, breathing range, soft-weight top-3 interpolation, O(K×D) query</td></tr>
+<tr><td data-label="Source">T0-018 (<code>broker.rs</code>)</td><td data-label="Key Contribution">Three-tier cascade (reckoner → accumulator → default), runner resolution, deferred batch training</td></tr>
+<tr><td data-label="Source">T0-005 (<code>lens.rs</code>, <code>enums.rs</code>)</td><td data-label="Key Contribution">PositionLens enum: Core (5 atoms) and Full (13 atoms), vocab wiring</td></tr>
+<tr><td data-label="Source">T0-017 (<code>wat-vm.rs</code>)</td><td data-label="Key Contribution">Pipeline wiring: topic fan-out to position observers, mailbox fan-in for learning</td></tr>
+</table></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

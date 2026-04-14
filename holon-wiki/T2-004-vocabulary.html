@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T2-004 — Vocabulary — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T2-004 — Vocabulary — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T2-004 — Vocabulary <span class="badge badge-what">WHAT</span></h1><h2>The complete atom set and how vocabulary modules are organized.</h2>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T2-004 — Vocabulary <span class="badge badge-what">WHAT</span></h1><h2>The complete atom set and how vocabulary modules are organized.</h2>
 <hr>
 <h2>Overview</h2>
 <p>From the GUIDE (lines 1244–1247):</p>
@@ -506,10 +611,10 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <blockquote>"The encoding scheme IS the bounding strategy."</blockquote>
 <p>Three schemes:</p>
 <table>
-<tr><th>Scheme</th><th>Use case</th><th>Examples</th></tr>
-<tr><td><code>Linear { scale }</code></td><td>Naturally bounded scalars. Bounds are in the math.</td><td>Bollinger position [-1,1], RSI [0,1]</td></tr>
-<tr><td><code>Log</code></td><td>Unbounded positive scalars. Log compresses naturally.</td><td>ATR ratio, volume ratio, band widths</td></tr>
-<tr><td><code>Circular { period }</code></td><td>Periodic scalars. The value wraps.</td><td>minute (60), hour (24), day-of-week (7)</td></tr>
+<thead><tr><th>Scheme</th><th>Use case</th><th>Examples</th></tr></thead>
+<tr><td data-label="Scheme"><code>Linear { scale }</code></td><td data-label="Use case">Naturally bounded scalars. Bounds are in the math.</td><td data-label="Examples">Bollinger position [-1,1], RSI [0,1]</td></tr>
+<tr><td data-label="Scheme"><code>Log</code></td><td data-label="Use case">Unbounded positive scalars. Log compresses naturally.</td><td data-label="Examples">ATR ratio, volume ratio, band widths</td></tr>
+<tr><td data-label="Scheme"><code>Circular { period }</code></td><td data-label="Use case">Periodic scalars. The value wraps.</td><td data-label="Examples">minute (60), hour (24), day-of-week (7)</td></tr>
 </table>
 <p>From the GUIDE (lines 1393–1395):</p>
 <blockquote>"Some facts are bounded. Some aren't. That's honest. The log doesn't bound — it compresses. The circular doesn't bound — it wraps. Only linear needs bounds, and linear's bounds come from the math."</blockquote>
@@ -521,12 +626,12 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Source: <code>wat/vocab/shared/time.wat</code> (26 lines)</p>
 <p>Interface: <code>(encode-time-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>minute</code></td><td>Circular { period: 60 }</td><td>mod 60</td></tr>
-<tr><td><code>hour</code></td><td>Circular { period: 24 }</td><td>mod 24</td></tr>
-<tr><td><code>day-of-week</code></td><td>Circular { period: 7 }</td><td>0 = Monday</td></tr>
-<tr><td><code>day-of-month</code></td><td>Circular { period: 31 }</td><td>mod 31</td></tr>
-<tr><td><code>month-of-year</code></td><td>Circular { period: 12 }</td><td>1 = January</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>minute</code></td><td data-label="Encoding">Circular { period: 60 }</td><td data-label="Notes">mod 60</td></tr>
+<tr><td data-label="Atom"><code>hour</code></td><td data-label="Encoding">Circular { period: 24 }</td><td data-label="Notes">mod 24</td></tr>
+<tr><td data-label="Atom"><code>day-of-week</code></td><td data-label="Encoding">Circular { period: 7 }</td><td data-label="Notes">0 = Monday</td></tr>
+<tr><td data-label="Atom"><code>day-of-month</code></td><td data-label="Encoding">Circular { period: 31 }</td><td data-label="Notes">mod 31</td></tr>
+<tr><td data-label="Atom"><code>month-of-year</code></td><td data-label="Encoding">Circular { period: 12 }</td><td data-label="Notes">1 = January</td></tr>
 </table>
 <p><strong>5 atoms. All Circular.</strong></p>
 <hr>
@@ -535,68 +640,68 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Source: <code>wat/vocab/market/standard.wat</code> (89 lines)</p>
 <p>Interface: <code>(encode-standard-facts candle-window) → Vec<ThoughtAST></code> — takes a <strong>window</strong> of candles, not a single candle.</p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>since-rsi-extreme</code></td><td>Log</td><td>Candles since RSI > 80 or < 20</td></tr>
-<tr><td><code>since-vol-spike</code></td><td>Log</td><td>Candles since volume-accel > 2.0</td></tr>
-<tr><td><code>since-large-move</code></td><td>Log</td><td>Candles since \</td><td>roc-1\</td><td>> 2%</td></tr>
-<tr><td><code>dist-from-high</code></td><td>Linear { scale: 0.1 }</td><td>Signed % from window high; always ≤ 0</td></tr>
-<tr><td><code>dist-from-low</code></td><td>Linear { scale: 0.1 }</td><td>Signed % from window low; always ≥ 0</td></tr>
-<tr><td><code>dist-from-midpoint</code></td><td>Linear { scale: 0.1 }</td><td>Signed % from window midpoint</td></tr>
-<tr><td><code>dist-from-sma200</code></td><td>Linear { scale: 0.1 }</td><td>Signed % from SMA200</td></tr>
-<tr><td><code>session-depth</code></td><td>Log</td><td>How deep into the window; log-encoded</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>since-rsi-extreme</code></td><td data-label="Encoding">Log</td><td data-label="Notes">Candles since RSI > 80 or < 20</td></tr>
+<tr><td data-label="Atom"><code>since-vol-spike</code></td><td data-label="Encoding">Log</td><td data-label="Notes">Candles since volume-accel > 2.0</td></tr>
+<tr><td data-label="Atom"><code>since-large-move</code></td><td data-label="Encoding">Log</td><td data-label="Notes">Candles since \</td><td data-label="">roc-1\</td><td data-label="">> 2%</td></tr>
+<tr><td data-label="Atom"><code>dist-from-high</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % from window high; always ≤ 0</td></tr>
+<tr><td data-label="Atom"><code>dist-from-low</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % from window low; always ≥ 0</td></tr>
+<tr><td data-label="Atom"><code>dist-from-midpoint</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % from window midpoint</td></tr>
+<tr><td data-label="Atom"><code>dist-from-sma200</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % from SMA200</td></tr>
+<tr><td data-label="Atom"><code>session-depth</code></td><td data-label="Encoding">Log</td><td data-label="Notes">How deep into the window; log-encoded</td></tr>
 </table>
 <p><strong>8 atoms. 4 Log, 4 Linear.</strong></p>
 <h4><code>oscillators.wat</code> — Oscillator positions as scalars</h4>
 <p>Source: <code>wat/vocab/market/oscillators.wat</code> (30 lines)</p>
 <p>Interface: <code>(encode-oscillator-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>rsi</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]</td></tr>
-<tr><td><code>cci</code></td><td>Linear { scale: 1.0 }</td><td>Normalized from [-300, 300] by /300</td></tr>
-<tr><td><code>mfi</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>williams-r</code></td><td>Linear { scale: 1.0 }</td><td>[-100, 0] raw → [0, 1]</td></tr>
-<tr><td><code>roc-1</code></td><td>Log</td><td>+1.0 before log</td></tr>
-<tr><td><code>roc-3</code></td><td>Log</td><td>+1.0 before log</td></tr>
-<tr><td><code>roc-6</code></td><td>Log</td><td>+1.0 before log</td></tr>
-<tr><td><code>roc-12</code></td><td>Log</td><td>+1.0 before log</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>rsi</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]</td></tr>
+<tr><td data-label="Atom"><code>cci</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Normalized from [-300, 300] by /300</td></tr>
+<tr><td data-label="Atom"><code>mfi</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>williams-r</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[-100, 0] raw → [0, 1]</td></tr>
+<tr><td data-label="Atom"><code>roc-1</code></td><td data-label="Encoding">Log</td><td data-label="Notes">+1.0 before log</td></tr>
+<tr><td data-label="Atom"><code>roc-3</code></td><td data-label="Encoding">Log</td><td data-label="Notes">+1.0 before log</td></tr>
+<tr><td data-label="Atom"><code>roc-6</code></td><td data-label="Encoding">Log</td><td data-label="Notes">+1.0 before log</td></tr>
+<tr><td data-label="Atom"><code>roc-12</code></td><td data-label="Encoding">Log</td><td data-label="Notes">+1.0 before log</td></tr>
 </table>
 <p><strong>8 atoms. 4 Linear, 4 Log.</strong></p>
 <h4><code>flow.wat</code> — Volume and pressure</h4>
 <p>Source: <code>wat/vocab/market/flow.wat</code> (46 lines)</p>
 <p>Interface: <code>(encode-flow-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>obv-slope</code></td><td>Log</td><td>exp of obv-slope-12</td></tr>
-<tr><td><code>vwap-distance</code></td><td>Linear { scale: 0.1 }</td><td>Signed % from VWAP</td></tr>
-<tr><td><code>buying-pressure</code></td><td>Linear { scale: 1.0 }</td><td>(close - low) / range; 0.5 if range=0</td></tr>
-<tr><td><code>selling-pressure</code></td><td>Linear { scale: 1.0 }</td><td>(high - close) / range; 0.5 if range=0</td></tr>
-<tr><td><code>volume-ratio</code></td><td>Log</td><td>exp of volume-accel</td></tr>
-<tr><td><code>body-ratio</code></td><td>Linear { scale: 1.0 }</td><td>\</td><td>body\</td><td>/ range</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>obv-slope</code></td><td data-label="Encoding">Log</td><td data-label="Notes">exp of obv-slope-12</td></tr>
+<tr><td data-label="Atom"><code>vwap-distance</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % from VWAP</td></tr>
+<tr><td data-label="Atom"><code>buying-pressure</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">(close - low) / range; 0.5 if range=0</td></tr>
+<tr><td data-label="Atom"><code>selling-pressure</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">(high - close) / range; 0.5 if range=0</td></tr>
+<tr><td data-label="Atom"><code>volume-ratio</code></td><td data-label="Encoding">Log</td><td data-label="Notes">exp of volume-accel</td></tr>
+<tr><td data-label="Atom"><code>body-ratio</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">\</td><td data-label="">body\</td><td data-label="">/ range</td></tr>
 </table>
 <p><strong>6 atoms. 2 Log, 4 Linear.</strong></p>
 <h4><code>persistence.wat</code> — Memory in the series</h4>
 <p>Source: <code>wat/vocab/market/persistence.wat</code> (19 lines)</p>
 <p>Interface: <code>(encode-persistence-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>hurst</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]; >0.5 trending, <0.5 mean-reverting</td></tr>
-<tr><td><code>autocorrelation</code></td><td>Linear { scale: 1.0 }</td><td>[-1, 1]</td></tr>
-<tr><td><code>adx</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>hurst</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]; >0.5 trending, <0.5 mean-reverting</td></tr>
+<tr><td data-label="Atom"><code>autocorrelation</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>adx</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
 </table>
 <p><strong>3 atoms. All Linear.</strong></p>
 <h4><code>regime.wat</code> — What KIND of market this is</h4>
 <p>Source: <code>wat/vocab/market/regime.wat</code> (40 lines)</p>
 <p>Interface: <code>(encode-regime-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>kama-er</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]; efficiency ratio</td></tr>
-<tr><td><code>choppiness</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>dfa-alpha</code></td><td>Linear { scale: 1.0 }</td><td>/2.0; ~0.5 = random</td></tr>
-<tr><td><code>variance-ratio</code></td><td>Log</td><td>max(0.001, value); unbounded positive</td></tr>
-<tr><td><code>entropy-rate</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]</td></tr>
-<tr><td><code>aroon-up</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>aroon-down</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>fractal-dim</code></td><td>Linear { scale: 1.0 }</td><td>(fd - 1.0); maps [1,2] → [0,1]</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>kama-er</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]; efficiency ratio</td></tr>
+<tr><td data-label="Atom"><code>choppiness</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>dfa-alpha</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">/2.0; ~0.5 = random</td></tr>
+<tr><td data-label="Atom"><code>variance-ratio</code></td><td data-label="Encoding">Log</td><td data-label="Notes">max(0.001, value); unbounded positive</td></tr>
+<tr><td data-label="Atom"><code>entropy-rate</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]</td></tr>
+<tr><td data-label="Atom"><code>aroon-up</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>aroon-down</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>fractal-dim</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">(fd - 1.0); maps [1,2] → [0,1]</td></tr>
 </table>
 <p><strong>8 atoms. 7 Linear, 1 Log.</strong></p>
 <h4><code>divergence.wat</code> — RSI divergence via structural peaks</h4>
@@ -604,10 +709,10 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Interface: <code>(encode-divergence-facts candle) → Vec<ThoughtAST></code></p>
 <p>Note: <strong>Conditional emission</strong> — atoms only fire when divergence is active (> 0).</p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>rsi-divergence-bull</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]; only emitted when > 0</td></tr>
-<tr><td><code>rsi-divergence-bear</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]; only emitted when > 0</td></tr>
-<tr><td><code>divergence-spread</code></td><td>Linear { scale: 1.0 }</td><td>bull - bear; only emitted when either active</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>rsi-divergence-bull</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]; only emitted when > 0</td></tr>
+<tr><td data-label="Atom"><code>rsi-divergence-bear</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]; only emitted when > 0</td></tr>
+<tr><td data-label="Atom"><code>divergence-spread</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">bull - bear; only emitted when either active</td></tr>
 </table>
 <p><strong>3 atoms. All Linear. Conditional emission (0–3 facts emitted).</strong></p>
 <h4><code>ichimoku.wat</code> — Cloud position, TK cross, distances</h4>
@@ -615,13 +720,13 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Interface: <code>(encode-ichimoku-facts candle) → Vec<ThoughtAST></code></p>
 <p>Note: Per <code>lens.rs</code> line 14–16: "Proposals 041+042: ichimoku, stochastic removed from all lenses. Their modules still exist but are no longer called."</p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>cloud-position</code></td><td>Linear { scale: 1.0 }</td><td>Clamped [-1, 1]</td></tr>
-<tr><td><code>cloud-thickness</code></td><td>Log</td><td>Width/price; max(0.0001, ...)</td></tr>
-<tr><td><code>tk-cross-delta</code></td><td>Linear { scale: 1.0 }</td><td>Clamped [-1, 1]</td></tr>
-<tr><td><code>tk-spread</code></td><td>Linear { scale: 1.0 }</td><td>(tenkan-kijun)/price; clamped</td></tr>
-<tr><td><code>tenkan-dist</code></td><td>Linear { scale: 1.0 }</td><td>Clamped [-1, 1]</td></tr>
-<tr><td><code>kijun-dist</code></td><td>Linear { scale: 1.0 }</td><td>Clamped [-1, 1]</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>cloud-position</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Clamped [-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>cloud-thickness</code></td><td data-label="Encoding">Log</td><td data-label="Notes">Width/price; max(0.0001, ...)</td></tr>
+<tr><td data-label="Atom"><code>tk-cross-delta</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Clamped [-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>tk-spread</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">(tenkan-kijun)/price; clamped</td></tr>
+<tr><td data-label="Atom"><code>tenkan-dist</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Clamped [-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>kijun-dist</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Clamped [-1, 1]</td></tr>
 </table>
 <p><strong>6 atoms. 5 Linear, 1 Log. ⚠️ Module exists but is NOT wired into any lens.</strong></p>
 <h4><code>stochastic.wat</code> — %K/%D spread and crosses</h4>
@@ -629,11 +734,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Interface: <code>(encode-stochastic-facts candle) → Vec<ThoughtAST></code></p>
 <p>Note: Same as ichimoku — "Proposals 041+042: ichimoku, stochastic removed from all lenses."</p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>stoch-k</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>stoch-d</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>stoch-kd-spread</code></td><td>Linear { scale: 1.0 }</td><td>k - d; [-1, 1]</td></tr>
-<tr><td><code>stoch-cross-delta</code></td><td>Linear { scale: 1.0 }</td><td>Clamped [-1, 1]</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>stoch-k</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>stoch-d</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>stoch-kd-spread</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">k - d; [-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>stoch-cross-delta</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Clamped [-1, 1]</td></tr>
 </table>
 <p><strong>4 atoms. All Linear. ⚠️ Module exists but is NOT wired into any lens.</strong></p>
 <h4><code>fibonacci.wat</code> — Retracement level distances</h4>
@@ -641,68 +746,68 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Interface: <code>(encode-fibonacci-facts candle) → Vec<ThoughtAST></code></p>
 <p>Note: Per <code>lens.rs</code> line 16: "fibonacci is used by WyckoffPosition."</p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>range-pos-12</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]</td></tr>
-<tr><td><code>range-pos-24</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]</td></tr>
-<tr><td><code>range-pos-48</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]</td></tr>
-<tr><td><code>fib-dist-236</code></td><td>Linear { scale: 1.0 }</td><td>pos48 - 0.236</td></tr>
-<tr><td><code>fib-dist-382</code></td><td>Linear { scale: 1.0 }</td><td>pos48 - 0.382</td></tr>
-<tr><td><code>fib-dist-500</code></td><td>Linear { scale: 1.0 }</td><td>pos48 - 0.500</td></tr>
-<tr><td><code>fib-dist-618</code></td><td>Linear { scale: 1.0 }</td><td>pos48 - 0.618</td></tr>
-<tr><td><code>fib-dist-786</code></td><td>Linear { scale: 1.0 }</td><td>pos48 - 0.786</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>range-pos-12</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]</td></tr>
+<tr><td data-label="Atom"><code>range-pos-24</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]</td></tr>
+<tr><td data-label="Atom"><code>range-pos-48</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]</td></tr>
+<tr><td data-label="Atom"><code>fib-dist-236</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">pos48 - 0.236</td></tr>
+<tr><td data-label="Atom"><code>fib-dist-382</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">pos48 - 0.382</td></tr>
+<tr><td data-label="Atom"><code>fib-dist-500</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">pos48 - 0.500</td></tr>
+<tr><td data-label="Atom"><code>fib-dist-618</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">pos48 - 0.618</td></tr>
+<tr><td data-label="Atom"><code>fib-dist-786</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">pos48 - 0.786</td></tr>
 </table>
 <p><strong>8 atoms. All Linear.</strong></p>
 <h4><code>keltner.wat</code> — Channel positions, squeeze</h4>
 <p>Source: <code>wat/vocab/market/keltner.wat</code> (37 lines)</p>
 <p>Interface: <code>(encode-keltner-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>bb-pos</code></td><td>Linear { scale: 1.0 }</td><td>[-1, 1]</td></tr>
-<tr><td><code>bb-width</code></td><td>Log</td><td>Unbounded positive</td></tr>
-<tr><td><code>kelt-pos</code></td><td>Linear { scale: 1.0 }</td><td>[-1, 1]</td></tr>
-<tr><td><code>squeeze</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]; Bollinger inside Keltner</td></tr>
-<tr><td><code>kelt-upper-dist</code></td><td>Linear { scale: 0.1 }</td><td>Signed % from upper Keltner</td></tr>
-<tr><td><code>kelt-lower-dist</code></td><td>Linear { scale: 0.1 }</td><td>Signed % from lower Keltner</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>bb-pos</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>bb-width</code></td><td data-label="Encoding">Log</td><td data-label="Notes">Unbounded positive</td></tr>
+<tr><td data-label="Atom"><code>kelt-pos</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>squeeze</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]; Bollinger inside Keltner</td></tr>
+<tr><td data-label="Atom"><code>kelt-upper-dist</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % from upper Keltner</td></tr>
+<tr><td data-label="Atom"><code>kelt-lower-dist</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % from lower Keltner</td></tr>
 </table>
 <p><strong>6 atoms. 5 Linear, 1 Log.</strong></p>
 <h4><code>momentum.wat</code> — Trend-relative, MACD, DI</h4>
 <p>Source: <code>wat/vocab/market/momentum.wat</code> (39 lines)</p>
 <p>Interface: <code>(encode-momentum-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>close-sma20</code></td><td>Linear { scale: 0.1 }</td><td>Signed % distance from SMA20</td></tr>
-<tr><td><code>close-sma50</code></td><td>Linear { scale: 0.1 }</td><td>Signed % distance from SMA50</td></tr>
-<tr><td><code>close-sma200</code></td><td>Linear { scale: 0.1 }</td><td>Signed % distance from SMA200</td></tr>
-<tr><td><code>macd-hist</code></td><td>Linear { scale: 0.01 }</td><td>MACD histogram / close</td></tr>
-<tr><td><code>di-spread</code></td><td>Linear { scale: 1.0 }</td><td>(plus-DI - minus-DI) / 100</td></tr>
-<tr><td><code>atr-ratio</code></td><td>Log</td><td>ATR / close; max(0.001, ...)</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>close-sma20</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % distance from SMA20</td></tr>
+<tr><td data-label="Atom"><code>close-sma50</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % distance from SMA50</td></tr>
+<tr><td data-label="Atom"><code>close-sma200</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">Signed % distance from SMA200</td></tr>
+<tr><td data-label="Atom"><code>macd-hist</code></td><td data-label="Encoding">Linear { scale: 0.01 }</td><td data-label="Notes">MACD histogram / close</td></tr>
+<tr><td data-label="Atom"><code>di-spread</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">(plus-DI - minus-DI) / 100</td></tr>
+<tr><td data-label="Atom"><code>atr-ratio</code></td><td data-label="Encoding">Log</td><td data-label="Notes">ATR / close; max(0.001, ...)</td></tr>
 </table>
 <p><strong>6 atoms. 5 Linear, 1 Log.</strong></p>
 <h4><code>price-action.wat</code> — Candlestick anatomy, range, gaps</h4>
 <p>Source: <code>wat/vocab/market/price-action.wat</code> (50 lines)</p>
 <p>Interface: <code>(encode-price-action-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>range-ratio</code></td><td>Log</td><td>current / previous range</td></tr>
-<tr><td><code>gap</code></td><td>Linear { scale: 1.0 }</td><td>Clamped [-1, 1]; open vs prev close / 5%</td></tr>
-<tr><td><code>consecutive-up</code></td><td>Log</td><td>count; +1.0, max 1.0</td></tr>
-<tr><td><code>consecutive-down</code></td><td>Log</td><td>count; +1.0, max 1.0</td></tr>
-<tr><td><code>body-ratio-pa</code></td><td>Linear { scale: 1.0 }</td><td>\</td><td>body\</td><td>/ range</td></tr>
-<tr><td><code>upper-wick</code></td><td>Linear { scale: 1.0 }</td><td>Upper wick / range</td></tr>
-<tr><td><code>lower-wick</code></td><td>Linear { scale: 1.0 }</td><td>Lower wick / range</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>range-ratio</code></td><td data-label="Encoding">Log</td><td data-label="Notes">current / previous range</td></tr>
+<tr><td data-label="Atom"><code>gap</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Clamped [-1, 1]; open vs prev close / 5%</td></tr>
+<tr><td data-label="Atom"><code>consecutive-up</code></td><td data-label="Encoding">Log</td><td data-label="Notes">count; +1.0, max 1.0</td></tr>
+<tr><td data-label="Atom"><code>consecutive-down</code></td><td data-label="Encoding">Log</td><td data-label="Notes">count; +1.0, max 1.0</td></tr>
+<tr><td data-label="Atom"><code>body-ratio-pa</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">\</td><td data-label="">body\</td><td data-label="">/ range</td></tr>
+<tr><td data-label="Atom"><code>upper-wick</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Upper wick / range</td></tr>
+<tr><td data-label="Atom"><code>lower-wick</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">Lower wick / range</td></tr>
 </table>
 <p><strong>7 atoms. 3 Log, 4 Linear.</strong></p>
 <h4><code>timeframe.wat</code> — Inter-timeframe structure</h4>
 <p>Source: <code>wat/vocab/market/timeframe.wat</code> (36 lines)</p>
 <p>Interface: <code>(encode-timeframe-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>tf-1h-trend</code></td><td>Linear { scale: 1.0 }</td><td>1h body/range; signed [-1, 1]</td></tr>
-<tr><td><code>tf-1h-ret</code></td><td>Linear { scale: 0.1 }</td><td>1h signed % return</td></tr>
-<tr><td><code>tf-4h-trend</code></td><td>Linear { scale: 1.0 }</td><td>4h body/range; signed [-1, 1]</td></tr>
-<tr><td><code>tf-4h-ret</code></td><td>Linear { scale: 0.1 }</td><td>4h signed % return</td></tr>
-<tr><td><code>tf-agreement</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]; timeframe alignment</td></tr>
-<tr><td><code>tf-5m-1h-align</code></td><td>Linear { scale: 0.1 }</td><td>5m direction × 1h trend sign</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>tf-1h-trend</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">1h body/range; signed [-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>tf-1h-ret</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">1h signed % return</td></tr>
+<tr><td data-label="Atom"><code>tf-4h-trend</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">4h body/range; signed [-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>tf-4h-ret</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">4h signed % return</td></tr>
+<tr><td data-label="Atom"><code>tf-agreement</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]; timeframe alignment</td></tr>
+<tr><td data-label="Atom"><code>tf-5m-1h-align</code></td><td data-label="Encoding">Linear { scale: 0.1 }</td><td data-label="Notes">5m direction × 1h trend sign</td></tr>
 </table>
 <p><strong>6 atoms. All Linear.</strong></p>
 <hr>
@@ -711,37 +816,37 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Source: <code>wat/vocab/exit/volatility.wat</code> (29 lines)</p>
 <p>Interface: <code>(encode-exit-volatility-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>atr-ratio</code></td><td>Log</td><td>ATR / close</td></tr>
-<tr><td><code>atr-r</code></td><td>Log</td><td>Raw ATR</td></tr>
-<tr><td><code>atr-roc-6</code></td><td>Linear { scale: 1.0 }</td><td>ATR rate of change, 6-period</td></tr>
-<tr><td><code>atr-roc-12</code></td><td>Linear { scale: 1.0 }</td><td>ATR rate of change, 12-period</td></tr>
-<tr><td><code>squeeze</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] Bollinger inside Keltner</td></tr>
-<tr><td><code>bb-width</code></td><td>Log</td><td>Bollinger width</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>atr-ratio</code></td><td data-label="Encoding">Log</td><td data-label="Notes">ATR / close</td></tr>
+<tr><td data-label="Atom"><code>atr-r</code></td><td data-label="Encoding">Log</td><td data-label="Notes">Raw ATR</td></tr>
+<tr><td data-label="Atom"><code>atr-roc-6</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">ATR rate of change, 6-period</td></tr>
+<tr><td data-label="Atom"><code>atr-roc-12</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">ATR rate of change, 12-period</td></tr>
+<tr><td data-label="Atom"><code>squeeze</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] Bollinger inside Keltner</td></tr>
+<tr><td data-label="Atom"><code>bb-width</code></td><td data-label="Encoding">Log</td><td data-label="Notes">Bollinger width</td></tr>
 </table>
 <p><strong>6 atoms. 3 Linear, 3 Log.</strong></p>
 <h4><code>exit/structure.wat</code> — Trend consistency, ADX strength</h4>
 <p>Source: <code>wat/vocab/exit/structure.wat</code> (31 lines)</p>
 <p>Interface: <code>(encode-exit-structure-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>trend-consistency-6</code></td><td>Linear { scale: 1.0 }</td><td>[-1, 1]</td></tr>
-<tr><td><code>trend-consistency-12</code></td><td>Linear { scale: 1.0 }</td><td>[-1, 1]</td></tr>
-<tr><td><code>trend-consistency-24</code></td><td>Linear { scale: 1.0 }</td><td>[-1, 1]</td></tr>
-<tr><td><code>adx</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>exit-kama-er</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]; named exit-kama-er to distinguish from market's kama-er</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>trend-consistency-6</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>trend-consistency-12</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>trend-consistency-24</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[-1, 1]</td></tr>
+<tr><td data-label="Atom"><code>adx</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>exit-kama-er</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]; named exit-kama-er to distinguish from market's kama-er</td></tr>
 </table>
 <p><strong>5 atoms. All Linear.</strong></p>
 <h4><code>exit/timing.wat</code> — Momentum state, reversal signals</h4>
 <p>Source: <code>wat/vocab/exit/timing.wat</code> (29 lines)</p>
 <p>Interface: <code>(encode-exit-timing-facts candle) → Vec<ThoughtAST></code></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>rsi</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1]</td></tr>
-<tr><td><code>stoch-k</code></td><td>Linear { scale: 1.0 }</td><td>[0, 1] from /100</td></tr>
-<tr><td><code>stoch-kd-spread</code></td><td>Linear { scale: 1.0 }</td><td>(%K - %D) / 100</td></tr>
-<tr><td><code>macd-hist</code></td><td>Linear { scale: 0.01 }</td><td>MACD histogram / close</td></tr>
-<tr><td><code>cci</code></td><td>Linear { scale: 1.0 }</td><td>/300</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>rsi</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1]</td></tr>
+<tr><td data-label="Atom"><code>stoch-k</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">[0, 1] from /100</td></tr>
+<tr><td data-label="Atom"><code>stoch-kd-spread</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">(%K - %D) / 100</td></tr>
+<tr><td data-label="Atom"><code>macd-hist</code></td><td data-label="Encoding">Linear { scale: 0.01 }</td><td data-label="Notes">MACD histogram / close</td></tr>
+<tr><td data-label="Atom"><code>cci</code></td><td data-label="Encoding">Linear { scale: 1.0 }</td><td data-label="Notes">/300</td></tr>
 </table>
 <p><strong>5 atoms. All Linear.</strong></p>
 <hr>
@@ -763,52 +868,52 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>Three output categories:</p>
 <p><strong>Current phase atoms (always 2 facts):</strong></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr>
-<tr><td><code>phase</code></td><td>Bind(Atom, Atom)</td><td>Label: valley, peak, transition-up, transition-down</td></tr>
-<tr><td><code>phase-duration</code></td><td>Linear { scale: scaled }</td><td>Duration in candles</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Notes</th></tr></thead>
+<tr><td data-label="Atom"><code>phase</code></td><td data-label="Encoding">Bind(Atom, Atom)</td><td data-label="Notes">Label: valley, peak, transition-up, transition-down</td></tr>
+<tr><td data-label="Atom"><code>phase-duration</code></td><td data-label="Encoding">Linear { scale: scaled }</td><td data-label="Notes">Duration in candles</td></tr>
 </table>
 <p><strong>Phase series (Sequential thought — variable length):</strong></p>
 <p>Each PhaseRecord in phase_history becomes a Bundle of:</p>
 <table>
-<tr><th>Atom</th><th>Encoding</th></tr>
-<tr><td><code>phase</code></td><td>Bind(Atom, Atom) — label</td></tr>
-<tr><td><code>phase-rec-duration</code></td><td>Log — duration</td></tr>
-<tr><td><code>phase-rec-range</code></td><td>Linear — (max-min)/avg</td></tr>
-<tr><td><code>phase-rec-move</code></td><td>Linear — (final-open)/open</td></tr>
-<tr><td><code>phase-rec-volume</code></td><td>Linear — volume_avg</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th></tr></thead>
+<tr><td data-label="Atom"><code>phase</code></td><td data-label="Encoding">Bind(Atom, Atom) — label</td></tr>
+<tr><td data-label="Atom"><code>phase-rec-duration</code></td><td data-label="Encoding">Log — duration</td></tr>
+<tr><td data-label="Atom"><code>phase-rec-range</code></td><td data-label="Encoding">Linear — (max-min)/avg</td></tr>
+<tr><td data-label="Atom"><code>phase-rec-move</code></td><td data-label="Encoding">Linear — (final-open)/open</td></tr>
+<tr><td data-label="Atom"><code>phase-rec-volume</code></td><td data-label="Encoding">Linear — volume_avg</td></tr>
 </table>
 <p><strong>Phase scalar summaries (conditional, requires ≥2 history records):</strong></p>
 <table>
-<tr><th>Atom</th><th>Encoding</th><th>Condition</th></tr>
-<tr><td><code>phase-valley-trend</code></td><td>Linear { scale: scaled }</td><td>≥2 valley records</td></tr>
-<tr><td><code>phase-peak-trend</code></td><td>Linear { scale: scaled }</td><td>≥2 peak records</td></tr>
-<tr><td><code>phase-range-trend</code></td><td>Linear { scale: scaled }</td><td>≥2 records</td></tr>
-<tr><td><code>phase-spacing-trend</code></td><td>Linear { scale: scaled }</td><td>≥2 records</td></tr>
+<thead><tr><th>Atom</th><th>Encoding</th><th>Condition</th></tr></thead>
+<tr><td data-label="Atom"><code>phase-valley-trend</code></td><td data-label="Encoding">Linear { scale: scaled }</td><td data-label="Condition">≥2 valley records</td></tr>
+<tr><td data-label="Atom"><code>phase-peak-trend</code></td><td data-label="Encoding">Linear { scale: scaled }</td><td data-label="Condition">≥2 peak records</td></tr>
+<tr><td data-label="Atom"><code>phase-range-trend</code></td><td data-label="Encoding">Linear { scale: scaled }</td><td data-label="Condition">≥2 records</td></tr>
+<tr><td data-label="Atom"><code>phase-spacing-trend</code></td><td data-label="Encoding">Linear { scale: scaled }</td><td data-label="Condition">≥2 records</td></tr>
 </table>
 <hr>
 <h2>Atom Counts</h2>
 <table>
-<tr><th>Domain</th><th>Module</th><th>Atoms</th><th>Wired in live Rust?</th></tr>
-<tr><td>shared</td><td>time</td><td>5</td><td>✅ (all market lenses + exit Core/Full)</td></tr>
-<tr><td>market</td><td>standard</td><td>8</td><td>✅ (selected lenses)</td></tr>
-<tr><td>market</td><td>oscillators</td><td>8</td><td>✅</td></tr>
-<tr><td>market</td><td>flow</td><td>6</td><td>✅</td></tr>
-<tr><td>market</td><td>persistence</td><td>3</td><td>✅</td></tr>
-<tr><td>market</td><td>regime</td><td>8</td><td>✅</td></tr>
-<tr><td>market</td><td>divergence</td><td>3 (conditional)</td><td>✅</td></tr>
-<tr><td>market</td><td>ichimoku</td><td>6</td><td>❌ removed (Proposals 041+042)</td></tr>
-<tr><td>market</td><td>stochastic</td><td>4</td><td>❌ removed (Proposals 041+042)</td></tr>
-<tr><td>market</td><td>fibonacci</td><td>8</td><td>✅ (WyckoffPosition only)</td></tr>
-<tr><td>market</td><td>keltner</td><td>6</td><td>✅</td></tr>
-<tr><td>market</td><td>momentum</td><td>6</td><td>✅</td></tr>
-<tr><td>market</td><td>price_action</td><td>7</td><td>✅</td></tr>
-<tr><td>market</td><td>timeframe</td><td>6</td><td>✅</td></tr>
-<tr><td>exit (wat)</td><td>volatility</td><td>6</td><td>❌ spec only, not wired</td></tr>
-<tr><td>exit (wat)</td><td>structure</td><td>5</td><td>❌ spec only, not wired</td></tr>
-<tr><td>exit (wat)</td><td>timing</td><td>5</td><td>❌ spec only, not wired</td></tr>
-<tr><td>exit (Rust)</td><td>regime</td><td>8</td><td>✅ (exit Core + Full)</td></tr>
-<tr><td>exit (Rust)</td><td>time</td><td>2</td><td>✅ (exit Core + Full)</td></tr>
-<tr><td>exit (Rust)</td><td>phase</td><td>2 fixed + variable series + 0–4 scalar</td><td>✅ (exit Full only)</td></tr>
+<thead><tr><th>Domain</th><th>Module</th><th>Atoms</th><th>Wired in live Rust?</th></tr></thead>
+<tr><td data-label="Domain">shared</td><td data-label="Module">time</td><td data-label="Atoms">5</td><td data-label="Wired in live Rust?">✅ (all market lenses + exit Core/Full)</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">standard</td><td data-label="Atoms">8</td><td data-label="Wired in live Rust?">✅ (selected lenses)</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">oscillators</td><td data-label="Atoms">8</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">flow</td><td data-label="Atoms">6</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">persistence</td><td data-label="Atoms">3</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">regime</td><td data-label="Atoms">8</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">divergence</td><td data-label="Atoms">3 (conditional)</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">ichimoku</td><td data-label="Atoms">6</td><td data-label="Wired in live Rust?">❌ removed (Proposals 041+042)</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">stochastic</td><td data-label="Atoms">4</td><td data-label="Wired in live Rust?">❌ removed (Proposals 041+042)</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">fibonacci</td><td data-label="Atoms">8</td><td data-label="Wired in live Rust?">✅ (WyckoffPosition only)</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">keltner</td><td data-label="Atoms">6</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">momentum</td><td data-label="Atoms">6</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">price_action</td><td data-label="Atoms">7</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">market</td><td data-label="Module">timeframe</td><td data-label="Atoms">6</td><td data-label="Wired in live Rust?">✅</td></tr>
+<tr><td data-label="Domain">exit (wat)</td><td data-label="Module">volatility</td><td data-label="Atoms">6</td><td data-label="Wired in live Rust?">❌ spec only, not wired</td></tr>
+<tr><td data-label="Domain">exit (wat)</td><td data-label="Module">structure</td><td data-label="Atoms">5</td><td data-label="Wired in live Rust?">❌ spec only, not wired</td></tr>
+<tr><td data-label="Domain">exit (wat)</td><td data-label="Module">timing</td><td data-label="Atoms">5</td><td data-label="Wired in live Rust?">❌ spec only, not wired</td></tr>
+<tr><td data-label="Domain">exit (Rust)</td><td data-label="Module">regime</td><td data-label="Atoms">8</td><td data-label="Wired in live Rust?">✅ (exit Core + Full)</td></tr>
+<tr><td data-label="Domain">exit (Rust)</td><td data-label="Module">time</td><td data-label="Atoms">2</td><td data-label="Wired in live Rust?">✅ (exit Core + Full)</td></tr>
+<tr><td data-label="Domain">exit (Rust)</td><td data-label="Module">phase</td><td data-label="Atoms">2 fixed + variable series + 0–4 scalar</td><td data-label="Wired in live Rust?">✅ (exit Full only)</td></tr>
 </table>
 <p><strong>Total unique atom names in wat spec (market + shared + exit wat):</strong> 100</p>
 <p><strong>Total unique atom names in live Rust (market + shared + exit Rust):</strong> ~99 (overlaps between market regime and exit regime share atom names)</p>
@@ -819,4 +924,4 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p>></p>
 <blockquote>"<strong>No zones. No categories. Only scalars.</strong> 'Overbought' is a human label on a continuous value — a magic number wearing a name. WHO decided 70 was the boundary? The vocabulary emits 'RSI is at 0.73.' The discriminant learns where the boundaries are."</blockquote>
 <p>From GUIDE lines 1346–1356:</p>
-<blockquote>"Every relationship is a signed scalar. Not 'close is above SMA20' — the relative distance, with sign. [...] The sign IS the direction. The magnitude IS the distance. No 'above' atom. No 'below' atom. No boolean. Just the number."</blockquote></div></body></html>
+<blockquote>"Every relationship is a signed scalar. Not 'close is above SMA20' — the relative distance, with sign. [...] The sign IS the direction. The magnitude IS the distance. No 'above' atom. No 'below' atom. No boolean. Just the number."</blockquote></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

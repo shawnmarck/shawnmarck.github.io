@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Chain Types — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>Chain Types — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>Chain Types <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>The typed values that flow through the organism.</strong></p>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>Chain Types <span class="badge badge-explain">EXPLAIN</span></h1><p><strong>The typed values that flow through the organism.</strong></p>
 <blockquote>TL;DR — Two pure-data structs in <code>src/programs/chain.rs</code> (40 lines) carry all information between pipeline stages. The type name <em>is</em> the proof of which stage produced it. No methods, no behavior, no shared references — just values on the wire.</blockquote>
 <hr>
 <h2>Design Principle</h2>
@@ -492,15 +597,15 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <h2><code>MarketChain</code> — <code>Clone</code></h2>
 <p><strong>Transport:</strong> Bounded <a class="wikilink" href="pg-services.html">Queue</a> (capacity 1) into market observer; <a class="wikilink" href="pg-services.html">Topic</a> (1→N) out to position observers.</p>
 <table>
-<tr><th>Field</th><th>Type</th><th>Meaning</th></tr>
-<tr><td><code>candle</code></td><td><code>Candle</code></td><td>The enriched OHLCV candle that triggered this step</td></tr>
-<tr><td><code>window</code></td><td><code>Arc<Vec<Candle>></code></td><td>Window of recent candles (currently length 1)</td></tr>
-<tr><td><code>encode_count</code></td><td><code>usize</code></td><td>Global monotonic encode counter</td></tr>
-<tr><td><code>market_raw</code></td><td><code>Vector</code></td><td>Raw encoding of market features via <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a></td></tr>
-<tr><td><code>market_anomaly</code></td><td><code>Vector</code></td><td>Anomaly component (deviation from noise subspace)</td></tr>
-<tr><td><code>market_ast</code></td><td><code>ThoughtAST</code></td><td>The abstract syntax tree that was encoded</td></tr>
-<tr><td><code>prediction</code></td><td><code>Prediction</code></td><td>Direction prediction (Up / Down)</td></tr>
-<tr><td><code>edge</code></td><td><code>f64</code></td><td>Edge / confidence score</td></tr>
+<thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead>
+<tr><td data-label="Field"><code>candle</code></td><td data-label="Type"><code>Candle</code></td><td data-label="Meaning">The enriched OHLCV candle that triggered this step</td></tr>
+<tr><td data-label="Field"><code>window</code></td><td data-label="Type"><code>Arc<Vec<Candle>></code></td><td data-label="Meaning">Window of recent candles (currently length 1)</td></tr>
+<tr><td data-label="Field"><code>encode_count</code></td><td data-label="Type"><code>usize</code></td><td data-label="Meaning">Global monotonic encode counter</td></tr>
+<tr><td data-label="Field"><code>market_raw</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Raw encoding of market features via <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a></td></tr>
+<tr><td data-label="Field"><code>market_anomaly</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Anomaly component (deviation from noise subspace)</td></tr>
+<tr><td data-label="Field"><code>market_ast</code></td><td data-label="Type"><code>ThoughtAST</code></td><td data-label="Meaning">The abstract syntax tree that was encoded</td></tr>
+<tr><td data-label="Field"><code>prediction</code></td><td data-label="Type"><code>Prediction</code></td><td data-label="Meaning">Direction prediction (Up / Down)</td></tr>
+<tr><td data-label="Field"><code>edge</code></td><td data-label="Type"><code>f64</code></td><td data-label="Meaning">Edge / confidence score</td></tr>
 </table>
 <p>Implements <code>Clone</code> because a <a class="wikilink" href="pg-services.html">Topic</a> clones the message to every subscriber. This is the only chain type that needs fan-out.</p>
 <hr>
@@ -508,22 +613,22 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <p><strong>Transport:</strong> Bounded <a class="wikilink" href="pg-services.html">Queue</a> (point-to-point, one broker per chain).</p>
 <p>Flattens <strong>all</strong> <code>MarketChain</code> fields — duplicated, not borrowed — then adds position-specific fields:</p>
 <table>
-<tr><th>Inherited Field (renamed)</th><th>Original</th><th>Meaning</th></tr>
-<tr><td><code>candle</code></td><td><code>MarketChain::candle</code></td><td>Same enriched candle</td></tr>
-<tr><td><code>window</code></td><td><code>MarketChain::window</code></td><td>Same window</td></tr>
-<tr><td><code>encode_count</code></td><td><code>MarketChain::encode_count</code></td><td>Same counter</td></tr>
-<tr><td><code>market_raw</code></td><td><code>MarketChain::market_raw</code></td><td>Same market raw encoding</td></tr>
-<tr><td><code>market_anomaly</code></td><td><code>MarketChain::market_anomaly</code></td><td>Same market anomaly</td></tr>
-<tr><td><code>market_ast</code></td><td><code>MarketChain::market_ast</code></td><td>Same market AST</td></tr>
-<tr><td><code>market_prediction</code></td><td><code>MarketChain::prediction</code></td><td>Renamed from <code>prediction</code></td></tr>
-<tr><td><code>market_edge</code></td><td><code>MarketChain::edge</code></td><td>Renamed from <code>edge</code></td></tr>
+<thead><tr><th>Inherited Field (renamed)</th><th>Original</th><th>Meaning</th></tr></thead>
+<tr><td data-label="Inherited Field (renamed)"><code>candle</code></td><td data-label="Original"><code>MarketChain::candle</code></td><td data-label="Meaning">Same enriched candle</td></tr>
+<tr><td data-label="Inherited Field (renamed)"><code>window</code></td><td data-label="Original"><code>MarketChain::window</code></td><td data-label="Meaning">Same window</td></tr>
+<tr><td data-label="Inherited Field (renamed)"><code>encode_count</code></td><td data-label="Original"><code>MarketChain::encode_count</code></td><td data-label="Meaning">Same counter</td></tr>
+<tr><td data-label="Inherited Field (renamed)"><code>market_raw</code></td><td data-label="Original"><code>MarketChain::market_raw</code></td><td data-label="Meaning">Same market raw encoding</td></tr>
+<tr><td data-label="Inherited Field (renamed)"><code>market_anomaly</code></td><td data-label="Original"><code>MarketChain::market_anomaly</code></td><td data-label="Meaning">Same market anomaly</td></tr>
+<tr><td data-label="Inherited Field (renamed)"><code>market_ast</code></td><td data-label="Original"><code>MarketChain::market_ast</code></td><td data-label="Meaning">Same market AST</td></tr>
+<tr><td data-label="Inherited Field (renamed)"><code>market_prediction</code></td><td data-label="Original"><code>MarketChain::prediction</code></td><td data-label="Meaning">Renamed from <code>prediction</code></td></tr>
+<tr><td data-label="Inherited Field (renamed)"><code>market_edge</code></td><td data-label="Original"><code>MarketChain::edge</code></td><td data-label="Meaning">Renamed from <code>edge</code></td></tr>
 </table>
 <table>
-<tr><th>New Field</th><th>Type</th><th>Meaning</th></tr>
-<tr><td><code>position_raw</code></td><td><code>Vector</code></td><td>Position observer's own raw encoding</td></tr>
-<tr><td><code>position_anomaly</code></td><td><code>Vector</code></td><td>Position observer's anomaly vector</td></tr>
-<tr><td><code>position_ast</code></td><td><code>ThoughtAST</code></td><td>Position observer's AST</td></tr>
-<tr><td><code>position_distances</code></td><td><code>Distances</code></td><td>Trailing stop and safety stop distances from <a class="wikilink" href="pg-reckoner.html">Reckoner</a></td></tr>
+<thead><tr><th>New Field</th><th>Type</th><th>Meaning</th></tr></thead>
+<tr><td data-label="New Field"><code>position_raw</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Position observer's own raw encoding</td></tr>
+<tr><td data-label="New Field"><code>position_anomaly</code></td><td data-label="Type"><code>Vector</code></td><td data-label="Meaning">Position observer's anomaly vector</td></tr>
+<tr><td data-label="New Field"><code>position_ast</code></td><td data-label="Type"><code>ThoughtAST</code></td><td data-label="Meaning">Position observer's AST</td></tr>
+<tr><td data-label="New Field"><code>position_distances</code></td><td data-label="Type"><code>Distances</code></td><td data-label="Meaning">Trailing stop and safety stop distances from <a class="wikilink" href="pg-reckoner.html">Reckoner</a></td></tr>
 </table>
 <hr>
 <h2>Data Flow Through the Grid</h2>
@@ -544,27 +649,27 @@ flowchart TD
 <hr>
 <h2>Wire Summary</h2>
 <table>
-<tr><th>Stage</th><th>Wire type</th><th>Mechanism</th></tr>
-<tr><td>Main → Market observer</td><td>(input wrapper)</td><td>Bounded <a class="wikilink" href="pg-services.html">Queue</a> (capacity 1)</td></tr>
-<tr><td>Market observer → Position observers</td><td><a class="wikilink" href="pg-chain-types.html">MarketChain</a></td><td><a class="wikilink" href="pg-services.html">Topic</a> (1→N fan-out)</td></tr>
-<tr><td>Position observer → Broker</td><td><a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a></td><td>Bounded <a class="wikilink" href="pg-services.html">Queue</a></td></tr>
-<tr><td>Broker → Market observer (learn)</td><td><code>ObsLearn</code></td><td>Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td></tr>
-<tr><td>Broker → Position observer (learn)</td><td><code>PositionLearn</code></td><td>Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td></tr>
-<tr><td>Broker → Position observer (trade)</td><td><code>TradeUpdate</code></td><td>Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a></td></tr>
+<thead><tr><th>Stage</th><th>Wire type</th><th>Mechanism</th></tr></thead>
+<tr><td data-label="Stage">Main → Market observer</td><td data-label="Wire type">(input wrapper)</td><td data-label="Mechanism">Bounded <a class="wikilink" href="pg-services.html">Queue</a> (capacity 1)</td></tr>
+<tr><td data-label="Stage">Market observer → Position observers</td><td data-label="Wire type"><a class="wikilink" href="pg-chain-types.html">MarketChain</a></td><td data-label="Mechanism"><a class="wikilink" href="pg-services.html">Topic</a> (1→N fan-out)</td></tr>
+<tr><td data-label="Stage">Position observer → Broker</td><td data-label="Wire type"><a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a></td><td data-label="Mechanism">Bounded <a class="wikilink" href="pg-services.html">Queue</a></td></tr>
+<tr><td data-label="Stage">Broker → Market observer (learn)</td><td data-label="Wire type"><code>ObsLearn</code></td><td data-label="Mechanism">Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td></tr>
+<tr><td data-label="Stage">Broker → Position observer (learn)</td><td data-label="Wire type"><code>PositionLearn</code></td><td data-label="Mechanism">Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1 fan-in)</td></tr>
+<tr><td data-label="Stage">Broker → Position observer (trade)</td><td data-label="Wire type"><code>TradeUpdate</code></td><td data-label="Mechanism">Unbounded <a class="wikilink" href="pg-services.html">Queue</a> → <a class="wikilink" href="pg-services.html">Mailbox</a></td></tr>
 </table>
 <hr>
 <h2>Key Design Choices</h2>
 <table>
-<tr><th>Choice</th><th>Rationale</th></tr>
-<tr><td><strong>Pure data, no methods</strong></td><td>Types carry information; behavior lives in the <a class="wikilink" href="pg-programs.html">program</a> functions that produce and consume them.</td></tr>
-<tr><td><strong>Flattened, not composed</strong></td><td><code>MarketPositionChain</code> duplicates market fields rather than holding a <code>MarketChain</code> field. This avoids lifetime complexity and shared-reference entanglement.</td></tr>
-<tr><td><strong><code>MarketChain</code> clones; <code>MarketPositionChain</code> does not</strong></td><td>Clone is required only for <a class="wikilink" href="pg-services.html">fan-out</a> to multiple position observers. Brokers receive point-to-point, so ownership transfer suffices.</td></tr>
-<tr><td><strong><code>Arc<Vec<Candle>></code> for window</strong></td><td>The one shared allocation — read-only, never mutated after creation.</td></tr>
-<tr><td><strong>Type-is-proof</strong></td><td>The compiler ensures a <code>MarketPositionChain</code> can only be produced by a position observer. Passing the wrong type to the wrong stage is a compile error, not a runtime bug.</td></tr>
+<thead><tr><th>Choice</th><th>Rationale</th></tr></thead>
+<tr><td data-label="Choice"><strong>Pure data, no methods</strong></td><td data-label="Rationale">Types carry information; behavior lives in the <a class="wikilink" href="pg-programs.html">program</a> functions that produce and consume them.</td></tr>
+<tr><td data-label="Choice"><strong>Flattened, not composed</strong></td><td data-label="Rationale"><code>MarketPositionChain</code> duplicates market fields rather than holding a <code>MarketChain</code> field. This avoids lifetime complexity and shared-reference entanglement.</td></tr>
+<tr><td data-label="Choice"><strong><code>MarketChain</code> clones; <code>MarketPositionChain</code> does not</strong></td><td data-label="Rationale">Clone is required only for <a class="wikilink" href="pg-services.html">fan-out</a> to multiple position observers. Brokers receive point-to-point, so ownership transfer suffices.</td></tr>
+<tr><td data-label="Choice"><strong><code>Arc<Vec<Candle>></code> for window</strong></td><td data-label="Rationale">The one shared allocation — read-only, never mutated after creation.</td></tr>
+<tr><td data-label="Choice"><strong>Type-is-proof</strong></td><td data-label="Rationale">The compiler ensures a <code>MarketPositionChain</code> can only be produced by a position observer. Passing the wrong type to the wrong stage is a compile error, not a runtime bug.</td></tr>
 </table>
 <hr>
 <h2>Source</h2>
 <ul>
 <li><code>src/programs/chain.rs</code> — 40 lines</li>
 </ul>
-<hr></div></body></html>
+<hr></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>

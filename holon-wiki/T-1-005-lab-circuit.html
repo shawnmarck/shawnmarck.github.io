@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T-1-005 — Lab Circuit (CIRCUIT.md) — Holon Wiki</title><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#0c0e12"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><title>T-1-005 — Lab Circuit (CIRCUIT.md) — Holon Wiki</title><style>
 :root {
   --font-sans: 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -367,6 +367,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
 #banner p { color: var(--color-text-muted); font-size: 14px; }
 
+/* === MOBILE SEARCH BAR (hidden on desktop) === */
+.mobile-search-bar {
+  display: none;
+}
+
 /* === MOBILE === */
 #menu-toggle {
   display: none;
@@ -374,25 +379,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   top: var(--space-md);
   left: var(--space-md);
   z-index: 60;
-  background: var(--color-surface);
+  background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   color: var(--color-text);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 16px;
+  padding: 10px 14px;
+  font-size: 18px;
   cursor: pointer;
   font-family: var(--font-sans);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
+/* === TABLET (≤ 900px) === */
 @media (max-width: 900px) {
-  #menu-toggle { display: block; }
+  #menu-toggle { display: flex; align-items: center; justify-content: center; }
 
   #sidebar {
     transform: translateX(-100%);
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
   }
 
-  #sidebar.open { transform: translateX(0); }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  /* Backdrop overlay */
+  #sidebar.open::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 300px; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+  }
 
   #content, #banner {
     margin-left: 0;
@@ -401,6 +424,87 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   #content h1 { font-size: 1.75em; }
   #content h2 { font-size: 1.25em; }
+
+  /* Tables scroll in container */
+  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Mermaid scale to container */
+  #content .mermaid svg { max-width: 100%; height: auto; }
+
+  /* Code blocks scroll with momentum */
+  #content pre { -webkit-overflow-scrolling: touch; }
+
+  /* Touch targets for sidebar links */
+  #sidebar a { padding: 10px var(--space-lg); min-height: 44px; display: flex; align-items: center; }
+}
+
+/* === PHONE (≤ 480px) === */
+@media (max-width: 480px) {
+  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
+
+  #menu-toggle {
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: 8px 12px;
+  }
+
+  #content, #banner { padding: var(--space-md) var(--space-sm); }
+
+  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
+  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
+  #content h3 { font-size: 1em; }
+
+  /* Mobile search bar */
+  .mobile-search-bar {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin: 0 0 var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    outline: none;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+
+  .mobile-search-bar:focus { border-color: var(--color-accent); }
+
+  /* Hide sidebar search on phone */
+  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
+
+  /* Wikilinks more visible */
+  #content a.wikilink {
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(88, 166, 255, 0.5);
+  }
+
+  /* Touch feedback */
+  #sidebar a:active { background: var(--color-border); }
+  #content a.wikilink:active { color: var(--color-text-bright); }
+  #menu-toggle:active { transform: scale(0.95); }
+
+  /* Tables: stacked card layout for 3+ columns */
+  #content table thead { display: none; }
+  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); }
+  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
+  #content table td::before { content: attr(data-label); font-weight: 600; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
+
+  /* Blockquote/TL;DR: prevent break */
+  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
+
+  /* Safe area insets for notched phones */
+  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
+}
+
+/* === SAFE AREA === */
+@supports (padding: max(0px)) {
+  #sidebar { padding-top: env(safe-area-inset-top); }
 }
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#2d333b",lineColor:"#2d333b",textColor:"#c9d1d9",fontSize:"14px",nodeBorder:"#58a6ff",mainBkg:"#141820",clusterBkg:"#141820",edgeLabelBackground:"#141820"}});</script>
@@ -484,7 +588,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
 </div>
 <div id="holon-results" class="search-results"></div>
-<div id="content"><h1>T-1-005 — Lab Circuit (CIRCUIT.md) <span class="badge badge-why">WHY</span></h1><blockquote><strong>TL;DR:</strong> CIRCUIT.md is the architectural wiring diagram for the holon-lab-trading system. It defines 11 sub-circuits (each rendered as a Mermaid graph) that together form a complete trading machine: raw candles enter, thoughts are encoded, predictions are made, proposals are funded as trades, outcomes propagate back as learning, and stops breathe every candle. The core equation is <code>f(state, candle) → state</code> — one tick of the clock.</blockquote>
+
+<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="content"><h1>T-1-005 — Lab Circuit (CIRCUIT.md) <span class="badge badge-why">WHY</span></h1><blockquote><strong>TL;DR:</strong> CIRCUIT.md is the architectural wiring diagram for the holon-lab-trading system. It defines 11 sub-circuits (each rendered as a Mermaid graph) that together form a complete trading machine: raw candles enter, thoughts are encoded, predictions are made, proposals are funded as trades, outcomes propagate back as learning, and stops breathe every candle. The core equation is <code>f(state, candle) → state</code> — one tick of the clock.</blockquote>
 <hr>
 <h2>Source</h2>
 <p><code>wat/CIRCUIT.md</code> — 456 lines, ~19KB. Renders natively on GitHub via Mermaid.</p>
@@ -571,28 +676,28 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <hr>
 <h2>Key Architectural Principles</h2>
 <table>
-<tr><th>Principle</th><th>Meaning</th></tr>
-<tr><td>Values up, not queues down</td><td>Side-effects returned as values, never queued via parameters</td></tr>
-<tr><td>Bounded(1) IS the synchronization</td><td>No mutexes, no shared state — channel capacity enforces lockstep</td></tr>
-<tr><td>The binary does not think</td><td>It drives the fold and writes what happened</td></tr>
-<tr><td>One encoding path</td><td>Encoding at prediction and resolution are identical</td></tr>
-<tr><td>The moment acts, the past teaches</td><td>Prediction and learning are decoupled, both converge</td></tr>
+<thead><tr><th>Principle</th><th>Meaning</th></tr></thead>
+<tr><td data-label="Principle">Values up, not queues down</td><td data-label="Meaning">Side-effects returned as values, never queued via parameters</td></tr>
+<tr><td data-label="Principle">Bounded(1) IS the synchronization</td><td data-label="Meaning">No mutexes, no shared state — channel capacity enforces lockstep</td></tr>
+<tr><td data-label="Principle">The binary does not think</td><td data-label="Meaning">It drives the fold and writes what happened</td></tr>
+<tr><td data-label="Principle">One encoding path</td><td data-label="Meaning">Encoding at prediction and resolution are identical</td></tr>
+<tr><td data-label="Principle">The moment acts, the past teaches</td><td data-label="Meaning">Prediction and learning are decoupled, both converge</td></tr>
 </table>
 <hr>
 <h2>Component Summary (from Circuit 1 legend)</h2>
 <table>
-<tr><th>Component</th><th>Role</th></tr>
-<tr><td>IndicatorBank</td><td>Streaming state → enriched Candle (100+ indicators)</td></tr>
-<tr><td><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a></td><td>Pure functions → Vec\<ThoughtAST\></td></tr>
-<tr><td><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a></td><td>ASTs → Vectors (with LRU cache)</td></tr>
-<tr><td><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a></td><td>Optimization cache for diff-based encoding</td></tr>
-<tr><td><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a></td><td>Single thread, LRU cache, N client pipes</td></tr>
-<tr><td><a class="wikilink" href="pg-market-observer.html">MarketObserver</a> ×N</td><td>Predicts direction (Up/Down) from thought</td></tr>
-<tr><td>ExitObserver ×M</td><td>Predicts distances (trail, stop) from composed thought</td></tr>
-<tr><td><a class="wikilink" href="pg-broker.html">Broker</a> ×N×M</td><td>Composes market + exit predictions, owns papers, proposes trades</td></tr>
-<tr><td><a class="wikilink" href="pg-four-step-loop.html">Post</a></td><td>Per-asset-pair unit, routes the four-step loop</td></tr>
-<tr><td><a class="wikilink" href="pg-treasury.html">Treasury</a></td><td>Capital management (available ↔ reserved)</td></tr>
-<tr><td>Enterprise</td><td>Coordination plane, routes candles and propagation</td></tr>
+<thead><tr><th>Component</th><th>Role</th></tr></thead>
+<tr><td data-label="Component">IndicatorBank</td><td data-label="Role">Streaming state → enriched Candle (100+ indicators)</td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a></td><td data-label="Role">Pure functions → Vec\<ThoughtAST\></td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a></td><td data-label="Role">ASTs → Vectors (with LRU cache)</td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a></td><td data-label="Role">Optimization cache for diff-based encoding</td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a></td><td data-label="Role">Single thread, LRU cache, N client pipes</td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="pg-market-observer.html">MarketObserver</a> ×N</td><td data-label="Role">Predicts direction (Up/Down) from thought</td></tr>
+<tr><td data-label="Component">ExitObserver ×M</td><td data-label="Role">Predicts distances (trail, stop) from composed thought</td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="pg-broker.html">Broker</a> ×N×M</td><td data-label="Role">Composes market + exit predictions, owns papers, proposes trades</td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="pg-four-step-loop.html">Post</a></td><td data-label="Role">Per-asset-pair unit, routes the four-step loop</td></tr>
+<tr><td data-label="Component"><a class="wikilink" href="pg-treasury.html">Treasury</a></td><td data-label="Role">Capital management (available ↔ reserved)</td></tr>
+<tr><td data-label="Component">Enterprise</td><td data-label="Role">Coordination plane, routes candles and propagation</td></tr>
 </table>
 <hr>
 <h2>Notes</h2>
@@ -600,4 +705,4 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <li>The document uses "ExitObserver" throughout; per the project's CLAUDE.md, this was renamed to "Position Observer" in Proposal 050, but CIRCUIT.md has not been updated to reflect this rename.</li>
 <li>The "misses" pattern (cache misses returned as values, inserted between candles) is consistent throughout all circuits.</li>
 <li>All circuits compose into one equation: <code>f(state, candle) → state</code>.</li>
-</ul></div></body></html>
+</ul></div><script>!function(){var s=document.getElementById('sidebar'),b=document.getElementById('holon-results');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search');if(ms){ms.addEventListener('input',function(e){var q=e.target.value.toLowerCase();if(q.length<2){document.getElementById('holon-results').innerHTML='';return}if(typeof holonSearch==='function'){holonSearch(q,ms)}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')})}}();</script></body></html>
