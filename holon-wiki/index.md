@@ -106,6 +106,10 @@ The system was built by a DDoS expert who pivoted to markets — not as a trader
 | Page | TL;DR |
 |------|-------|
 | [[Thought Primitives]] | Five operations — atom, bind, bundle, cosine, reckoner — form the complete algebra of cognition |
+| [[Atom]] | Naming a concept assigns it a random point in high-dimensional space — the name IS the vector |
+| [[Bind and Bundle]] | Bind composes meaning (structure). Bundle aggregates evidence (consensus). |
+| [[Fact]] | A named observation frozen in time — atom + scalar + timestamp |
+| [[Thought Encoder]] | Turns the tree of atoms, binds, and bundles into a single high-dimensional vector |
 | [[Thought Space]] | 10,000-dimensional hyperspace where every concept is a direction and every prediction is a cosine |
 | [[Vocabulary]] | 107 named atoms across schools — the vocabulary IS the model |
 | [[Homoiconicity]] | Atoms are names are vectors — the identifier of a thing IS the thing itself |
@@ -133,8 +137,12 @@ The system was built by a DDoS expert who pivoted to markets — not as a trader
 | [[Brokers]] | The accountability unit — binds market + exit observer, owns papers and Grace/Violence reckoner |
 | [[The Treasury]] | Pure accounting — funds proportionally to edge, bounded loss, residue IS the growth |
 | [[The Four-Step Loop]] | The heartbeat — resolve, compute+dispatch, tick, collect+fund — every candle |
+| [[Propagation]] | Values flow up from brokers through posts to observers — no callbacks, no shared mutation |
+| [[Programs]] | Pure functions on threads — input queues, output queues, return trained state |
+| [[Services]] | Queue (1→1), Topic (1→N), Mailbox (N→1) — the three-instruction ISA |
 | [[The Proposal System]] | What brokers produce, what the treasury evaluates |
 | [[Paper Trades]] | Hypothetical what-if positions — the fast learning stream, every candle |
+| [[Window Sampler]] | Random candle subsets per training cycle — prevents overfitting |
 | [[Trade Lifecycle]] | Active → Runner → Settled. Stops breathe. One entry. One exit. |
 
 ### Specification
