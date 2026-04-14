@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site Map — Holon Wiki</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#08090a"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><title>Reckoner — the geometric learning primitive — Holon Wiki</title><script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        bg: '#08090a',
+        surface: '#0f1011',
+        'surface-raised': '#191a1b',
+        'surface-overlay': '#28282c',
+        border: 'rgba(255,255,255,0.08)',
+        'border-subtle': 'rgba(255,255,255,0.05)',
+        accent: '#7170ff',
+        'accent-hover': '#828fff',
+        provenance: '#d29922',
+      }
+    }
+  }
+}
+</script><style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#62666d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+#sidebar.open::after{content:'';position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:-1}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+#sidebar.open::after{content:'';position:fixed;top:0;left:260px;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:-1}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});</script>
+<script src="holon-search.js"></script>
+
+</head>
+<body class="bg-bg text-[#d0d6e0] font-sans antialiased">
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+<div class="md:ml-[260px] flex-1 min-w-0">
+<div class="md:ml-[260px] flex-1 min-w-0">
+<nav id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+<h2 class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</h2>
+<div class="px-6 py-4"><input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" /><div id="holon-results" class="search-results"></div></div>
+<div class="tier">Conceptual Leaves</div>
+<a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+<a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+<a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+<a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+<a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+<a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+<a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+<div class="tier">Substrate</div>
+<a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+<a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+<a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+<a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+<a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+<a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+<a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+<a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+<a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+<div class="tier">Language</div>
+<a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+<a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+<a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+<div class="tier">Enterprise Rust</div>
+<a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+<a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+<a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+<a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+<a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+<a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+<a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+<a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+<a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+<a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+<div class="tier">Enterprise Spec</div>
+<a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+<a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+<a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+<a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+<a href="T2-005-lens.html">T2-005 — Lens</a>
+<a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+<a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+<div class="tier">Wiki Composites</div>
+<a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+<a href="pg-bind.html">Bind — the self-inverse combinator</a>
+<a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+<a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+<a href="pg-chain-types.html">Chain Types</a>
+<a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+<a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+<a href="pg-disposable-machine.html">Disposable Machine</a>
+<a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+<a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+<a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+<a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+<a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+<a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+<a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+<a href="pg-panel-of-experts.html">Panel of Experts</a>
+<a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+<a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+<a href="pg-proposal-system.html">Proposal System</a>
+<a href="pg-reckoner.html" active>Reckoner — the geometric learning primitive</a>
+<a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+<a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+<a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+<a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+<a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+<a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+<a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+<a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+<a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+<a href="pg-wat-vm.html">wat-vm — the training harness</a>
+</nav>
+<main class="max-w-6xl mx-auto px-4 py-8 md:px-8">
+
+<h1 class="text-2xl font-semibold text-[#e5e7eb] mb-2">Site Map</h1>
+<p class="text-[#8a8f98] mb-6 text-base">Dependency tree of 80 concepts. Arrows = provenance — what each composite is built from. Click any node.</p>
+
+<div class="flex flex-wrap gap-x-6 gap-y-2 mb-6">
+<span class="flex items-center gap-2 text-sm"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#9ca3af"></span><span class="text-[#e5e7eb] font-medium">T0 Narrative</span><span class="text-[#62666d]">3</span></span>
+<span class="flex items-center gap-2 text-sm"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#60a5fa"></span><span class="text-[#e5e7eb] font-medium">T1 Substrate</span><span class="text-[#62666d]">10</span></span>
+<span class="flex items-center gap-2 text-sm"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#a78bfa"></span><span class="text-[#e5e7eb] font-medium">T2 Language</span><span class="text-[#62666d]">3</span></span>
+<span class="flex items-center gap-2 text-sm"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#34d399"></span><span class="text-[#e5e7eb] font-medium">T3 Enterprise Leaves</span><span class="text-[#62666d]">25</span></span>
+<span class="flex items-center gap-2 text-sm"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#fbbf24"></span><span class="text-[#e5e7eb] font-medium">T4 Composites</span><span class="text-[#62666d]">30</span></span>
+<span class="flex items-center gap-2 text-sm"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:#f87171"></span><span class="text-[#e5e7eb] font-medium">T5 System Composites</span><span class="text-[#62666d]">9</span></span>
+
+</div>
+
+<div class="mermaid">
+flowchart TD
+    subgraph T0Narrative["T0 Narrative"]
+        primers["The Primers"]
+        book["The Book"]
+        story["The Story"]
+    end
+    subgraph T1Substrate["T1 Substrate"]
+        vector["Vector"]
+        primitives["Primitives (atom, bind, bundle)"]
+        cosine["Cosine Similarity"]
+        encoder["Scalar Encoding"]
+        vector_manager["VectorManager"]
+        walkable["Walkable (AST)"]
+        accumulator["Accumulator"]
+        reckoner["Reckoner"]
+        engram["Engram"]
+        subspace["Subspace"]
+    end
+    subgraph T2Language["T2 Language"]
+        wat_language["wat Language"]
+        wat_stdlib["wat Standard Library"]
+        wat_proposals["wat Proposals"]
+    end
+    subgraph T3EnterpriseLeaves["T3 Enterprise Leaves"]
+        thought_encoder_rust["ThoughtEncoder (Rust)"]
+        lens_rust["Lens (Rust)"]
+        market_observer_rust["MarketObserver (Rust)"]
+        exit_observer_rust["ExitObserver (Rust)"]
+        broker_rust["Broker (Rust)"]
+        paper_entry_rust["PaperEntry (Rust)"]
+        services_rust["Services (Rust)"]
+        chain_rust["Chain Types (Rust)"]
+        wat_vm_rust["wat-vm (Rust)"]
+        indicator_bank_rust["IndicatorBank (Rust)"]
+        thought_encoder_wat["ThoughtEncoder (wat)"]
+        encoder_service_wat["Encoder Service (wat)"]
+        engram_gate_wat["EngramGate (wat)"]
+        vocabulary_wat["Vocabulary (wat)"]
+        lens_wat["Lens (wat)"]
+        market_observer_wat["MarketObserver (wat)"]
+        exit_observer_wat["ExitObserver (wat)"]
+        broker_wat["Broker (wat)"]
+        paper_entry_wat["PaperEntry (wat)"]
+        treasury_wat["Treasury (wat)"]
+        post_wat["Post (wat)"]
+        enterprise_wat["Enterprise (wat)"]
+        guide["GUIDE.md"]
+        circuit["CIRCUIT.md"]
+        order["ORDER.md"]
+    end
+    subgraph T4Composites["T4 Composites"]
+        pg_thought_system["thought-system"]
+        pg_atom["atom"]
+        pg_bind["bind"]
+        pg_bundle["bundle"]
+        pg_fact["fact"]
+        pg_lens["lens"]
+        pg_curve["curve"]
+        pg_thought_encoding["thought-encoding"]
+        pg_thought_space["thought-space"]
+        pg_encoding_cache["encoding-cache"]
+        pg_services["services"]
+        pg_programs["programs"]
+        pg_chain_types["chain-types"]
+        pg_wat_vm["wat-vm"]
+        pg_four_step_loop["four-step-loop"]
+        pg_market_observer["market-observer"]
+        pg_exit_observer["exit-observer"]
+        pg_broker["broker"]
+        pg_reckoner["reckoner"]
+        pg_grace_and_violence["grace-and-violence"]
+        pg_conviction["conviction"]
+        pg_signal_propagation["signal-propagation"]
+        pg_vocabulary["vocabulary"]
+        pg_treasury["treasury"]
+        pg_paper_trade["paper-trade"]
+        pg_vocabulary_evolution["vocabulary-evolution"]
+        pg_wards["wards"]
+        pg_disposable_machine["disposable-machine"]
+        pg_proposal_system["proposal-system"]
+        pg_panel_of_experts["panel-of-experts"]
+    end
+    subgraph T5SystemComposites["T5 System Composites"]
+        pg_panel_of_experts["pg-panel-of-experts"]
+        006_lab_order["006-lab-order"]
+        pg_proposal_system["pg-proposal-system"]
+        003_web_guide["003-web-guide"]
+        005_lab_circuit["005-lab-circuit"]
+        pg_disposable_machine["pg-disposable-machine"]
+        019_indicator_bank["019-indicator-bank"]
+        004_lab_guide["004-lab-guide"]
+        003_proposals["003-proposals"]
+    end
+    vector --> primers
+    primitives --> primers
+    cosine --> primers
+    encoder --> primers
+    reckoner --> primers
+    engram --> primers
+    subspace --> primers
+    wat_language --> primitives
+    wat_language --> reckoner
+    thought_encoder_rust --> primitives
+    thought_encoder_rust --> encoder
+    thought_encoder_rust --> walkable
+    thought_encoder_rust --> vector_manager
+    lens_rust --> vector
+    market_observer_rust --> reckoner
+    market_observer_rust --> subspace
+    exit_observer_rust --> reckoner
+    broker_rust --> reckoner
+    services_rust --> vector
+    engram_gate_wat --> reckoner
+    engram_gate_wat --> engram
+    pg_thought_system --> thought_encoder_rust
+    pg_thought_system --> primitives
+    pg_thought_system --> encoder
+    pg_thought_system --> walkable
+    pg_thought_system --> vocabulary_wat
+    pg_atom --> vector_manager
+    pg_atom --> vocabulary_wat
+    pg_bind --> primitives
+    pg_bind --> thought_encoder_rust
+    pg_bind --> walkable
+    pg_bundle --> primitives
+    pg_bundle --> thought_encoder_rust
+    pg_bundle --> walkable
+    pg_fact --> encoder
+    pg_fact --> thought_encoder_rust
+    pg_fact --> vocabulary_wat
+    pg_lens --> lens_rust
+    pg_lens --> lens_wat
+    pg_lens --> vocabulary_wat
+    pg_curve --> reckoner
+    pg_curve --> cosine
+    pg_curve --> broker_rust
+    pg_thought_encoding --> thought_encoder_rust
+    pg_thought_encoding --> thought_encoder_wat
+    pg_thought_encoding --> encoder_service_wat
+    pg_thought_encoding --> engram_gate_wat
+    pg_thought_space --> vector
+    pg_thought_space --> cosine
+    pg_thought_space --> primers
+    pg_encoding_cache --> encoder_service_wat
+    pg_encoding_cache --> thought_encoder_wat
+    pg_services --> services_rust
+    pg_services --> wat_language
+    pg_programs --> services_rust
+    pg_chain_types --> chain_rust
+    pg_wat_vm --> wat_vm_rust
+    pg_wat_vm --> services_rust
+    pg_wat_vm --> wat_language
+    pg_four_step_loop --> broker_rust
+    pg_four_step_loop --> market_observer_rust
+    pg_four_step_loop --> exit_observer_rust
+    pg_four_step_loop --> paper_entry_rust
+    pg_market_observer --> market_observer_rust
+    pg_market_observer --> lens_rust
+    pg_market_observer --> reckoner
+    pg_market_observer --> subspace
+    pg_exit_observer --> exit_observer_rust
+    pg_exit_observer --> reckoner
+    pg_broker --> broker_rust
+    pg_broker --> paper_entry_rust
+    pg_broker --> reckoner
+    pg_reckoner --> reckoner
+    pg_reckoner --> accumulator
+    pg_reckoner --> cosine
+    pg_reckoner --> subspace
+    pg_reckoner --> primers
+    pg_grace_and_violence --> broker_rust
+    pg_conviction --> reckoner
+    pg_conviction --> cosine
+    pg_conviction --> primers
+    pg_signal_propagation --> broker_rust
+    pg_vocabulary --> vocabulary_wat
+    pg_vocabulary --> encoder
+    pg_vocabulary --> thought_encoder_rust
+    pg_treasury --> treasury_wat
+    pg_treasury --> broker_rust
+    pg_paper_trade --> paper_entry_rust
+    pg_paper_trade --> paper_entry_wat
+    pg_paper_trade --> broker_rust
+    pg_vocabulary_evolution --> story
+    pg_vocabulary_evolution --> book
+    pg_wards --> book
+    pg_disposable_machine --> book
+    pg_disposable_machine --> guide
+    pg_proposal_system --> wat_proposals
+    pg_proposal_system --> story
+    pg_panel_of_experts --> wat_proposals
+    click primers "T-1-000-primers.html"
+    click book "T-1-002-book.html"
+    click story "T-1-001-story.html"
+    click vector "T0-001-vector.html"
+    click primitives "T0-002-primitives.html"
+    click cosine "T0-003-cosine.html"
+    click encoder "T0-004-encoder.html"
+    click vector_manager "T0-005-vector-manager.html"
+    click walkable "T0-006-walkable.html"
+    click accumulator "T0-007-accumulator.html"
+    click reckoner "T0-008-reckoner.html"
+    click engram "T0-009-engram.html"
+    click subspace "T0-010-subspace.html"
+    click wat_language "T1-001-wat-language.html"
+    click wat_stdlib "T1-002-wat-stdlib.html"
+    click thought_encoder_rust "T0-011-thought-encoder-rust.html"
+    click lens_rust "T0-012-lens-rust.html"
+    click market_observer_rust "T0-013-market-observer-rust.html"
+    click exit_observer_rust "T0-014-exit-observer-rust.html"
+    click broker_rust "T0-018-broker-rust.html"
+    click paper_entry_rust "T0-015-paper-entry-rust.html"
+    click services_rust "T0-016-services-rust.html"
+    click chain_rust "T0-023-chain_rust.html"
+    click wat_vm_rust "T0-017-wat-vm-rust.html"
+    click thought_encoder_wat "T2-001-thought-encoder.html"
+    click encoder_service_wat "T2-002-encoder-service.html"
+    click engram_gate_wat "T2-003-engram-gate.html"
+    click vocabulary_wat "T2-004-vocabulary.html"
+    click lens_wat "T2-005-lens.html"
+    click broker_wat "T3-broker-wat.html"
+    click paper_entry_wat "T3-paper-entry-wat.html"
+    click treasury_wat "T3-treasury-wat.html"
+    click pg_thought_system "pg-thought-system.html"
+    click pg_atom "pg-atom.html"
+    click pg_bind "pg-bind.html"
+    click pg_bundle "pg-bundle.html"
+    click pg_fact "pg-fact.html"
+    click pg_lens "pg-lens.html"
+    click pg_curve "pg-curve.html"
+    click pg_thought_encoding "pg-thought-encoding.html"
+    click pg_thought_space "pg-thought-space.html"
+    click pg_encoding_cache "pg-encoding-cache.html"
+    click pg_services "pg-services.html"
+    click pg_programs "pg-programs.html"
+    click pg_chain_types "pg-chain-types.html"
+    click pg_wat_vm "pg-wat-vm.html"
+    click pg_four_step_loop "pg-four-step-loop.html"
+    click pg_market_observer "pg-market-observer.html"
+    click pg_exit_observer "pg-exit-observer.html"
+    click pg_broker "pg-broker.html"
+    click pg_reckoner "pg-reckoner.html"
+    click pg_grace_and_violence "pg-grace-and-violence.html"
+    click pg_conviction "pg-conviction.html"
+    click pg_signal_propagation "pg-signal-propagation.html"
+    click pg_vocabulary "pg-vocabulary.html"
+    click pg_treasury "pg-treasury.html"
+    click pg_paper_trade "pg-paper-trade.html"
+    click pg_vocabulary_evolution "pg-vocabulary-evolution.html"
+    click pg_wards "pg-wards.html"
+    click pg_panel_of_experts "pg-panel-of-experts.html"
+    click 006_lab_order "T-1-006-lab-order.html"
+    click pg_proposal_system "pg-proposal-system.html"
+    click 003_web_guide "T-1-003-web-guide.html"
+    click 005_lab_circuit "T-1-005-lab-circuit.html"
+    click pg_disposable_machine "pg-disposable-machine.html"
+    click 019_indicator_bank "T0-019-indicator-bank-rust.html"
+    click 004_lab_guide "T-1-004-lab-guide.html"
+    click 003_proposals "T1-003-wat-proposals.html"
+</div>
+
+<p class="mt-6 text-[#62666d] text-xs">80 nodes · 98 edges · generated from concept-graph.json</p>
+
+</main>
+</div>
+<script>!function(){document.getElementById('sidebar').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})}();</script></body>
+</html>
