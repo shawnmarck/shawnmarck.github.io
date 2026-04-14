@@ -1,588 +1,56 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#08090a"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><title>Vocabulary — the named atoms that give the system its words. — Holon Wiki</title><style>
-:root {
-  --font-sans: 'Inter Variable', 'Inter', 'SF Pro Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-  --color-bg: #08090a;
-  --color-sidebar: #0f1011;
-  --color-surface: #191a1b;
-  --color-surface-raised: #28282c;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-subtle: rgba(255, 255, 255, 0.05);
-  --color-text: #d0d6e0;
-  --color-text-primary: #f7f8f8;
-  --color-text-muted: #8a8f98;
-  --color-text-quaternary: #62666d;
-  --color-heading: #f7f8f8;
-  --color-accent: #7170ff;
-  --color-accent-hover: #828fff;
-  --color-provenance: #d29922;
-  --sidebar-width: 260px;
-  --content-max: 960px;
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
-  --space-2xl: 48px;
-  --space-3xl: 64px;
-  --space-4xl: 80px;
-  --radius: 6px;
-  --radius-card: 8px;
-  --radius-badge: 2px;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: var(--font-sans);
-  font-feature-settings: "cv01", "ss03";
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-size: 16px;
-  line-height: 1.50;
-  font-weight: 400;
-  display: flex;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* === SIDEBAR === */
-#sidebar {
-  width: var(--sidebar-width);
-  background: var(--color-sidebar);
-  border-right: 1px solid var(--color-border);
-  padding: 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  overflow-y: auto;
-  z-index: 50;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-#sidebar h2 {
-  color: var(--color-accent);
-  padding: var(--space-lg) var(--space-lg) var(--space-md);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 510;
-  border-bottom: 1px solid var(--color-border);
-}
-
-#sidebar .tier {
-  padding: var(--space-lg) var(--space-lg) var(--space-xs);
-  font-size: 10px;
-  color: var(--color-text-quaternary);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-weight: 510;
-}
-
-#sidebar a {
-  display: flex;
-  align-items: center;
-  padding: 5px var(--space-lg) 5px calc(var(--space-lg) + var(--space-sm));
-  color: var(--color-text-muted);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 510;
-  line-height: 1.4;
-  transition: color 0.15s, background 0.15s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: 32px;
-}
-
-#sidebar a:hover {
-  color: var(--color-text);
-  background: rgba(255, 255, 255, 0.02);
-}
-
-#sidebar a.active {
-  color: var(--color-accent);
-  background: rgba(255, 255, 255, 0.02);
-  border-right: 2px solid var(--color-accent);
-}
-
-#sidebar #holon-search {
-  width: calc(100% - var(--space-lg) * 2);
-  margin: var(--space-md) var(--space-lg);
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.02);
-  color: #d0d6e0;
-  font-size: 13px;
-  font-weight: 400;
-  font-family: var(--font-sans);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-#sidebar #holon-search:focus {
-  border-color: var(--color-accent);
-}
-
-#sidebar #holon-search::placeholder {
-  color: var(--color-text-quaternary);
-}
-
-/* === CONTENT === */
-#content {
-  margin-left: var(--sidebar-width);
-  padding: var(--space-xl) var(--space-2xl);
-  max-width: var(--content-max);
-  min-height: 100vh;
-}
-
-#content h1 {
-  color: var(--color-text-primary);
-  font-size: 32px;
-  font-weight: 400;
-  letter-spacing: -0.704px;
-  line-height: 1.13;
-  margin-bottom: var(--space-lg);
-}
-
-#content h1 .badge {
-  font-size: 10px;
-  font-weight: 510;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-#content h2 {
-  color: var(--color-heading);
-  margin: var(--space-3xl) 0 var(--space-md);
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: -0.288px;
-  line-height: 1.33;
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-border);
-}
-
-#content h3 {
-  color: var(--color-text-primary);
-  margin: var(--space-xl) 0 var(--space-sm);
-  font-size: 20px;
-  font-weight: 590;
-  letter-spacing: -0.24px;
-}
-
-#content h4 {
-  color: var(--color-text-primary);
-  margin: var(--space-lg) 0 var(--space-sm);
-  font-size: 16px;
-  font-weight: 590;
-  letter-spacing: -0.192px;
-}
-
-#content p {
-  margin: 0 0 var(--space-lg);
-}
-
-#content ul, #content ol {
-  margin: 0 0 var(--space-lg) var(--space-xl);
-  padding: 0;
-}
-
-#content li {
-  margin: var(--space-xs) 0;
-  line-height: 1.50;
-}
-
-/* === TL;DR === */
-#content .tldr {
-  background: rgba(210, 153, 34, 0.06);
-  border-left: 3px solid var(--color-provenance);
-  padding: var(--space-md) var(--space-lg);
-  margin: 0 0 var(--space-xl);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  color: var(--color-text);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-/* === CODE === */
-#content code {
-  background: rgba(255, 255, 255, 0.02);
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 0.875em;
-  color: #828fff;
-  font-family: var(--font-mono);
-}
-
-#content pre {
-  background: rgba(255, 255, 255, 0.02);
-  padding: var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  margin: var(--space-lg) 0;
-  font-size: 14px;
-  font-family: var(--font-mono);
-}
-
-#content pre code {
-  background: none;
-  padding: 0;
-  font-size: inherit;
-  color: var(--color-text);
-}
-
-/* === MERMAID === */
-#content .mermaid {
-  background: #191a1b;
-  padding: var(--space-lg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-card);
-  margin: var(--space-lg) 0;
-  text-align: center;
-  overflow-x: auto;
-}
-
-/* === BLOCKQUOTES === */
-#content blockquote {
-  border-left: 3px solid var(--color-provenance);
-  background: rgba(210, 153, 34, 0.04);
-  padding: var(--space-md) var(--space-lg);
-  margin: var(--space-lg) 0;
-  color: var(--color-text);
-  border-radius: 0 var(--radius) var(--radius) 0;
-}
-
-/* === TABLES === */
-#content table {
-  border-collapse: collapse;
-  margin: var(--space-lg) 0;
-  width: 100%;
-  font-size: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-}
-
-#content th, #content td {
-  border: 1px solid var(--color-border);
-  padding: var(--space-sm) var(--space-md);
-  text-align: left;
-}
-
-#content th {
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--color-text-primary);
-  font-weight: 590;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-#content tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-/* === LINKS === */
-#content a.wikilink {
-  color: #7170ff;
-  text-decoration: none;
-  border-bottom: 1px dotted rgba(113, 112, 255, 0.3);
-  transition: border-color 0.15s, color 0.15s;
-}
-
-#content a.wikilink:hover {
-  border-bottom-style: solid;
-  border-bottom-color: #7170ff;
-  color: #828fff;
-}
-
-/* === BADGES === */
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-badge);
-  font-size: 10px;
-  font-weight: 510;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-left: 6px;
-  vertical-align: middle;
-  line-height: 1.5;
-}
-
-.badge-why { background: rgba(255, 255, 255, 0.05); color: #d8b4fe; }
-.badge-how { background: rgba(255, 255, 255, 0.05); color: #6ee7b7; }
-.badge-describe { background: rgba(255, 255, 255, 0.05); color: #93c5fd; }
-.badge-what { background: rgba(255, 255, 255, 0.05); color: #fbbf24; }
-.badge-explain { background: rgba(255, 255, 255, 0.05); color: #c4b5fd; }
-
-/* === SEPARATOR === */
-#content hr {
-  border: none;
-  border-top: 1px solid var(--color-border);
-  margin: var(--space-2xl) 0;
-}
-
-/* === FOCUS STYLES (accessibility) === */
-a:focus-visible, button:focus-visible, input:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-/* === SEARCH RESULTS === */
-.search-results {
-  display: none;
-  position: absolute;
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-border);
-  border-top: none;
-  border-radius: 0 0 var(--radius) var(--radius);
-  max-height: 400px;
-  overflow-y: auto;
-  z-index: 100;
-  width: 228px;
-  left: 16px;
-}
-
-.search-results::-webkit-scrollbar { width: 4px; }
-.search-results::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 2px; }
-
-.search-result {
-  display: block;
-  padding: var(--space-sm) var(--space-md);
-  color: var(--color-text);
-  text-decoration: none;
-  border-bottom: 1px solid var(--color-border);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-
-.search-result:hover, .search-result.active {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.search-title { font-size: 13px; font-weight: 510; color: var(--color-text-primary); }
-.search-score { font-size: 10px; color: var(--color-text-muted); font-weight: normal; margin-left: 6px; }
-.search-meta { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
-
-.search-related {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  margin-top: 4px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-}
-
-.search-rel-link {
-  color: #7170ff;
-  text-decoration: none;
-  padding: 1px 6px;
-  border: 1px solid var(--color-border);
-  border-radius: 3px;
-}
-
-.search-rel-link:hover { background: rgba(255, 255, 255, 0.02); }
-.search-empty { padding: var(--space-md); color: var(--color-text-muted); font-size: 13px; text-align: center; }
-
-/* === BANNER (index page) === */
-#banner {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  padding: var(--space-xl) var(--space-2xl);
-  margin-left: var(--sidebar-width);
-}
-
-#banner h1 {
-  color: var(--color-text-primary);
-  font-size: 32px;
-  font-weight: 400;
-  letter-spacing: -0.704px;
-  line-height: 1.13;
-  margin-bottom: var(--space-sm);
-}
-
-#banner p { color: var(--color-text-muted); font-size: 14px; }
-
-/* === MOBILE SEARCH BAR (hidden on desktop) === */
-.mobile-search-bar {
-  display: none;
-}
-
-#mobile-results {
-  display: none;
-  position: fixed;
-  top: 120px;
-  left: 8px;
-  right: 8px;
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  max-height: 60vh;
-  overflow-y: auto;
-  z-index: 55;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-#mobile-results::-webkit-scrollbar { width: 4px; }
-#mobile-results::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 2px; }
-
-/* === MOBILE === */
-#menu-toggle {
-  display: none;
-  position: fixed;
-  top: var(--space-md);
-  left: var(--space-md);
-  z-index: 60;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text);
-  padding: 10px 14px;
-  font-size: 18px;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  line-height: 1;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-/* === TABLET (≤ 768px) === */
-@media (max-width: 768px) {
-  #menu-toggle { display: flex; align-items: center; justify-content: center; }
-
-  #sidebar {
-    transform: translateX(-100%);
-    box-shadow: none;
-  }
-
-  #sidebar.open {
-    transform: translateX(0);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
-  }
-
-  /* Backdrop overlay */
-  #sidebar.open::after {
-    content: '';
-    position: fixed;
-    top: 0; left: var(--sidebar-width); right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
-  }
-
-  #content, #banner {
-    margin-left: 0;
-    padding: var(--space-lg) var(--space-md);
-  }
-
-  #content h1 { font-size: 1.75em; }
-  #content h2 { font-size: 1.25em; }
-
-  /* Tables scroll in container */
-  #content table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-  /* Mermaid scale to container */
-  #content .mermaid svg { max-width: 100%; height: auto; }
-
-  /* Code blocks scroll with momentum */
-  #content pre { -webkit-overflow-scrolling: touch; }
-
-  /* Touch targets for sidebar links */
-  #sidebar a {
-    padding: 10px var(--space-md);
-    min-height: 44px;
+<!DOCTYPE html><html lang="en" class="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><meta name="theme-color" content="#08090a"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><title>Vocabulary — the named atoms that give the system its words. — Holon Wiki</title><script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        bg: '#08090a',
+        surface: '#0f1011',
+        'surface-raised': '#191a1b',
+        'surface-overlay': '#28282c',
+        border: 'rgba(255,255,255,0.08)',
+        'border-subtle': 'rgba(255,255,255,0.05)',
+        accent: '#7170ff',
+        'accent-hover': '#828fff',
+        provenance: '#d29922',
+      }
+    }
   }
 }
-
-/* === MOBILE SMALL (≤ 600px) === */
-@media (max-width: 600px) {
-  #content, #banner {
-    padding: var(--space-lg) var(--space-sm);
-  }
-
-  #content h1 { font-size: 1.5em; }
-  #content h2 { font-size: 1.15em; }
-}
-
-/* === PHONE (≤ 480px) === */
-@media (max-width: 480px) {
-  :root { --space-lg: 16px; --space-xl: 24px; --space-2xl: 32px; }
-
-  #menu-toggle {
-    top: var(--space-sm);
-    left: var(--space-sm);
-    padding: 8px 12px;
-  }
-
-  #content, #banner { padding: var(--space-md) var(--space-sm); }
-
-  #content h1 { font-size: 1.4em; letter-spacing: -0.01em; }
-  #content h2 { font-size: 1.1em; margin: var(--space-lg) 0 var(--space-sm); }
-  #content h3 { font-size: 1em; }
-
-  /* Mobile search bar */
-  .mobile-search-bar {
-    display: block;
-    width: 100%;
-    padding: 12px 16px;
-    margin: 0 0 var(--space-md);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font-size: 16px;
-    font-family: var(--font-sans);
-    outline: none;
-    box-sizing: border-box;
-    -webkit-appearance: none;
-  }
-
-  .mobile-search-bar:focus { border-color: var(--color-accent); }
-
-  /* Hide sidebar search on phone */
-  #sidebar #holon-search, #sidebar div:has(> #holon-search) { display: none; }
-
-  /* Wikilinks more visible */
-  #content a.wikilink {
-    border-bottom-width: 1.5px;
-    border-bottom-style: solid;
-    border-bottom-color: rgba(113, 112, 255, 0.5);
-  }
-
-  /* Touch feedback */
-  #sidebar a:active { background: rgba(255, 255, 255, 0.04); }
-  #content a.wikilink:active { color: var(--color-text-primary); }
-  #menu-toggle:active { transform: scale(0.95); }
-
-  /* Tables: stacked card layout for 3+ columns */
-  #content table thead { display: none; }
-  #content table tr { display: block; margin-bottom: var(--space-md); padding: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }
-  #content table td { display: block; padding: 2px 0; border: none; text-align: left !important; }
-  #content table td::before { content: attr(data-label); font-weight: 590; font-size: 12px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px; }
-
-  /* Blockquote/TL;DR: prevent break */
-  #content blockquote, #content .tldr { overflow-wrap: break-word; word-break: break-word; }
-
-  /* Safe area insets for notched phones */
-  #content { padding-top: max(var(--space-md), env(safe-area-inset-top)); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
-  #menu-toggle { top: max(var(--space-sm), calc(env(safe-area-inset-top) + 4px)); }
-}
-
-/* === SAFE AREA === */
-@supports (padding: max(0px)) {
-  #sidebar { padding-top: env(safe-area-inset-top); }
-}
+</script><style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#62666d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+#sidebar.open::after{content:'';position:fixed;top:0;left:260px;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:-1}
+@media(max-width:480px){#sidebar #holon-search,#sidebar div:has(> #holon-search){display:none}
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
 </style><script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});</script>
 <script src="holon-search.js"></script>
-</head><body><button id="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button><nav id="sidebar"><h2>Holon Wiki</h2>
+</head><body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex"><button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">&#9776;</button><div class="md:ml-[260px] flex-1 min-w-0">
+<input id="mobile-search" class="block md:hidden w-full py-3 px-4 mb-4 border border-[rgba(255,255,255,0.08)] rounded bg-surface text-[#d0d6e0] text-base font-sans outline-none box-border appearance-none" type="text" placeholder="Search the graph..." autocomplete="off" />
+<div id="mobile-results" class="hidden fixed top-28 left-2 right-2 bg-surface-overlay border border-[rgba(255,255,255,0.08)] rounded max-h-[60vh] overflow-y-auto z-[55] shadow-2xl md:hidden"></div>
+<nav id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+<h2 class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</h2>
 <div class="tier">Conceptual Leaves</div>
 <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
 <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
@@ -656,15 +124,11 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
 <a href="pg-wat-vm.html">wat-vm — the training harness</a>
 </nav>
-
-<div>
-<input id="holon-search" type="text" placeholder="Search the graph..." autocomplete="off" />
-</div>
+<div class="relative hidden md:block">
+<input id="holon-search" class="w-[calc(100%-3rem)] mx-6 mb-4 py-2 px-4 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-[13px] font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
 <div id="holon-results" class="search-results"></div>
-
-<input id="mobile-search" class="mobile-search-bar" type="text" placeholder="Search the graph..." autocomplete="off" />
-<div id="mobile-results" class="search-results"></div><div id="content"><h1>Vocabulary — the named atoms that give the system its words. <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr'><h2>TL;DR</h2>
-<hr></div><h2>What Vocabulary Is</h2>
+</div><main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12"><h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">Vocabulary — the named atoms that give the system its words. <span class="badge badge-explain">EXPLAIN</span></h1><div class='tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]'><h2>TL;DR</h2>
+<hr></div><div class="prose max-w-none"><h2>What Vocabulary Is</h2>
 <p>Each vocabulary module is a <strong>pure function</strong>: data in, facts out, no state. From the GUIDE:</p>
 <blockquote>"Pure functions. Something in, facts out. No state. Each domain thinks about different things. Market vocab thinks about candles. Exit vocab thinks about candles and conditions. Risk vocab (future) thinks about portfolio state. The input is whatever the domain needs to form its judgment."</blockquote>
 <blockquote>— GUIDE, lines 1244–1247</blockquote>
@@ -935,4 +399,4 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 <li>T0-004 (<a class="wikilink" href="T0-004-encoder.html">scalar-encoding</a>) — Linear/Log/Circular encoding algorithms, WAT spec vs Rust implementation</li>
 <li>T0-011 (<a class="wikilink" href="pg-thought-encoding.html">thought-encoder</a>) — ThoughtAST enum, ThoughtEncoder evaluator, IncrementalBundle, collect_facts</li>
 <li>GUIDE lines 1244–1247, 1252, 1256, 1310–1319, 1346–1356, 1376–1405 — design principles and domain spec</li>
-</ul></div><script>!function(){var s=document.getElementById('sidebar');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search'),mr=document.getElementById('mobile-results');if(ms&&mr){ms.addEventListener('input',function(){var q=ms.value.trim();if(q.length<2){mr.style.display='none';mr.innerHTML='';return}if(window.holonSearch&&holonSearch.load&&holonSearch.search){holonSearch.load().then(function(idx){if(!idx)return;var res=holonSearch.search(q);mr.style.display='block';if(!res.length){mr.innerHTML='<div class="search-empty">No results</div>';return}mr.innerHTML=res.map(function(r){var related=r.related.length?'<div class="search-related">'+r.related.map(function(rel){return'<a href="'+rel.file+'" class="search-rel-link" onclick="event.stopPropagation()">'+rel.title+'</a>'}).join(' → ')+'</div>':'';return'<a href="'+r.file+'" class="search-result"><div class="search-title">'+r.title+' <span class="search-score">'+r.score+'</span></div><div class="search-meta">tier '+r.tier+'</div>'+related+'</a>'}).join('')})}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')});document.addEventListener('click',function(e){if(!ms.contains(e.target)&&!mr.contains(e.target)){mr.style.display='none'}})}}();</script></body></html>
+</ul></div></main></div><script>!function(){var s=document.getElementById('sidebar');s.addEventListener('click',function(e){if(e.target===s)s.classList.remove('open')});var ms=document.getElementById('mobile-search'),mr=document.getElementById('mobile-results');if(ms&&mr){ms.addEventListener('input',function(){var q=ms.value.trim();if(q.length<2){mr.style.display='none';mr.innerHTML='';return}if(window.holonSearch&&holonSearch.load&&holonSearch.search){holonSearch.load().then(function(idx){if(!idx)return;var res=holonSearch.search(q);mr.style.display='block';if(!res.length){mr.innerHTML='<div class="search-empty">No results</div>';return}mr.innerHTML=res.map(function(r){var related=r.related.length?'<div class="search-related">'+r.related.map(function(rel){return'<a href="'+rel.file+'" class="search-rel-link" onclick="event.stopPropagation()">'+rel.title+'</a>'}).join(' → ')+'</div>':'';return'<a href="'+r.file+'" class="search-result"><div class="search-title">'+r.title+' <span class="search-score">'+r.score+'</span></div><div class="search-meta">tier '+r.tier+'</div>'+related+'</a>'}).join('')})}});ms.addEventListener('focus',function(){document.getElementById('sidebar').classList.remove('open')});document.addEventListener('click',function(e){if(!ms.contains(e.target)&&!mr.contains(e.target)){mr.style.display='none'}})}}}();</script></body></html>
