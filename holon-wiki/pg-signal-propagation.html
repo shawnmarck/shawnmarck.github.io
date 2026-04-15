@@ -242,7 +242,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <hr />
 <h2 id="the-backward-path">The Backward Path<a class="heading-anchor" href="#the-backward-path" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
-    price_move[&quot;Price moves against paper\nOutcome resolved (Grace or Violence)&quot;] --&gt; tick[&quot;Broker.tick_papers()\nproduces Resolution (15 fields)&quot;]
+    price_move[&quot;Price moves against paper\\nOutcome resolved (Grace or Violence)&quot;] --&gt; tick[&quot;Broker.tick_papers()\\nproduces Resolution (16 fields)&quot;]
     tick --&gt; post_collect[&quot;Post collects Resolutions\nfrom all N×M brokers&quot;]
     post_collect --&gt; propagate[&quot;Broker.propagate()\noutcome, weight, optimal_distances, thoughts, direction&quot;]
     propagate --&gt;|&quot;Step 1&quot;| track[&quot;Track record\n(cumulative grace/violence, counts)&quot;]
@@ -261,7 +261,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>— T0-018 (§7.7, §7.8, §10); pg-programs (§Data flow through the grid)</p>
 <hr />
 <h2 id="the-resolution-what-triggers-learning">The Resolution — What Triggers Learning<a class="heading-anchor" href="#the-resolution-what-triggers-learning" aria-hidden="true">#</a></h2>
-<p>Every settled paper produces a <code>Resolution</code> struct carrying 15 fields. The three resolution paths:</p>
+<p>Every settled paper produces a <code>Resolution</code> struct carrying 16 fields. The three resolution paths:</p>
 <table>
 <thead>
 <tr>

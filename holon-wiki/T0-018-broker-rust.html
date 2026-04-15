@@ -418,7 +418,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     position_batch: Vec&lt;(Vector, Distances, Distances, f64)&gt;,
 ) -&gt; Self
 </code></pre>
-<p>Single construction site for all 15 fields. The <code>amount</code> is derived from outcome:</p>
+<p>Single construction site for all 16 fields. The <code>amount</code> is derived from outcome:</p>
 <ul>
 <li><strong>Grace:</strong> <code>paper.excursion()</code> (the realized gain fraction)</li>
 <li><strong>Violence:</strong> <code>paper.distances.stop</code> (the stop distance that was hit)</li>
@@ -864,7 +864,7 @@ optimal_trail = clamp(optimal_trail, 0.001, 0.10)
 </ol>
 <p><strong>Batch entry:</strong> <code>(thought_at_candle, optimal_distances_at_candle, actual_distances_at_candle, weight)</code>.</p>
 <hr />
-<h2 id="9-tests-lines-574887-15-tests">9. Tests (Lines 574–887, 15 tests)<a class="heading-anchor" href="#9-tests-lines-574887-15-tests" aria-hidden="true">#</a></h2>
+<h2 id="9-tests-lines-574887-18-tests">9. Tests (Lines 574–887, 18 tests)<a class="heading-anchor" href="#9-tests-lines-574887-18-tests" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -1052,14 +1052,14 @@ optimal_trail = clamp(optimal_trail, 0.001, 0.10)
 <hr />
 <h2 id="12-findings">12. Findings<a class="heading-anchor" href="#12-findings" aria-hidden="true">#</a></h2>
 <ol>
-<li><strong>Complete.</strong> All 24 fields documented. All 9 methods (including 2 free functions) documented. Every code path traced.</li>
+<li><strong>Complete.</strong> All 24 fields documented. All 10 methods documented. Every code path traced.</li>
 <li><strong>No hidden mutation.</strong> <code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state. <code>tick_papers()</code> returns <code>Vec&lt;Resolution&gt;</code> — the broker does not call propagate itself.</li>
 <li><strong>Runner history is correctly scoped.</strong> Created at Grace signal, accumulated per-candle, consumed and removed at runner resolution. The <code>HashMap</code> key is <code>paper_id</code>, preventing stale data.</li>
 <li><strong>The gate has two distinct modes</strong> with a clear boundary at 50 resolved trades of each outcome.</li>
 <li><strong>The distance cascade has exactly three tiers</strong> with clean fallback semantics.</li>
 <li><strong>P&amp;L computation includes swap fees</strong> on both entry and exit, against a fixed $10,000 reference.</li>
 <li><strong><code>close_all_runners</code> accepts <code>_current_price</code> unused</strong> — all resolution data comes from the paper's own tracked price history.</li>
-<li><strong>15 tests</strong> cover construction, grid math, gate logic, paper lifecycle (no-resolution, violence, grace→runner), propagation accounting, dollar P&amp;L (both directions), EMA convergence, accumulator naming, and optimal distance approximation (both directions + clamping). No test for <code>compute_position_batch</code> or <code>close_all_runners</code>.</li>
+<li><strong>18 tests</strong> cover construction, grid math, gate logic, paper lifecycle (no-resolution, violence, grace→runner), propagation accounting, dollar P&amp;L (both directions), EMA convergence, accumulator naming, and optimal distance approximation (both directions + clamping). No test for <code>compute_position_batch</code> or <code>close_all_runners</code>.</li>
 </ol>
 </div>
   </main>

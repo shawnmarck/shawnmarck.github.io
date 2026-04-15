@@ -360,7 +360,7 @@ position_idx = slot_idx % M
 <p>The method returns <code>PropagationFacts</code> — a data struct containing which observers should learn and with what data. The broker does <strong>not</strong> talk to observers directly. (T0-018, §7.8)</p>
 <hr />
 <h2 id="resolution-struct">Resolution Struct<a class="heading-anchor" href="#resolution-struct" aria-hidden="true">#</a></h2>
-<p>Every resolved paper produces a <code>Resolution</code> with 15 fields:</p>
+<p>Every resolved paper produces a <code>Resolution</code> with 16 fields:</p>
 <table>
 <thead>
 <tr>
@@ -467,12 +467,12 @@ position_idx = slot_idx % M
 <li><strong>Gate has two distinct modes</strong> with a clear boundary at 50 resolved trades. (T0-018, §12)</li>
 <li><strong>Distance cascade has exactly three tiers</strong> with clean fallback. (T0-018, §12)</li>
 <li><strong>P&amp;L includes swap fees</strong> on both entry and exit. (T0-018, §12)</li>
-<li><strong>15 tests</strong> cover construction, grid math, gate logic, paper lifecycle, propagation, dollar P&amp;L, EMA convergence, accumulator naming, and optimal distance approximation. (T0-018, §9)</li>
+<li><strong>18 tests</strong> cover construction, grid math, gate logic, paper lifecycle, propagation, dollar P&amp;L, EMA convergence, accumulator naming, and optimal distance approximation. (T0-018, §9)</li>
 </ol>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
-<li><strong><a href="T0-018-broker-rust">T0-018</a></strong> — <code>broker.rs</code> (887 lines, 489 production + 398 test). Full verification of all 24 fields, 9 methods, 15 tests.</li>
+<li><strong><a href="T0-018-broker-rust">T0-018</a></strong> — <code>broker.rs</code> (887 lines, 489 production + 398 test). Full verification of all 24 fields, 10 methods, 18 tests.</li>
 <li><strong><a href="T0-015-paper-entry-rust">T0-015</a></strong> — <code>paper_entry.rs</code> (370 lines). Paper trade lifecycle, tick mechanics, resolution classifications.</li>
 <li><strong><a href="T0-008-reckoner">T0-008</a></strong> — <code>reckoner.rs</code> (1107 lines). The learning primitive underlying the scalar accumulators and the position observer's continuous mode.</li>
 </ul>

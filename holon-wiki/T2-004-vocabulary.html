@@ -240,10 +240,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <blockquote>
 <p>&quot;Pure functions. Something in, facts out. No state. Each domain thinks about different things. Market vocab thinks about candles. Exit vocab thinks about candles and conditions. Risk vocab (future) thinks about portfolio state. The input is whatever the domain needs to form its judgment.&quot;</p>
 </blockquote>
-<p>Three domains, scoped subfiles. The GUIDE declares (line 1252):</p>
+<p>Four domains, scoped subfiles. The GUIDE declares (line 1252):</p>
 <blockquote>
 <p>&quot;Three domains. Each domain has scoped subfiles.&quot;</p>
 </blockquote>
+<h3 id="divergence-note-guide-lists-three-live-rust-has-four">Divergence note: GUIDE lists three, live Rust has four<a class="heading-anchor" href="#divergence-note-guide-lists-three-live-rust-has-four" aria-hidden="true">#</a></h3>
+<p>The GUIDE describes three domains (shared, market, exit). The live Rust codebase has <strong>four</strong>: shared, market, exit, and <strong>broker</strong>. The broker domain (Proposal 044, Phase 3) provides portfolio-level vocabulary for brokers — it has no wat spec file and exists only in Rust.</p>
 <h3 id="divergence-note-guide-exit-domain-vs-rust-reality">Divergence note: GUIDE exit domain vs Rust reality<a class="heading-anchor" href="#divergence-note-guide-exit-domain-vs-rust-reality" aria-hidden="true">#</a></h3>
 <p>The GUIDE (lines 1310–1319) describes the exit domain with three wat modules (<code>volatility.wat</code>, <code>structure.wat</code>, <code>timing.wat</code>) and a <code>ExitLens</code> with variants <code>:volatility</code>, <code>:structure</code>, <code>:timing</code>, <code>:generalist</code>. These wat files exist and define atoms as documented below.</p>
 <p>However, the <strong>live Rust</strong> <code>position_lens_facts</code> in <code>src/domain/lens.rs</code> does <strong>not</strong> call any of those three exit wat modules. Instead it calls:</p>
@@ -1163,6 +1165,158 @@ Each PhaseRecord in phase_history becomes a Bundle of:</p>
 </tbody>
 </table>
 <hr />
+<h3 id="domain-exit-live-rust-trade-atoms">Domain: exit/ (live Rust — trade atoms)<a class="heading-anchor" href="#domain-exit-live-rust-trade-atoms" aria-hidden="true">#</a></h3>
+<h4 id="exittrade_atomsrs-trade-specific-vocabulary-for-position-observers"><code>exit/trade_atoms.rs</code> — Trade-specific vocabulary for position observers<a class="heading-anchor" href="#exittrade_atomsrs-trade-specific-vocabulary-for-position-observers" aria-hidden="true">#</a></h4>
+<p>Source: <code>src/vocab/exit/trade_atoms.rs</code> (118 lines)
+Comment: &quot;Trade atom vocabulary — 13 atoms describing a paper trade's state. Proposal 040 + Phase 3 biography (Proposal 044).&quot;
+Atoms: exit-excursion, exit-retracement, exit-age, exit-peak-age, exit-signaled, exit-trail-distance, exit-stop-distance, exit-r-multiple, exit-heat, exit-trail-cushion, phases-since-entry, phases-survived, entry-vs-phase-avg</p>
+<table>
+<thead>
+<tr>
+  <th>Atom</th>
+  <th>Encoding</th>
+  <th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Atom"><code>exit-excursion</code></td>
+  <td data-label="Encoding">Log</td>
+  <td data-label="Notes">Trade excursion from entry (max excursion)</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-retracement</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">How much excursion has been given back [0, 1]</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-age</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Trade age in candles</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-peak-age</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Candles since the extreme was last set</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-signaled</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">Binary: 1.0 if signaled, 0.0 otherwise</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-trail-distance</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Current trailing stop distance</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-stop-distance</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Current safety stop distance</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-r-multiple</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Excursion / initial risk</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-heat</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">Trail distance / remaining profit [0, 1]</td>
+</tr>
+<tr>
+  <td data-label=""><code>exit-trail-cushion</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">Distance from price to trail level / excursion [0, 1]</td>
+</tr>
+<tr>
+  <td data-label=""><code>phases-since-entry</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Number of phases since trade entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>phases-survived</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Number of peak phases survived since entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry-vs-phase-avg</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">Signed %: entry price vs average phase close</td>
+</tr>
+</tbody>
+</table>
+<p><strong>13 atoms. 7 Log, 6 Linear. Core lens uses first 5; Full lens uses all 13.</strong></p>
+<hr />
+<h3 id="domain-broker-live-rust-no-wat-spec">Domain: broker/ (live Rust — no wat spec)<a class="heading-anchor" href="#domain-broker-live-rust-no-wat-spec" aria-hidden="true">#</a></h3>
+<p>The broker domain provides portfolio-level vocabulary. It has no wat spec file.</p>
+<h4 id="brokerportfoliors-portfolio-biography-for-brokers"><code>broker/portfolio.rs</code> — Portfolio biography for brokers<a class="heading-anchor" href="#brokerportfoliors-portfolio-biography-for-brokers" aria-hidden="true">#</a></h4>
+<p>Source: <code>src/vocab/broker/portfolio.rs</code> (161 lines)
+Comment: &quot;Portfolio biography vocabulary — 10 atoms describing a broker's portfolio shape. Phase 3 (Proposal 044).&quot;
+Atoms: active-trade-count, oldest-trade-phases, newest-trade-phases, portfolio-excursion, portfolio-heat, broker-phase-valley-trend, broker-phase-peak-trend, broker-phase-regularity, broker-phase-entry-ratio, broker-phase-avg-spacing</p>
+<table>
+<thead>
+<tr>
+  <th>Atom</th>
+  <th>Encoding</th>
+  <th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Atom"><code>active-trade-count</code></td>
+  <td data-label="Encoding">Log</td>
+  <td data-label="Notes">Number of active (unresolved) trades</td>
+</tr>
+<tr>
+  <td data-label=""><code>oldest-trade-phases</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Phases since the oldest active trade's entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>newest-trade-phases</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Phases since the newest active trade's entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>portfolio-excursion</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Weighted average excursion across active trades</td>
+</tr>
+<tr>
+  <td data-label=""><code>portfolio-heat</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">active_count / max_papers_seen [0, 1]</td>
+</tr>
+<tr>
+  <td data-label=""><code>broker-phase-valley-trend</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">(last − prev) / prev for last two valley close avgs</td>
+</tr>
+<tr>
+  <td data-label=""><code>broker-phase-peak-trend</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">(last − prev) / prev for last two peak close avgs</td>
+</tr>
+<tr>
+  <td data-label=""><code>broker-phase-regularity</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">CV of phase durations (regularity measure)</td>
+</tr>
+<tr>
+  <td data-label=""><code>broker-phase-entry-ratio</code></td>
+  <td data-label="">Linear { scale: 1.0 }</td>
+  <td data-label="">Fraction of active trades entered in favorable phases [0, 1]</td>
+</tr>
+<tr>
+  <td data-label=""><code>broker-phase-avg-spacing</code></td>
+  <td data-label="">Log</td>
+  <td data-label="">Average phase duration</td>
+</tr>
+</tbody>
+</table>
+<p><strong>10 atoms. 3 Log, 7 Linear.</strong></p>
+<hr />
 <h2 id="atom-counts">Atom Counts<a class="heading-anchor" href="#atom-counts" aria-hidden="true">#</a></h2>
 <table>
 <thead>
@@ -1294,10 +1448,22 @@ Each PhaseRecord in phase_history becomes a Bundle of:</p>
   <td data-label="">2 fixed + variable series + 0–4 scalar</td>
   <td data-label="">✅ (exit Full only)</td>
 </tr>
+<tr>
+  <td data-label="">exit (Rust)</td>
+  <td data-label="">trade_atoms</td>
+  <td data-label="">13</td>
+  <td data-label="">✅ (exit Full only)</td>
+</tr>
+<tr>
+  <td data-label="">broker (Rust)</td>
+  <td data-label="">portfolio</td>
+  <td data-label="">10</td>
+  <td data-label="">✅ (brokers)</td>
+</tr>
 </tbody>
 </table>
-<p><strong>Total unique atom names in wat spec (market + shared + exit wat):</strong> 100
-<strong>Total unique atom names in live Rust (market + shared + exit Rust):</strong> ~99 (overlaps between market regime and exit regime share atom names)</p>
+<p><strong>Total unique atom names in wat spec (market + shared + exit wat):</strong> ~92 (exit wat has 9 atoms overlapping with market: atr-ratio, squeeze, bb-width, adx, rsi, stoch-k, stoch-kd-spread, macd-hist, cci — plus exit-kama-er vs kama-er, so 9 unique overlaps, reducing 100 named atoms to ~92 unique names)
+<strong>Total unique atom names in live Rust (market + shared + exit Rust + broker Rust):</strong> ~117 (market+shared+exit Rust ~99 + broker/portfolio 10 unique atoms = ~109; however exit/trade_atoms adds 13 fully new atom names not present elsewhere, bringing total to ~117)</p>
 <hr />
 <h2 id="key-guide-principles">Key GUIDE Principles<a class="heading-anchor" href="#key-guide-principles" aria-hidden="true">#</a></h2>
 <p>From GUIDE lines 1396–1405:</p>

@@ -434,6 +434,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     pub dmi: DmiState,            // period 14
     pub atr: AtrState,            // period 14
     pub stoch: StochState,        // 14/3
+    pub ichimoku: IchimokuState,  // 9/26/52 (tenkan/kijun/senkou)
     pub cci: CciState,            // period 20
     pub mfi: MfiState,            // period 14
     pub obv: ObvState,            // history 12
@@ -570,8 +571,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label="">20</td>
 </tr>
 <tr>
-  <td data-label="">RSI / ATR / DMI / Stoch / MFI</td>
+  <td data-label="">RSI / ATR / MFI</td>
   <td data-label="">15 (14-period + 1 seed)</td>
+</tr>
+<tr>
+  <td data-label="">DMI</td>
+  <td data-label="">29 (14-period Wilder × 2 smoothers + 1 seed)</td>
+</tr>
+<tr>
+  <td data-label="">Stoch</td>
+  <td data-label="">17 (14-period %K buffer + 3-period %D buffer)</td>
 </tr>
 <tr>
   <td data-label="">MACD</td>

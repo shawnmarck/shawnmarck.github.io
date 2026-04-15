@@ -296,12 +296,12 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>Both methods query on <code>position_thought</code> only (Proposal 026). No composition with market thought at query time.</p>
 <hr />
 <h2 id="how-it-learns">How It Learns<a class="heading-anchor" href="#how-it-learns" aria-hidden="true">#</a></h2>
-<p>One learning method: <code>observe_distances(position_thought: &amp;Vector, optimal: &amp;Distances, weight: f64) -&gt; (f64, f64)</code>.</p>
+<p>One learning method: <code>observe_distances(&amp;mut self, position_thought: &amp;Vector, optimal: &amp;Distances) -&gt; (f64, f64, f64, f64, f64, f64)</code>.</p>
 <ol>
 <li><strong>Pre-learning prediction:</strong> Query each reckoner for what it <em>would</em> predict given current state. If no experience, use default.</li>
 <li><strong>Error computation:</strong> <code>|predicted - optimal| / optimal.max(0.0001)</code> for both trail and stop. Normalized error. Read-only diagnostic — no feedback loop.</li>
 <li><strong>Learn:</strong> Call <code>trail_reckoner.observe_scalar(position_thought, optimal.trail, 1.0)</code> and <code>stop_reckoner.observe_scalar(position_thought, optimal.stop, 1.0)</code>. Weight is always 1.0 — each observation counts once. The value (optimal distance) goes to the bucket center; the thought goes to the prototype. Weight does NOT scale by magnitude.</li>
-<li><strong>Return:</strong> <code>(trail_error, stop_error)</code>.</li>
+<li><strong>Return:</strong> 6-tuple of <code>(trail_error, stop_error, trail_predicted, stop_predicted, trail_optimal, stop_optimal)</code>.</li>
 </ol>
 <p>The &quot;optimal&quot; distances come from hindsight — simulation sweeps candidate values against actual price histories to determine what would have been ideal (defined in <code>simulation</code> module, not here).</p>
 <hr />
