@@ -237,7 +237,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>wat-vm is a standalone binary (<code>src/bin/wat-vm.rs</code>, 846 lines). It is the &quot;second heartbeat&quot; — a process that reads candle data from files, feeds it to a grid of parallel observers and brokers, lets them learn, and then collects them back at shutdown. The CLI summary says it plainly: <strong>&quot;Candles in, observers learn, results discarded.&quot;</strong> It is a training/learning run, not a live trading system.</p>
 <h2 id="cli-interface">CLI interface<a class="heading-anchor" href="#cli-interface" aria-hidden="true">#</a></h2>
 <pre><code>wat-vm --stream SOURCE:TARGET:PATH [--max-candles N] [--dims D] [--recalib-interval R] [--swap-fee F]
-
+</code></pre>
 <ul>
 <li><code>--stream</code>: repeatable. Format <code>SOURCE:TARGET:PATH</code> (e.g., <code>binance:BTCUSDT:data/btc.csv</code>). Multiple streams are processed sequentially.</li>
 <li><code>--max-candles</code>: per-stream cap. Each pipeline owns its limit.</li>
@@ -289,7 +289,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     broker -.-&gt;|&quot;ObsLearn -&gt; market observer i's mailbox&quot;| mkt_obs
     broker -.-&gt;|&quot;PositionLearn -&gt; position observer ei's mailbox&quot;| posM
     broker -.-&gt;|&quot;TradeUpdate -&gt; position observer ei's trade mailbox&quot;| posM
-</code></pre>
+
 <ul>
 <li><strong>MarketChain</strong> flows from market observers to position observers via topics (fan-out).</li>
 <li><strong>MarketPositionChain</strong> flows from position observers to brokers via unbounded queues.</li>

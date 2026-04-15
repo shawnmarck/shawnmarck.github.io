@@ -248,7 +248,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <h2 id="how-data-is-collected">How data is collected<a class="heading-anchor" href="#how-data-is-collected" aria-hidden="true">#</a></h2>
 <h3 id="resolveconviction-correct-recording-outcomes"><code>resolve(conviction, correct)</code> — recording outcomes<a class="heading-anchor" href="#resolveconviction-correct-recording-outcomes" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub fn resolve(&amp;mut self, conviction: f64, correct: bool)
-
+</code></pre>
 <p>Discrete mode only. Pushes <code>(conviction, correct)</code> onto a bounded sliding window (<code>resolved_cap = 5000</code> by default). When the window overflows, the oldest entry is evicted. This is a FIFO queue of bounded size.</p>
 <p><strong>Source:</strong> <code>reckoner.rs</code> — <em>&quot;Pushes <code>(conviction, correct)</code> onto the <code>resolved</code> vec. If <code>resolved.len() &gt; resolved_cap</code>, the oldest entry is removed.&quot;</em> (T0-008, §3.5)</p>
 <h3 id="where-resolve-is-called">Where resolve is called<a class="heading-anchor" href="#where-resolve-is-called" aria-hidden="true">#</a></h3>
@@ -387,7 +387,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     mkt_obs --&gt;|&quot;resolve(conviction, correct)&quot;| feeds[&quot;feeds the curve&quot;]
     mkt_obs --&gt;|&quot;curve()&quot;| curve[&quot;(a, b)&quot;]
     curve --&gt;|&quot;accuracy_at(conviction)&quot;| broker[&quot;Broker uses this\nto weight proposals\n(higher predicted accuracy\n-&gt; stronger signal)&quot;]
-</code></pre>
+
 <p>The curve closes the feedback loop: prediction → conviction → outcome → calibration → better trust weighting.</p>
 <hr />
 <h2 id="key-properties">Key properties<a class="heading-anchor" href="#key-properties" aria-hidden="true">#</a></h2>

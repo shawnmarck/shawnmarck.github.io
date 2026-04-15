@@ -251,7 +251,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <pre><code>slot_idx = market_idx × M + position_idx
 market_idx = slot_idx / M       (integer division)
 position_idx = slot_idx % M
-
+</code></pre>
 <p>Each broker's <code>slot_idx</code> is <strong>its identity</strong> — it determines which market observer and which position observer it binds. For example: <code>slot_idx=5, M=3</code> → <code>market_idx=1, position_idx=2</code>. (T0-018, lines 217–224)</p>
 <hr />
 <h2 id="core-data-flow">Core Data Flow<a class="heading-anchor" href="#core-data-flow" aria-hidden="true">#</a></h2>
@@ -335,7 +335,7 @@ position_idx = slot_idx % M
     signaled --&gt;|&quot;Reversal crosses trailing stop&quot;| grace_resolution[&quot;Grace resolution&quot;]
     signaled --&gt;|&quot;Continues favorably&quot;| keeps_running[&quot;keeps running&quot;]
     created --&gt;|&quot;Neither fires&quot;| stays_open[&quot;stays open&quot;]
-</code></pre>
+
 <p><strong>Key ordering:</strong> Violence is checked before Grace. If both would fire on the same tick, Violence wins. (T0-015, §tick)</p>
 <hr />
 <h2 id="runners-and-deferred-training">Runners and Deferred Training<a class="heading-anchor" href="#runners-and-deferred-training" aria-hidden="true">#</a></h2>

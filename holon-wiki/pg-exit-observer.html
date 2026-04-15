@@ -426,7 +426,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <h2 id="construction">Construction<a class="heading-anchor" href="#construction" aria-hidden="true">#</a></h2>
 <pre><code class="language-rust">PositionObserver::new(lens: PositionLens, dims: usize, recalib_interval: usize,
                       default_trail: f64, default_stop: f64)
-
+</code></pre>
 <ul>
 <li>Two continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s: <code>&quot;trail-{lens}&quot;</code> and <code>&quot;stop-{lens}&quot;</code>, each with 10 buckets.</li>
 <li><code>noise_subspace</code>: 8 principal components, initialized with <code>(dims, 8)</code>.</li>
@@ -440,7 +440,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     position_obs --&gt;|&quot;Queue\n(MarketPositionChain)&quot;| broker[&quot;Broker&quot;]
     broker -.-&gt;|&quot;ObsLearn\n(Mailbox)&quot;| market_obs
     broker -.-&gt;|&quot;PositionLearn\n(Mailbox)&quot;| position_obs
-</code></pre>
+
 <ul>
 <li><strong>Input</strong>: <a class="wikilink" href="pg-chain-types.html">MarketChain</a> from each market observer (via <a class="wikilink" href="pg-services.html">Topic</a>, fan-out 1→N).</li>
 <li><strong>Output</strong>: <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> to each broker (via <a class="wikilink" href="pg-services.html">Queue</a>).</li>

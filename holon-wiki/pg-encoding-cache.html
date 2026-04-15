@@ -257,7 +257,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   [lookup  : Sender&lt;ThoughtAST&gt;]          ; bounded 1
   [answer  : Receiver&lt;Option&lt;Vector&gt;&gt;]    ; bounded 1
   [install : Sender&lt;(ThoughtAST, Vector)&gt;]) ; unbounded, fire and forget
-
+</code></pre>
 <p><em>(T2-002, lines 22–25)</em></p>
 <table>
 <thead>
@@ -334,7 +334,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
         service --&gt; select[&quot;Pass 3: select,\nblock until data&quot;]
         select --&gt; drain
     end
-</code></pre>
+
 <p><em>(T2-002, lines 9–12)</em></p>
 <p>This implements the <strong>&quot;values up&quot; principle</strong>: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
 <blockquote>
