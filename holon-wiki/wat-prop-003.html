@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Wat Proposal 003 — Language Layers ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wat Language Proposals</div>
+  
+  <a href="wat-prop-index.html">Wat Language Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Wat Proposal 003 — Language Layers ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> core — clarifying the structure of the wat language itself.
+<strong>Dependents:</strong> <a class="wikilink" href="wat-prop-004.html">Wat Proposal 004</a></p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p>Status: <strong>ACCEPTED with tension</strong></p>
+<p>Both designers accepted the four-layer model. One tension unresolved.</p>
+<h2 id="the-decision">The decision<a class="heading-anchor" href="#the-decision" aria-hidden="true">#</a></h2>
+<p>Four named layers (drop numbers per Beckman):</p>
+<ul>
+<li><strong>Syntax</strong>: compiler builtins — define, let, if, map, filter, fold, require</li>
+<li><strong>Core</strong> (<code>core/</code>): the six VSA primitives — atom, bind, bundle, cosine, journal, curve</li>
+<li><strong>Stdlib</strong> (<code>std/</code>): derived operations — permute, encode-log, difference, gate, etc.</li>
+<li><strong>Userland</strong> (<code>mod/</code>): domain-specific vocabularies and programs</li>
+</ul>
+<h2 id="agreed-actions">Agreed actions<a class="heading-anchor" href="#agreed-actions" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Delete <code>std/channels.wat</code></strong> — the pub/sub runtime contract contradicts Proposal 002. Channels are compile-time wiring expressed as function calls inside a fold. Wiring documentation moves to LANGUAGE.md.</p>
+</li>
+<li><p><strong>Strip <code>core/primitives.wat</code></strong> — remove derived patterns and the &quot;additional holon operations&quot; wishlist. Core is the six primitives, nothing more.</p>
+</li>
+<li><p><strong>Move derived patterns to <code>std/</code></strong> — permute, encode-log, difference, gate, etc. become stdlib <code>.wat</code> files.</p>
+</li>
+<li><p><strong><code>online-subspace</code> stays in stdlib</strong> — both designers agree it's not a seventh primitive.</p>
+</li>
+</ol>
+<h2 id="unresolved-tension-observepredictdecay">Unresolved tension: observe/predict/decay<a class="heading-anchor" href="#unresolved-tension-observepredictdecay" aria-hidden="true">#</a></h2>
+<p><strong>Hickey</strong>: move to stdlib. They're derivable — observe is bundle, predict is cosine, decay is scalar multiply. The journal is opaque state but the operations are compositions of the six.</p>
+<p><strong>Beckman</strong>: keep in core. They're co-generators of the journal coalgebra. You can't express observe as just bundle — the journal maintains internal state (accumulators, recalib counter) that bundle alone can't access.</p>
+<p><strong>The datamancer's interim decision</strong>: implement Hickey's version (move to stdlib), then re-run the designers with the reorganized code. If the tension persists after seeing the actual separation, it needs a dedicated proposal.</p>
+<h2 id="next-steps">Next steps<a class="heading-anchor" href="#next-steps" aria-hidden="true">#</a></h2>
+<ol>
+<li>Implement the agreed actions (delete channels, strip core, move derived to std/)</li>
+<li>Commit with proposal attribution</li>
+<li>Re-assess observe/predict/decay placement with fresh designer review if needed</li>
+</ol>
+<hr />
+<h2 id="1-the-current-state">1. The Current State<a class="heading-anchor" href="#1-the-current-state" aria-hidden="true">#</a></h2>
+<p>The wat language has accumulated forms across several files and documents. What exists today:</p>
+<p><strong><code>core/primitives.wat</code></strong> declares six VSA primitives: <code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code>, <code>journal</code>, <code>curve</code>. It also lists derived operations (<code>permute</code>, <code>encode-log</code>, <code>difference</code>, <code>attend</code>, <code>prototype</code>, etc.) under a &quot;Derived patterns&quot; heading.</p>
+<p><strong><code>LANGUAGE.md</code></strong> documents three categories:</p>
+<ul>
+<li><strong>Core Forms (corelib):</strong> the six primitives.</li>
+<li><strong>Standard Library (stdlib):</strong> scalar encoders, vector operations, memory (online-subspace), gate, noise-floor.</li>
+<li><strong>Control Forms:</strong> <code>define</code>, <code>let</code>, <code>let*</code>, <code>if</code>, <code>when</code>, <code>match</code>, <code>for-each</code>, <code>map</code>, <code>filter</code>, <code>filter-map</code>, <code>fold</code>, <code>channel</code>, <code>publish</code>, <code>subscribe</code>.</li>
+</ul>
+<p><strong><code>std/common.wat</code></strong> defines shared atoms (predicates, directions, temporal, logical).</p>
+<p><strong><code>std/channels.wat</code></strong> defines a pub/sub contract with <code>define-contract</code>, <code>channel</code>, <code>publish</code>, <code>subscribe</code>, and filter combinators.</p>
+<p><strong><code>examples/enterprise.wat</code></strong> is a complete program that uses all of the above.</p>
+<p>What works: the six primitives are clear and stable. The enterprise program composes cleanly. The <code>fold</code> acceptance (Proposal 002) established that control forms are a legitimate category distinct from the six primitives.</p>
+<h2 id="2-the-problem">2. The Problem<a class="heading-anchor" href="#2-the-problem" aria-hidden="true">#</a></h2>
+<p>The language has layers, but they are implicit and inconsistent. A reader cannot determine where a form lives or what its status is without reading multiple files and inferring from context.</p>
+<p><strong>2a. Control forms have no home.</strong> <code>define</code>, <code>let</code>, <code>if</code>, <code>map</code>, <code>filter</code>, <code>fold</code> — these are documented in <code>LANGUAGE.md</code> but do not exist as <code>.wat</code> files. They are not in <code>core/primitives.wat</code>. They are not in <code>std/</code>. They appear in the grammar reference as a flat list. Are they deeper than core? Are they the compiler itself? The language does not say.</p>
+<p><strong>2b. The core/std boundary is blurred.</strong> <code>core/primitives.wat</code> lists <code>permute</code>, <code>encode-log</code>, and <code>difference</code> as &quot;Derived patterns&quot; below the six primitives. <code>LANGUAGE.md</code> lists these same operations under &quot;Standard Library (stdlib).&quot; The same form appears to live in two layers depending on which document you read. A consumer cannot tell: is <code>permute</code> a core primitive or a stdlib convenience?</p>
+<p><strong>2c. Channels have an uncertain status.</strong> <code>std/channels.wat</code> defines <code>channel</code>, <code>publish</code>, <code>subscribe</code> with a rich contract system (<code>define-contract</code>, filter combinators like <code>gate-open?</code>, <code>conviction&gt;</code>, <code>always</code>). But <code>LANGUAGE.md</code> lists <code>channel</code>, <code>publish</code>, and <code>subscribe</code> as control forms — the same category as <code>if</code> and <code>let</code>. Meanwhile, Proposal 002's resolution established that channels are compile-time wiring that compiles to function calls inside a fold. If channels are compile-time sugar over fold, they are not a runtime contract system — and <code>std/channels.wat</code> as written describes a runtime contract system.</p>
+<p><strong>2d. No explicit layer model.</strong> The <code>require</code> system imports from paths (<code>core/primitives</code>, <code>std/common</code>, <code>std/channels</code>, <code>mod/oscillators</code>) but the language does not define what these path prefixes mean. What is <code>core/</code> vs <code>std/</code> vs <code>mod/</code>? What is the contract for each? Can userland override stdlib? Can stdlib extend core? The directory structure implies a hierarchy but the language does not declare one.</p>
+<h2 id="3-the-proposed-change">3. The Proposed Change<a class="heading-anchor" href="#3-the-proposed-change" aria-hidden="true">#</a></h2>
+<p>Define four explicit layers. Each layer has a name, a location, a contract, and a boundary rule.</p>
+<h3 id="layer-0-syntax">Layer 0: Syntax<a class="heading-anchor" href="#layer-0-syntax" aria-hidden="true">#</a></h3>
+<p><strong>What lives here:</strong> The s-expression reader. The grammar from <code>LANGUAGE.md</code> (atom, number, string, list, comment). The binding forms (<code>define</code>, <code>let</code>, <code>let*</code>). The conditional forms (<code>if</code>, <code>when</code>, <code>match</code>). The iteration forms (<code>map</code>, <code>filter</code>, <code>filter-map</code>, <code>for-each</code>, <code>fold</code>). The module form (<code>require</code>). Type annotations.</p>
+<p><strong>Where it lives:</strong> In the compiler. No <code>.wat</code> file. These forms are the language itself — the substrate that all other layers are written in.</p>
+<p><strong>Contract:</strong> Syntax forms are domain-agnostic. They know nothing about vectors, journals, or cognition. They are the structural skeleton: naming, branching, iteration, composition. A program that uses only Layer 0 forms computes but does not think.</p>
+<p><strong>Boundary rule:</strong> Syntax cannot be extended by any other layer. These forms are fixed at language version. Adding a new syntax form (as <code>fold</code> was added in Proposal 002) requires a language proposal.</p>
+<h3 id="layer-1-core-core">Layer 1: Core (<code>core/</code>)<a class="heading-anchor" href="#layer-1-core-core" aria-hidden="true">#</a></h3>
+<p><strong>What lives here:</strong> The six VSA primitives and nothing else.</p>
+<pre><code class="language-scheme">;; core/primitives.wat — the complete contents
+(atom name)
+(bind role filler)
+(bundle facts ...)
+(cosine a b)
+(journal name dims recalib)
+(curve journal resolved)
+</code></pre>
+<p>Plus the journal operations that are part of the journal primitive's interface: <code>observe</code>, <code>predict</code>, <code>decay</code>.</p>
+<p><strong>Where it lives:</strong> <code>core/primitives.wat</code>. One file.</p>
+<p><strong>Contract:</strong> Core forms are the algebra. They are the reason the language exists. Every core form has a mathematical definition (binding = element-wise multiplication, bundling = element-wise majority, cosine = normalized dot product, journal = online discriminant learning, curve = logistic fit). Core forms cannot be implemented in terms of each other or in terms of stdlib — they are axiomatic.</p>
+<p><strong>Boundary rule:</strong> Core can only be extended by language proposal with designer review. The bar is: &quot;Does this form have a mathematical definition that cannot be derived from the existing six?&quot; Convenience is not sufficient.</p>
+<h3 id="layer-2-standard-library-std">Layer 2: Standard Library (<code>std/</code>)<a class="heading-anchor" href="#layer-2-standard-library-std" aria-hidden="true">#</a></h3>
+<p><strong>What lives here:</strong> Derived operations built from core primitives. Everything currently listed under &quot;Standard Library (stdlib)&quot; in <code>LANGUAGE.md</code>:</p>
+<pre><code class="language-scheme">;; std/vectors.wat — derived vector operations
+(permute vector shift)          ; element rotation
+(difference before after)       ; structural change
+(negate superposition component)
+(amplify superposition component strength)
+(prototype vectors threshold)
+(cleanup noisy codebook)
+(attend query memory strength mode)
+(coherence vectors)
+(similarity-profile a b)
+
+;; std/scalars.wat — scalar encoding
+(encode-linear value scale)
+(encode-log value)
+(encode-circular value period)
+
+;; std/memory.wat — memory structures
+(online-subspace dims k)
+(update subspace vector)
+(residual subspace vector)
+(threshold subspace)
+
+;; std/common.wat — shared atoms (unchanged)
+;; std/patterns.wat — derived patterns
+(gate journal curve threshold)
+(noise-floor dims)
+(sweet-spot dims)
+</code></pre>
+<p><strong>Where it lives:</strong> <code>std/*.wat</code>. Multiple files organized by concern.</p>
+<p><strong>Contract:</strong> Every stdlib form can be defined in terms of core primitives and syntax. <code>permute</code> is an element rotation of a vector. <code>difference</code> is <code>bundle(negate(before), after)</code>. <code>encode-log</code> maps a scalar to a vector via the core <code>bind</code> and <code>atom</code> operations. If a form cannot be expressed in terms of core, it does not belong in stdlib — it belongs in core (and must pass the core bar).</p>
+<p><strong>Boundary rule:</strong> Stdlib can be extended without a full language proposal, but new forms must demonstrate they are (a) domain-agnostic and (b) expressible in terms of core. Stdlib never imports from userland.</p>
+<p><strong>What happens to channels:</strong> <code>channel</code>, <code>publish</code>, and <code>subscribe</code> move OUT of <code>std/channels.wat</code> in their current form. Per Proposal 002's resolution, channels are compile-time wiring that compiles to function calls inside a fold. This means:</p>
+<ul>
+<li>As syntax sugar for wiring fold steps, they belong in <strong>Layer 0 (Syntax)</strong> — they are compiler directives, not stdlib functions.</li>
+<li>The current <code>std/channels.wat</code> with its <code>define-contract</code>, filter combinators, and subscription tables describes a runtime pub/sub system that does not match the accepted design. It needs to be rewritten or retired.</li>
+</ul>
+<p>This is an open question for designers (see Section 6).</p>
+<h3 id="layer-3-userland-mod-application-code">Layer 3: Userland (<code>mod/</code>, application code)<a class="heading-anchor" href="#layer-3-userland-mod-application-code" aria-hidden="true">#</a></h3>
+<p><strong>What lives here:</strong> Domain-specific vocabularies, application architectures, programs.</p>
+<pre><code class="language-scheme">;; Application-specific vocabulary modules
+(require mod/oscillators)       ; momentum atoms and encoders
+(require mod/segments)          ; structure atoms and encoders
+
+;; Application programs
+;; examples/enterprise.wat
+</code></pre>
+<p><strong>Where it lives:</strong> <code>mod/</code> for vocabulary modules, <code>examples/</code> for programs, or in the application's own repository.</p>
+<p><strong>Contract:</strong> Userland may use all lower layers. Userland defines domain-specific atoms, encoders, and architectures. Userland does not extend the language — it uses it.</p>
+<p><strong>Boundary rule:</strong> Userland never leaks into std or core. If a userland pattern proves universal, it may be promoted to stdlib via proposal. Domain-specific atoms (<code>&quot;momentum&quot;</code>, <code>&quot;drawdown&quot;</code>) never enter stdlib.</p>
+<h3 id="the-require-semantics">The <code>require</code> semantics<a class="heading-anchor" href="#the-require-semantics" aria-hidden="true">#</a></h3>
+<p>The <code>require</code> form resolves by layer:</p>
+<pre><code class="language-scheme">(require core/primitives)    ; Layer 1 — always available
+(require std/common)         ; Layer 2 — standard library
+(require std/scalars)        ; Layer 2
+(require mod/oscillators)    ; Layer 3 — application vocabulary
+</code></pre>
+<p>The path prefix (<code>core/</code>, <code>std/</code>, <code>mod/</code>) is the layer declaration. A reader seeing <code>(require std/vectors)</code> knows immediately: this is a derived operation, expressible in terms of core, domain-agnostic. A reader seeing <code>(require mod/oscillators)</code> knows: this is application-specific vocabulary.</p>
+<h2 id="4-the-algebraic-question">4. The Algebraic Question<a class="heading-anchor" href="#4-the-algebraic-question" aria-hidden="true">#</a></h2>
+<p><strong>Does this compose with the existing monoid (bundle/bind)?</strong></p>
+<p>This proposal does not add algebraic operations. It organizes existing ones. The monoid is unchanged. Bundle and bind remain in Layer 1 (Core). Derived operations that use them (<code>difference</code>, <code>negate</code>, <code>amplify</code>) are in Layer 2 (Stdlib). The algebra is untouched.</p>
+<p><strong>Does it compose with the state monad (journal)?</strong></p>
+<p>Journal remains in Layer 1. Its interface operations (<code>observe</code>, <code>predict</code>, <code>decay</code>) remain in Layer 1. The fold that drives journals is in Layer 0 (Syntax). This is consistent: the catamorphism (fold) is structural; the accumulation (journal) is algebraic.</p>
+<p><strong>Does it introduce a new algebraic structure?</strong></p>
+<p>No. This is a organizational proposal, not an algebraic one. It names a hierarchy that already exists implicitly.</p>
+<h2 id="5-the-simplicity-question">5. The Simplicity Question<a class="heading-anchor" href="#5-the-simplicity-question" aria-hidden="true">#</a></h2>
+<p><strong>Is this simple or easy?</strong></p>
+<p>Simple. It separates four concerns that are currently complected:</p>
+<ul>
+<li>Syntax (the language's structural forms) from primitives (the language's algebraic forms)</li>
+<li>Core (axiomatic, mathematically defined) from stdlib (derived, expressible in terms of core)</li>
+<li>Stdlib (domain-agnostic) from userland (domain-specific)</li>
+<li>Compiler directives (Layer 0) from runtime operations (Layers 1-2)</li>
+</ul>
+<p><strong>What is being complected today?</strong></p>
+<ol>
+<li>Control forms and primitives share the same flat list in <code>LANGUAGE.md</code>. <code>if</code> and <code>journal</code> appear to be peers. They are not — <code>if</code> is syntax, <code>journal</code> is algebra.</li>
+<li>Core and stdlib share content. <code>permute</code> appears in both <code>core/primitives.wat</code> and the stdlib section of <code>LANGUAGE.md</code>.</li>
+<li>Channels appear simultaneously as control forms (Layer 0), stdlib (Layer 2), and a runtime contract system (<code>std/channels.wat</code>). Three layers at once.</li>
+</ol>
+<p><strong>Could existing structure solve it?</strong></p>
+<p>The directory structure (<code>core/</code>, <code>std/</code>, <code>examples/</code>) already gestures at this hierarchy. But without explicit contracts and boundary rules, the structure is suggestive rather than definitive. The proposal makes implicit structure explicit.</p>
+<h2 id="6-questions-for-designers">6. Questions for Designers<a class="heading-anchor" href="#6-questions-for-designers" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Is Layer 0 (Syntax) correctly scoped?</strong> The proposal places <code>define</code>, <code>let</code>, <code>if</code>, <code>map</code>, <code>filter</code>, <code>fold</code>, and <code>require</code> in the compiler as fixed syntax forms. Is this the right boundary? Should any of these be expressible in wat itself (e.g., <code>map</code> as sugar for <code>fold</code>)? Or should all iteration forms be compiler-provided?</p>
+</li>
+<li><p><strong>Should <code>observe</code>, <code>predict</code>, and <code>decay</code> stay in Layer 1 or move to Layer 2?</strong> They are the journal's interface — but they could be seen as derived operations on the journal primitive. If <code>journal</code> is the primitive and <code>observe</code>/<code>predict</code>/<code>decay</code> are its methods, are the methods also primitive? Or is only the constructor primitive, with the methods being stdlib?</p>
+</li>
+<li><p><strong>What happens to <code>std/channels.wat</code>?</strong> Three options:</p>
+<ul>
+<li><strong>Retire it.</strong> Channels are syntax (Layer 0 compiler directives) per the Proposal 002 resolution. The current file describes a runtime system that no longer matches the design. Delete it and define channel syntax in LANGUAGE.md.</li>
+<li><strong>Rewrite it.</strong> Keep <code>std/channels.wat</code> but rewrite it to describe the compile-time wiring contract — what a channel declaration means, how <code>subscribe</code> compiles to a fold step, what the filter expressions compile to. The file becomes documentation of the syntax, not a runtime contract.</li>
+<li><strong>Split it.</strong> Channel declaration syntax goes to Layer 0. Filter combinators (<code>gate-open?</code>, <code>conviction&gt;</code>, <code>always</code>, <code>and</code>, <code>or</code>, <code>not</code>) move to Layer 2 as stdlib predicates that happen to be useful in channel filters but are not channel-specific.</li>
+</ul>
+</li>
+<li><p><strong>Is the <code>core/primitives.wat</code> cleanup acceptable?</strong> The proposal requires removing the &quot;Derived patterns&quot; and &quot;Additional holon operations&quot; sections from <code>core/primitives.wat</code>, leaving only the six primitives and journal interface operations. Everything else moves to <code>std/</code>. Does this match the designers' intent for what &quot;core&quot; means?</p>
+</li>
+<li><p><strong>Should Layer 2 (Stdlib) have sub-layers?</strong> The proposal suggests <code>std/vectors.wat</code>, <code>std/scalars.wat</code>, <code>std/memory.wat</code>, <code>std/common.wat</code>, <code>std/patterns.wat</code>. Is this the right decomposition? Is <code>memory</code> (online-subspace) truly stdlib, or is it closer to a seventh primitive that deserves core status?</p>
+</li>
+<li><p><strong>Does <code>mod/</code> need more structure?</strong> The proposal treats all userland as flat under <code>mod/</code>. But applications may have their own layering (vocabulary modules vs. architecture modules vs. programs). Should the language say anything about userland organization, or is that the application's concern?</p>
+</li>
+</ol>
+<p>&lt;details&gt;
+&lt;summary&gt;Supporting files (2)&lt;/summary&gt;</p>
+<ul>
+<li><code>review-beckman.md</code></li>
+<li><code>review-hickey.md</code></li>
+</ul>
+<p>&lt;/details&gt;</p>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Wat Proposal 004 — Journal Operations — Core or Stdlib? ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wat Language Proposals</div>
+  
+  <a href="wat-prop-index.html">Wat Language Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Wat Proposal 004 — Journal Operations — Core or Stdlib? ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> language
+<strong>Depends on:</strong> <a class="wikilink" href="wat-prop-003.html">Wat Proposal 003</a></p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p>Status: <strong>ACCEPTED</strong></p>
+<p>Both designers accept. The Proposal 003 tension is resolved.</p>
+<h2 id="the-decision">The decision<a class="heading-anchor" href="#the-decision" aria-hidden="true">#</a></h2>
+<p>observe/predict/decay move to core. std/journal.wat is deleted.</p>
+<h2 id="why">Why<a class="heading-anchor" href="#why" aria-hidden="true">#</a></h2>
+<p>The journal is opaque state. No composition of the six public primitives can implement observe/predict/decay — they require privileged access to hidden state. The consistency argument is dispositive: curve reads journal internals and lives in core. predict reads journal internals and was in stdlib. No principled reason for the asymmetry.</p>
+<p>Hickey reversed his Proposal 003 position: &quot;conceptually equivalent&quot; and &quot;expressible as a wat expression&quot; are different claims. The opacity makes the difference.</p>
+<h2 id="the-structure">The structure<a class="heading-anchor" href="#the-structure" aria-hidden="true">#</a></h2>
+<p>core/primitives.wat has two sections:</p>
+<p><strong>Vector algebra</strong> — four generators:</p>
+<ul>
+<li>atom, bind, bundle, cosine</li>
+</ul>
+<p><strong>Journal coalgebra</strong> — one generator, five forms:</p>
+<ul>
+<li>journal (constructor)</li>
+<li>observe (state transition)</li>
+<li>predict (observation)</li>
+<li>decay (aging)</li>
+<li>curve (evaluation)</li>
+</ul>
+<p>Five generators. Nine forms. The tagline becomes &quot;five generators&quot; not &quot;six primitives.&quot;</p>
+<h2 id="the-general-rule-from-beckman">The general rule (from Beckman)<a class="heading-anchor" href="#the-general-rule-from-beckman" aria-hidden="true">#</a></h2>
+<p>If a type is opaque, its interface operations are core. This follows from journal opacity + stdlib expressibility contract.</p>
+<h2 id="what-to-implement">What to implement<a class="heading-anchor" href="#what-to-implement" aria-hidden="true">#</a></h2>
+<ol>
+<li>Move observe/predict/decay from std/journal.wat into core/primitives.wat</li>
+<li>Delete std/journal.wat</li>
+<li>Reorganize core/primitives.wat into two sections (algebra + coalgebra)</li>
+<li>Update LANGUAGE.md to reflect five generators, nine forms</li>
+</ol>
+<hr />
+<h2 id="1-the-current-state">1. The Current State<a class="heading-anchor" href="#1-the-current-state" aria-hidden="true">#</a></h2>
+<p>The journal primitive in <code>core/primitives.wat</code> creates opaque state:</p>
+<pre><code class="language-scheme">(journal name dims recalib-interval) → Journal
+</code></pre>
+<p>Three operations on that state live in <code>std/journal.wat</code>:</p>
+<pre><code class="language-scheme">(observe journal thought label weight)
+(predict journal thought) → Prediction
+(decay journal rate)
+</code></pre>
+<p>This placement follows the Proposal 003 interim decision: implement Hickey's position (stdlib), then revisit. The file itself documents the tension in its header comment.</p>
+<p>The six core primitives are: <code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code>, <code>journal</code>, <code>curve</code>.</p>
+<h2 id="2-the-problem">2. The Problem<a class="heading-anchor" href="#2-the-problem" aria-hidden="true">#</a></h2>
+<p>The stdlib contract says: forms in <code>std/</code> are expressible as compositions of the six core primitives plus syntax. If <code>observe</code>, <code>predict</code>, and <code>decay</code> cannot be so expressed, they violate the contract by living in <code>std/</code>. If they can be so expressed, they belong there. The question is precise and answerable.</p>
+<p>The tension from Proposal 003:</p>
+<ul>
+<li><strong>Hickey</strong>: observe is bundle-into-accumulator, predict is cosine-against-discriminant, decay is scalar-multiply. These are compositions. Stdlib.</li>
+<li><strong>Beckman</strong>: the journal is opaque. You cannot reach the accumulators with bundle. You cannot reach the discriminant with cosine. The opacity makes these co-generators of a coalgebra. Core.</li>
+</ul>
+<p>Both are correct about different things. The question is which property governs placement.</p>
+<h2 id="3-the-analysis">3. The Analysis<a class="heading-anchor" href="#3-the-analysis" aria-hidden="true">#</a></h2>
+<h3 id="can-observe-be-implemented-from-the-six-primitives-alone">Can observe be implemented from the six primitives alone?<a class="heading-anchor" href="#can-observe-be-implemented-from-the-six-primitives-alone" aria-hidden="true">#</a></h3>
+<p>No. Here is why.</p>
+<p>Suppose we attempt to define <code>observe</code> in terms of the six primitives:</p>
+<pre><code class="language-scheme">;; Hypothetical stdlib observe:
+(define (observe journal thought label weight)
+  ;; We need to bundle `thought` into journal's accumulator for `label`.
+  ;; But: which accumulator? journal is opaque. There is no form that
+  ;; extracts an accumulator from a journal.
+  ;;
+  ;; (bundle (??? journal label) (??? thought weight))
+  ;;
+  ;; The ??? is the problem. No primitive provides read or write
+  ;; access to journal internals.
+  )
+</code></pre>
+<p>The six primitives provide:</p>
+<ul>
+<li><code>atom</code> — creates vectors from names</li>
+<li><code>bind</code> — composes two vectors</li>
+<li><code>bundle</code> — superimposes vectors</li>
+<li><code>cosine</code> — measures similarity between two vectors</li>
+<li><code>journal</code> — creates opaque state (constructor only)</li>
+<li><code>curve</code> — reads accuracy/conviction relationship from a journal</li>
+</ul>
+<p>None of these gives write access to a journal's accumulators. <code>bundle</code> operates on vectors, not on journal internals. <code>cosine</code> measures two vectors, not a vector against a hidden discriminant. The journal constructor returns a sealed container. Without a way to open it, no composition of the six primitives can feed observations into it.</p>
+<p>The same argument applies to <code>predict</code> and <code>decay</code>:</p>
+<ul>
+<li><code>predict</code> needs read access to the journal's discriminant vector. No primitive exposes it.</li>
+<li><code>decay</code> needs write access to the journal's accumulators to scale them. No primitive provides it.</li>
+</ul>
+<h3 id="what-hickeys-argument-actually-shows">What Hickey's argument actually shows<a class="heading-anchor" href="#what-hickeys-argument-actually-shows" aria-hidden="true">#</a></h3>
+<p>Hickey is correct that the <em>algorithms</em> decompose: observe is conceptually bundle, predict is conceptually cosine, decay is conceptually scalar multiply. The mathematical operations inside the journal are compositions of vector algebra.</p>
+<p>But the <em>access</em> does not decompose. The journal's opacity means the composed operations cannot be expressed as wat expressions over the six primitives. The algorithms are derivable. The implementations are not.</p>
+<h3 id="the-coalgebra-argument">The coalgebra argument<a class="heading-anchor" href="#the-coalgebra-argument" aria-hidden="true">#</a></h3>
+<p>Beckman's framing is precise. A coalgebra has:</p>
+<ul>
+<li>A state space (the journal's internal accumulators, discriminant, recalib counter)</li>
+<li>Observations that map external inputs to state transitions (<code>observe</code>)</li>
+<li>Projections that map state to external outputs (<code>predict</code>)</li>
+<li>Endomorphisms on state (<code>decay</code>)</li>
+</ul>
+<p>The constructor (<code>journal</code>) and these three operations form a single algebraic unit. The constructor without the operations is a box you cannot open. The operations without the constructor have nothing to operate on. They are not separable.</p>
+<p><code>curve</code> is also a projection from journal state (it reads the accuracy history). It already lives in core. If <code>curve</code> is core because it reads journal internals, <code>predict</code> is core for the same reason. The current placement is inconsistent: <code>curve</code> in core, <code>predict</code> in stdlib, both reading opaque journal state.</p>
+<h2 id="4-the-proposed-change">4. The Proposed Change<a class="heading-anchor" href="#4-the-proposed-change" aria-hidden="true">#</a></h2>
+<p>Move <code>observe</code>, <code>predict</code>, and <code>decay</code> from <code>std/journal.wat</code> to <code>core/primitives.wat</code>.</p>
+<p>The journal section of core becomes:</p>
+<pre><code class="language-scheme">;; The state monad of the algebra.
+;; Constructor + co-operations form a single coalgebra.
+
+(journal name dims recalib-interval) → Journal
+
+(observe journal thought label weight)
+(predict journal thought) → Prediction  ; { direction, conviction, raw-cos }
+(decay journal rate)
+
+(curve journal resolved) → (a, b)
+</code></pre>
+<p><code>std/journal.wat</code> is retired. Its contents move to core.</p>
+<p>The primitive count changes from &quot;six primitives&quot; to &quot;six primitives, nine forms&quot;:</p>
+<ul>
+<li>Four vector algebra generators: <code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code></li>
+<li>One coalgebra (five forms): <code>journal</code>, <code>observe</code>, <code>predict</code>, <code>decay</code>, <code>curve</code></li>
+</ul>
+<p>The <em>generator</em> count is still six. The form count is nine. The distinction matters: <code>observe</code>/<code>predict</code>/<code>decay</code> are not independent generators. They are the interface of the <code>journal</code> generator. They add no new algebraic structure — they complete an existing one.</p>
+<h2 id="5-the-algebraic-question">5. The Algebraic Question<a class="heading-anchor" href="#5-the-algebraic-question" aria-hidden="true">#</a></h2>
+<p>Does this compose with the existing algebra?</p>
+<p>Yes. The journal coalgebra is already present. This proposal does not add it — it acknowledges that it was always a single unit. The four vector primitives (<code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code>) remain unchanged. The journal coalgebra (<code>journal</code>, <code>observe</code>, <code>predict</code>, <code>decay</code>, <code>curve</code>) remains unchanged. Only the file boundary moves.</p>
+<p>Does this introduce a new algebraic structure?</p>
+<p>No. The coalgebra was introduced when <code>journal</code> was made a primitive. <code>observe</code>, <code>predict</code>, and <code>decay</code> are part of that same structure. Moving them to core is recognizing what already exists, not adding something new.</p>
+<h2 id="6-the-simplicity-question">6. The Simplicity Question<a class="heading-anchor" href="#6-the-simplicity-question" aria-hidden="true">#</a></h2>
+<p><strong>Is this simple or easy?</strong></p>
+<p>Simple. It removes a false separation. Currently, one algebraic unit is split across two layers. The split forces <code>std/journal.wat</code> to have &quot;privileged access&quot; to core internals — a concept that exists nowhere else in the language. Removing the split removes the special case.</p>
+<p><strong>What's being complected?</strong></p>
+<p>The current design complects two ideas: &quot;stdlib means derivable from primitives&quot; and &quot;these operations need special compiler support.&quot; Those are contradictory. If an operation needs compiler support to access opaque state, it is not derivable from the public primitives. Calling it stdlib while giving it special access is a polite fiction.</p>
+<p><strong>Could existing primitives solve it?</strong></p>
+<p>Only if the journal were not opaque. If <code>journal</code> exposed its accumulators as vectors — say, <code>(journal-accumulator journal label) → Vector</code> — then <code>observe</code> could be written as:</p>
+<pre><code class="language-scheme">(define (observe journal thought label weight)
+  (bundle (journal-accumulator journal label) thought weight))
+</code></pre>
+<p>But exposing accumulators would break encapsulation. The journal's value is that it manages its own state: recalibration intervals, discriminant computation, accumulator normalization. Exposing internals would push state management to userland, duplicating logic and creating correctness risks.</p>
+<p>The opacity is a deliberate design choice. The consequence of that choice is that operations on opaque state must live where the opacity is defined: core.</p>
+<h2 id="7-questions-for-designers">7. Questions for Designers<a class="heading-anchor" href="#7-questions-for-designers" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>The consistency argument.</strong> <code>curve</code> reads journal internals and lives in core. <code>predict</code> reads journal internals and lives in stdlib. Is there a principled reason for this asymmetry, or is it an accident of history?</p>
+</li>
+<li><p><strong>The naming.</strong> If journal operations move to core, should <code>core/primitives.wat</code> remain one file, or should it split into <code>core/algebra.wat</code> (atom, bind, bundle, cosine) and <code>core/journal.wat</code> (journal, observe, predict, decay, curve)?</p>
+</li>
+<li><p><strong>The precedent.</strong> If <code>observe</code>/<code>predict</code>/<code>decay</code> move to core because they access opaque state, does any future opaque container (e.g., a hypothetical <code>online-subspace</code> primitive) automatically bring its operations into core? Is &quot;operations on opaque state are core&quot; the general rule?</p>
+</li>
+<li><p><strong>The count.</strong> The language has described itself as having &quot;six primitives.&quot; Moving to &quot;six primitives, nine forms&quot; changes the tagline. Does this matter? Is the correct framing &quot;six generators&quot; (four algebra + one coalgebra + one evaluator) with the coalgebra having a constructor and three co-operations?</p>
+</li>
+</ol>
+<p>&lt;details&gt;
+&lt;summary&gt;Supporting files (2)&lt;/summary&gt;</p>
+<ul>
+<li><code>review-beckman.md</code></li>
+<li><code>review-hickey.md</code></li>
+</ul>
+<p>&lt;/details&gt;</p>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

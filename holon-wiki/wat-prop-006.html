@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Wat Proposal 006 — Aggregate Types ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wat Language Proposals</div>
+  
+  <a href="wat-prop-index.html">Wat Language Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Wat Proposal 006 — Aggregate Types ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> core — a new form in the wat language.
+<strong>Dependents:</strong> <a class="wikilink" href="wat-prop-007.html">Wat Proposal 007</a></p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p>Both designers CONDITIONAL. Both conditions met with a framing correction.</p>
+<h2 id="the-framing-correction">The framing correction<a class="heading-anchor" href="#the-framing-correction" aria-hidden="true">#</a></h2>
+<p>Both designers scoped wat too narrowly — as &quot;the language for the two algebras.&quot; This was our fault, not theirs. The <code>/designers core</code> skill told them to evaluate against the algebraic primitives. They did exactly what we asked. The skill was wrong.</p>
+<p>Wat is the specification of the program. The whole program. The treasury does arithmetic, not algebra. The position lifecycle is a state machine, not a discriminant. The ledger writes SQL, not vectors. These are all enterprise components. They all need to be specified. Wat must be complete — it must name everything the program contains.</p>
+<p>The two algebras are the crown jewels. <code>defrecord</code> is the setting. Both are needed. A program specification language that can only express algebra leaves half the enterprise dark.</p>
+<p><strong>Action: update the <code>/propose</code> and <code>/designers</code> skills to recognize three language layers, not one.</strong></p>
+<h2 id="what-the-designers-agreed-on">What the designers agreed on<a class="heading-anchor" href="#what-the-designers-agreed-on" aria-hidden="true">#</a></h2>
+<ul>
+<li><code>defrecord</code> is essential (the 16-parameter heartbeat is a specification gap)</li>
+<li>Records are opaque (no destructuring — projections only)</li>
+<li>The compilation model doesn't change</li>
+<li>The algebra files remain untouched</li>
+</ul>
+<h2 id="where-they-diverged-and-how-we-resolve">Where they diverged and how we resolve<a class="heading-anchor" href="#where-they-diverged-and-how-we-resolve" aria-hidden="true">#</a></h2>
+<h3 id="where-does-it-live">Where does it live?<a class="heading-anchor" href="#where-does-it-live" aria-hidden="true">#</a></h3>
+<p>Hickey: host language layer. Beckman: core, third section.</p>
+<p><strong>Resolution:</strong> New file <code>core/structural.wat</code> — the ambient category's product construction. Not in <code>primitives.wat</code> (Hickey is right that it's not algebraic). Not in host language (Beckman is right that it's more than <code>let</code>). A third core file that says: these forms organize programs. The algebras transform values. The structural forms carry them.</p>
+<h3 id="access-syntax">Access syntax?<a class="heading-anchor" href="#access-syntax" aria-hidden="true">#</a></h3>
+<p>Hickey: keywords <code>(:field record)</code>. Beckman: dot <code>(. record field)</code> as projection.</p>
+<p><strong>Resolution:</strong> Dot. <code>(. state experts)</code>. It maps directly to Rust's <code>state.experts</code>. Wat → Rust should be transparent. Beckman's categorical argument (projection morphism) is correct, but the pragmatic argument is stronger: the syntax should look like what it compiles to.</p>
+<h3 id="is-update-core-or-stdlib">Is <code>update</code> core or stdlib?<a class="heading-anchor" href="#is-update-core-or-stdlib" aria-hidden="true">#</a></h3>
+<p>Hickey: core (essential). Beckman: stdlib (derivable).</p>
+<p><strong>Resolution:</strong> Core, in <code>structural.wat</code>. The 12-field reconstruction that <code>update</code> prevents is noise that drowns signal. Hickey's argument wins: &quot;its absence forces you to write code where the structural noise exceeds the semantic signal.&quot;</p>
+<h2 id="the-language-structure">The language structure<a class="heading-anchor" href="#the-language-structure" aria-hidden="true">#</a></h2>
+<pre><code>core/primitives.wat     — two algebras (vector + journal)
+core/structural.wat     — program organization (defrecord, projection, update)
+std/                    — derived operations on the algebras
+Host language           — arithmetic, comparison, control flow (the Lisp substrate)
+</code></pre>
+<p>Three layers of core. The algebras don't know about records. Records don't know about algebras. Both are core because both are essential to specifying a program.</p>
+<h2 id="the-forms">The forms<a class="heading-anchor" href="#the-forms" aria-hidden="true">#</a></h2>
+<pre><code class="language-scheme">;; core/structural.wat
+
+;; Declare a product type — named fields that travel together.
+;; Compiles to a Rust struct. No methods, no mutation.
+(defrecord name field1 field2 ...)
+
+;; Project a field — the universal extraction from a product.
+;; Compiles to Rust field access: record.field
+(. record field) → value
+
+;; Functional update — return a new record with one field changed.
+;; Compiles to Rust struct update: Record { field: value, ..record }
+(update record :field value) → record
+</code></pre>
+<h2 id="skill-update-needed">Skill update needed<a class="heading-anchor" href="#skill-update-needed" aria-hidden="true">#</a></h2>
+<p>The <code>/propose</code> and <code>/designers</code> skills must be updated to recognize three scopes:</p>
+<ul>
+<li><code>core/algebra</code> — the two algebras (highest bar, must be algebraically essential)</li>
+<li><code>core/structural</code> — program organization (must be structurally essential, not algebraic)</li>
+<li><code>userland</code> — application design (uses all of the above)</li>
+</ul>
+<p>This prevents future designers from evaluating structural proposals against algebraic criteria.</p>
+<h2 id="1-the-current-state">1. The current state<a class="heading-anchor" href="#1-the-current-state" aria-hidden="true">#</a></h2>
+<p>Wat has two algebras (vector, journal), a stdlib, and host language forms. It has no way to declare that a set of values belong together. Every function that needs multiple values takes them as individual parameters.</p>
+<p>The enterprise heartbeat takes 16 parameters. The treasury-execute takes 7. Both have runes inscribed: <code>rune:gaze(length) — wat has no aggregate types</code>. The gaze found the gap. The runes prove it's not code quality — it's a missing language form.</p>
+<h2 id="2-the-problem">2. The problem<a class="heading-anchor" href="#2-the-problem" aria-hidden="true">#</a></h2>
+<p>You cannot thread state through a fold without naming the state.</p>
+<p>The enterprise is a fold: <code>(state, event) → state</code>. In Rust, the state is <code>EnterpriseState</code> — one struct, one parameter to <code>on_event</code>. In wat, the state is 16 individual parameters because the language cannot say &quot;these belong together.&quot;</p>
+<p>This affects every function that touches enterprise state:</p>
+<ul>
+<li><code>heartbeat</code> — 16 parameters (the full state)</li>
+<li><code>treasury-execute</code> — 7 parameters (subset of state + context)</li>
+<li><code>learn</code> — 6 parameters (another subset)</li>
+<li><code>manage-positions</code> — 4 parameters</li>
+</ul>
+<p>The state IS one thing. The language forces it to be many things.</p>
+<h2 id="3-the-proposed-change">3. The proposed change<a class="heading-anchor" href="#3-the-proposed-change" aria-hidden="true">#</a></h2>
+<p>A new core form: <code>defrecord</code>.</p>
+<pre><code class="language-scheme">;; Declaration
+(defrecord enterprise-state
+  experts generalist manager risk treasury
+  positions exit-expert pending band ledger
+  last-exit-price last-exit-atr)
+
+;; Construction
+(enterprise-state
+  :experts experts
+  :generalist generalist
+  :manager manager
+  ...)
+
+;; Field access
+(. state experts)           ; → the experts value
+(. state last-exit-price)   ; → the last exit price
+
+;; The heartbeat becomes:
+(define (heartbeat candle-idx candle vector-manager state)
+  (let* ((expert-preds (map (lambda (e) (e candle)) (. state experts)))
+         ...)
+    (update state :last-exit-price new-price)))
+
+;; Update (functional — returns a new record)
+(update state :field new-value)
+</code></pre>
+<h3 id="what-defrecord-is">What defrecord IS<a class="heading-anchor" href="#what-defrecord-is" aria-hidden="true">#</a></h3>
+<p>A compile-time declaration that a set of named fields form one value. No methods. No inheritance. No mutation. A product type — the simplest aggregate.</p>
+<p>In Rust, it compiles to a <code>struct</code> with named fields. In the wat spec, it's documentation that these values travel together.</p>
+<h3 id="what-defrecord-is-not">What defrecord is NOT<a class="heading-anchor" href="#what-defrecord-is-not" aria-hidden="true">#</a></h3>
+<ul>
+<li>Not a class. No methods, no <code>self</code>, no dispatch.</li>
+<li>Not mutable. <code>update</code> returns a new record (functional update).</li>
+<li>Not an extension to the algebra. Records don't bind, bundle, or cosine. They carry state through the fold.</li>
+</ul>
+<h2 id="4-the-algebraic-question">4. The algebraic question<a class="heading-anchor" href="#4-the-algebraic-question" aria-hidden="true">#</a></h2>
+<p>Does <code>defrecord</code> compose with the existing two algebras?</p>
+<p>Records carry values. Vectors are values. Journals are values. Labels are values. Records can carry all of them. A record is a product type — <code>A × B × C × ...</code> — which is the simplest categorical construction. Product types compose with everything because they compose with nothing — they just hold things.</p>
+<p>The fold becomes: <code>(Record, Event) → Record</code>. The record IS the carrier. The fold step reads fields, computes, and returns a new record with updated fields. This is the standard functional fold over a product type.</p>
+<p>Records don't interact with the vector algebra. You don't bind a record or bundle records. You pass records as state and extract fields as needed. The algebras operate on vectors. Records operate on program state. These are orthogonal concerns.</p>
+<h2 id="5-the-simplicity-question">5. The simplicity question<a class="heading-anchor" href="#5-the-simplicity-question" aria-hidden="true">#</a></h2>
+<p>Is <code>defrecord</code> simple or easy?</p>
+<p><strong>Simple:</strong> It adds one concept (named product type) with three operations (construct, access, update). It doesn't complect with anything — records are not vectors, not journals, not labels.</p>
+<p><strong>Not easy:</strong> It adds syntax. A new form. A new way to declare things. Every new form has a learning cost.</p>
+<p><strong>The alternative:</strong> Continue using individual parameters. This is simpler (no new form) but not simple (the heartbeat's 16 parameters are complected — they are one thing pretending to be many).</p>
+<p>Hickey's test: &quot;Is it complecting something that was simple?&quot; No. The heartbeat was already complected — 16 parameters interleaving state and context. <code>defrecord</code> untangles it by naming the aggregate.</p>
+<h2 id="6-questions-for-designers">6. Questions for designers<a class="heading-anchor" href="#6-questions-for-designers" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Is this a primitive or a convenience?</strong> Can existing forms express aggregate types? <code>bundle</code> aggregates vectors, but not journals or scalars. <code>let</code> binds names, but doesn't declare that names belong together. Is there a composition of existing forms that serves as a record?</p>
+</li>
+<li><p><strong>What is the access syntax?</strong> <code>.</code> (dot access), keyword access (<code>:field record</code>), or function access (<code>(field record)</code>)? Each has tradeoffs. Dot is familiar from Rust/Java. Keywords are Clojure. Function access is pure Lisp but ambiguous.</p>
+</li>
+<li><p><strong>Should records be opaque?</strong> Can you pattern-match on record fields? Or is the record a black box where only the declared accessors work? Opaque records enforce encapsulation. Open records enable destructuring.</p>
+</li>
+<li><p><strong>Does this change the compilation model?</strong> Currently wat compiles to Rust via human translation. A <code>defrecord</code> could generate a Rust <code>struct</code> declaration. Does this push wat toward being a real compiler, or is it still a specification language?</p>
+</li>
+<li><p><strong>Is <code>update</code> essential?</strong> Functional update (<code>(update state :field value)</code>) is convenient but derivable — you can construct a new record with one field changed. Is the convenience worth the form?</p>
+</li>
+<li><p><strong>Where does it live?</strong> Is <code>defrecord</code> a core form (alongside atom, bind, bundle) or a stdlib form (derived from something more primitive)? Records are not algebraic — they don't participate in the vector or journal algebras. They're structural. Does structural belong in core?</p>
+</li>
+</ol>
+<p>&lt;details&gt;
+&lt;summary&gt;Supporting files (2)&lt;/summary&gt;</p>
+<ul>
+<li><code>review-beckman.md</code></li>
+<li><code>review-hickey.md</code></li>
+</ul>
+<p>&lt;/details&gt;</p>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

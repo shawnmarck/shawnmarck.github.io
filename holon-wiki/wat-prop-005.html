@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Wat Proposal 005 — Compilation Plan — wat Forms to holon-rs ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wat Language Proposals</div>
+  
+  <a href="wat-prop-index.html">Wat Language Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Wat Proposal 005 — Compilation Plan — wat Forms to holon-rs ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> core — the mapping between the language and its runtime.</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p>Status: <strong>ACCEPTED</strong></p>
+<p>Both designers accept. The plan is right. The phasing is right.</p>
+<h2 id="the-plan">The plan<a class="heading-anchor" href="#the-plan" aria-hidden="true">#</a></h2>
+<p><strong>Phase 1 (blocking):</strong> Move journal coalgebra from trading lab to holon-rs.</p>
+<ul>
+<li>N-ary labels (not binary Buy/Sell) — journal takes a list of label names at construction</li>
+<li>Accumulators MUST be private — opacity is the foundation of the coalgebra argument (Proposal 004)</li>
+<li>Hickey: N accumulators, max-cosine prediction across N</li>
+<li>Beckman: Positive/Negative naming to make discriminant asymmetry visible</li>
+</ul>
+<p><strong>Phase 2:</strong> Document the compilation table — every wat form to its holon-rs type and method.</p>
+<p><strong>Phase 3:</strong> Audit holon-rs surplus operations. Stdlib expressibility test: can it be composed from the nine core forms? If not, it's either a new primitive or an unnamed utility.</p>
+<h2 id="designer-consensus">Designer consensus<a class="heading-anchor" href="#designer-consensus" aria-hidden="true">#</a></h2>
+<ul>
+<li>The functor from wat to holon-rs exists and is well-defined for the algebra. Phase 1 repairs the break on the journal fragment.</li>
+<li>The journal in holon-rs must have private accumulators. If public, observe becomes stdlib and the entire core-primitive justification collapses.</li>
+<li>N-class generalization is correct — the trading lab's binary discriminant is the first application, not the definition.</li>
+<li>curve belongs with the journal in holon-rs (same module, same opacity boundary).</li>
+</ul>
+<h2 id="what-to-implement-first">What to implement first<a class="heading-anchor" href="#what-to-implement-first" aria-hidden="true">#</a></h2>
+<ol>
+<li>Promote journal to holon-rs with N-ary labels and private accumulators</li>
+<li>The trading lab becomes a consumer of holon-rs Journal, not the owner</li>
+<li>Document the compilation table in wat/docs/</li>
+</ol>
+<hr />
+<h2 id="1-the-current-state">1. The Current State<a class="heading-anchor" href="#1-the-current-state" aria-hidden="true">#</a></h2>
+<p>The wat language has five generators and nine forms (Proposal 004, accepted):</p>
+<p><strong>Vector algebra</strong> (4 generators, 4 forms):</p>
+<ul>
+<li><code>atom</code>, <code>bind</code>, <code>bundle</code>, <code>cosine</code></li>
+</ul>
+<p><strong>Journal coalgebra</strong> (1 generator, 5 forms):</p>
+<ul>
+<li><code>journal</code>, <code>observe</code>, <code>predict</code>, <code>decay</code>, <code>curve</code></li>
+</ul>
+<p>The stdlib has four modules:</p>
+<ul>
+<li><code>std/vectors.wat</code> — permute, difference, negate, amplify, prototype, cleanup, attend, coherence</li>
+<li><code>std/scalars.wat</code> — encode-log, encode-linear, encode-circular</li>
+<li><code>std/memory.wat</code> — online-subspace, update, residual, threshold</li>
+<li><code>std/patterns.wat</code> — gate (a named composition, not a new operation)</li>
+</ul>
+<p>The runtime is holon-rs. It exists and is production-grade (~12x faster than the Python reference). Here is what it contains today:</p>
+<p><strong>holon-rs has (kernel layer):</strong></p>
+<ul>
+<li><code>VectorManager</code> — deterministic atom allocation. This IS <code>(atom name)</code>.</li>
+<li><code>Primitives::bind</code> — element-wise multiplication. This IS <code>(bind role filler)</code>.</li>
+<li><code>Primitives::bundle</code> — majority vote. This IS <code>(bundle fact1 fact2 ...)</code>.</li>
+<li><code>Similarity::cosine</code> — cosine similarity. This IS <code>(cosine thought direction)</code>.</li>
+<li><code>Accumulator</code> — frequency-preserving streaming sums. The BUILDING BLOCK of journal internals.</li>
+<li><code>ScalarEncoder</code> — encode_log, encode_linear, encode_circular. These ARE the <code>std/scalars.wat</code> forms.</li>
+<li><code>Primitives::permute</code>, <code>::difference</code>, <code>::negate</code>, <code>::amplify</code>, <code>::prototype</code>, <code>::cleanup</code>, <code>::attend</code>, <code>::coherence</code> — these ARE the <code>std/vectors.wat</code> forms.</li>
+<li>~30 additional operations (blend, resonance, project, reject, segment, etc.) that are NOT in wat stdlib.</li>
+</ul>
+<p><strong>holon-rs has (memory layer):</strong></p>
+<ul>
+<li><code>OnlineSubspace</code> — CCIPCA incremental PCA. This IS <code>(online-subspace dims k)</code>.</li>
+<li><code>OnlineSubspace::partial_fit</code> — this IS <code>(update subspace vector)</code>.</li>
+<li><code>OnlineSubspace::residual</code> — this IS <code>(residual subspace vector)</code>.</li>
+<li><code>Engram</code>, <code>EngramLibrary</code> — snapshot patterns. Not yet in wat stdlib.</li>
+</ul>
+<p><strong>holon-rs does NOT have:</strong></p>
+<ul>
+<li><code>Journal</code> — the coalgebra. Lives in <code>holon-lab-trading/src/journal.rs</code> as application code.</li>
+<li><code>observe</code>, <code>predict</code>, <code>decay</code> — journal interface operations. Same file.</li>
+<li><code>curve</code> — accuracy/conviction evaluation. Scattered across trading lab application code.</li>
+</ul>
+<h2 id="2-the-problem">2. The Problem<a class="heading-anchor" href="#2-the-problem" aria-hidden="true">#</a></h2>
+<p>There is no documented mapping between wat forms and holon-rs types. Three specific gaps:</p>
+<p><strong>Gap 1: The journal coalgebra is not in the runtime.</strong> The journal is a core primitive (Proposal 004). It is the only core form with no holon-rs implementation. It currently lives in the trading lab as application code (<code>holon-lab-trading/src/journal.rs</code>). This is the wrong layer. A core primitive belongs in the runtime, not in a domain application.</p>
+<p><strong>Gap 2: The stdlib mapping is implicit.</strong> <code>std/vectors.wat</code> forms map 1:1 to <code>Primitives::*</code> methods. <code>std/scalars.wat</code> forms map 1:1 to <code>ScalarEncoder::*</code> methods. <code>std/memory.wat</code> forms map 1:1 to <code>OnlineSubspace::*</code> methods. But this mapping is nowhere written down. A person reading the wat files cannot determine what Rust function implements each form without searching the holon-rs source.</p>
+<p><strong>Gap 3: holon-rs has operations that wat does not name.</strong> Blend, resonance, project, reject, segment, entropy, power, grover_amplify, drift_rate, and others exist in <code>Primitives</code> but have no wat form. These are either stdlib candidates or internal utilities. The distinction has not been made.</p>
+<h2 id="3-the-proposed-plan">3. The Proposed Plan<a class="heading-anchor" href="#3-the-proposed-plan" aria-hidden="true">#</a></h2>
+<p>Three phases. Each is independently valuable. Each has a clear deliverable. The dependency order is: Phase 1 before Phase 2. Phase 3 is independent.</p>
+<h3 id="phase-1-move-the-journal-coalgebra-into-holon-rs">Phase 1: Move the journal coalgebra into holon-rs<a class="heading-anchor" href="#phase-1-move-the-journal-coalgebra-into-holon-rs" aria-hidden="true">#</a></h3>
+<p><strong>What:</strong> Extract <code>Journal</code>, <code>Prediction</code>, <code>Outcome</code> (generalized to two-class labels), <code>observe</code>, <code>predict</code>, <code>decay</code> from <code>holon-lab-trading/src/journal.rs</code> into <code>holon-rs/src/memory/journal.rs</code>. Add <code>curve</code> as a method.</p>
+<p><strong>Why this moves first:</strong> The journal is the only core primitive without a runtime implementation. Every other core form already compiles to a holon-rs call. This is the single blocking gap for the core layer.</p>
+<p><strong>The generalization:</strong> The trading lab's <code>Journal</code> is already nearly domain-agnostic. It uses <code>Accumulator</code> (holon-rs kernel) and <code>Vector</code> (holon-rs kernel). The only domain-specific element is <code>Outcome::Buy | Sell | Noise</code>. The generalized form uses two-class labels (the journal is a binary discriminant) plus a noise/ignore option:</p>
+<pre><code class="language-rust">// holon-rs/src/memory/journal.rs
+pub enum Label { A, B, Ignore }
+
+pub struct Journal { ... }  // same internals as today
+
+impl Journal {
+    pub fn new(name: &amp;str, dims: usize, recalib_interval: usize) -&gt; Self;
+    pub fn observe(&amp;mut self, vec: &amp;Vector, label: Label, weight: f64);
+    pub fn predict(&amp;self, vec: &amp;Vector) -&gt; Prediction;
+    pub fn decay(&amp;mut self, factor: f64);
+    pub fn curve(&amp;self, resolved: &amp;[(Prediction, Label)]) -&gt; (f64, f64);
+}
+</code></pre>
+<p>The trading lab re-exports with domain aliases: <code>type Outcome = Label; const Buy: Label = Label::A;</code> etc.</p>
+<p><strong>What does NOT move:</strong> <code>decode_discriminant</code> (inspection utility), diagnostic fields (<code>last_cos_raw</code>, <code>last_disc_strength</code>). These are application concerns. They can access journal internals via a public <code>discriminant()</code> accessor.</p>
+<p><strong>Deliverable:</strong> <code>holon-rs/src/memory/journal.rs</code> exists. <code>holon-lab-trading/src/journal.rs</code> becomes a thin wrapper. All nine core forms compile to holon-rs calls.</p>
+<h3 id="phase-2-the-compilation-table">Phase 2: The compilation table<a class="heading-anchor" href="#phase-2-the-compilation-table" aria-hidden="true">#</a></h3>
+<p><strong>What:</strong> A document in <code>wat/docs/</code> that maps every wat form to its holon-rs implementation. One table per layer.</p>
+<p><strong>Core forms:</strong></p>
+<table>
+<thead>
+<tr>
+  <th>wat form</th>
+  <th>holon-rs</th>
+  <th>module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="wat form"><code>(atom name)</code></td>
+  <td data-label="holon-rs"><code>VectorManager::get_vector(name)</code></td>
+  <td data-label="module"><code>kernel::vector_manager</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(bind a b)</code></td>
+  <td data-label=""><code>Primitives::bind(&amp;a, &amp;b)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(bundle a b ...)</code></td>
+  <td data-label=""><code>Primitives::bundle(&amp;[&amp;a, &amp;b, ...])</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(cosine a b)</code></td>
+  <td data-label=""><code>Similarity::cosine(&amp;a, &amp;b)</code></td>
+  <td data-label=""><code>kernel::similarity</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(journal name dims interval)</code></td>
+  <td data-label=""><code>Journal::new(name, dims, interval)</code></td>
+  <td data-label=""><code>memory::journal</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(observe j thought label weight)</code></td>
+  <td data-label=""><code>j.observe(&amp;thought, label, weight)</code></td>
+  <td data-label=""><code>memory::journal</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(predict j thought)</code></td>
+  <td data-label=""><code>j.predict(&amp;thought)</code></td>
+  <td data-label=""><code>memory::journal</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(decay j rate)</code></td>
+  <td data-label=""><code>j.decay(rate)</code></td>
+  <td data-label=""><code>memory::journal</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(curve j resolved)</code></td>
+  <td data-label=""><code>j.curve(&amp;resolved)</code></td>
+  <td data-label=""><code>memory::journal</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Stdlib forms:</strong></p>
+<table>
+<thead>
+<tr>
+  <th>wat form</th>
+  <th>holon-rs</th>
+  <th>module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="wat form"><code>(permute v shift)</code></td>
+  <td data-label="holon-rs"><code>Primitives::permute(&amp;v, shift)</code></td>
+  <td data-label="module"><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(difference before after)</code></td>
+  <td data-label=""><code>Primitives::difference(&amp;before, &amp;after)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(negate sup comp)</code></td>
+  <td data-label=""><code>Primitives::negate(&amp;sup, &amp;comp)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(amplify sup comp str)</code></td>
+  <td data-label=""><code>Primitives::amplify(&amp;sup, &amp;comp, str)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(prototype vecs threshold)</code></td>
+  <td data-label=""><code>Primitives::prototype(&amp;vecs, threshold)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(cleanup noisy codebook)</code></td>
+  <td data-label=""><code>Primitives::cleanup(&amp;noisy, &amp;codebook)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(attend q mem str mode)</code></td>
+  <td data-label=""><code>Primitives::attend(&amp;q, &amp;mem, str, mode)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(coherence vecs)</code></td>
+  <td data-label=""><code>Primitives::coherence(&amp;vecs)</code></td>
+  <td data-label=""><code>kernel::primitives</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(encode-log value)</code></td>
+  <td data-label=""><code>ScalarEncoder::encode_log(value)</code></td>
+  <td data-label=""><code>kernel::scalar</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(encode-linear value scale)</code></td>
+  <td data-label=""><code>ScalarEncoder::encode_linear(value, scale)</code></td>
+  <td data-label=""><code>kernel::scalar</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(encode-circular value period)</code></td>
+  <td data-label=""><code>ScalarEncoder::encode_circular(value, period)</code></td>
+  <td data-label=""><code>kernel::scalar</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(online-subspace dims k)</code></td>
+  <td data-label=""><code>OnlineSubspace::new(dims, k)</code></td>
+  <td data-label=""><code>memory::subspace</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(update sub vec)</code></td>
+  <td data-label=""><code>sub.partial_fit(&amp;vec)</code></td>
+  <td data-label=""><code>memory::subspace</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(residual sub vec)</code></td>
+  <td data-label=""><code>sub.residual(&amp;vec)</code></td>
+  <td data-label=""><code>memory::subspace</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>(threshold sub)</code></td>
+  <td data-label=""><code>sub.threshold()</code></td>
+  <td data-label=""><code>memory::subspace</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deliverable:</strong> A single reference document. Every wat form has one row. A person can look up the Rust call without searching.</p>
+<h3 id="phase-3-audit-unnamed-holon-rs-operations">Phase 3: Audit unnamed holon-rs operations<a class="heading-anchor" href="#phase-3-audit-unnamed-holon-rs-operations" aria-hidden="true">#</a></h3>
+<p><strong>What:</strong> Review the ~30 <code>Primitives::*</code> methods that exist in holon-rs but have no wat form. For each, decide: stdlib candidate, or internal utility.</p>
+<p><strong>Candidates likely to become stdlib forms:</strong></p>
+<ul>
+<li><code>blend</code> — weighted interpolation. General-purpose. Used in memory systems.</li>
+<li><code>prototype_add</code> — incremental prototype. General-purpose.</li>
+<li><code>project</code> / <code>reject</code> — subspace projection. Used by memory layer.</li>
+</ul>
+<p><strong>Candidates likely to remain unnamed utilities:</strong></p>
+<ul>
+<li><code>grover_amplify</code> — quantum-inspired experiment. Niche.</li>
+<li><code>random_project</code> — dimensionality reduction. Implementation detail.</li>
+<li><code>similarity_matrix</code> — batch computation. Performance utility, not a new concept.</li>
+<li><code>flip</code> — sign inversion. Trivially <code>(bind v (atom &quot;negate&quot;))</code> or similar.</li>
+</ul>
+<p><strong>This is NOT urgent.</strong> The unnamed operations work. Applications use them directly. The question is documentation and whether the wat stdlib should grow. This phase produces a list of recommendations, not code changes.</p>
+<p><strong>Deliverable:</strong> An appendix to the compilation table: &quot;holon-rs operations without wat forms&quot; with a disposition for each.</p>
+<h2 id="4-the-algebraic-question">4. The Algebraic Question<a class="heading-anchor" href="#4-the-algebraic-question" aria-hidden="true">#</a></h2>
+<p><strong>Does this change the algebra?</strong> No. The five generators and nine forms remain identical. No new forms are proposed. The plan is about where implementations live (Phase 1), documentation (Phase 2), and future stdlib candidates (Phase 3).</p>
+<p><strong>Does Phase 1 change the journal's algebraic properties?</strong> No. The journal moves from application code to the runtime library. The API is identical. The internal algorithms are identical. The only change is generalized labels (A/B instead of Buy/Sell) — which is the correct generalization for a domain-agnostic primitive.</p>
+<p><strong>Does Phase 3 risk bloating the stdlib?</strong> It could, if the bar is low. The stdlib contract from Proposal 003 applies: a form enters stdlib only if it is (a) derivable from the core primitives and (b) useful across multiple domains. &quot;Useful in one application&quot; is not enough.</p>
+<h2 id="5-the-simplicity-question">5. The Simplicity Question<a class="heading-anchor" href="#5-the-simplicity-question" aria-hidden="true">#</a></h2>
+<p><strong>Is this simple or easy?</strong></p>
+<p>Simple. Phase 1 moves code that is in the wrong layer to the right layer. Phase 2 writes down what is already true. Phase 3 names what is unnamed.</p>
+<p><strong>What's being complected?</strong></p>
+<p>Currently, &quot;core primitive&quot; and &quot;application code&quot; are complected in the journal. The journal is defined as core (Proposal 004) but implemented as application code (trading lab). A person reading the wat spec sees journal as foundational. A person reading holon-rs sees no journal. The map and the territory disagree.</p>
+<p><strong>Could we skip Phase 1?</strong></p>
+<p>Yes, if we accept that core primitives can live in application code and each application re-implements them. But this is exactly the problem that runtimes solve. If two applications need journals, they would each write their own, and the implementations would diverge. The primitive would fragment.</p>
+<h2 id="6-questions-for-designers">6. Questions for Designers<a class="heading-anchor" href="#6-questions-for-designers" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Label generalization.</strong> The trading lab uses Buy/Sell. The journal coalgebra is a binary discriminant. Should the holon-rs <code>Journal</code> use abstract labels (A/B), named string labels, or a generic type parameter <code>Journal&lt;L: Label&gt;</code>? The choice affects how applications alias the primitive.</p>
+</li>
+<li><p><strong>Curve placement.</strong> <code>curve</code> fits a <code>accuracy = 0.50 + a * exp(b * conviction)</code> model to resolved predictions. This is more specific than observe/predict/decay. Should <code>curve</code> be a method on <code>Journal</code> in holon-rs, or should it remain a pattern that applications implement? The fitting algorithm itself is not algebraic — it is statistical.</p>
+</li>
+<li><p><strong>The threshold question for Phase 3.</strong> What is the bar for a holon-rs operation to earn a wat stdlib form? Proposed: &quot;used by two or more unrelated domains in practice.&quot; Is this the right threshold, or should it be stricter (algebraically derivable AND cross-domain)?</p>
+</li>
+<li><p><strong>Memory module scope.</strong> Phase 1 puts Journal in <code>holon-rs/src/memory/</code>. Currently memory contains OnlineSubspace and Engram. After the move, memory would contain three learning primitives (Journal, OnlineSubspace, Engram). Is memory the right module, or should Journal get its own module given its coalgebra status?</p>
+</li>
+<li><p><strong>The compilation table format.</strong> Phase 2 proposes a static document. An alternative: embed the mapping as doc comments in the wat files themselves (e.g., <code>;; compiles-to: Primitives::bind</code>). Which serves the reader better?</p>
+</li>
+</ol>
+<p>&lt;details&gt;
+&lt;summary&gt;Supporting files (2)&lt;/summary&gt;</p>
+<ul>
+<li><code>review-beckman.md</code></li>
+<li><code>review-hickey.md</code></li>
+</ul>
+<p>&lt;/details&gt;</p>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>
