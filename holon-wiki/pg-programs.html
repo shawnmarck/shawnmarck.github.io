@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -159,7 +159,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
   
-  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
   
   
   <div class="tier">Wiki Composites</div>
@@ -168,7 +168,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-bind.html">Bind — the self-inverse combinator</a>
   
-  <a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
   
   <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
   
@@ -182,7 +182,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
   
-  <a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
   
   <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
   
@@ -214,7 +214,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
   
-  <a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
   
   <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
   
@@ -247,8 +247,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </blockquote>
 <p>In Rust, this maps to: create input/output <a class="wikilink" href="pg-services.html">queues</a>, spawn <code>std::thread::spawn</code>, pass senders/receivers by move. The function owns its inputs exclusively; threads communicate by sending messages, not by sharing memory (T0-016, §&quot;How Concurrency Is Achieved Without Mutex&quot;).</p>
 <hr />
-<h2 id="the-three-program-types">The Three Program Types<a class="heading-anchor" href="#the-three-program-types" aria-hidden="true">#</a></h2>
-<p>The <a class="wikilink" href="pg-wat-vm.html">wat-vm</a> runs exactly three kinds of program threads (T0-017):</p>
+<h2 id="the-four-program-types">The Four Program Types<a class="heading-anchor" href="#the-four-program-types" aria-hidden="true">#</a></h2>
+<p>The <a class="wikilink" href="pg-wat-vm.html">wat-vm</a> runs exactly four kinds of program threads (T0-017):</p>
 <h3 id="market-observer-market_observer_program">Market Observer (<code>market_observer_program</code>)<a class="heading-anchor" href="#market-observer-market_observer_program" aria-hidden="true">#</a></h3>
 <p><strong>Role:</strong> Receive candles, encode market features, predict direction.</p>
 <p><strong>Inputs:</strong> One bounded candle queue (capacity 1) from the main thread.
@@ -256,22 +256,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>Each market observer holds a <a class="wikilink" href="pg-market-observer.html">MarketObserver</a> struct: a <a class="wikilink" href="pg-reckoner.html">Reckoner</a> for Up/Down prediction, a noise subspace for anomaly detection, a <a class="wikilink" href="pg-curve.html">curve</a> for conviction calibration, and an engram for gating low-conviction predictions (T0-013). It encodes the candle into a <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a>, sends it to the <a class="wikilink" href="pg-encoding-cache.html">Encoding Cache</a>, receives the thought vector, strips noise, and predicts. Results are fanned out via topics to all position observers.</p>
 <p><strong>Per-stream default:</strong> N = 6 (one per <a class="wikilink" href="pg-lens.html">market lens</a>).</p>
 <h3 id="position-observer-position_observer_program">Position Observer (<code>position_observer_program</code>)<a class="heading-anchor" href="#position-observer-position_observer_program" aria-hidden="true">#</a></h3>
-<p><strong>Role:</strong> Receive market observations from N market observers, predict exit distances.</p>
+<p><strong>Role:</strong> Receive market observations from N market observers, compose position-specific vocabulary facts.</p>
 <p><strong>Inputs:</strong> N bounded queues — one from each market observer's topic output — assembled into <code>PositionSlot</code>s.
 <strong>Outputs:</strong> One unbounded queue carrying <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> values, consumed by a downstream broker.</p>
-<p>Each position observer holds a <a class="wikilink" href="pg-exit-observer.html">PositionObserver</a> struct (also called &quot;exit observer&quot;): two continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s for trailing stop and safety stop distances (T0-014). It receives a <a class="wikilink" href="pg-chain-types.html">MarketChain</a> from each market observer, encodes its own position-specific features, and produces a <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> that flattens all market fields plus adds position fields.</p>
+<p>Each position observer is a pure <a class="wikilink" href="pg-lens.html">lens</a> carrier — it holds a single <a class="wikilink" href="pg-lens.html">Lens</a> and <strong>no</strong> <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s, no prediction, no learning (see <a class="wikilink" href="pg-exit-observer.html">pg-exit-observer</a>). It receives a <a class="wikilink" href="pg-chain-types.html">MarketChain</a> from each market observer, composes position-specific vocabulary as AST expressions, and produces a <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> that flattens all market fields plus adds <code>position_facts: Vec&lt;ThoughtAST&gt;</code>. The broker is responsible for encoding; the position observer only adds raw vocabulary.</p>
 <p><strong>Per-stream default:</strong> M = 2 (one per <a class="wikilink" href="pg-lens.html">position lens</a>).</p>
 <h3 id="broker-broker_program">Broker (<code>broker_program</code>)<a class="heading-anchor" href="#broker-broker_program" aria-hidden="true">#</a></h3>
-<p><strong>Role:</strong> Receive position observations, manage simulated trades, propagate learn signals back.</p>
+<p><strong>Role:</strong> Receive position observations, submit papers to <a class="wikilink" href="pg-treasury.html">treasury</a>, discover outcomes, encode anxiety atoms.</p>
 <p><strong>Inputs:</strong> One <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> queue from a position observer.
-<strong>Outputs (via unbounded queues → mailboxes):</strong></p>
-<ul>
-<li><code>ObsLearn</code> → market observer's mailbox (direction feedback)</li>
-<li><code>PositionLearn</code> → position observer's mailbox (exit distance feedback)</li>
-<li><code>TradeUpdate</code> → position observer's trade mailbox (trade state)</li>
-</ul>
-<p>The broker owns the production cascade: it decides when to enter/exit based on predictions and distances, then sends hindsight-optimal observations back through the learn queues so observers improve (T0-014, T0-017).</p>
+<strong>Outputs:</strong> Requests to the <a class="wikilink" href="pg-treasury.html">treasury</a> via <code>TreasuryHandle</code> (IssuePaper, IssueReal, ResolveGrace, ResolveViolence, CheckDeadlines, GetPaperState, GetProposerStats, TotalEquity).</p>
+<p>The broker owns the production cascade: it decides when to enter/exit based on predictions and gates, submits papers to the treasury via <code>TreasuryHandle</code>, reads outcome responses, and encodes anxiety atoms. No learn signals are sent back to observers (those were removed in the strip-down).</p>
 <p><strong>Per-stream count:</strong> N × M = 6 × 2 = 12 brokers.</p>
+<h3 id="treasury-treasury_program">Treasury (<code>treasury_program</code>)<a class="heading-anchor" href="#treasury-treasury_program" aria-hidden="true">#</a></h3>
+<p><strong>Role:</strong> Manage capital, issue papers and real positions, resolve outcomes.</p>
+<p><strong>File:</strong> <code>src/programs/app/treasury_program.rs</code> (374 lines).</p>
+<p><strong>Inputs:</strong> A bounded queue of <code>TreasuryEvent</code> requests from brokers (via <code>TreasuryHandle</code>).
+<strong>Outputs:</strong> Per-broker response queues (1:1, not mailbox).</p>
+<p>Brokers send requests (<code>IssuePaper</code>, <code>IssueReal</code>, <code>ResolveGrace</code>, <code>ResolveViolence</code>, <code>CheckDeadlines</code>, <code>GetPaperState</code>, <code>GetProposerStats</code>, <code>TotalEquity</code>) via <code>TreasuryHandle</code>. The treasury processes them sequentially and responds. See <a class="wikilink" href="pg-treasury.html">pg-treasury</a> for the full design (paper/real two-track, async service thread).</p>
+<p><strong>Per-stream count:</strong> 1 treasury thread.</p>
 <hr />
 <h2 id="data-flow-through-the-grid">Data Flow Through the Grid<a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
@@ -282,15 +284,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     pos0 --&gt;|&quot;send MarketPositionChain&quot;| broker[&quot;Broker [i, ei]\n(thread)&quot;]
     pos1 --&gt; broker
     posM --&gt; broker
-    broker -.-&gt;|&quot;ObsLearn -&gt; market observer i's mailbox&quot;| mkt_obs
-    broker -.-&gt;|&quot;PositionLearn -&gt; position observer ei's mailbox&quot;| posM
-    broker -.-&gt;|&quot;TradeUpdate -&gt; position observer ei's trade mailbox&quot;| posM
+    broker --&gt;|&quot;TreasuryHandle\nrequest/response&quot;| treasury[&quot;Treasury\n(thread)&quot;]
 </pre>
 <p><em>(T0-017, §&quot;Data flow through the grid&quot;)</em></p>
-<p>Each arrow is a <a class="wikilink" href="pg-services.html">Queue</a>. The fan-out from market to position observers uses <a class="wikilink" href="pg-services.html">Topic</a> (1→N). The learn-signal aggregation from multiple brokers back to one observer uses <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1).</p>
+<p>Each arrow is a <a class="wikilink" href="pg-services.html">Queue</a>. The fan-out from market to position observers uses <a class="wikilink" href="pg-services.html">Topic</a> (1→N). Data flows forward only — brokers communicate with the treasury via <code>TreasuryHandle</code> (request/response queues). No learn-signal return paths to observers.</p>
 <hr />
 <h2 id="chain-types-values-on-the-wire">Chain Types — Values on the Wire<a class="heading-anchor" href="#chain-types-values-on-the-wire" aria-hidden="true">#</a></h2>
-<p>Defined in <code>src/programs/chain.rs</code> (40 lines). The module doc: <em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em> (T0-017, §Chain types)</p>
+<p>Defined in <code>src/programs/chain.rs</code> (38 lines). The module doc: <em>&quot;Each stage produces a new value. The type IS the proof of which stage produced it. No methods. No behavior. Values on the wire.&quot;</em> (T0-017, §Chain types)</p>
 <h3 id="marketchain-clone"><a class="wikilink" href="pg-chain-types.html">MarketChain</a> (Clone)<a class="heading-anchor" href="#marketchain-clone" aria-hidden="true">#</a></h3>
 <p>What the market observer produces. What the position observer receives.</p>
 <table>
@@ -345,7 +345,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </tbody>
 </table>
 <h3 id="marketpositionchain-not-clone"><a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> (not Clone)<a class="heading-anchor" href="#marketpositionchain-not-clone" aria-hidden="true">#</a></h3>
-<p>What the position observer produces. What the broker receives. Flattens all <code>MarketChain</code> fields (duplicated, not borrowed) plus position-specific fields:</p>
+<p>What the position observer produces. What the broker receives. Flattens all <code>MarketChain</code> fields (duplicated, not borrowed) plus one position-specific field:</p>
 <table>
 <thead>
 <tr>
@@ -356,37 +356,22 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </thead>
 <tbody>
 <tr>
-  <td data-label="Additional Field"><code>position_raw</code></td>
-  <td data-label="Type"><code>Vector</code></td>
-  <td data-label="Meaning">Position observer's raw encoding</td>
-</tr>
-<tr>
-  <td data-label=""><code>position_anomaly</code></td>
-  <td data-label=""><code>Vector</code></td>
-  <td data-label="">Position observer's anomaly</td>
-</tr>
-<tr>
-  <td data-label=""><code>position_ast</code></td>
-  <td data-label=""><code>ThoughtAST</code></td>
-  <td data-label="">Position observer's AST</td>
-</tr>
-<tr>
-  <td data-label=""><code>position_distances</code></td>
-  <td data-label=""><code>Distances</code></td>
-  <td data-label="">Trailing stop and safety stop distances</td>
+  <td data-label="Additional Field"><code>position_facts</code></td>
+  <td data-label="Type"><code>Vec&lt;ThoughtAST&gt;</code></td>
+  <td data-label="Meaning">Position-specific vocabulary facts as raw AST expressions (no vectors, no distances)</td>
 </tr>
 </tbody>
 </table>
-<p>Self-contained but large — a deliberate &quot;values on the wire&quot; design with no shared references (T0-017).</p>
+<p>Self-contained but large — a deliberate &quot;values on the wire&quot; design with no shared references (T0-017). The position observer is a pure lens carrier — no reckoners, no encoding, no learning. See <a class="wikilink" href="pg-exit-observer.html">pg-exit-observer</a>.</p>
 <hr />
 <h2 id="resource-pools-and-orphan-detection">Resource Pools and Orphan Detection<a class="heading-anchor" href="#resource-pools-and-orphan-detection" aria-hidden="true">#</a></h2>
 <p>Console, cache, and database handles are pre-allocated into <code>HandlePool</code>s. Each program thread claims exactly one of each. Pools assert <code>finish()</code> — if any handle remains unclaimed, the program panics (T0-017, §&quot;Resources allocated from pools&quot;).</p>
 <p>This is orphan detection: if a thread was supposed to be spawned but wasn't (or was wired incorrectly), the unclaimed handle triggers a panic at startup, preventing deadlocks from invisible missing consumers.</p>
 <hr />
 <h2 id="thread-count">Thread Count<a class="heading-anchor" href="#thread-count" aria-hidden="true">#</a></h2>
-<p>For one stream with N market observers, M position observers (T0-017, §Thread count):</p>
-<p><strong>N + M + (N×M) + 3</strong> threads minimum (database + cache + console drivers).</p>
-<p>With defaults (N=6, M=2): <strong>6 + 2 + 12 + 3 = 23 threads.</strong></p>
+<p>For one stream with N market observers, M position observers, and one treasury thread (T0-017, §Thread count):</p>
+<p><strong>N + M + (N×M) + 1 (treasury) + 3</strong> threads minimum (database + cache + console drivers).</p>
+<p>With defaults (N=6, M=2): <strong>6 + 2 + 12 + 1 + 3 = 24 threads.</strong></p>
 <hr />
 <h2 id="shutdown-by-disconnection">Shutdown by Disconnection<a class="heading-anchor" href="#shutdown-by-disconnection" aria-hidden="true">#</a></h2>
 <p>Programs do not use explicit shutdown flags. Shutdown cascades through <a class="wikilink" href="pg-services.html">Queue</a> disconnection:</p>
@@ -463,7 +448,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <hr />
 <h2 id="source-files">Source Files<a class="heading-anchor" href="#source-files" aria-hidden="true">#</a></h2>
 <ul>
-<li><code>src/programs/chain.rs</code> — 40 lines — <a class="wikilink" href="pg-chain-types.html">MarketChain</a>, <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a></li>
+<li><code>src/programs/chain.rs</code> — 38 lines — <a class="wikilink" href="pg-chain-types.html">MarketChain</a>, <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a></li>
+<li><code>src/programs/app/treasury_program.rs</code> — 374 lines — <a class="wikilink" href="pg-treasury.html">Treasury</a> (paper/real two-track, async service thread)</li>
 <li><code>src/bin/wat-vm.rs</code> — 846 lines — wiring, startup, main loop, shutdown</li>
 <li><code>src/services/queue.rs</code> — 123 lines — <a class="wikilink" href="pg-services.html">Queue</a></li>
 <li><code>src/services/topic.rs</code> — 129 lines — <a class="wikilink" href="pg-services.html">Topic</a></li>

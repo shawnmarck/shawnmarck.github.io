@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#08090a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<title>Treasury — Bounded Capital Allocation — Holon Wiki</title>
+<title>Treasury — the bank. Headless. Blind to strategy. — Holon Wiki</title>
 <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 <script>
 tailwind.config = {
@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -159,7 +159,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
   
-  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
   
   
   <div class="tier">Wiki Composites</div>
@@ -168,7 +168,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-bind.html">Bind — the self-inverse combinator</a>
   
-  <a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
   
   <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
   
@@ -182,7 +182,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
   
-  <a href="pg-exit-observer.html">Exit Observer — Perceiving When to Leave a Position</a>
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
   
   <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
   
@@ -214,7 +214,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
   
-  <a href="pg-treasury.html" class="active" aria-current="page">Treasury — Bounded Capital Allocation</a>
+  <a href="pg-treasury.html" class="active" aria-current="page">Treasury — the bank. Headless. Blind to strategy.</a>
   
   <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
   
@@ -230,37 +230,46 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <div class="md:ml-[320px] flex-1 min-w-0">
   <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
     <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
-      Treasury — Bounded Capital Allocation <span class="badge badge-explain">EXPLAIN</span>
+      Treasury — the bank. Headless. Blind to strategy. <span class="badge badge-explain">EXPLAIN</span>
     </h1>
     
-    <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The treasury is a capital reservation engine. It receives trade proposals from brokers, funds those that pass an edge gate, and settles them through stop-level triggers. Loss is bounded structurally: reserved capital cannot be double-spent, and the maximum loss per trade equals one swap's venue cost. The <a class="wikilink" href="pg-broker.html">broker</a> is the accountability gate — it only proposes when its expected dollar-P&amp;L is positive.</p>
+    <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The treasury is a capital allocator and position lifecycle manager. It issues <strong>paper positions</strong> (fixed $10,000, no capital movement — proof of thoughts) and <strong>real positions</strong> (variable amount, actual capital — proof of execution). The <strong>gate</strong> reads paper track records to decide who earns real capital: minimum 50 papers submitted with &gt;50% survival rate. Every position has a <strong>deadline</strong> — the clock. Positions resolve to <strong>Grace</strong> (profitable exit, residue after fees) or <strong>Violence</strong> (deadline expired, capital reclaimed). The treasury runs as its own service thread — one mailbox, two event types (Tick, Request), per-broker response queues. On shutdown, the state comes home.</p>
 <hr />
 <h2 id="architecture-overview">Architecture Overview<a class="heading-anchor" href="#architecture-overview" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
-    subgraph broker[&quot;Broker (gate_open -&gt; propose)&quot;]
-        ev_check[&quot;expected_value &gt; 0?&quot;]
-        cold_check[&quot;cold start &lt; 50 each?&quot;]
-        papers[&quot;paper trades track\noutcomes, accumulate\noptimal distances&quot;]
-        pf_return[&quot;PropagationFacts&quot;]
+    subgraph broker[&quot;Broker (slot_idx)&quot;]
+        submit_paper[&quot;submit_paper()\\nalways succeeds&quot;]
+        submit_real[&quot;submit_real()\\ngate checked&quot;]
+        submit_exit[&quot;submit_exit()\\nvalidate + resolve&quot;]
     end
 
-    subgraph treasury[&quot;Treasury (fund -&gt; settle)&quot;]
-        available[&quot;available&quot;]
-        reserved[&quot;reserved&quot;]
-        active[&quot;active trades\nstop-level triggers&quot;]
+    subgraph handle[&quot;TreasuryHandle&quot;]
+        queue_send[&quot;per-broker\\nQueueSender&quot;]
+        queue_recv[&quot;per-broker\\nQueueReceiver&quot;]
     end
 
-    ev_check --&gt;|&quot;yes&quot;| available
-    cold_check --&gt;|&quot;yes&quot;| available
-    available --&gt;|&quot;fund&quot;| reserved
-    reserved --&gt;|&quot;settle&quot;| active
-    active --&gt;|&quot;settle&quot;| available
-    pf_return --&gt;|&quot;return&quot;| available
+    subgraph thread[&quot;TreasuryProgram (service thread)&quot;]
+        mailbox[&quot;MailboxReceiver\\n(Tick | Request)&quot;]
+        tick_handler[&quot;Tick → check_deadlines()&quot;]
+        req_handler[&quot;handle_request()&quot;]
+        treasury[&quot;Treasury struct\\npapers + real_positions\\nrecords + balances&quot;]
+    end
+
+    submit_paper --&gt; queue_send
+    submit_real --&gt; queue_send
+    submit_exit --&gt; queue_send
+    queue_send --&gt;|&quot;shared mailbox&quot;| mailbox
+    mailbox --&gt;|Tick| tick_handler
+    mailbox --&gt;|Request| req_handler
+    tick_handler --&gt; treasury
+    req_handler --&gt; treasury
+    treasury --&gt;|&quot;response&quot;| queue_recv
+    queue_recv --&gt;|&quot;PositionReceipt\\nor None&quot;| submit_paper
 </pre>
-<p>Two units, one loop. The <a class="wikilink" href="pg-broker.html">broker</a> produces proposals; the treasury consumes and funds them. Settlement results flow back through the broker's <a class="wikilink" href="pg-signal-propagation.html">PropagationFacts</a> for learning.</p>
+<p><strong>One mailbox. Two event types. Per-broker response queues.</strong> The <a class="wikilink" href="pg-broker.html">broker</a> holds a <code>TreasuryHandle</code>. It sends <code>TreasuryRequest</code> into the shared mailbox and blocks on its own <code>QueueReceiver&lt;TreasuryResponse&gt;</code>. No polling. No spinning. No deadlock.</p>
 <hr />
 <h2 id="the-treasury-struct">The Treasury Struct<a class="heading-anchor" href="#the-treasury-struct" aria-hidden="true">#</a></h2>
-<p><strong>Source:</strong> <code>wat/treasury.wat</code> (258 lines). 8 fields:</p>
+<p><strong>Source:</strong> <code>src/domain/treasury.rs</code> (784 lines). 8 fields:</p>
 <table>
 <thead>
 <tr>
@@ -271,180 +280,716 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </thead>
 <tbody>
 <tr>
-  <td data-label="Field"><code>denomination</code></td>
-  <td data-label="Type"><code>Asset</code></td>
-  <td data-label="Purpose">Unit of account (e.g. USD)</td>
+  <td data-label="Field"><code>papers</code></td>
+  <td data-label="Type"><code>HashMap&lt;u64, PaperPosition&gt;</code></td>
+  <td data-label="Purpose">All paper positions — the source of truth</td>
 </tr>
 <tr>
-  <td data-label=""><code>available</code></td>
-  <td data-label=""><code>Map&lt;Asset, f64&gt;</code></td>
-  <td data-label="">Capital free to deploy</td>
+  <td data-label=""><code>real_positions</code></td>
+  <td data-label=""><code>HashMap&lt;u64, RealPosition&gt;</code></td>
+  <td data-label="">All real positions — actual capital deployed</td>
 </tr>
 <tr>
-  <td data-label=""><code>reserved</code></td>
-  <td data-label=""><code>Map&lt;Asset, f64&gt;</code></td>
-  <td data-label="">Capital locked by active trades</td>
+  <td data-label=""><code>proposer_records</code></td>
+  <td data-label=""><code>HashMap&lt;usize, ProposerRecord&gt;</code></td>
+  <td data-label="">Per-broker track records — the gate reads these</td>
 </tr>
 <tr>
-  <td data-label=""><code>proposals</code></td>
-  <td data-label=""><code>Vec&lt;Proposal&gt;</code></td>
-  <td data-label="">Incoming proposal barrage; drained after funding</td>
+  <td data-label=""><code>balances</code></td>
+  <td data-label=""><code>HashMap&lt;String, f64&gt;</code></td>
+  <td data-label="">Asset balances (e.g. &quot;USDC&quot; → 100_000.0)</td>
 </tr>
 <tr>
-  <td data-label=""><code>trades</code></td>
-  <td data-label=""><code>Map&lt;TradeId, Trade&gt;</code></td>
-  <td data-label="">Funded proposals become active trades</td>
+  <td data-label=""><code>next_paper_id</code></td>
+  <td data-label=""><code>u64</code></td>
+  <td data-label="">Auto-incrementing paper ID counter</td>
 </tr>
 <tr>
-  <td data-label=""><code>trade-origins</code></td>
-  <td data-label=""><code>Map&lt;TradeId, TradeOrigin&gt;</code></td>
-  <td data-label="">Stashes origin for propagation at settlement</td>
+  <td data-label=""><code>next_position_id</code></td>
+  <td data-label=""><code>u64</code></td>
+  <td data-label="">Auto-incrementing real position ID counter</td>
 </tr>
 <tr>
-  <td data-label=""><code>swap-fee</code></td>
+  <td data-label=""><code>entry_fee</code></td>
   <td data-label=""><code>f64</code></td>
-  <td data-label="">Per-swap venue cost (fraction)</td>
+  <td data-label="">Entry fee rate (e.g. 0.0035 for 0.35%)</td>
 </tr>
 <tr>
-  <td data-label=""><code>slippage</code></td>
+  <td data-label=""><code>exit_fee</code></td>
   <td data-label=""><code>f64</code></td>
-  <td data-label="">Per-swap slippage estimate</td>
+  <td data-label="">Exit fee rate (e.g. 0.0035 for 0.35%)</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Constructor:</strong> <code>(make-treasury denomination initial-balances swap-fee slippage) → Treasury</code>. All maps start empty; proposals empty; trade IDs start at 0.</p>
+<p><strong>Constructor:</strong> <code>Treasury::new(entry_fee, exit_fee)</code> — all maps start empty, counters start at 0.</p>
 <hr />
-<h2 id="funding-fund-proposals">Funding: <code>fund-proposals</code><a class="heading-anchor" href="#funding-fund-proposals" aria-hidden="true">#</a></h2>
-<p>Proposals arrive via <code>submit-proposal</code>, which pushes onto the <code>proposals</code> vector. <code>fund-proposals</code> evaluates all proposals, sorted by <strong>edge descending</strong> (best first), and greedily funds from the top.</p>
-<h3 id="funding-gates-checked-per-proposal">Funding Gates (checked per proposal)<a class="heading-anchor" href="#funding-gates-checked-per-proposal" aria-hidden="true">#</a></h3>
-<ol>
-<li><strong>Edge gate:</strong> <code>edge &lt; venue-cost-rate</code> → rejected. A proposal must clear the round-trip cost to be worth funding.</li>
-<li><strong>Capital gate:</strong> <code>available-capital ≤ 0.0</code> → rejected. No capital, no trade.</li>
-</ol>
-<p><strong>Venue cost rate:</strong> <code>2.0 × (swap-fee + slippage)</code> — the open+close round-trip.</p>
-<h3 id="funding-math">Funding Math<a class="heading-anchor" href="#funding-math" aria-hidden="true">#</a></h3>
-<pre><code>reserve-amount = amount + (amount × venue-cost-rate)   // principal + buffer
-actual-reserve = min(reserve-amount, available-capital) // clamped
-trade-amount   = actual-reserve / (1.0 + venue-cost-rate)  // back-computed principal
-</code></pre>
-<p>Capital moves <code>available → reserved</code> by <code>trade-amount</code>. Entry price initialized to <code>0.0</code> — set later by the enterprise from the current price. Stop levels computed via <code>distances-to-levels(distances, entry-price, side)</code>. Proposals vector is drained after processing.</p>
-<p><strong>Returns:</strong> <code>Vec&lt;LogEntry&gt;</code> — one per proposal (funded or rejected).</p>
-<blockquote>
-<p><strong>Greedily funds top-to-bottom.</strong> First proposal to deplete an asset's available capital blocks subsequent proposals for that asset.</p>
-</blockquote>
-<hr />
-<h2 id="settlement-settle-triggered">Settlement: <code>settle-triggered</code><a class="heading-anchor" href="#settlement-settle-triggered" aria-hidden="true">#</a></h2>
-<p>Checks all active trades against their stop-levels using current prices. Two trigger paths:</p>
-<h3 id="path-a-safety-stop">Path A — Safety Stop<a class="heading-anchor" href="#path-a-safety-stop" aria-hidden="true">#</a></h3>
-<ul>
-<li>Condition: trade is <code>:active</code>; price crosses safety-stop in the adverse direction (buy: <code>price ≤ safety-stop</code>; sell: <code>price ≥ safety-stop</code>).</li>
-<li>Exit value: <code>amount × (1.0 - venue-cost-per-swap)</code> — loses one swap's venue cost on exit.</li>
-<li>Loss: <code>amount - exit-value</code> = <code>amount × venue-cost-per-swap</code>.</li>
-<li>Outcome: <code>:settled-violence</code>, reason <code>:violence</code>.</li>
-</ul>
-<h3 id="path-b-trailing-stop">Path B — Trailing Stop<a class="heading-anchor" href="#path-b-trailing-stop" aria-hidden="true">#</a></h3>
-<ul>
-<li>Condition: trade is <code>:active</code> or <code>:runner</code>; price crosses trail-stop in the adverse direction.</li>
-<li>Exit value: <code>amount × (price / entry-price) × (1.0 - venue-cost-per-swap)</code> — proportional P&amp;L minus exit cost.</li>
-<li>Outcome: <code>:grace</code> if exit-value &gt; amount (profit), <code>:violence</code> otherwise (loss).</li>
-<li>Capital: <code>min(exit-value, amount)</code> returns to <code>available</code>; full <code>amount</code> removed from <code>reserved</code>.</li>
-</ul>
-<p><strong>Both paths:</strong> trade and origin removed from their maps. Returns <code>(Vec&lt;TreasurySettlement&gt;, Vec&lt;LogEntry&gt;)</code>.</p>
-<hr />
-<h2 id="the-runner-transition-update-trade-stops">The Runner Transition: <code>update-trade-stops</code><a class="heading-anchor" href="#the-runner-transition-update-trade-stops" aria-hidden="true">#</a></h2>
-<p>Replaces stop-levels on a specific trade. Handles the <strong>runner transition</strong>:</p>
-<ul>
-<li>If trade is <code>:active</code> and the new trail-stop would recover principal (trail-stop past entry-price), the phase transitions to <code>:runner</code>.</li>
-<li>Buy: <code>trail-stop &gt; entry-price</code>; Sell: <code>trail-stop &lt; entry-price</code>.</li>
-</ul>
-<p>Called from outside the treasury (by the post's tick step 3c).</p>
-<hr />
-<h2 id="bounded-loss-structural-not-policy">Bounded Loss: Structural, Not Policy<a class="heading-anchor" href="#bounded-loss-structural-not-policy" aria-hidden="true">#</a></h2>
-<p>The treasury enforces loss bounds through capital reservation — not through risk parameters or position limits.</p>
-<ol>
-<li><p><strong>At funding:</strong> Capital moves from <code>available</code> to <code>reserved</code>. The reserve map is the accounting enforcement: capital in <code>reserved</code> cannot be redeployed. It only returns to <code>available</code> through settlement.</p>
-</li>
-<li><p><strong>At settlement (safety stop):</strong> The maximum loss is <code>amount × venue-cost-per-swap</code> — one swap's cost on exit. The rest of the principal returns to <code>available</code>. This is the <strong>hard bound</strong>.</p>
-</li>
-<li><p><strong>At settlement (trailing stop):</strong> P&amp;L is proportional to price movement. Profits return as available capital. Losses are bounded by the same formula as the safety stop.</p>
-</li>
-<li><p><strong>No double-spending is possible</strong> because proposals are drained after funding.</p>
-</li>
-</ol>
-<blockquote>
-<p>&quot;The bound is structural, not policy. The reserve map is the accounting enforcement.&quot; — T3-treasury-wat</p>
-</blockquote>
-<hr />
-<h2 id="the-brokers-gate">The Broker's Gate<a class="heading-anchor" href="#the-brokers-gate" aria-hidden="true">#</a></h2>
-<p>The <a class="wikilink" href="pg-broker.html">broker</a> sits between the market and the treasury. It decides whether proposals are worth submitting.</p>
-<h3 id="gate_open-two-phase-gate"><code>gate_open()</code> — Two-Phase Gate<a class="heading-anchor" href="#gate_open-two-phase-gate" aria-hidden="true">#</a></h3>
-<pre><code>cold_start = grace_count &lt; 50 || violence_count &lt; 50
-cold_start || expected_value &gt; 0.0
-</code></pre>
-<ol>
-<li><strong>Cold start</strong> (&lt; 50 of either outcome): gate always open — not enough data for a statistical judgment.</li>
-<li><strong>Warm</strong> (≥ 50 of both): gate opens only when <code>expected_value &gt; 0.0</code>. A broker with negative expected value is suppressed.</li>
-</ol>
-<h3 id="expected-value-computation">Expected Value Computation<a class="heading-anchor" href="#expected-value-computation" aria-hidden="true">#</a></h3>
-<pre><code>expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net
-</code></pre>
-<ul>
-<li><code>avg_grace_net</code> and <code>avg_violence_net</code> are EMAs (alpha = 0.038, half-life ~50 papers).</li>
-<li>P&amp;L computed against a reference capital of $10,000, including swap fees on both entry and exit.</li>
-<li>Propagated from <code>propagate()</code> after each resolution.</li>
-</ul>
-<hr />
-<h2 id="full-lifecycle">Full Lifecycle<a class="heading-anchor" href="#full-lifecycle" aria-hidden="true">#</a></h2>
-<pre><code>1. register_paper()     — broker creates a paper trade every candle
-2. tick_papers()        — broker ticks papers: Grace signal, Violence stop, or runner resolution
-3. propagate()          — broker accumulates outcomes, updates EV, returns PropagationFacts
-4. gate_open()          — broker checks EV threshold (cold start always passes)
-5. submit-proposal()    — proposal pushed to treasury
-6. fund-proposals()     — treasury evaluates edge + capital gates, funds or rejects
-7. update-trade-stops() — treasury updates stops; runner transition if trail recovers principal
-8. settle-triggered()   — treasury settles triggered trades, returns capital to available
-9. PropagationFacts     — routed back through broker to observers for learning
-</code></pre>
-<hr />
-<h2 id="other-treasury-methods">Other Treasury Methods<a class="heading-anchor" href="#other-treasury-methods" aria-hidden="true">#</a></h2>
+<h2 id="position-lifecycle-positionstate">Position Lifecycle: <code>PositionState</code><a class="heading-anchor" href="#position-lifecycle-positionstate" aria-hidden="true">#</a></h2>
+<p>One enum, not <code>bool + Option</code>. Every position (paper or real) moves through the same state machine:</p>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Active : issue_paper() / issue_real()
+    Active --&gt; Grace : resolve_grace() — price moved favorably, residue &gt; 0
+    Active --&gt; Violence : check_deadlines() — candle ≥ deadline
+    Grace --&gt; [*]
+    Violence --&gt; [*]
+</pre>
 <table>
 <thead>
 <tr>
-  <th>Method</th>
+  <th>Variant</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>Active</code></td>
+  <td data-label="Meaning">Open, clock ticking. Normal operating state.</td>
+</tr>
+<tr>
+  <td data-label=""><code>Grace { residue: f64 }</code></td>
+  <td data-label="">Exited profitably. Residue is the profit after exit fees. Terminal.</td>
+</tr>
+<tr>
+  <td data-label=""><code>Violence</code></td>
+  <td data-label="">Deadline hit, position reclaimed. For real positions, market value (minus exit fee) returns to balances. Terminal.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="paper-positions">Paper Positions<a class="heading-anchor" href="#paper-positions" aria-hidden="true">#</a></h2>
+<p><strong>Papers don't move capital.</strong> They are proof of thoughts — a fixed $10,000 reference trade that simulates entry arithmetic without touching balances. Always issued. The cost is computation (lab) or gas (Solana).</p>
+<h3 id="paperposition-struct"><code>PaperPosition</code> struct<a class="heading-anchor" href="#paperposition-struct" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
   <th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td data-label="Method"><code>available-capital(asset)</code></td>
-  <td data-label="Purpose">Returns available balance, defaulting to <code>0.0</code></td>
+  <td data-label="Field"><code>paper_id</code></td>
+  <td data-label="Type"><code>u64</code></td>
+  <td data-label="Purpose">Unique identifier (from <code>next_paper_id</code>)</td>
 </tr>
 <tr>
-  <td data-label=""><code>deposit(asset, amount)</code></td>
-  <td data-label="">Adds to available capital</td>
+  <td data-label=""><code>owner</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Broker slot index — who owns this paper</td>
 </tr>
 <tr>
-  <td data-label=""><code>total-equity()</code></td>
-  <td data-label="">Sums all available + reserved across all assets</td>
+  <td data-label=""><code>from_asset</code></td>
+  <td data-label=""><code>String</code></td>
+  <td data-label="">What was borrowed (e.g. &quot;USDC&quot;)</td>
 </tr>
 <tr>
-  <td data-label=""><code>trades-for-post(post-idx)</code></td>
-  <td data-label="">Returns all active/runner trades for a given post</td>
+  <td data-label=""><code>to_asset</code></td>
+  <td data-label=""><code>String</code></td>
+  <td data-label="">What was acquired (e.g. &quot;WBTC&quot;)</td>
+</tr>
+<tr>
+  <td data-label=""><code>amount</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Units of from_asset borrowed. <strong>Always 10,000.0</strong></td>
+</tr>
+<tr>
+  <td data-label=""><code>units_acquired</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Units of to_asset after entry fee: <code>(amount - fee) / price</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_price</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Exchange rate at entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_candle</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Candle index at entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>deadline</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label=""><code>entry_candle + N</code> — the clock</td>
+</tr>
+<tr>
+  <td data-label=""><code>state</code></td>
+  <td data-label=""><code>PositionState</code></td>
+  <td data-label="">Lifecycle state</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="known-issues">Known Issues<a class="heading-anchor" href="#known-issues" aria-hidden="true">#</a></h2>
-<ul>
-<li><strong><code>total-equity</code></strong> comment says &quot;converted to denomination&quot; but the code sums raw <code>f64</code> values without conversion. If multiple assets exist, this is a bug or incomplete spec.</li>
-<li><strong>Entry price set to <code>0.0</code></strong> at funding time. The enterprise must update it before the first tick — otherwise <code>settle-triggered</code> would divide by zero (<code>price / entry-price</code>).</li>
-<li><strong>Broker <code>close_all_runners</code></strong> accepts <code>_current_price</code> but does not use it — all resolution data comes from the paper's own tracked price history.</li>
-</ul>
+<h2 id="real-positions">Real Positions<a class="heading-anchor" href="#real-positions" aria-hidden="true">#</a></h2>
+<p><strong>Real positions move capital.</strong> The treasury deducts from <code>balances</code> on issue and returns (market value minus exit fee) on Violence. The broker does <strong>not</strong> choose the amount — the treasury decides. Currently fixed at $50 per position (or available balance, whichever is smaller). Requires a proven record.</p>
+<h3 id="realposition-struct"><code>RealPosition</code> struct<a class="heading-anchor" href="#realposition-struct" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>position_id</code></td>
+  <td data-label="Type"><code>u64</code></td>
+  <td data-label="Purpose">Unique identifier (from <code>next_position_id</code>, separate ID space)</td>
+</tr>
+<tr>
+  <td data-label=""><code>owner</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Broker slot index</td>
+</tr>
+<tr>
+  <td data-label=""><code>from_asset</code></td>
+  <td data-label=""><code>String</code></td>
+  <td data-label="">What was borrowed</td>
+</tr>
+<tr>
+  <td data-label=""><code>to_asset</code></td>
+  <td data-label=""><code>String</code></td>
+  <td data-label="">What was acquired</td>
+</tr>
+<tr>
+  <td data-label=""><code>amount</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label=""><strong>Variable</strong> — treasury decides (currently min($50, balance))</td>
+</tr>
+<tr>
+  <td data-label=""><code>units_acquired</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Units of to_asset after entry fee</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_price</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Exchange rate at entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_candle</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Candle index at entry</td>
+</tr>
+<tr>
+  <td data-label=""><code>deadline</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label=""><code>entry_candle + N</code> — the clock</td>
+</tr>
+<tr>
+  <td data-label=""><code>state</code></td>
+  <td data-label=""><code>PositionState</code></td>
+  <td data-label="">Lifecycle state — same state machine as paper</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Distinct type, distinct issuance.</strong> Papers and real positions use separate ID counters and separate <code>HashMap</code> storage. The <code>issue_paper()</code> and <code>issue_real()</code> methods are fundamentally different — paper always succeeds; real requires gate + balance.</p>
+</blockquote>
+<hr />
+<h2 id="proposer-record-the-gate">Proposer Record: the Gate<a class="heading-anchor" href="#proposer-record-the-gate" aria-hidden="true">#</a></h2>
+<p>The gate reads <strong>paper stats only</strong> to decide trust. Real stats measure whether the trust was deserved — they track performance <em>after</em> the gate opens.</p>
+<h3 id="proposerrecord-struct"><code>ProposerRecord</code> struct<a class="heading-anchor" href="#proposerrecord-struct" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>paper_submitted</code></td>
+  <td data-label="Type"><code>usize</code></td>
+  <td data-label="Purpose">Total papers submitted (proof of thoughts)</td>
+</tr>
+<tr>
+  <td data-label=""><code>paper_survived</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Papers resolved to Grace</td>
+</tr>
+<tr>
+  <td data-label=""><code>paper_failed</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Papers resolved to Violence (deadline)</td>
+</tr>
+<tr>
+  <td data-label=""><code>paper_grace_residue</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Cumulative profit from paper Graces</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_submitted</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Total real positions submitted</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_survived</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Real positions resolved to Grace</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_failed</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Real positions resolved to Violence</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_grace_residue</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Cumulative profit from real Graces</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_violence_loss</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Cumulative loss from real Violences</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default:</strong> all zeros. Records are created lazily via <code>entry().or_default()</code> on first interaction.</p>
+<hr />
+<h2 id="supporting-types">Supporting Types<a class="heading-anchor" href="#supporting-types" aria-hidden="true">#</a></h2>
+<h3 id="positionreceipt"><code>PositionReceipt</code><a class="heading-anchor" href="#positionreceipt" aria-hidden="true">#</a></h3>
+<p>What the treasury returns when it approves a position. <strong>The receipt IS the answer</strong> — the amount is on the receipt, decided by the treasury, not requested by the broker.</p>
+<table>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>position_id</code></td>
+  <td data-label="Type"><code>u64</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>owner</code></td>
+  <td data-label=""><code>usize</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>from_asset</code></td>
+  <td data-label=""><code>String</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>to_asset</code></td>
+  <td data-label=""><code>String</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>amount</code></td>
+  <td data-label=""><code>f64</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>units_acquired</code></td>
+  <td data-label=""><code>f64</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_price</code></td>
+  <td data-label=""><code>f64</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>entry_candle</code></td>
+  <td data-label=""><code>usize</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>deadline</code></td>
+  <td data-label=""><code>usize</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="treasuryverdict"><code>TreasuryVerdict</code><a class="heading-anchor" href="#treasuryverdict" aria-hidden="true">#</a></h3>
+<p>The treasury's response to a resolution event. Pushed down to brokers through their pipe.</p>
+<table>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>Grace { position_id, residue }</code></td>
+  <td data-label="Meaning">Position exited profitably. Residue is profit after fees.</td>
+</tr>
+<tr>
+  <td data-label=""><code>Violence { position_id }</code></td>
+  <td data-label="">Position expired. For real positions, market value recovered.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="treasury-methods">Treasury Methods<a class="heading-anchor" href="#treasury-methods" aria-hidden="true">#</a></h2>
+<h3 id="newentry_fee-exit_fee-treasury"><code>new(entry_fee, exit_fee) → Treasury</code><a class="heading-anchor" href="#newentry_fee-exit_fee-treasury" aria-hidden="true">#</a></h3>
+<p>Constructor. Empty maps, zero counters. Fees expressed as rates (e.g. 0.0035 = 0.35%).</p>
+<h3 id="issue_paperowner-from_asset-to_asset-price-candle-deadline_candles-positionreceipt"><code>issue_paper(owner, from_asset, to_asset, price, candle, deadline_candles) → PositionReceipt</code><a class="heading-anchor" href="#issue_paperowner-from_asset-to_asset-price-candle-deadline_candles-positionreceipt" aria-hidden="true">#</a></h3>
+<p><strong>Always succeeds.</strong> Creates a paper position with fixed $10,000 amount. Computes entry fee, converts to <code>to_asset</code> units. Increments the owner's <code>paper_submitted</code> count. <strong>No balances are touched.</strong></p>
+<pre><code>fee = 10_000.0 × entry_fee
+units = (10_000.0 - fee) / price
+deadline = candle + deadline_candles
+</code></pre>
+<h3 id="issue_realowner-from_asset-to_asset-price-candle-deadline_candles-optionltpositionreceiptgt"><code>issue_real(owner, from_asset, to_asset, price, candle, deadline_candles) → Option&lt;PositionReceipt&gt;</code><a class="heading-anchor" href="#issue_realowner-from_asset-to_asset-price-candle-deadline_candles-optionltpositionreceiptgt" aria-hidden="true">#</a></h3>
+<p><strong>Requires gate predicate AND positive balance.</strong> Three checks that return <code>None</code>:</p>
+<ol>
+<li>No <code>ProposerRecord</code> exists for this owner.</li>
+<li><code>gate_predicate()</code> returns <code>false</code>.</li>
+<li>Balance for <code>from_asset</code> is zero or missing.</li>
+</ol>
+<p>If approved: allocates <code>min($50, balance)</code> from <code>balances</code>, creates the real position, deducts the amount. <strong>Capital moves.</strong></p>
+<pre><code>amount = min(50.0, balance[from_asset])
+fee = amount × entry_fee
+units = (amount - fee) / price
+balances[from_asset] -= amount
+</code></pre>
+<blockquote>
+<p><strong>The broker does NOT choose the amount.</strong> The treasury decides. For now: fixed $50 per position. Later: proportional to record quality and available balance.</p>
+</blockquote>
+<h3 id="get_paper_positionpaper_id-optionltamppaperpositiongt"><code>get_paper_position(paper_id) → Option&lt;&amp;PaperPosition&gt;</code><a class="heading-anchor" href="#get_paper_positionpaper_id-optionltamppaperpositiongt" aria-hidden="true">#</a></h3>
+<p>Read a paper position. Pure lookup.</p>
+<h3 id="get_real_positionposition_id-optionltamprealpositiongt"><code>get_real_position(position_id) → Option&lt;&amp;RealPosition&gt;</code><a class="heading-anchor" href="#get_real_positionposition_id-optionltamprealpositiongt" aria-hidden="true">#</a></h3>
+<p>Read a real position. Pure lookup.</p>
+<h3 id="validate_exitpaper_id-current_price-optionltf64gt"><code>validate_exit(paper_id, current_price) → Option&lt;f64&gt;</code><a class="heading-anchor" href="#validate_exitpaper_id-current_price-optionltf64gt" aria-hidden="true">#</a></h3>
+<p>Validates an exit proposal. Three checks:</p>
+<ol>
+<li>Paper must exist.</li>
+<li>State must be <code>Active</code>.</li>
+<li>Residue must be positive: <code>current_value - original_amount - exit_fee &gt; 0</code>.</li>
+</ol>
+<pre><code>current_value = units_acquired × current_price
+exit_fee = current_value × exit_fee
+residue = current_value - amount - exit_fee
+</code></pre>
+<p>Returns <code>Some(residue)</code> if profitable, <code>None</code> otherwise.</p>
+<h3 id="resolve_gracepaper_id-current_price-optionlttreasuryverdictgt"><code>resolve_grace(paper_id, current_price) → Option&lt;TreasuryVerdict&gt;</code><a class="heading-anchor" href="#resolve_gracepaper_id-current_price-optionlttreasuryverdictgt" aria-hidden="true">#</a></h3>
+<p>Calls <code>validate_exit()</code>. If approved, transitions the paper to <code>Grace { residue }</code>, increments the owner's <code>paper_survived</code> and adds residue to <code>paper_grace_residue</code>. Returns <code>TreasuryVerdict::Grace</code>.</p>
+<h3 id="check_deadlinescurrent_candle-current_price-veclttreasuryverdictgt"><code>check_deadlines(current_candle, current_price) → Vec&lt;TreasuryVerdict&gt;</code><a class="heading-anchor" href="#check_deadlinescurrent_candle-current_price-veclttreasuryverdictgt" aria-hidden="true">#</a></h3>
+<p>Scans <strong>all</strong> active papers and real positions. Any position where <code>current_candle ≥ deadline</code> transitions to <code>Violence</code>.</p>
+<p><strong>For papers:</strong> increments the owner's <code>paper_failed</code>. No capital movement.</p>
+<p><strong>For real positions:</strong> recovers market value back to balances, computes loss.</p>
+<pre><code>market_value = units_acquired × current_price
+exit_fee = market_value × exit_fee
+recovered = market_value - exit_fee   (floored at 0)
+balances[from_asset] += recovered
+loss = amount - recovered
+real_failed += 1
+real_violence_loss += max(0, loss)
+</code></pre>
+<blockquote>
+<p>The treasury gets back what the asset is <strong>actually worth</strong>, not what was lent. If the position lost value, the treasury absorbs the loss.</p>
+</blockquote>
+<h3 id="gate_predicaterecord-bool"><code>gate_predicate(record) → bool</code><a class="heading-anchor" href="#gate_predicaterecord-bool" aria-hidden="true">#</a></h3>
+<p><strong>Reads PAPER stats only.</strong> Two conditions, both required:</p>
+<ol>
+<li><code>paper_submitted ≥ 50</code> — minimum volume threshold.</li>
+<li><code>paper_survived / (paper_survived + paper_failed) &gt; 0.5</code> — majority survival among resolved papers.</li>
+</ol>
+<pre><code>resolved = paper_survived + paper_failed
+if resolved == 0 → false  (no resolved papers yet)
+survival_rate = paper_survived / resolved
+return survival_rate &gt; 0.5
+</code></pre>
+<h3 id="get_recordowner-optionltampproposerrecordgt"><code>get_record(owner) → Option&lt;&amp;ProposerRecord&gt;</code><a class="heading-anchor" href="#get_recordowner-optionltampproposerrecordgt" aria-hidden="true">#</a></h3>
+<p>Read access to a proposer's track record. Pure lookup.</p>
+<hr />
+<h2 id="treasuryprogram-the-service-thread">TreasuryProgram: the Service Thread<a class="heading-anchor" href="#treasuryprogram-the-service-thread" aria-hidden="true">#</a></h2>
+<p><strong>Source:</strong> <code>src/programs/app/treasury_program.rs</code> (374 lines).</p>
+<p>The treasury runs as an independent thread. One recv loop, two-level match.</p>
+<h3 id="event-types-treasuryevent">Event Types (<code>TreasuryEvent</code>)<a class="heading-anchor" href="#event-types-treasuryevent" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>Tick { candle, price, atr }</code></td>
+  <td data-label="Purpose">Candle clock. Advances deadlines via <code>check_deadlines()</code>.</td>
+</tr>
+<tr>
+  <td data-label=""><code>Request { client_id, request }</code></td>
+  <td data-label="">A broker's request. <code>client_id</code> indexes the response queue.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="request-types-treasuryrequest">Request Types (<code>TreasuryRequest</code>)<a class="heading-anchor" href="#request-types-treasuryrequest" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Fields</th>
+  <th>Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>SubmitPaper</code></td>
+  <td data-label="Fields"><code>from_asset, to_asset, price</code></td>
+  <td data-label="Handling">Always succeeds → <code>PaperIssued(receipt)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>SubmitReal</code></td>
+  <td data-label=""><code>from_asset, to_asset, price</code></td>
+  <td data-label="">Gate check → <code>RealApproved(receipt)</code> or <code>RealDenied</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>SubmitExit</code></td>
+  <td data-label=""><code>paper_id, current_price</code></td>
+  <td data-label=""><code>resolve_grace()</code> → <code>ExitApproved { residue }</code> or <code>ExitDenied</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>GetPaperState</code></td>
+  <td data-label=""><code>paper_id</code></td>
+  <td data-label="">Lookup → <code>PaperState { state }</code> or <code>NotFound</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="response-types-treasuryresponse">Response Types (<code>TreasuryResponse</code>)<a class="heading-anchor" href="#response-types-treasuryresponse" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Variant</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Variant"><code>PaperIssued(PositionReceipt)</code></td>
+  <td data-label="Meaning">Paper created successfully</td>
+</tr>
+<tr>
+  <td data-label=""><code>RealApproved(PositionReceipt)</code></td>
+  <td data-label="">Real position funded</td>
+</tr>
+<tr>
+  <td data-label=""><code>RealDenied</code></td>
+  <td data-label="">Gate failed or insufficient balance</td>
+</tr>
+<tr>
+  <td data-label=""><code>ExitApproved { position_id, residue }</code></td>
+  <td data-label="">Grace exit approved</td>
+</tr>
+<tr>
+  <td data-label=""><code>ExitDenied</code></td>
+  <td data-label="">Position not profitable or not active</td>
+</tr>
+<tr>
+  <td data-label=""><code>PaperState { position_id, state }</code></td>
+  <td data-label="">Current state of a paper</td>
+</tr>
+<tr>
+  <td data-label=""><code>NotFound</code></td>
+  <td data-label="">Paper ID does not exist</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treasuryhandle"><code>TreasuryHandle</code><a class="heading-anchor" href="#treasuryhandle" aria-hidden="true">#</a></h3>
+<p>One per <a class="wikilink" href="pg-broker.html">broker</a>. Wraps a <code>QueueSender&lt;TreasuryEvent&gt;</code> (into the shared mailbox) and a <code>QueueReceiver&lt;TreasuryResponse&gt;</code> (per-broker response pipe).</p>
+<table>
+<thead>
+<tr>
+  <th>Method</th>
+  <th>Sends</th>
+  <th>Expects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Method"><code>submit_paper(from_asset, to_asset, price)</code></td>
+  <td data-label="Sends"><code>SubmitPaper</code></td>
+  <td data-label="Expects"><code>PaperIssued(receipt)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>submit_real(from_asset, to_asset, price)</code></td>
+  <td data-label=""><code>SubmitReal</code></td>
+  <td data-label=""><code>RealApproved(receipt)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>submit_exit(paper_id, current_price)</code></td>
+  <td data-label=""><code>SubmitExit</code></td>
+  <td data-label=""><code>ExitApproved { residue }</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>get_paper_state(paper_id)</code></td>
+  <td data-label=""><code>GetPaperState</code></td>
+  <td data-label=""><code>PaperState { state }</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="treasuryticksender"><code>TreasuryTickSender</code><a class="heading-anchor" href="#treasuryticksender" aria-hidden="true">#</a></h3>
+<p>Handle for the main loop to send ticks. Wraps the event sender. <code>send_tick(candle, price, atr)</code> pushes a <code>Tick</code> event into the mailbox.</p>
+<h3 id="program-loop">Program Loop<a class="heading-anchor" href="#program-loop" aria-hidden="true">#</a></h3>
+<pre><code>while let Ok(event) = event_rx.recv() {
+    match event {
+        Tick { candle, price, .. } =&gt; {
+            treasury.check_deadlines(candle, price);
+            // diagnostics every 1000 candles
+        }
+        Request { client_id, request } =&gt; {
+            let response = handle_request(&amp;mut treasury, client_id, request, current_candle, base_deadline);
+            client_txs[client_id].send(response);
+        }
+    }
+}
+// On mailbox disconnect: returns Treasury (state comes home)
+</code></pre>
+<p><strong>On shutdown</strong>, the <code>Treasury</code> struct is returned — the state comes home for inspection or persistence.</p>
+<hr />
+<h2 id="capital-conservation">Capital Conservation<a class="heading-anchor" href="#capital-conservation" aria-hidden="true">#</a></h2>
+<p>The system enforces capital conservation through three mechanisms:</p>
+<ol>
+<li><p><strong>Papers don't move capital.</strong> <code>issue_paper()</code> never touches <code>balances</code>. The <code>conservation_papers_dont_move_capital</code> test verifies this with an assertion.</p>
+</li>
+<li><p><strong>Real positions deduct at issue, recover at Violence.</strong> <code>issue_real()</code> deducts <code>amount</code> from <code>balances</code>. <code>check_deadlines()</code> returns <code>market_value - exit_fee</code> (which may be less than the original amount — the treasury absorbs the loss).</p>
+</li>
+<li><p><strong>The gate restricts real issuance.</strong> Without a proven paper record (≥50 papers, &gt;50% survival), <code>issue_real()</code> returns <code>None</code>. No capital is deployed to unproven brokers.</p>
+</li>
+</ol>
+<hr />
+<h2 id="two-track-design-papers-vs-real">Two-Track Design: Papers vs. Real<a class="heading-anchor" href="#two-track-design-papers-vs-real" aria-hidden="true">#</a></h2>
+<pre class="mermaid">flowchart LR
+    subgraph papers[&quot;Paper Track (Proof of Thoughts)&quot;]
+        p_issue[&quot;issue_paper()\\nalways succeeds\\nfixed $10K\\nno capital moves&quot;]
+        p_gate[&quot;gate_predicate()\\nreads paper stats&quot;]
+        p_record[&quot;ProposerRecord\\npaper_submitted\\npaper_survived\\npaper_failed\\npaper_grace_residue&quot;]
+    end
+
+    subgraph real[&quot;Real Track (Proof of Execution)&quot;]
+        r_issue[&quot;issue_real()\\ngate required\\nvariable amount\\ncapital moves&quot;]
+        r_deadline[&quot;check_deadlines()\\nrecovers market value&quot;]
+        r_record[&quot;ProposerRecord\\nreal_submitted\\nreal_survived\\nreal_failed\\nreal_violence_loss&quot;]
+    end
+
+    p_issue --&gt; p_record
+    p_record --&gt;|&quot;50+ papers, &gt;50% survival&quot;| p_gate
+    p_gate --&gt;|&quot;gate opens&quot;| r_issue
+    r_issue --&gt; r_deadline
+    r_deadline --&gt; r_record
+</pre>
+<p><strong>Papers are the training ground.</strong> They build the record that earns real capital. Real positions are the deployment — actual money, actual risk, actual accountability. The gate is the one-way valve between them.</p>
+<hr />
+<h2 id="test-coverage">Test Coverage<a class="heading-anchor" href="#test-coverage" aria-hidden="true">#</a></h2>
+<h3 id="treasuryrs-9-tests-domain-logic"><code>treasury.rs</code> — 9 tests (domain logic)<a class="heading-anchor" href="#treasuryrs-9-tests-domain-logic" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Test</th>
+  <th>What it verifies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Test"><code>proposer_record_default_is_all_zeros</code></td>
+  <td data-label="What it verifies">Default record has all zero fields</td>
+</tr>
+<tr>
+  <td data-label=""><code>position_state_starts_active</code></td>
+  <td data-label="">New positions start in Active state</td>
+</tr>
+<tr>
+  <td data-label=""><code>paper_position_can_be_constructed</code></td>
+  <td data-label="">Paper struct construction with all fields</td>
+</tr>
+<tr>
+  <td data-label=""><code>conservation_papers_dont_move_capital</code></td>
+  <td data-label=""><strong>Papers never change balances</strong></td>
+</tr>
+<tr>
+  <td data-label=""><code>issue_paper_exists_and_record_updated</code></td>
+  <td data-label=""><code>issue_paper()</code> creates paper, updates record</td>
+</tr>
+<tr>
+  <td data-label=""><code>validate_exit_higher_price_returns_residue</code></td>
+  <td data-label="">Profitable exit returns <code>Some(positive)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>validate_exit_lower_price_returns_none</code></td>
+  <td data-label="">Unprofitable exit returns <code>None</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>check_deadline_after_expiry_returns_violence</code></td>
+  <td data-label="">Past-deadline → Violence, record updated</td>
+</tr>
+<tr>
+  <td data-label=""><code>resolve_grace_updates_state_and_record</code></td>
+  <td data-label="">Grace transition, residue &gt; 0, record updated</td>
+</tr>
+<tr>
+  <td data-label=""><code>gate_predicate_new_proposer_denied</code></td>
+  <td data-label="">&lt; 50 papers → denied</td>
+</tr>
+<tr>
+  <td data-label=""><code>gate_predicate_proven_proposer_approved</code></td>
+  <td data-label="">100 papers, 60% survival → approved</td>
+</tr>
+<tr>
+  <td data-label=""><code>gate_predicate_low_survival_denied</code></td>
+  <td data-label="">100 papers, 30% survival → denied</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_position_denied_without_record</code></td>
+  <td data-label="">No record at all → denied</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_position_denied_unproven_record</code></td>
+  <td data-label="">Record fails gate → denied</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_position_approved_with_proven_record_and_balance_moves</code></td>
+  <td data-label="">Approved: balance decreases, real position created, amount ≤ $50</td>
+</tr>
+<tr>
+  <td data-label=""><code>real_position_denied_insufficient_balance</code></td>
+  <td data-label="">Zero balance → denied</td>
+</tr>
+<tr>
+  <td data-label=""><code>check_deadlines_real_position_violence_returns_balance</code></td>
+  <td data-label="">Violence recovers market value minus exit fee</td>
+</tr>
+<tr>
+  <td data-label=""><code>issue_paper_via_new_constructor_no_capital_move</code></td>
+  <td data-label="">Papers via <code>new()</code> constructor also don't move capital</td>
+</tr>
+</tbody>
+</table>
+<h3 id="treasury_programrs-4-tests-program-layer"><code>treasury_program.rs</code> — 4 tests (program layer)<a class="heading-anchor" href="#treasury_programrs-4-tests-program-layer" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Test</th>
+  <th>What it verifies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Test"><code>treasury_event_tick</code></td>
+  <td data-label="What it verifies">Tick event construction</td>
+</tr>
+<tr>
+  <td data-label=""><code>treasury_event_request</code></td>
+  <td data-label="">Request event construction</td>
+</tr>
+<tr>
+  <td data-label=""><code>handle_request_submit_paper</code></td>
+  <td data-label="">Paper request → <code>PaperIssued</code>, paper stored</td>
+</tr>
+<tr>
+  <td data-label=""><code>handle_request_get_paper_state</code></td>
+  <td data-label="">State query → <code>PaperState { Active }</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>handle_request_not_found</code></td>
+  <td data-label="">Nonexistent paper → <code>NotFound</code></td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
-<li><strong><a href="T3-treasury-wat">T3-treasury-wat</a></strong> — Context-free verification of <code>wat/treasury.wat</code> (258 lines). Treasury struct, all 7 methods, funding gates, settlement paths, bounded loss model.</li>
-<li><strong><a href="T0-018-broker-rust">T0-018</a></strong> — Context-free verification of <code>broker.rs</code> (887 lines). Broker struct (24 fields), gate logic, expected value, distance cascade, paper lifecycle, propagation, dollar P&amp;L.</li>
+<li><strong><code>src/domain/treasury.rs</code></strong> (784 lines) — <code>Treasury</code> struct, <code>PositionState</code>, <code>PaperPosition</code>, <code>RealPosition</code>, <code>ProposerRecord</code>, <code>PositionReceipt</code>, <code>TreasuryVerdict</code>, all domain methods, 9+ tests</li>
+<li><strong><code>src/programs/app/treasury_program.rs</code></strong> (374 lines) — <code>TreasuryEvent</code>, <code>TreasuryRequest</code>, <code>TreasuryResponse</code>, <code>TreasuryHandle</code>, <code>TreasuryTickSender</code>, <code>treasury_program()</code> thread body, <code>handle_request()</code>, 4+ tests</li>
+<li><strong>Proposal 055: Treasury-Driven Resolution</strong> — the design proposal that introduced these types</li>
 </ul>
 </div>
   </main>

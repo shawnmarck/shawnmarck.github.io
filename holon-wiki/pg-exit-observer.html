@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#08090a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<title>Exit Observer — Perceiving When to Leave a Position — Holon Wiki</title>
+<title>Position Observer — Pure Lens Carrier — Holon Wiki</title>
 <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 <script>
 tailwind.config = {
@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html">T0-014 — ExitObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -159,7 +159,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
   
-  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — Context-Free Verification</a>
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
   
   
   <div class="tier">Wiki Composites</div>
@@ -168,7 +168,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-bind.html">Bind — the self-inverse combinator</a>
   
-  <a href="pg-broker.html">Broker — the accountability and execution primitive</a>
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
   
   <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
   
@@ -182,7 +182,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
   
-  <a href="pg-exit-observer.html" class="active" aria-current="page">Exit Observer — Perceiving When to Leave a Position</a>
+  <a href="pg-exit-observer.html" class="active" aria-current="page">Position Observer — Pure Lens Carrier</a>
   
   <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
   
@@ -214,7 +214,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
   
-  <a href="pg-treasury.html">Treasury — Bounded Capital Allocation</a>
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
   
   <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
   
@@ -230,138 +230,118 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <div class="md:ml-[320px] flex-1 min-w-0">
   <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
     <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
-      Exit Observer — Perceiving When to Leave a Position <span class="badge badge-explain">EXPLAIN</span>
+      Position Observer — Pure Lens Carrier <span class="badge badge-explain">EXPLAIN</span>
     </h1>
     
-    <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>PositionObserver</code> (also called &quot;exit observer&quot;) predicts two continuous values — <strong>trailing stop distance</strong> and <strong>safety stop distance</strong> — from a position thought vector using two independent continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s. It learns from hindsight-optimal distances determined by simulation. Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that selects its trade-state vocabulary. It has a <a class="wikilink" href="T0-010-subspace.html">noise subspace</a> for anomaly detection despite its own docstring claiming it doesn't. The <a class="wikilink" href="pg-broker.html">broker</a> owns the production cascade (reckoner → accumulator → default); the observer only exposes raw reckoner queries. M per trading system; N×M brokers total.</p>
+    <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> A <code>PositionObserver</code> is a <strong>pure lens carrier</strong> — one field (<code>lens: PositionLens</code>), one constructor, zero behavior. It does not learn, does not predict, does not encode. The domain struct is 17 production lines. The real work happens in the <strong>program thread</strong> (<code>position_observer_program.rs</code>, 213 lines), which composes position-specific vocabulary with market thoughts and sends raw <code>ThoughtAST</code> facts downstream. The <a class="wikilink" href="pg-broker.html">broker</a> is the accountability unit.</p>
+<blockquote>
+<p><em>&quot;Does not learn. Does not predict. Quality is measured through the BROKER's curve.&quot;</em> — module docstring</p>
+</blockquote>
 <hr />
 <h2 id="anatomy">Anatomy<a class="heading-anchor" href="#anatomy" aria-hidden="true">#</a></h2>
+<p>The domain struct is deliberately minimal. Everything that was stripped — reckoners, noise subspace, incremental cache, learning — is gone.</p>
 <table>
 <thead>
 <tr>
-  <th>Component</th>
+  <th>Field</th>
   <th>Type</th>
   <th>Role</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td data-label="Component"><code>lens</code></td>
-  <td data-label="Type"><a class="wikilink" href="pg-lens.html">PositionLens</a></td>
-  <td data-label="Role">Which trade-state vocabulary this observer uses: <code>Core</code> (5 trade atoms) or <code>Full</code> (13 trade atoms)</td>
-</tr>
-<tr>
-  <td data-label=""><code>trail_reckoner</code></td>
-  <td data-label=""><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td>
-  <td data-label="">Predicts trailing stop distance. Named <code>&quot;trail-{lens}&quot;</code>. 10 buckets.</td>
-</tr>
-<tr>
-  <td data-label=""><code>stop_reckoner</code></td>
-  <td data-label=""><a class="wikilink" href="pg-reckoner.html">Reckoner</a> (continuous)</td>
-  <td data-label="">Predicts safety stop distance. Named <code>&quot;stop-{lens}&quot;</code>. 10 buckets.</td>
-</tr>
-<tr>
-  <td data-label=""><code>default_distances</code></td>
-  <td data-label=""><code>Distances</code></td>
-  <td data-label="">Fallback <code>{trail: f64, stop: f64}</code> — percentage of price, scale-free. Returned when reckoners have no experience.</td>
-</tr>
-<tr>
-  <td data-label=""><code>noise_subspace</code></td>
-  <td data-label=""><a class="wikilink" href="T0-010-subspace.html">OnlineSubspace</a></td>
-  <td data-label="">8 principal components. Learns the background distribution for this exit lens. The anomaly is what the subspace cannot explain.</td>
-</tr>
-<tr>
-  <td data-label=""><code>incremental</code></td>
-  <td data-label=""><code>IncrementalBundle</code></td>
-  <td data-label="">Optimization cache — running element-wise sums + last-facts cache for incremental encoding. Not cognition.</td>
+  <td data-label="Field"><code>lens</code></td>
+  <td data-label="Type"><code>PositionLens</code></td>
+  <td data-label="Role">Which judgment vocabulary: <code>Core</code> (10 vocab facts) or <code>Full</code> (13 vocab facts)</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p><em>&quot;Intentionally simpler than MarketObserver.&quot;</em> — module docstring (though the struct <em>does</em> include a noise subspace, contradicting this claim — see <a href="#discrepancies">Discrepancies</a>).</p>
-</blockquote>
+<p>That's it. One field.</p>
+<pre><code class="language-rust">pub struct PositionObserver {
+    pub lens: PositionLens,
+}
+
+impl PositionObserver {
+    pub fn new(lens: PositionLens) -&gt; Self {
+        Self { lens }
+    }
+}
+</code></pre>
 <hr />
-<h2 id="prediction-reckoner_distances">Prediction (<code>reckoner_distances</code>)<a class="heading-anchor" href="#prediction-reckoner_distances" aria-hidden="true">#</a></h2>
-<p>One public prediction method: <code>reckoner_distances(position_thought: &amp;Vector) -&gt; Option&lt;Distances&gt;</code>.</p>
-<ol>
-<li><strong>Check experience</strong> — if either reckoner has zero experience, return <code>None</code>.</li>
-<li><strong>Query trail</strong> — <code>trail_reckoner.query(position_thought)</code> → trailing stop distance.</li>
-<li><strong>Query stop</strong> — <code>stop_reckoner.query(position_thought)</code> → safety stop distance.</li>
-<li><strong>Return</strong> — <code>Some(Distances { trail, stop })</code>.</li>
-</ol>
-<p><strong>Tier 1 only</strong> — raw reckoner output with no fallback. The broker owns the full three-tier cascade:</p>
+<h2 id="what-was-removed">What Was Removed<a class="heading-anchor" href="#what-was-removed" aria-hidden="true">#</a></h2>
+<p>The old <code>PositionObserver</code> had 6 fields, 291 lines, two continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s, a noise subspace, an incremental bundle cache, prediction methods (<code>reckoner_distances</code>), and learning methods (<code>observe_distances</code>). All of this was reaped. The rationale:</p>
+<ul>
+<li><strong>Distances never worked.</strong> The continuous reckoners predicted trail/stop distances that never produced useful edge.</li>
+<li><strong>Learning without signal is noise.</strong> The position observer received no direct feedback — only indirect signals through the broker.</li>
+<li><strong>The broker IS the accountability unit.</strong> It owns paper trades, scalar accumulators, and the three-tier cascade. The observer should not duplicate that.</li>
+</ul>
+<hr />
+<h2 id="the-program-thread">The Program Thread<a class="heading-anchor" href="#the-program-thread" aria-hidden="true">#</a></h2>
+<p>The program (<code>position_observer_program.rs</code>, 213 lines) is where the position observer actually does work. It runs in its own thread, processing one slot per broker connection per candle round.</p>
+<h3 id="positionslot">PositionSlot<a class="heading-anchor" href="#positionslot" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
-  <th>Tier</th>
-  <th>Source</th>
-  <th>Owner</th>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Role</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td data-label="Tier">1</td>
-  <td data-label="Source">Reckoner query (this method)</td>
-  <td data-label="Owner">Position observer</td>
+  <td data-label="Field"><code>input_rx</code></td>
+  <td data-label="Type"><code>QueueReceiver&lt;MarketChain&gt;</code></td>
+  <td data-label="Role">Receives from one market observer (via topic fan-out)</td>
 </tr>
 <tr>
-  <td data-label="">2</td>
-  <td data-label="">Scalar accumulators (per-broker)</td>
-  <td data-label="">Broker</td>
-</tr>
-<tr>
-  <td data-label="">3</td>
-  <td data-label=""><code>default_distances</code></td>
-  <td data-label="">Broker</td>
+  <td data-label=""><code>output_tx</code></td>
+  <td data-label=""><code>QueueSender&lt;MarketPositionChain&gt;</code></td>
+  <td data-label="">Sends to exactly one broker (point-to-point queue)</td>
 </tr>
 </tbody>
 </table>
-<p>Per <a class="wikilink" href="pg-signal-propagation.html">Proposal 026</a>, queries operate on <code>position_thought</code> only — no composition with market thought at query time.</p>
-<blockquote>
-<p><em>&quot;The broker owns the full cascade because it owns the scalar accumulators. The reckoner answer comes from outside (the position observer's continuous reckoner), but tiers 2 and 3 are broker-owned.&quot;</em> — T0-018</p>
-</blockquote>
-<hr />
-<h2 id="learning-observe_distances">Learning (<code>observe_distances</code>)<a class="heading-anchor" href="#learning-observe_distances" aria-hidden="true">#</a></h2>
-<p>One learning method: <code>observe_distances(position_thought: &amp;Vector, optimal: &amp;Distances) -&gt; (f64, f64, f64, f64, f64, f64)</code>.</p>
+<h3 id="per-candle-loop">Per-Candle Loop<a class="heading-anchor" href="#per-candle-loop" aria-hidden="true">#</a></h3>
+<pre class="mermaid">flowchart TD
+    recv[&quot;recv MarketChain from slot&quot;] --&gt; facts[&quot;position_lens_facts(lens, candle, scales)&quot;]
+    facts --&gt; clone[&quot;clone base_facts for each slot&quot;]
+    clone --&gt; extract[&quot;collect_facts from market_ast → encode → cosine&quot;]
+    extract --&gt; anomaly[&quot;Cosine vs market_anomaly — bind matching facts as (market ...)&quot;]
+    anomaly --&gt; raw[&quot;Cosine vs market_raw — bind matching facts as (market-raw ...)&quot;]
+    raw --&gt; send[&quot;Compose MarketPositionChain → send to broker&quot;]
+</pre>
 <ol>
-<li><strong>Pre-learning prediction</strong> — query each reckoner for what it <em>would</em> predict given current state. If no experience, use default.</li>
-<li><strong>Error computation</strong> — <code>|predicted - optimal| / optimal.max(0.0001)</code> for both trail and stop. Normalized error. Read-only diagnostic — no feedback loop.</li>
-<li><strong>Observe</strong> — <code>trail_reckoner.observe_scalar(position_thought, optimal.trail, 1.0)</code> and <code>stop_reckoner.observe_scalar(position_thought, optimal.stop, 1.0)</code>. Weight is always 1.0 — each observation counts once.</li>
-<li><strong>Return</strong> — <code>(trail_error, stop_error, predicted_trail, predicted_stop, optimal_trail, optimal_stop)</code>.</li>
-</ol>
-<p>The &quot;optimal&quot; distances come from <strong>hindsight</strong> — the simulation module sweeps candidate trail/stop values against actual price histories to determine what would have been ideal.</p>
-<h3 id="how-the-continuous-reckoner-learns">How the Continuous Reckoner Learns<a class="heading-anchor" href="#how-the-continuous-reckoner-learns" aria-hidden="true">#</a></h3>
-<p>Each continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a> uses bucketed nearest-neighbor regression:</p>
-<ul>
-<li><strong>10 buckets</strong> span the discovered value range. The first observation seeds a tiny range (±0.001); out-of-range values expand it; every 100 observations the range contracts to where alive weight lives (<em>&quot;breathing range&quot;</em>).</li>
-<li><strong>Implicit decay</strong> — every observation decays all buckets by 0.999. <em>&quot;Every observation is a tick of time.&quot;</em></li>
-<li><strong>Query</strong> — cosine against bucket prototypes, soft-weight top-3, interpolate. O(K×D), constant in observation count.</li>
-<li><strong>Range is data-driven</strong> — <em>&quot;No magic min/max. The data teaches the range. K is the only parameter.&quot;</em> — T0-008</li>
+<li><strong>Receive</strong> — <code>slot.input_rx.recv()</code> — gets a <code>MarketChain</code> from the upstream market observer.</li>
+<li><strong>Position facts</strong> — <code>position_lens_facts(&amp;lens, &amp;candle, &amp;mut scales)</code> — computes lens-specific vocabulary. Computed <strong>once</strong> per candle (first slot), then cloned for subsequent slots.</li>
+<li><strong>Market fact extraction</strong> — Collects facts from <code>chain.market_ast</code>, encodes each into a vector, then does two cosine passes:<ul>
+<li>Against <code>chain.market_anomaly</code> — facts above <code>noise_floor</code> threshold are bound as <code>(market fact)</code>.</li>
+<li>Against <code>chain.market_raw</code> — facts above <code>noise_floor</code> threshold are bound as <code>(market-raw fact)</code>.</li>
 </ul>
-<hr />
-<h2 id="noise-stripping">Noise Stripping<a class="heading-anchor" href="#noise-stripping" aria-hidden="true">#</a></h2>
-<p><code>strip_noise(thought: &amp;Vector) -&gt; Vector</code> — converts to f64, runs <code>noise_subspace.anomalous_component()</code>, converts back. Returns what the subspace <em>cannot</em> explain. Same pattern as the <a class="wikilink" href="pg-market-observer.html">market observer</a>.</p>
+</li>
+<li><strong>Send downstream</strong> — Composes a <code>MarketPositionChain</code> with all fields forwarded plus <code>position_facts: Vec&lt;ThoughtAST&gt;</code>. <strong>No encoding.</strong> The broker encodes when it composes with anxiety.</li>
+</ol>
+<h3 id="key-design-decision-no-encoding-here">Key Design Decision: No Encoding Here<a class="heading-anchor" href="#key-design-decision-no-encoding-here" aria-hidden="true">#</a></h3>
+<p>The position observer sends <strong>raw <code>ThoughtAST</code> facts</strong> downstream. It does <strong>not</strong> encode them into vectors. Encoding happens in the broker, which composes position facts with market thoughts and anxiety. This keeps the position observer as pure middleware — vocabulary composition only.</p>
 <hr />
 <h2 id="the-lens-what-the-observer-sees">The Lens — What the Observer Sees<a class="heading-anchor" href="#the-lens-what-the-observer-sees" aria-hidden="true">#</a></h2>
-<p>Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that determines its trade-state vocabulary (T0-005):</p>
+<p>Each observer wears a <a class="wikilink" href="pg-lens.html">PositionLens</a> that determines its vocabulary (from <code>position_lens_facts</code> in <code>lens.rs</code>):</p>
 <table>
 <thead>
 <tr>
   <th>Lens</th>
-  <th>Trade Atoms</th>
-  <th>Description</th>
+  <th>Vocab Sources</th>
+  <th>Fact Count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
   <td data-label="Lens"><code>Core</code></td>
-  <td data-label="Trade Atoms">5</td>
-  <td data-label="Description">Excursion, retracement, age, peak-age, signaled. The consensus view.</td>
+  <td data-label="Vocab Sources">exit-regime (8) + exit-time (2)</td>
+  <td data-label="Fact Count"><strong>10</strong></td>
 </tr>
 <tr>
   <td data-label=""><code>Full</code></td>
-  <td data-label="">13</td>
-  <td data-label="">All Core atoms + 3 phase biography atoms. All three voices plus phase context.</td>
+  <td data-label="">exit-regime (8) + exit-time (2) + phase-current (1) + phase-series (1) + phase-scalars (1)</td>
+  <td data-label=""><strong>13</strong></td>
 </tr>
 </tbody>
 </table>
@@ -369,51 +349,122 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p><em>&quot;Core: lean — regime + time. 5 trade atoms downstream.&quot;</em> — T0-005
 <em>&quot;Full: rich — regime + time + phase series. 13 trade atoms downstream.&quot;</em> — T0-005</p>
 </blockquote>
-<p>N is the number of market observers (one per <a class="wikilink" href="pg-lens.html">MarketLens</a> variant); M is the number of exit observers (one per <a class="wikilink" href="pg-lens.html">PositionLens</a> variant). N×M brokers bind every market observer to every exit observer.</p>
+<p>The &quot;trade atoms&quot; (5 for Core, 13 for Full) arrive through the broker's trade pipe, not from <code>position_lens_facts</code>. The vocabulary facts above are what the position observer <strong>produces</strong> — the trade atoms are what the broker <strong>consumes</strong>.</p>
 <hr />
-<h2 id="discrepancies">Discrepancies<a class="heading-anchor" href="#discrepancies" aria-hidden="true">#</a></h2>
-<p>The module docstring (lines 1–5) states: <em>&quot;Intentionally simpler than MarketObserver. <strong>No noise-subspace</strong>, no curve, no engram gating.&quot;</em></p>
-<p>The struct <strong>does</strong> have a <code>noise_subspace</code> field and a <code>strip_noise</code> method. The docstring contradicts the code. All 7 tests confirm the noise subspace is initialized and functional.</p>
+<h2 id="marketpositionchain">MarketPositionChain<a class="heading-anchor" href="#marketpositionchain" aria-hidden="true">#</a></h2>
+<p>Defined in <code>chain.rs</code>. What the position observer produces; what the broker receives.</p>
+<table>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Type</th>
+  <th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Field"><code>candle</code></td>
+  <td data-label="Type"><code>Candle</code></td>
+  <td data-label="Source">Forwarded from <code>MarketChain</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>window</code></td>
+  <td data-label=""><code>Arc&lt;Vec&lt;Candle&gt;&gt;</code></td>
+  <td data-label="">Forwarded from <code>MarketChain</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>encode_count</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Forwarded from <code>MarketChain</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>market_raw</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Forwarded from <code>MarketChain</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>market_anomaly</code></td>
+  <td data-label=""><code>Vector</code></td>
+  <td data-label="">Forwarded from <code>MarketChain</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>market_ast</code></td>
+  <td data-label=""><code>ThoughtAST</code></td>
+  <td data-label="">Forwarded from <code>MarketChain</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>market_prediction</code></td>
+  <td data-label=""><code>Prediction</code></td>
+  <td data-label="">Forwarded from <code>MarketChain.prediction</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>market_edge</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Forwarded from <code>MarketChain.edge</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>position_facts</code></td>
+  <td data-label=""><code>Vec&lt;ThoughtAST&gt;</code></td>
+  <td data-label=""><strong>Produced here</strong> — lens vocab + market-extracted facts</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><em>&quot;No encoding. No vectors. No distances. The broker encodes.&quot;</em> — chain.rs docstring</p>
+</blockquote>
+<p>There are <strong>no</strong> <code>position_raw</code>, <code>position_anomaly</code>, <code>position_ast</code>, or <code>position_distances</code> fields. The position observer enriches with AST facts only.</p>
 <hr />
-<h2 id="comparison-exit-observer-vs-market-observer">Comparison — Exit Observer vs. Market Observer<a class="heading-anchor" href="#comparison-exit-observer-vs-market-observer" aria-hidden="true">#</a></h2>
+<h2 id="position-in-the-pipeline">Position in the Pipeline<a class="heading-anchor" href="#position-in-the-pipeline" aria-hidden="true">#</a></h2>
+<pre class="mermaid">flowchart TD
+    market_obs[&quot;Market Observer&quot;] --&gt;|&quot;\nTopic (MarketChain)&quot;| pos_prog[&quot;position_observer_program()&quot;]
+    pos_prog --&gt;|&quot;Queue\n(MarketPositionChain)&quot;| broker[&quot;Broker&quot;]
+    broker -.-&gt;|&quot;Mailbox\n(ObsLearn)&quot;| market_obs
+</pre>
+<ul>
+<li><strong>Input</strong>: <a class="wikilink" href="pg-chain-types.html">MarketChain</a> from each market observer (via <a class="wikilink" href="pg-services.html">Topic</a>, fan-out 1→N).</li>
+<li><strong>Output</strong>: <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> to each broker (via <a class="wikilink" href="pg-services.html">Queue</a>, point-to-point).</li>
+<li><strong>No feedback path</strong> — the position observer receives no learn signals. The broker handles all accountability.</li>
+</ul>
+<hr />
+<h2 id="comparison-position-observer-vs-market-observer">Comparison — Position Observer vs. Market Observer<a class="heading-anchor" href="#comparison-position-observer-vs-market-observer" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
   <th>Property</th>
   <th>Market Observer</th>
-  <th>Exit Observer</th>
+  <th>Position Observer</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td data-label="Property">Prediction type</td>
-  <td data-label="Market Observer">Discrete (Up/Down)</td>
-  <td data-label="Exit Observer">Continuous (trail distance, stop distance)</td>
+  <td data-label="Property">Struct fields</td>
+  <td data-label="Market Observer">Multiple (lens, reckoner, subspace, curve)</td>
+  <td data-label="Position Observer"><strong>1</strong> (lens)</td>
 </tr>
 <tr>
-  <td data-label="">Reckoner mode</td>
-  <td data-label="">Discrete, 2 labels</td>
-  <td data-label="">Continuous, 10 buckets each (×2 reckoners)</td>
+  <td data-label="">Prediction</td>
+  <td data-label="">Discrete (Up/Down) via <a class="wikilink" href="pg-reckoner.html">Reckoner</a></td>
+  <td data-label=""><strong>None</strong> — pure lens carrier</td>
+</tr>
+<tr>
+  <td data-label="">Learning</td>
+  <td data-label="">Receives outcomes, updates reckoner</td>
+  <td data-label=""><strong>None</strong></td>
 </tr>
 <tr>
   <td data-label="">Noise subspace</td>
-  <td data-label="">8 components</td>
-  <td data-label="">8 components</td>
+  <td data-label="">Yes — 8 components</td>
+  <td data-label=""><strong>None</strong></td>
 </tr>
 <tr>
+  <td data-label="">Encoding</td>
+  <td data-label="">Encodes thoughts into vectors</td>
+  <td data-label=""><strong>No encoding</strong> — sends raw <code>ThoughtAST</code></td>
+</tr>
+<tr>
+  <td data-label="">Accountability</td>
   <td data-label="">Conviction curve</td>
-  <td data-label="">Yes — self-evaluates accuracy</td>
-  <td data-label="">No curve mechanism</td>
-</tr>
-<tr>
-  <td data-label="">Engram gate</td>
-  <td data-label="">Yes — gates long-term memory</td>
-  <td data-label="">No engram gating</td>
-</tr>
-<tr>
-  <td data-label="">Learning source</td>
-  <td data-label="">Market outcomes (actual direction)</td>
-  <td data-label="">Hindsight simulation (optimal distances)</td>
+  <td data-label=""><strong>None</strong> — broker owns it</td>
 </tr>
 <tr>
   <td data-label="">Lens</td>
@@ -422,31 +473,6 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </tr>
 </tbody>
 </table>
-<hr />
-<h2 id="construction">Construction<a class="heading-anchor" href="#construction" aria-hidden="true">#</a></h2>
-<pre><code class="language-rust">PositionObserver::new(lens: PositionLens, dims: usize, recalib_interval: usize,
-                      default_trail: f64, default_stop: f64)
-</code></pre>
-<ul>
-<li>Two continuous <a class="wikilink" href="pg-reckoner.html">Reckoner</a>s: <code>&quot;trail-{lens}&quot;</code> and <code>&quot;stop-{lens}&quot;</code>, each with 10 buckets.</li>
-<li><code>noise_subspace</code>: 8 principal components, initialized with <code>(dims, 8)</code>.</li>
-<li>Test constants: <code>DIMS=4096</code>, <code>RECALIB=100</code>, <code>DEFAULT_TRAIL=0.02</code>, <code>DEFAULT_STOP=0.05</code>.</li>
-</ul>
-<hr />
-<h2 id="position-in-the-pipeline">Position in the Pipeline<a class="heading-anchor" href="#position-in-the-pipeline" aria-hidden="true">#</a></h2>
-<p>The exit observer sits between market observers and brokers in the concurrent pipeline:</p>
-<pre class="mermaid">flowchart TD
-    market_obs[&quot;Market Observer&quot;] --&gt;|&quot;Topic\n(MarketChain)&quot;| position_obs[&quot;Position Observer&quot;]
-    position_obs --&gt;|&quot;Queue\n(MarketPositionChain)&quot;| broker[&quot;Broker&quot;]
-    broker -.-&gt;|&quot;ObsLearn\n(Mailbox)&quot;| market_obs
-    broker -.-&gt;|&quot;PositionLearn\n(Mailbox)&quot;| position_obs
-</pre>
-<ul>
-<li><strong>Input</strong>: <a class="wikilink" href="pg-chain-types.html">MarketChain</a> from each market observer (via <a class="wikilink" href="pg-services.html">Topic</a>, fan-out 1→N).</li>
-<li><strong>Output</strong>: <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> to each broker (via <a class="wikilink" href="pg-services.html">Queue</a>).</li>
-<li><strong>Feedback</strong>: <code>PositionLearn</code> signals from brokers (via <a class="wikilink" href="pg-services.html">Mailbox</a>, fan-in N→1).</li>
-</ul>
-<p>Each arrow is a <a class="wikilink" href="pg-services.html">Queue</a>. The fan-out uses <a class="wikilink" href="pg-services.html">Topic</a> (1→N). The learn-signal aggregation uses <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1).</p>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <table>
@@ -458,24 +484,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </thead>
 <tbody>
 <tr>
-  <td data-label="Source"><a href="T0-014-exit-observer-rust">T0-014</a> (<code>position_observer.rs</code>, 291 lines)</td>
-  <td data-label="Key Contribution">Struct fields (6), reckoners (trail/stop), prediction, learning, noise subspace, docstring discrepancy, 7 tests</td>
+  <td data-label="Source"><code>position_observer.rs</code> (34 lines, 17 prod)</td>
+  <td data-label="Key Contribution">Domain struct: 1 field, 1 constructor, 2 tests</td>
 </tr>
 <tr>
-  <td data-label=""><a href="T0-008-reckoner">T0-008</a> (<code>reckoner.rs</code>, 1107 lines; <code>primitives.wat</code>)</td>
-  <td data-label="">Continuous mode: bucketed regression, breathing range, soft-weight top-3 interpolation, O(K×D) query</td>
+  <td data-label=""><code>position_observer_program.rs</code> (213 lines)</td>
+  <td data-label="">Program thread: slot processing, lens fact computation, market fact extraction via cosine, MarketPositionChain composition</td>
 </tr>
 <tr>
-  <td data-label=""><a href="T0-018-broker-rust">T0-018</a> (<code>broker.rs</code>)</td>
-  <td data-label="">Three-tier cascade (reckoner → accumulator → default), runner resolution, deferred batch training</td>
+  <td data-label=""><code>chain.rs</code> (38 lines)</td>
+  <td data-label=""><code>MarketPositionChain</code>: 9 fields including <code>position_facts</code> (no position vectors/distances)</td>
 </tr>
 <tr>
-  <td data-label=""><a href="T0-005-vector-manager">T0-005</a> (<code>lens.rs</code>, <code>enums.rs</code>)</td>
-  <td data-label="">PositionLens enum: Core (5 atoms) and Full (13 atoms), vocab wiring</td>
+  <td data-label=""><code>lens.rs</code></td>
+  <td data-label=""><code>position_lens_facts()</code>: Core=10 facts, Full=13 facts</td>
 </tr>
 <tr>
-  <td data-label=""><a href="T0-017-wat-vm-rust">T0-017</a> (<code>wat-vm.rs</code>)</td>
-  <td data-label="">Pipeline wiring: topic fan-out to position observers, mailbox fan-in for learning</td>
+  <td data-label=""><code>enums.rs</code></td>
+  <td data-label=""><code>PositionLens</code> enum: Core, Full</td>
 </tr>
 </tbody>
 </table>
