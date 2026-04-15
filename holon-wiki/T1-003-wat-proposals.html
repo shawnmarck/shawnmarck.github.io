@@ -367,16 +367,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label="">Parallel map/for-each. Permission, not directive.</td>
 </tr>
 <tr>
-  <td data-label=""><code>defpipe</code></td>
-  <td data-label="">04/002</td>
-  <td data-label="">Syntax (concurrency)</td>
-  <td data-label="">Typed pipe declarations. Bounded/unbounded capacity.</td>
-</tr>
-<tr>
-  <td data-label=""><code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>spawn</code></td>
+  <td data-label=""><code>make-pipe</code>, <code>send</code>, <code>recv</code>, <code>try-recv</code>, <code>select</code>, <code>spawn</code></td>
   <td data-label="">04/002, 04/003</td>
   <td data-label="">Syntax (concurrency)</td>
-  <td data-label="">Pipe verbs. <code>select</code> absorbs <code>select-ready</code>.</td>
+  <td data-label="">Pipes are values (not <code>defpipe</code>). <code>select</code> absorbs <code>select-ready</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -385,6 +379,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>defprocessor</code> — rejected (001). The function shape <code>(state, event) → state</code> IS the declaration.</li>
 <li><code>std/channels.wat</code> — deleted (003). Contradicted fold-based design.</li>
 <li><code>(field ...)</code> from proposal 011 — partially superseded by protocols (014 resolution says protocols subsume derived fields). However, 011 was accepted before 014, so <code>field</code> lives in <code>std/fields.wat</code> with uncertain long-term status.</li>
+<li><code>defpipe</code> — rejected. Pipes are values created by <code>make-pipe</code>, not special-form declarations (LANGUAGE.md: &quot;No defpipe&quot;).</li>
 <li><code>defprocess</code>, <code>defservice</code> — withdrawn (04/003). Functions + <code>select</code> + <code>spawn</code> suffice.</li>
 <li><code>nil</code> — rejected (013). Absence is structural (<code>when</code> not executing), not a value.</li>
 </ul>
@@ -402,8 +397,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tbody>
 <tr>
   <td data-label="Status"><strong>ACCEPTED</strong></td>
-  <td data-label="Count">16</td>
-  <td data-label="Proposals">002-015 (March), 04/001, 04/002, 04/003</td>
+  <td data-label="Count">15</td>
+  <td data-label="Proposals">002-015 (March), 04/001, 04/002</td>
 </tr>
 <tr>
   <td data-label=""><strong>REJECTED</strong></td>

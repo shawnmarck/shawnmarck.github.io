@@ -370,7 +370,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     pub started: bool,
 }
 </code></pre>
-<p>Money Flow Index. Raw flow = TP × volume. Positive or negative based on TP direction. Equal TP → pushes to positive flow (not zero).</p>
+<p>Money Flow Index. Raw flow = TP × volume. Positive or negative based on TP direction. Equal TP → pushes to negative flow (the <code>else</code> branch, <code>tp &lt;= prev_tp</code>).</p>
 <h3 id="ichimokustate-line-698">IchimokuState (line 698)<a class="heading-anchor" href="#ichimokustate-line-698" aria-hidden="true">#</a></h3>
 <pre><code class="language-rust">pub struct IchimokuState {
     pub high_9: RingBuffer,    // tenkan
@@ -614,7 +614,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>Before warm-up, indicators return neutral defaults (0.0, 0.5, 50.0, etc. — see <code>Candle::default()</code>). The test <code>test_tick_produces_finite_after_warmup</code> verifies all fields are finite after 300 candles.</p>
 <hr />
 <h2 id="tests-lines-19562363">Tests (Lines 1956–2363)<a class="heading-anchor" href="#tests-lines-19562363" aria-hidden="true">#</a></h2>
-<p>16 tests covering:</p>
+<p>28 tests covering:</p>
 <ul>
 <li><code>RingBuffer</code>: new, push/get, wrap, max/min/sum, to_vec, newest/oldest</li>
 <li><code>EmaState</code>: seed + EMA transition</li>

@@ -318,7 +318,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong>Store <code>last_prediction</code></strong> — maps the reckoner's label index (0→Up, 1→Down) to <code>Direction</code>.</li>
 <li><strong>Return <code>ObserveResult</code></strong> — contains <code>raw_thought</code>, <code>anomaly</code>, <code>prediction</code> (scores + conviction), and <code>edge</code>.</li>
 </ol>
-<p>Key design: prediction and learning are aligned — both operate on the anomaly, not the raw thought.</p>
+<p>Key design: prediction operates on the anomaly, learning (via <code>resolve()</code>) receives the raw thought. The <code>resolve()</code> method feeds the raw vector to the reckoner — noise is not stripped before learning. The observe path's doc comment says &quot;Prediction and learning are aligned&quot; (line 102) but this refers to the internal curve feeding within observe(), not the resolve path.</p>
 <hr />
 <h2 id="how-does-it-learn">How does it learn?<a class="heading-anchor" href="#how-does-it-learn" aria-hidden="true">#</a></h2>
 <p>Learning happens in <code>resolve()</code>, called by broker propagation when a trade settles:</p>
@@ -380,7 +380,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><strong><code>experience()</code></strong> — delegates to <code>reckoner.experience()</code>. Returns how much the observer has learned.</li>
 </ul>
 <hr />
-<h2 id="tests-6">Tests (6)<a class="heading-anchor" href="#tests-6" aria-hidden="true">#</a></h2>
+<h2 id="tests-7">Tests (7)<a class="heading-anchor" href="#tests-7" aria-hidden="true">#</a></h2>
 <p>All use 4096-dim vectors from <code>VectorManager</code>, <code>DowTrend</code> lens, recalib interval of 100, <code>WindowSampler::new(42, 10, 500)</code>:</p>
 <ol>
 <li><strong><code>test_market_observer_new</code></strong> — verifies initial state (lens, resolved=0, last_prediction=Down, recalib counters=0).</li>
