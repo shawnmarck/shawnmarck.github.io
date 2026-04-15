@@ -33,7 +33,7 @@ tailwind.config = {
 #sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
 #sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
 #sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
-.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:228px;left:24px}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
 .mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
 .mermaid code,.mermaid pre{background:none!important;padding:0!important}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
@@ -64,7 +64,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
 <a href="#content" class="skip-nav">Skip to content</a>
 <button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
-<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
   <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
   <div class="px-6 py-4">
     <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
@@ -227,7 +227,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
 </nav>
 <div id="sidebar-backdrop"></div>
-<div class="md:ml-[260px] flex-1 min-w-0">
+<div class="md:ml-[320px] flex-1 min-w-0">
   <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
     <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
       T-1-002: The Book — Philosophical Foundations and Design Philosophy <span class="badge badge-why">WHY</span>
