@@ -285,7 +285,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     broker -.-&gt;|&quot;ObsLearn -&gt; market observer i's mailbox&quot;| mkt_obs
     broker -.-&gt;|&quot;PositionLearn -&gt; position observer ei's mailbox&quot;| posM
     broker -.-&gt;|&quot;TradeUpdate -&gt; position observer ei's trade mailbox&quot;| posM
-
+</pre>
 <p><em>(T0-017, §&quot;Data flow through the grid&quot;)</em></p>
 <p>Each arrow is a <a class="wikilink" href="pg-services.html">Queue</a>. The fan-out from market to position observers uses <a class="wikilink" href="pg-services.html">Topic</a> (1→N). The learn-signal aggregation from multiple brokers back to one observer uses <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1).</p>
 <hr />

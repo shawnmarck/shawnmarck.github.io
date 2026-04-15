@@ -440,7 +440,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     position_obs --&gt;|&quot;Queue\n(MarketPositionChain)&quot;| broker[&quot;Broker&quot;]
     broker -.-&gt;|&quot;ObsLearn\n(Mailbox)&quot;| market_obs
     broker -.-&gt;|&quot;PositionLearn\n(Mailbox)&quot;| position_obs
-
+</pre>
 <ul>
 <li><strong>Input</strong>: <a class="wikilink" href="pg-chain-types.html">MarketChain</a> from each market observer (via <a class="wikilink" href="pg-services.html">Topic</a>, fan-out 1→N).</li>
 <li><strong>Output</strong>: <a class="wikilink" href="pg-chain-types.html">MarketPositionChain</a> to each broker (via <a class="wikilink" href="pg-services.html">Queue</a>).</li>

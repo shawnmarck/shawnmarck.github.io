@@ -271,7 +271,7 @@ position_idx = slot_idx % M
     facts --&gt; gate_open[&quot;gate_open()\nconsulted before proposals&quot;]
     gate_open --&gt;|&quot;Cold start (&lt; 50 of either)&quot;| always_open[&quot;always open&quot;]
     gate_open --&gt;|&quot;Warm (≥ 50 of both)&quot;| ev_check[&quot;open iff expected_value &gt; 0&quot;]
-
+</pre>
 <p>— T0-018, §10</p>
 <hr />
 <h2 id="the-gate">The Gate<a class="heading-anchor" href="#the-gate" aria-hidden="true">#</a></h2>
@@ -335,7 +335,7 @@ position_idx = slot_idx % M
     signaled --&gt;|&quot;Reversal crosses trailing stop&quot;| grace_resolution[&quot;Grace resolution&quot;]
     signaled --&gt;|&quot;Continues favorably&quot;| keeps_running[&quot;keeps running&quot;]
     created --&gt;|&quot;Neither fires&quot;| stays_open[&quot;stays open&quot;]
-
+</pre>
 <p><strong>Key ordering:</strong> Violence is checked before Grace. If both would fire on the same tick, Violence wins. (T0-015, §tick)</p>
 <hr />
 <h2 id="runners-and-deferred-training">Runners and Deferred Training<a class="heading-anchor" href="#runners-and-deferred-training" aria-hidden="true">#</a></h2>

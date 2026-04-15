@@ -244,7 +244,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     vocab --&gt;|&quot;Vec&amp;lt;ThoughtAST&amp;gt;&quot;| encoder[&quot;ThoughtEncoder\n.encode()&quot;]
     encoder --&gt;|&quot;Vector&quot;| vector[&quot;Vector&quot;]
     encoder --&gt;|&quot;across candles&quot;| incremental[&quot;IncrementalBundle&quot;]
-
+</pre>
 <h3 id="step-1-vocabulary-modules-emit-facts">Step 1: Vocabulary modules emit facts<a class="heading-anchor" href="#step-1-vocabulary-modules-emit-facts" aria-hidden="true">#</a></h3>
 <p>Vocabulary modules are <strong>pure functions</strong> — something in, facts out, no state. Each domain (market, exit, shared) observes different aspects of a candle and emits a <code>Vec&lt;ThoughtAST&gt;</code>.</p>
 <blockquote>

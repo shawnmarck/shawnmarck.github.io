@@ -337,7 +337,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     runner --&gt;|&quot;Trailing stop fires&quot;| grace[&quot;resolved = true\n(Grace)&quot;]
     runner --&gt;|&quot;Price continues favorably&quot;| running[&quot;keeps running&quot;]
     created --&gt;|&quot;Neither fires&quot;| open[&quot;stays open&quot;]
-
+</pre>
 <h3 id="runner-history">Runner History<a class="heading-anchor" href="#runner-history" aria-hidden="true">#</a></h3>
 <p>When a paper signals Grace (becomes a runner), the broker creates a <code>RunnerHistory</code> and accumulates <code>(thought, distances, price)</code> per candle. At runner resolution, <code>compute_position_batch()</code> uses a suffix-extremum pass to produce deferred training data — sparse samples where the optimal trail distance changed by &gt;10%. <a class="wikilink" href="T0-018-broker-rust.html">§T0-018</a></p>
 <hr />
@@ -430,7 +430,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     learn --&gt;|&quot;Scalar accumulators fed optimal distances&quot;| sa[&quot;Scalar accumulators&quot;]
     learn --&gt;|&quot;Dollar P&amp;L -&gt; EMA -&gt; expected_value -&gt; gate&quot;| ev[&quot;Gate&quot;]
     learn --&gt;|&quot;PropagationFacts returned -&gt; Post routes to observers&quot;| pf[&quot;Observers learn&quot;]
-
+</pre>
 <hr />
 <h2 id="architectural-invariants">Architectural Invariants<a class="heading-anchor" href="#architectural-invariants" aria-hidden="true">#</a></h2>
 <table>
