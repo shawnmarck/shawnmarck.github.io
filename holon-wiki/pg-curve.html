@@ -386,7 +386,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     mkt_obs[&quot;Market Observer\n(discrete Reckoner)&quot;] --&gt;|&quot;predict(thought)&quot;| prediction[&quot;Prediction\n{ conviction, direction }&quot;]
     mkt_obs --&gt;|&quot;resolve(conviction, correct)&quot;| feeds[&quot;feeds the curve&quot;]
     mkt_obs --&gt;|&quot;curve()&quot;| curve[&quot;(a, b)&quot;]
-    curve --&gt;|&quot;accuracy_at(conviction)&quot;| broker[&quot;Broker uses this\nto weight proposals\n(higher predicted accuracy\n→ stronger signal)&quot;]
+    curve --&gt;|&quot;accuracy_at(conviction)&quot;| broker[&quot;Broker uses this\nto weight proposals\n(higher predicted accuracy\n-&gt; stronger signal)&quot;]
 </code></pre>
 <p>The curve closes the feedback loop: prediction → conviction → outcome → calibration → better trust weighting.</p>
 <hr />

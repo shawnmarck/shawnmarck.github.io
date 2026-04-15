@@ -247,7 +247,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     post_collect --&gt; propagate[&quot;Broker.propagate()\noutcome, weight, optimal_distances, thoughts, direction&quot;]
     propagate --&gt;|&quot;Step 1&quot;| track[&quot;Track record\n(cumulative grace/violence, counts)&quot;]
     propagate --&gt;|&quot;Step 2&quot;| scalar[&quot;Scalar accumulators learn\n(optimal trail/stop distances)&quot;]
-    propagate --&gt;|&quot;Step 3&quot;| pnl[&quot;Dollar P&amp;L → EMA → expected_value&quot;]
+    propagate --&gt;|&quot;Step 3&quot;| pnl[&quot;Dollar P&amp;L -&gt; EMA -&gt; expected_value&quot;]
     propagate --&gt;|&quot;Returns&quot;| pf[&quot;PropagationFacts\n(which observers learn, with what data)&quot;]
     pf --&gt; post_route[&quot;Post routes PropagationFacts\nvia mailboxes&quot;]
     post_route --&gt;|&quot;ObsLearn&quot;| mkt_mailbox[&quot;market observer's mailbox&quot;]

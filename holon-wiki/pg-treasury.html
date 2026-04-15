@@ -237,14 +237,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <hr />
 <h2 id="architecture-overview">Architecture Overview<a class="heading-anchor" href="#architecture-overview" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
-    subgraph broker[&quot;Broker (gate_open → propose)&quot;]
+    subgraph broker[&quot;Broker (gate_open -&gt; propose)&quot;]
         ev_check[&quot;expected_value &gt; 0?&quot;]
         cold_check[&quot;cold start &lt; 50 each?&quot;]
         papers[&quot;paper trades track\noutcomes, accumulate\noptimal distances&quot;]
         pf_return[&quot;PropagationFacts&quot;]
     end
 
-    subgraph treasury[&quot;Treasury (fund → settle)&quot;]
+    subgraph treasury[&quot;Treasury (fund -&gt; settle)&quot;]
         available[&quot;available&quot;]
         reserved[&quot;reserved&quot;]
         active[&quot;active trades\nstop-level triggers&quot;]

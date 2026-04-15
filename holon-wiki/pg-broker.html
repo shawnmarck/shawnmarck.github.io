@@ -260,7 +260,7 @@ position_idx = slot_idx % M
     register_paper --&gt;|&quot;next candle&quot;| tick_papers[&quot;tick_papers()&quot;]
     tick_papers --&gt;|&quot;Paper signals Grace\ncreates RunnerHistory&quot;| market_signals_grace[&quot;market_signals\n(Resolution)&quot;]
     tick_papers --&gt;|&quot;Paper hits stop&quot;| market_signals_violence[&quot;market_signals\n(Resolution, Violence)&quot;]
-    tick_papers --&gt;|&quot;Runner resolves\ncompute_position_batch() → deferred training data&quot;| runner_resolutions[&quot;runner_resolutions\n(Resolution, Grace + position_batch)&quot;]
+    tick_papers --&gt;|&quot;Runner resolves\ncompute_position_batch() -&gt; deferred training data&quot;| runner_resolutions[&quot;runner_resolutions\n(Resolution, Grace + position_batch)&quot;]
     market_signals_grace --&gt; propagate
     market_signals_violence --&gt; propagate
     runner_resolutions --&gt; propagate

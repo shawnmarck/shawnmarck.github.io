@@ -275,16 +275,16 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <hr />
 <h2 id="data-flow-through-the-grid">Data Flow Through the Grid<a class="heading-anchor" href="#data-flow-through-the-grid" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
-    main[&quot;Main thread\nsend ObsInput&quot;] --&gt; mkt_obs[&quot;Market Observer i\n(thread)\nencode → predict&quot;]
+    main[&quot;Main thread\nsend ObsInput&quot;] --&gt; mkt_obs[&quot;Market Observer i\n(thread)\nencode -&gt; predict&quot;]
     mkt_obs --&gt;|&quot;Topic fan-out\nsend MarketChain&quot;| pos0[&quot;Position Observer 0&quot;]
     mkt_obs --&gt; pos1[&quot;Position Observer 1&quot;]
     mkt_obs --&gt; posM[&quot;Position Observer M&quot;]
     pos0 --&gt;|&quot;send MarketPositionChain&quot;| broker[&quot;Broker [i, ei]\n(thread)&quot;]
     pos1 --&gt; broker
     posM --&gt; broker
-    broker -.-&gt;|&quot;ObsLearn → market observer i's mailbox&quot;| mkt_obs
-    broker -.-&gt;|&quot;PositionLearn → position observer ei's mailbox&quot;| posM
-    broker -.-&gt;|&quot;TradeUpdate → position observer ei's trade mailbox&quot;| posM
+    broker -.-&gt;|&quot;ObsLearn -&gt; market observer i's mailbox&quot;| mkt_obs
+    broker -.-&gt;|&quot;PositionLearn -&gt; position observer ei's mailbox&quot;| posM
+    broker -.-&gt;|&quot;TradeUpdate -&gt; position observer ei's trade mailbox&quot;| posM
 
 <p><em>(T0-017, §&quot;Data flow through the grid&quot;)</em></p>
 <p>Each arrow is a <a class="wikilink" href="pg-services.html">Queue</a>. The fan-out from market to position observers uses <a class="wikilink" href="pg-services.html">Topic</a> (1→N). The learn-signal aggregation from multiple brokers back to one observer uses <a class="wikilink" href="pg-services.html">Mailbox</a> (N→1).</p>

@@ -416,8 +416,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <h2 id="end-to-end-data-flow">End-to-End Data Flow<a class="heading-anchor" href="#end-to-end-data-flow" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
     candle[&quot;Candle arrives&quot;] --&gt; observe[&quot;[1] Observe\nencode thoughts\n(market + position lenses)&quot;]
-    observe --&gt; predict[&quot;[2] Predict\ndirection (MarketObserver)\n+ distances (PositionObserver → Broker cascade)&quot;]
-    predict --&gt; execute[&quot;[3] Execute\nregister_paper() → PaperEntry\nwith thoughts + distances&quot;]
+    observe --&gt; predict[&quot;[2] Predict\ndirection (MarketObserver)\n+ distances (PositionObserver -&gt; Broker cascade)&quot;]
+    predict --&gt; execute[&quot;[3] Execute\nregister_paper() -&gt; PaperEntry\nwith thoughts + distances&quot;]
     execute --&gt;|&quot;next candle&quot;| tick[&quot;tick_papers()&quot;]
     tick --&gt;|&quot;Grace signal&quot;| ms1[&quot;market_signals\n(MarketObserver learns)&quot;]
     tick --&gt;|&quot;Violence stop&quot;| ms2[&quot;market_signals\n(MarketObserver learns)&quot;]
@@ -428,8 +428,8 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     learn[&quot;[4] Learn — propagate()&quot;]
     learn --&gt;|&quot;Track record updated&quot;| tr[&quot;Track record&quot;]
     learn --&gt;|&quot;Scalar accumulators fed optimal distances&quot;| sa[&quot;Scalar accumulators&quot;]
-    learn --&gt;|&quot;Dollar P&amp;L → EMA → expected_value → gate&quot;| ev[&quot;Gate&quot;]
-    learn --&gt;|&quot;PropagationFacts returned → Post routes to observers&quot;| pf[&quot;Observers learn&quot;]
+    learn --&gt;|&quot;Dollar P&amp;L -&gt; EMA -&gt; expected_value -&gt; gate&quot;| ev[&quot;Gate&quot;]
+    learn --&gt;|&quot;PropagationFacts returned -&gt; Post routes to observers&quot;| pf[&quot;Observers learn&quot;]
 
 <hr />
 <h2 id="architectural-invariants">Architectural Invariants<a class="heading-anchor" href="#architectural-invariants" aria-hidden="true">#</a></h2>
