@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 055 — Treasury-Driven Resolution ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 055 — Treasury-Driven Resolution ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland (implementation of Proposal 054's design)
+<strong>Depends on:</strong> <a class="wikilink" href="prop-054.html">Proposal 054</a></p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Status:</strong> APPROVED — unanimous after debate.</p>
+<p>Five designers. Two rounds. Zero rejections. Build it.</p>
+<h2 id="the-game">The game<a class="heading-anchor" href="#the-game" aria-hidden="true">#</a></h2>
+<p>The treasury is the bank. The broker borrows. The deadline is
+the clock. The broker thinks. The treasury counts. The market
+decides.</p>
+<h2 id="what-was-decided">What was decided<a class="heading-anchor" href="#what-was-decided" aria-hidden="true">#</a></h2>
+<h3 id="the-structs">The structs<a class="heading-anchor" href="#the-structs" aria-hidden="true">#</a></h3>
+<p><strong>PositionState</strong> — one enum, not bool + Option:</p>
+<ul>
+<li><code>Active</code> — open, clock ticking</li>
+<li><code>Grace { residue: f64 }</code> — exited profitably</li>
+<li><code>Violence</code> — deadline hit, reclaimed</li>
+</ul>
+<p><strong>PaperPosition</strong> — fixed $10,000 reference. Proof of thoughts.
+No capital moves. Always issued. The cost is computation (lab)
+or gas (Solana).</p>
+<p><strong>RealPosition</strong> — actual capital. Requires proven record.
+Treasury moves balances. Distinct type, distinct issuance.</p>
+<p><strong>ProposerRecord</strong> — papers_submitted, papers_survived,
+papers_failed, total_grace_residue, total_violence_loss.
+Expectancy derivable at query time. The gate reads this.</p>
+<h3 id="the-separation">The separation<a class="heading-anchor" href="#the-separation" aria-hidden="true">#</a></h3>
+<p>The broker proposes. The treasury validates arithmetic.</p>
+<p>The treasury does NOT know: the phase, the market prediction,
+the position observer's opinion, the vocabulary, the strategy.
+The treasury knows: who borrowed what, when, the deadline, and
+whether the math works at exit time.</p>
+<p>The treasury's only autonomous action: deadline enforcement
+every candle. Everything else is reactive — validate when asked.</p>
+<h3 id="the-four-gates">The four gates<a class="heading-anchor" href="#the-four-gates" aria-hidden="true">#</a></h3>
+<p>At trigger points (valleys for longs, peaks for shorts):</p>
+<ol>
+<li><strong>Phase trigger</strong> — are we at an evaluation point? (prerequisite)</li>
+<li><strong>Market direction</strong> — does the market predict against me? (prerequisite)</li>
+<li><strong>Residue math</strong> — can I exit profitably after fees? (prerequisite)</li>
+<li><strong>Position observer</strong> — should I? Exit or Hold. (the decision)</li>
+</ol>
+<p>Gates 1-3 are arithmetic. Gate 4 is learned. Gate 4 can override
+gate 2 — experience trumps simple conditions.</p>
+<h3 id="the-two-labels">The two labels<a class="heading-anchor" href="#the-two-labels" aria-hidden="true">#</a></h3>
+<p>Position observer: discrete reckoner. Exit or Hold.</p>
+<p>Retroactive labeling — when a paper resolves, every trigger it
+passed through gets labeled:</p>
+<ul>
+<li>Exited Grace at trigger T → T labeled Exit</li>
+<li>Held through T, later Grace → T labeled Hold</li>
+<li>Held through T, hit deadline → T labeled Exit (should have left)</li>
+</ul>
+<h3 id="the-deadline">The deadline<a class="heading-anchor" href="#the-deadline" aria-hidden="true">#</a></h3>
+<p>ATR-proportional. Median ATR over one week (2016 candles).
+<code>deadline = base * (median_atr / current_atr)</code>.</p>
+<p>Clamped by trust:</p>
+<ul>
+<li>Untrusted: max 288 candles (1 day)</li>
+<li>Fully trusted: up to 2016 candles (1 week)</li>
+</ul>
+<p>The proposer's record determines where in [288, 2016] they land.
+The trust IS the deadline. The deadline IS the reward.</p>
+<h3 id="the-residue-split">The residue split<a class="heading-anchor" href="#the-residue-split" aria-hidden="true">#</a></h3>
+<p>Half to the proposer. Half to the pool.</p>
+<p>The proposer's half: credited to their deposit balance. The
+honest reward for good thoughts.</p>
+<p>The pool's half: all depositors benefit proportionally. Passive
+yield from the treasury's growth.</p>
+<p>50/50 is a parameter, not a law. The principle: proposers must
+be rewarded, depositors must benefit. The split is the alignment.</p>
+<h3 id="two-claim-states">Two claim states<a class="heading-anchor" href="#two-claim-states" aria-hidden="true">#</a></h3>
+<p><strong>Deposited</strong> — available. Earns passive yield. Withdrawable
+via queue (contract concern, not lab).</p>
+<p><strong>In trade</strong> — reserved to active real positions. Locked until
+resolution. Papers never reserve capital.</p>
+<h3 id="the-conservation-invariant">The conservation invariant<a class="heading-anchor" href="#the-conservation-invariant" aria-hidden="true">#</a></h3>
+<pre><code>sum(deposited) + sum(in-trade at current prices)
+= sum(all deposits) - sum(all fees) + sum(all residue)
+</code></pre>
+<p>Testable every candle. The treasury cannot create or destroy
+value. Fees are the only real cost (venue, not treasury).
+The invariant IS the ward.</p>
+<h3 id="proof-of-grace">Proof of Grace<a class="heading-anchor" href="#proof-of-grace" aria-hidden="true">#</a></h3>
+<p>Depositors are stakers. Proposers are validators. Grace residue
+is the yield. Not proof of stake. Not proof of work. Proof of
+Grace. The yield comes from measured trading outcomes — actual
+assets moved profitably.</p>
+<p>Nobody benefits from Violence.</p>
+<h2 id="what-this-replaces">What this replaces<a class="heading-anchor" href="#what-this-replaces" aria-hidden="true">#</a></h2>
+<ul>
+<li>Distance-based triggers → phase triggers + four gates</li>
+<li>Continuous reckoner (distances) → discrete reckoner (Exit/Hold)</li>
+<li>Simulation sweep → deadline is the teacher</li>
+<li>Paper stacking (8,000 never resolving) → deadline kills dead papers</li>
+<li>Stop loss as price level → deadline as time cost</li>
+<li>Broker-driven resolution → treasury-driven (deadline) + broker-proposed (Grace)</li>
+</ul>
+<h2 id="what-this-keeps">What this keeps<a class="heading-anchor" href="#what-this-keeps" aria-hidden="true">#</a></h2>
+<ul>
+<li>Phase labeler (2.0 ATR, one week history)</li>
+<li>Market observer (direction prediction)</li>
+<li>Position observer (new job: fourth gate, Exit/Hold)</li>
+<li>Broker as accountability unit</li>
+<li>Accumulation model</li>
+<li>ThoughtAST (anxiety atoms)</li>
+<li>The pipes (same CSP, same threads)</li>
+</ul>
+<h2 id="the-voices">The voices<a class="heading-anchor" href="#the-voices" aria-hidden="true">#</a></h2>
+<table>
+<thead>
+<tr>
+  <th>Voice</th>
+  <th>Verdict</th>
+  <th>Key Contribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Voice">Seykota</td>
+  <td data-label="Verdict">APPROVED</td>
+  <td data-label="Key Contribution">Selection over prediction. Build it.</td>
+</tr>
+<tr>
+  <td data-label="">Van Tharp</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Expectancy in the record. $10K reference.</td>
+</tr>
+<tr>
+  <td data-label="">Wyckoff</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Headless treasury truly headless.</td>
+</tr>
+<tr>
+  <td data-label="">Hickey</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Enum state. Paper/real split. Deadline named.</td>
+</tr>
+<tr>
+  <td data-label="">Beckman</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Conservation invariant. Algebraically closed.</td>
+</tr>
+</tbody>
+</table>
+<p>It hurts to lose. It pays to win.</p>
+<p>Nobody benefits from Violence.</p>
+<p><strong>PERSEVERARE.</strong></p>
+<p><strong>Scope:</strong> userland (implementation of Proposal 054's design)</p>
+<p><strong>Depends on:</strong> Proposal 054 (interest-bearing positions — the game)</p>
+<h2 id="what-054-decided">What 054 decided<a class="heading-anchor" href="#what-054-decided" aria-hidden="true">#</a></h2>
+<p>The treasury is the bank. The broker borrows. The deadline is the
+clock. Phase transitions are the triggers. The exit is three
+booleans AND'd. The treasury is headless — blind to strategy,
+judges outcomes. Favor is earned through paper. Unanimous after
+two rounds.</p>
+<p>This proposal implements it.</p>
+<h2 id="the-paper-struct">The paper struct<a class="heading-anchor" href="#the-paper-struct" aria-hidden="true">#</a></h2>
+<p>Issued by the treasury. Held by both treasury and broker.
+The treasury's copy is the source of truth.</p>
+<pre><code class="language-rust">enum PositionState {
+    Active,                          // open, clock ticking
+    Grace { residue: f64 },          // exited profitably
+    Violence,                        // deadline hit, reclaimed
+}
+
+struct PaperPosition {
+    paper_id: u64,
+    owner: BrokerSlot,                // (market_idx, position_idx)
+    from_asset: Asset,                // what was borrowed (e.g. USDC)
+    to_asset: Asset,                  // what was acquired (e.g. WBTC)
+    amount: f64,                      // units of from_asset borrowed
+    units_acquired: f64,              // units of to_asset after entry fee
+    entry_price: f64,                 // exchange rate at entry
+    entry_candle: usize,
+    deadline: usize,                  // entry_candle + N
+    state: PositionState,                // one enum, not bool + Option
+}
+</code></pre>
+<p>Paper and real are distinct types. A paper always uses a fixed
+reference amount ($10,000) for percentage-based observation. A
+real position borrows actual capital from the treasury — the
+amount depends on the treasury's allocation. A real can be built
+from a paper's proven pattern, but the amounts differ.</p>
+<pre><code class="language-rust">struct RealPosition {
+    position_id: u64,
+    owner: BrokerSlot,
+    from_asset: Asset,
+    to_asset: Asset,
+    amount: f64,                      // actual capital borrowed
+    units_acquired: f64,
+    entry_price: f64,
+    entry_candle: usize,
+    deadline: usize,
+    state: PositionState,                // same state machine
+}
+</code></pre>
+<h3 id="deadline-not-interest">Deadline, not interest<a class="heading-anchor" href="#deadline-not-interest" aria-hidden="true">#</a></h3>
+<p>Proposal 054 described continuous interest eroding positions.
+This proposal replaces that with a hard deadline. These are
+different mechanisms but the same game. Interest was a proxy
+for time the whole time. The deadline IS the time pressure.
+The anxiety atoms still encode urgency (candles-remaining,
+time-pressure). The mechanism is simpler. The effect is the same:
+you must produce Grace before the clock runs out.</p>
+<p>The <code>deadline</code> is computed at entry: <code>entry_candle + deadline_candles</code>.
+The <code>deadline_candles</code> comes from the treasury's configuration,
+derived from ATR at entry time. Volatile market → shorter deadline
+(things move fast, prove it fast). Calm market → longer deadline.</p>
+<p>The ATR lookback window for the median: <strong>2016 candles (one week)</strong>.
+Matches the phase history window. Spans one full weekly cycle
+(Asia/London/NY sessions + weekend). Seykota: &quot;the median
+window should span one full cycle of the dominant periodicity.&quot;
+Clamped by trust:</p>
+<ul>
+<li><strong>Untrusted</strong> (new, unproven, recovering): max 1 day (288
+candles). Prove yourself fast.</li>
+<li><strong>Fully trusted</strong> (strong record): up to 1 week (2016
+candles). Room for runners to run.</li>
+</ul>
+<p>The proposer's record determines where in the [288, 2016]
+range they land. The ATR ratio adjusts within those bounds.
+The trust IS the deadline. The deadline IS the reward for
+playing well.</p>
+<p>The <code>units_acquired</code>: the broker borrowed <code>amount</code> of <code>from_asset</code>,
+paid the 0.35% entry fee, and acquired this many units of <code>to_asset</code>.
+For a $50 USDC → WBTC swap at $90,000/BTC with 0.35% fee:
+<code>units_acquired = (50.0 * (1.0 - 0.0035)) / 90000.0 = 0.000554</code></p>
+<h2 id="the-treasurys-ledger">The treasury's ledger<a class="heading-anchor" href="#the-treasurys-ledger" aria-hidden="true">#</a></h2>
+<pre><code class="language-rust">struct Treasury {
+    // Asset balances
+    balances: HashMap&lt;Asset, f64&gt;,
+
+    // All papers — the source of truth
+    papers: HashMap&lt;u64, PaperPosition&gt;,
+    next_paper_id: u64,
+
+    // Papers indexed by owner for fast lookup
+    papers_by_owner: HashMap&lt;BrokerSlot, Vec&lt;u64&gt;&gt;,
+
+    // Proposer records — the gate
+    proposer_records: HashMap&lt;BrokerSlot, ProposerRecord&gt;,
+
+    // Configuration
+    entry_fee: f64,                   // 0.0035 (0.35%)
+    exit_fee: f64,                    // 0.0035 (0.35%)
+    deadline_candles: usize,          // base deadline, ATR-adjusted
+}
+
+struct ProposerRecord {
+    papers_submitted: usize,
+    papers_survived: usize,          // Grace count
+    papers_failed: usize,            // Violence count
+    total_grace_residue: f64,        // sum of all Grace residues (%)
+    total_violence_loss: f64,        // sum of all Violence losses (%)
+    // Derived at query time:
+    // survival_rate = survived / submitted
+    // mean_residue = total_grace_residue / survived
+    // expectancy = survival_rate * mean_win - (1 - survival_rate) * mean_loss
+}
+</code></pre>
+<p>The <code>ProposerRecord</code> is the struct from Proposal 054's &quot;Earning
+favor.&quot; The treasury applies a predicate: <code>survival_rate &gt; threshold AND papers_submitted &gt; minimum</code>. Same for everyone.</p>
+<h2 id="the-treasurys-jobs-per-candle">The treasury's jobs — per candle<a class="heading-anchor" href="#the-treasurys-jobs-per-candle" aria-hidden="true">#</a></h2>
+<p>The treasury drives resolution. Not the broker. Every candle:</p>
+<h3 id="1-deadline-check-violence">1. Deadline check (Violence)<a class="heading-anchor" href="#1-deadline-check-violence" aria-hidden="true">#</a></h3>
+<p>Every paper. Every real position. Every candle.</p>
+<pre><code class="language-rust">for paper in all_active_papers() {
+    if current_candle &gt;= paper.deadline {
+        // Reclaim. The deadline expired.
+        resolve_violence(paper);
+        notify_broker(paper.owner, Violence, paper.paper_id);
+    }
+}
+</code></pre>
+<p>The asset stays in the treasury. The broker's claim is revoked.
+The proposer record is updated: <code>papers_failed += 1</code>.</p>
+<h3 id="2-grace-exit-broker-proposes-treasury-validates">2. Grace exit (broker proposes, treasury validates)<a class="heading-anchor" href="#2-grace-exit-broker-proposes-treasury-validates" aria-hidden="true">#</a></h3>
+<p>The broker makes the exit decision. Not the treasury. The treasury
+is headless — it does not know what a valley is, what the market
+observer thinks, or what the position observer recommends. The
+treasury knows arithmetic.</p>
+<p>The broker runs the four gates:</p>
+<ol>
+<li>Phase trigger (valley/peak) — the broker sees the phase</li>
+<li>Market direction — the broker reads its market observer</li>
+<li>Residue math — the broker estimates from its copy of the paper</li>
+<li>Position observer — the broker consults its exit advisor</li>
+</ol>
+<p>If all four gates say exit, the broker PROPOSES the exit:</p>
+<pre><code class="language-rust">// Broker → Treasury
+struct ExitProposal {
+    paper_id: u64,
+    current_price: f64,  // the broker's observed price
+}
+</code></pre>
+<p>The treasury validates. It checks ITS OWN copy of the paper:</p>
+<pre><code class="language-rust">fn validate_exit(&amp;self, proposal: &amp;ExitProposal) -&gt; Option&lt;f64&gt; {
+    let paper = self.papers.get(&amp;proposal.paper_id)?;
+    if paper.resolved { return None; }
+
+    let current_value = paper.units_acquired * proposal.current_price;
+    let exit_fee = current_value * self.exit_fee;
+    let residue = current_value - paper.amount - exit_fee;
+
+    if residue &gt; 0.0 {
+        Some(residue)
+    } else {
+        None  // deny — the math doesn't work
+    }
+}
+</code></pre>
+<p>The treasury does not know WHY the broker wants to exit. The
+treasury checks: is there positive residue after recovering
+principal and paying the exit fee? Yes → approve. No → deny.</p>
+<p>The broker could propose exits for any reason — phase, sentiment,
+wind speed, a coin flip. The treasury doesn't care. The treasury
+validates the arithmetic. The record tracks the outcome.</p>
+<p>If approved:</p>
+<ul>
+<li>Treasury recovers <code>paper.amount</code> of from_asset (the principal)</li>
+<li>Treasury deducts exit fee</li>
+<li>Residue is split: half to the proposer, half to the treasury.<ul>
+<li>Proposer's half: credited to the proposer's deposit balance.
+This is the incentive to participate. The proposer earned it
+through good thoughts.</li>
+<li>Treasury's half: stays in the pool. All depositors benefit
+proportionally — their claim is the percentage of the pool
+at deposit time. Passive depositors grow from proposers' Grace.</li>
+<li>The 50/50 split is a parameter, not a law. It can be adjusted.
+But the principle holds: proposers must be rewarded for growing
+the pool, and passive depositors must benefit from that growth.
+The split is the alignment mechanism.</li>
+</ul>
+</li>
+<li>Broker's proposer record updated: <code>papers_survived += 1</code>,
+<code>total_grace_residue += residue</code></li>
+<li>Treasury notifies broker: Grace, paper_id, residue amount</li>
+</ul>
+<p>The incentive aligns. The proposer wants Grace because they
+earn half the residue. The treasury wants Grace because it keeps
+half. The passive depositors want Grace because the pool grows.
+Everyone benefits from the same outcome. Nobody benefits from
+Violence.</p>
+<p>The proposer with $100 and the proposer with $10,000,000 play
+the same game. Same deadlines (adjusted by record, not deposit).
+Same four gates. The game rewards the THOUGHT, not the capital.
+A small proposer with good thoughts earns the same percentage
+as a whale with good thoughts. The edge is in the thinking.</p>
+<h3 id="two-kinds-of-claim">Two kinds of claim<a class="heading-anchor" href="#two-kinds-of-claim" aria-hidden="true">#</a></h3>
+<p>Every participant has capital in the treasury. That capital
+exists in two states:</p>
+<p><strong>Deposited</strong> — available. Not assigned to any trade. Earning
+passively from the treasury's growth (the pool's half of every
+Grace residue). Depositors can enqueue a withdrawal request
+against their deposited balance. The withdrawal fulfills as
+trades resolve and capital becomes available. The treasury never
+breaks active trades to satisfy a withdrawal — it queues them
+and fills them from returning principal.</p>
+<p><strong>In trade</strong> — reserved. Assigned to an active REAL position.
+Not available for withdrawal until the position resolves.
+Papers never reserve capital — papers are always a fixed
+reference amount ($100 or $10,000), returning percentages
+only. Papers are proof of thoughts, not capital at risk.</p>
+<p>When a real position exits Grace: the principal returns to
+the treasury (deposited state), the proposer's half of the
+residue credits to their deposited balance, the treasury's
+half stays in the pool. When a real position hits the deadline:
+the remaining value returns to the treasury's deposited pool.
+The proposer's in-trade claim is revoked.</p>
+<p>The proposer's deposited balance includes their deposit PLUS
+their accumulated Grace residue halves. The proposer can
+withdraw from the deposited balance (in the contract — not
+in the lab program). The in-trade balance cannot be touched
+until the position resolves.</p>
+<p>In the lab: brokers never withdraw. Everything reinvests. The
+claims exist in the ledger for accounting. The withdrawal
+mechanism is a contract concern for Solana.</p>
+<h3 id="proof-of-grace">Proof of Grace<a class="heading-anchor" href="#proof-of-grace" aria-hidden="true">#</a></h3>
+<p>The depositor's claim includes yield. Not a percentage of all
+assets — a percentage of the residue the pool acquired WHILE
+the depositor's capital was staked. The depositor provided
+capital from time T1 to T2. During that window, the pool
+earned X residue from proposers' Grace exits. The depositor's
+share is proportional to their deposit relative to the pool
+during that window.</p>
+<p>This IS staking. The capital enables work (proposers trading).
+The work produces yield (Grace residue). The yield distributes
+to stakers proportional to their contribution and duration.</p>
+<p>The difference from traditional staking: the yield comes from
+MEASURED trading outcomes, not from inflation or transaction
+fees. The yield is real — actual value created by proposers
+who outran their deadlines. Grace residue. Not printed tokens.
+Not fee redistribution. Actual assets moved profitably.</p>
+<ul>
+<li><strong>Depositors</strong> are the stakers. Provide capital. Earn passive
+yield from the pool's half of every Grace residue.</li>
+<li><strong>Proposers</strong> are the validators. Do the work. Earn active
+yield (their half of their own Grace residue) PLUS passive
+yield on their deposited balance (same as any staker).</li>
+<li><strong>The treasury</strong> is the protocol. Headless. Measures outcomes.
+Distributes yield. Enforces deadlines. The program with a
+ledger.</li>
+</ul>
+<p>The small proposer who deposits $100 and produces Grace earns:
+passive yield on the $100 (from ALL proposers' Grace) PLUS
+half the residue from their OWN Grace exits. Double reward for
+participating actively. The whale who deposits $10,000,000 and
+never proposes earns only the passive yield. The game rewards
+both providing capital AND providing good thoughts. The
+proposer who does both earns both.</p>
+<p>Not proof of stake. Not proof of work. Proof of Grace. The
+yield comes from the measurement. The measurement comes from
+the market. The market decides who earns. The treasury
+distributes.</p>
+<h3 id="the-conservation-invariant">The conservation invariant<a class="heading-anchor" href="#the-conservation-invariant" aria-hidden="true">#</a></h3>
+<p>The treasury cannot create or destroy value. It can only move
+it between states. At any candle:</p>
+<pre><code>sum(deposited balances) + sum(in-trade value at current prices)
+= sum(all deposits ever) - sum(all fees paid) + sum(all residue earned)
+</code></pre>
+<p>Every entry: deposited shrinks, in-trade grows. Same total.
+Every Grace exit: in-trade shrinks, deposited grows by principal,
+residue splits to proposer deposit and pool. Same total.
+Every Violence reclaim: in-trade shrinks, deposited grows by
+whatever the position was worth. Same total minus the loss
+(which was the proposer's claim, not the treasury's value —
+the asset stayed in the treasury).
+Every fee: total shrinks by the fee amount. Fees are the only
+real cost. The fee goes to the venue (Jupiter, etc.), not to
+the treasury.</p>
+<p>The invariant is testable. Every candle, after all resolutions:
+assert that the equation holds. If it doesn't, there is a bug.
+The invariant IS the ward on the treasury.</p>
+<p>If denied:</p>
+<ul>
+<li>The paper lives. The deadline ticks. The broker holds.</li>
+</ul>
+<h3 id="3-issue-new-papers">3. Issue new papers<a class="heading-anchor" href="#3-issue-new-papers" aria-hidden="true">#</a></h3>
+<p>The broker proposes an entry. The treasury evaluates:</p>
+<ul>
+<li>Does the broker have a record? (proposer record exists)</li>
+<li>Does the record pass the predicate? (for real capital)</li>
+<li>For papers: always issue. Papers are how you build the record.</li>
+<li>For real: check the predicate. Deny if unproven.</li>
+</ul>
+<p>Two distinct functions. Paper and real are different things.</p>
+<pre><code class="language-rust">/// Issue a paper — always succeeds. Fixed $10,000 reference.
+/// Papers are proof of thoughts. No capital moves.
+fn issue_paper(&amp;mut self, owner: BrokerSlot, from: Asset,
+               to: Asset, price: f64, candle: usize) -&gt; u64 {
+    let amount = 10_000.0;  // fixed reference for percentages
+    let fee = amount * self.entry_fee;
+    let units = (amount - fee) / price;
+
+    let id = self.next_paper_id;
+    self.next_paper_id += 1;
+
+    let paper = Paper {
+        paper_id: id, owner, from_asset: from, to_asset: to,
+        amount, units_acquired: units, entry_price: price,
+        entry_candle: candle,
+        deadline: candle + self.compute_deadline(candle),
+        state: PositionState::Active,
+    };
+
+    self.papers.insert(id, paper);
+    self.proposer_records.entry(owner).or_default()
+        .papers_submitted += 1;
+    id
+}
+
+/// Issue a real position — requires proven record and available balance.
+fn issue_real(&amp;mut self, owner: BrokerSlot, from: Asset,
+              to: Asset, amount: f64, price: f64,
+              candle: usize) -&gt; Option&lt;u64&gt; {
+    let record = self.proposer_records.get(&amp;owner)?;
+    if !self.gate_predicate(record) { return None; }
+    if self.balances[&amp;from] &lt; amount { return None; }
+
+    let fee = amount * self.entry_fee;
+    let units = (amount - fee) / price;
+
+    let id = self.next_position_id;
+    self.next_position_id += 1;
+
+    *self.balances.get_mut(&amp;from).unwrap() -= amount;
+
+    // Real positions tracked separately
+    let position = RealPosition {
+        position_id: id, owner, from_asset: from, to_asset: to,
+        amount, units_acquired: units, entry_price: price,
+        entry_candle: candle,
+        deadline: candle + self.compute_deadline(candle),
+        state: PositionState::Active,
+    };
+
+    self.real_positions.insert(id, position);
+    Some(id)
+}
+</code></pre>
+<p>Papers organically expire at their deadline. No cap needed —
+the deadline IS the cap. A broker submitting 100 papers per
+candle accumulates 100 × deadline_candles active papers. Each
+one expires on schedule. The treasury doesn't limit paper
+frequency. The deadline limits paper lifetime.</p>
+<h3 id="4-notify-brokers">4. Notify brokers<a class="heading-anchor" href="#4-notify-brokers" aria-hidden="true">#</a></h3>
+<p>The treasury pushes outcomes down. The broker receives:</p>
+<pre><code class="language-rust">enum TreasuryVerdict {
+    Grace { paper_id: u64, residue: f64 },
+    Violence { paper_id: u64 },
+}
+</code></pre>
+<p>The broker receives the verdict through its pipe. The broker:</p>
+<ul>
+<li>Updates its own copy of the paper</li>
+<li>Propagates learn signals to its market and position observers</li>
+<li>Grace → the observers learn &quot;this entry was good&quot;</li>
+<li>Violence → the observers learn &quot;this entry was bad&quot;</li>
+</ul>
+<p>The broker doesn't decide. The broker is told.</p>
+<h2 id="the-brokers-new-role">The broker's new role<a class="heading-anchor" href="#the-brokers-new-role" aria-hidden="true">#</a></h2>
+<p>The broker thinks. The treasury judges.</p>
+<p>The broker's per-candle work:</p>
+<ol>
+<li>Receive verdicts from treasury (drain verdict pipe)</li>
+<li>Propagate learns to observers</li>
+<li>Encode the market (via market observer chain)</li>
+<li>Compose anxiety atoms for active papers</li>
+<li>At trigger candles: propose Grace exits to treasury</li>
+<li>During active phase: propose new entries to treasury</li>
+</ol>
+<p>The broker NO LONGER:</p>
+<ul>
+<li>Ticks papers against price</li>
+<li>Computes distances</li>
+<li>Decides resolution outcomes</li>
+<li>Owns the paper lifecycle</li>
+</ul>
+<p>The broker's anxiety atoms (per active paper):</p>
+<pre><code class="language-scheme">(Log &quot;candles-remaining&quot; (- deadline current-candle))
+(Linear &quot;time-pressure&quot; (/ candles-elapsed (- deadline entry-candle)) 1.0)
+(Linear &quot;unrealized-residue&quot; (/ (- current-value amount) amount) 1.0)
+(Log &quot;paper-age&quot; candles-elapsed)
+</code></pre>
+<p>These bundle with the market thoughts. The position observer
+sees them and predicts: exit or hold at this trigger.</p>
+<h2 id="the-position-observers-new-job">The position observer's new job<a class="heading-anchor" href="#the-position-observers-new-job" aria-hidden="true">#</a></h2>
+<p>Two position observers remain (Core, Full). Both become discrete.</p>
+<p>Was: continuous reckoner predicting trail and stop distances.
+Now: discrete reckoner predicting Exit or Hold.</p>
+<p>The position observer receives:</p>
+<ul>
+<li>The market chain (market observer's prediction and anomaly)</li>
+<li>The anxiety atoms (from the broker, per active paper)</li>
+<li>The phase state (valley, peak, transition)</li>
+</ul>
+<p>The position observer predicts: at this trigger, with this
+anxiety, with this market state — Exit or Hold?</p>
+<p>Labels:</p>
+<ul>
+<li>Exit: the broker proposed Grace at this trigger and the
+treasury confirmed it. The exit was right.</li>
+<li>Hold: the broker held through this trigger and the paper
+later resolved Grace. Holding was right.</li>
+<li>(Violence papers teach both: &quot;you should have exited earlier&quot;
+for the triggers you held through before the deadline hit.)</li>
+</ul>
+<p>The lenses still matter. Core sees regime + time. Full sees
+regime + time + phase. Different lenses may produce different
+exit/hold opinions at the same trigger. The broker that pairs
+a specific market observer with a specific position observer
+gets a specific exit strategy. The N×M grid still produces
+diverse behaviors.</p>
+<h2 id="the-flow-per-candle">The flow — per candle<a class="heading-anchor" href="#the-flow-per-candle" aria-hidden="true">#</a></h2>
+<pre><code>1. Treasury: deadline check → resolve Violence → notify brokers
+2. Brokers: receive verdicts (Violence notifications from step 1)
+3. Brokers: evaluate active papers (four gates: phase, market,
+   math, position observer). Propose exits to treasury.
+4. Treasury: validate exit proposals → resolve Grace → notify
+5. Brokers: receive Grace verdicts
+6. Brokers: during active phase, propose new entries to treasury
+7. Treasury: issue papers (real if record passes, paper always)
+8. Brokers: propagate all verdicts to observers (learn signals)
+</code></pre>
+<p>Step 1 runs every candle — the treasury checks deadlines. This
+is the ONLY thing the treasury does autonomously. Everything
+else is in response to broker proposals.</p>
+<p>Steps 3-4 are broker-driven. The broker decides when to propose
+exits. The treasury validates arithmetic. The broker could
+propose exits every candle or never. The treasury doesn't care
+when — it validates when asked.</p>
+<p>Step 6-7: the broker proposes entries. The treasury issues. The
+treasury checks the proposer record for real capital. Papers
+are always issued (that's how you build the record).</p>
+<p>The treasury is reactive except for step 1 (deadline enforcement).
+The broker is active — it thinks, evaluates, proposes. The
+treasury validates, records, notifies.</p>
+<h2 id="the-pipe-changes">The pipe changes<a class="heading-anchor" href="#the-pipe-changes" aria-hidden="true">#</a></h2>
+<pre><code>Before:
+  candle → market obs → position obs → broker → (broker ticks papers)
+
+After:
+  candle → market obs → position obs → broker → treasury
+                                                    ↓
+                                              broker (verdicts)
+                                                    ↓
+                                              observer learns
+</code></pre>
+<p>New pipes:</p>
+<ul>
+<li>Broker → Treasury: entry proposals, exit proposals</li>
+<li>Treasury → Broker: verdicts (Grace/Violence per paper)</li>
+</ul>
+<p>The treasury becomes a program on the wat-vm. Its own thread.
+Its own pipes. The brokers send proposals. The treasury sends
+verdicts. The treasury has a pipe from the phase labeler (or
+reads it from the candle) to know when triggers occur.</p>
+<h2 id="the-deadline-calculation">The deadline calculation<a class="heading-anchor" href="#the-deadline-calculation" aria-hidden="true">#</a></h2>
+<p>ATR-proportional. At entry time:</p>
+<pre><code class="language-rust">deadline_candles = base_deadline * (median_atr / current_atr)
+</code></pre>
+<p>High ATR (volatile) → shorter deadline. The market moves fast.
+Prove it fast. Low ATR (calm) → longer deadline. The market
+moves slow. More patience.</p>
+<p><code>base_deadline</code> is the treasury's ONE parameter. The ATR
+adjusts it to the regime. The proposer doesn't choose their
+deadline. The market does.</p>
+<h2 id="settled">Settled<a class="heading-anchor" href="#settled" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Base deadline.</strong> Configurable. Starts at a reasonable value
+(to be discovered through simulation). Proven winners earn
+longer deadlines — the favor. The number will change as
+winners self-elect and earn more confidence. The deadline is
+not a magic number. It is the treasury's expression of trust.</p>
+</li>
+<li><p><strong>Paper vs real.</strong> Identical treatment from the treasury.
+Same deadlines. Same exit conditions. Same resolution logic.
+Papers use a reference amount for percentage calculation
+($10,000 or $100 — the amount doesn't matter, only the
+percentages). Reals use real capital. The treasury doesn't
+distinguish in its logic — only in whether balances move.</p>
+</li>
+<li><p><strong>Multiple exits per candle.</strong> If the exit conditions are met,
+you exit. All of them. For optimization: flatten into a single
+swap to avoid compounding fees. But if the conditions are met,
+you get out. No ranking. No selectivity. The math decides.</p>
+</li>
+</ol>
+<h2 id="settled-the-fourth-gate">Settled — the fourth gate<a class="heading-anchor" href="#settled-the-fourth-gate" aria-hidden="true">#</a></h2>
+<ol start="4">
+<li><p><strong>The position observer at triggers — the fourth gate.</strong></p>
+<p>Four gates, evaluated in order:</p>
+<ol>
+<li><strong>Phase trigger</strong> (valley/peak) — are we at an evaluation point?</li>
+<li><strong>Market direction</strong> — does the market predict against my position?</li>
+<li><strong>Residue math</strong> — can I exit profitably after fees?</li>
+<li><strong>Position observer</strong> — should I? Experience says Exit or Hold.</li>
+</ol>
+<p>Gates 1-3 are arithmetic. They determine whether exit is
+POSSIBLE. Gate 4 is learned. It determines whether exit is
+WISE. Gate 4 can override gate 2 — the market observer says
+Down, but the position observer says &quot;I've seen this shape
+before — hold, this is a dip, not the end.&quot;</p>
+<p>Experience trumps simple conditions. The market observer sees
+now. The position observer remembers.</p>
+</li>
+<li><p><strong>Two labels: Exit and Hold.</strong></p>
+<p>The position observer's discrete reckoner. Two labels. Learned
+from outcomes. Applied at exit time to decide whether to
+actually get out or not.</p>
+<p>The labels arrive when the paper resolves — retroactively
+applied to EVERY trigger the paper passed through:</p>
+<ul>
+<li>Paper exited Grace at trigger T → trigger T labeled <strong>Exit</strong>
+(the exit was right)</li>
+<li>Paper held through trigger T, later exited Grace at trigger
+T+3 → trigger T labeled <strong>Hold</strong> (holding was right)</li>
+<li>Paper held through trigger T, hit deadline → trigger T
+labeled <strong>Exit</strong> (you should have left — holding was wrong)</li>
+</ul>
+<p>The position observer learns from the full history of
+decisions. Every trigger a paper passed through is a training
+example. The label says: at THIS trigger, with THIS anxiety,
+with THIS market state — was exiting or holding the right
+call? The answer comes later. The reckoner accumulates.</p>
+<p>The position observer's thought at each trigger:</p>
+<pre><code class="language-scheme">(Bundle
+  ;; Anxiety atoms — the position's state
+  (Log &quot;candles-remaining&quot; 234)
+  (Linear &quot;time-pressure&quot; 0.35 1.0)
+  (Linear &quot;unrealized-residue&quot; 0.024 1.0)
+  (Log &quot;paper-age&quot; 147)
+
+  ;; Market atoms — what the market observer says
+  ;; (extracted from the chain, same as before)
+
+  ;; Phase atoms — what the structure looks like
+  ;; (from the phase labeler)
+)
+</code></pre>
+<p>The reckoner sees anxiety + market + structure. It predicts
+Exit or Hold. The prediction is the fourth gate. If the first
+three gates say &quot;you can exit&quot; and the fourth says Hold —
+you hold. The position observer's experience overrides the
+arithmetic. The arithmetic says possible. The experience says
+not yet.</p>
+</li>
+</ol>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

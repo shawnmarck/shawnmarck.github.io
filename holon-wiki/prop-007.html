@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 007 — Exit Proposes ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 007 — Exit Proposes ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Hickey: APPROVED.</strong> First clean approval across all proposals.</p>
+<p><strong>Beckman: CONDITIONAL</strong> on three empirical conditions.</p>
+<hr />
+<h2 id="beckman-condition-1-kernel-selectivity">Beckman condition 1: Kernel selectivity<a class="heading-anchor" href="#beckman-condition-1-kernel-selectivity" aria-hidden="true">#</a></h2>
+<p><strong>Accepted. Will measure.</strong> After the first 100k run with the new architecture, plot the cosine similarity distribution of stored thoughts in the LearnedStop. If bimodal (near-zero cluster + meaningful cluster), the kernel is selective. If broad unimodal, introduce a sharpening exponent (<code>cos^k</code>). The measurement comes from the run, not from theory.</p>
+<h2 id="beckman-condition-2-sell-side-optimal-distance">Beckman condition 2: Sell-side optimal distance<a class="heading-anchor" href="#beckman-condition-2-sell-side-optimal-distance" aria-hidden="true">#</a></h2>
+<p><strong>Accepted. Will implement.</strong> <code>compute_optimal_distance</code> currently simulates buy-side trailing stops only. The sell-side mirror is trivial — ratchet the extreme downward, fire when price rises above the trail. Both sides needed for the DualExcursion to learn honestly. Will add before the first run.</p>
+<h2 id="beckman-condition-3-feedback-stability">Beckman condition 3: Feedback stability<a class="heading-anchor" href="#beckman-condition-3-feedback-stability" aria-hidden="true">#</a></h2>
+<p><strong>Accepted. Will measure.</strong> Run the 100k benchmark twice: once with per-candle LearnedStop adjustment on live trades, once with fixed stops from entry. Compare whether the learned distances oscillate or stabilize. The paper stream provides open-loop training (not influenced by the LearnedStop), which should stabilize the closed loop. The measurement proves it.</p>
+<hr />
+<h2 id="hickeys-items-to-watch">Hickey's items to watch<a class="heading-anchor" href="#hickeys-items-to-watch" aria-hidden="true">#</a></h2>
+<ol>
+<li><strong>Paper vector memory</strong> — each closure holds paper entries with thought vectors. Will monitor memory growth. The ring buffer on papers caps it.</li>
+<li><strong>LearnedStop linear scan</strong> — O(pairs) per query. At 5000 pairs, this is ~5000 cosines per candle per active trade. Will profile. If hot, spatial indexing (e.g., locality-sensitive hashing) replaces the linear scan.</li>
+<li><strong>Step 3 scope creep</strong> — PROCESS does two things (update active + tick papers). Will keep them as two sub-phases, not interleaved.</li>
+<li><strong>Tuple journal struct size</strong> — papers + track record + learned stop + scalar accumulators. Will monitor. The flat vec means one allocation, not N×M.</li>
+</ol>
+<hr />
+<h2 id="the-decision">The decision<a class="heading-anchor" href="#the-decision" aria-hidden="true">#</a></h2>
+<p>Build it. Beckman's conditions are measurements from the first run, not design changes. Hickey's items are monitoring, not blocking. The algebra is sound. The architecture composes. The tuple journal is the right abstraction.</p>
+<p>Sell-side <code>compute_optimal_distance</code> first (Beckman condition 2). Then the four-step loop. Then the 100k run. Then the measurements (conditions 1 and 3).</p>
+<p><em>Accepted. Implementation follows.</em></p>
+<p><strong>Scope: userland</strong> -- existing forms only. No new language forms. No new primitives.</p>
+<hr />
+<h2 id="1-the-current-state">1. The current state<a class="heading-anchor" href="#1-the-current-state" aria-hidden="true">#</a></h2>
+<p>The enterprise processes one candle at a time in a single pass. Market observers encode thoughts. The manager aggregates. The desk opens positions when conviction is sufficient. Positions are managed with fixed ATR multipliers (k_trail, k_stop, k_tp). The exit module has four proven pieces that are not yet wired into the candle loop:</p>
+<p><strong>LearnedStop</strong> (<code>src/exit/learned_stop.rs</code>): Nearest neighbor regression over (thought, distance) pairs. Given a thought vector, returns a weighted average of distances from similar thoughts. Tested: trending regime returns 0.05%, choppy regime returns 1.40%. The interface is two methods: <code>observe(thought, optimal_distance, weight)</code> and <code>recommended_distance(thought)</code>.</p>
+<p><strong>compute_optimal_distance</strong> (<code>src/exit/optimal.rs</code>): Sweeps trailing stop distances over a resolved price history and finds the one that maximized residue. Pure function. No state. Tested on ascending, reversal, choppy, and realistic BTC shapes. The market's answer to &quot;what distance should you have used?&quot;</p>
+<p><strong>ScalarAccumulator</strong> (<code>src/exit/scalar.rs</code>): Accumulates f64-encoded scalar values by outcome. Grace observations and violence observations build separate prototypes. Extract via sweep recovers the learned value. Tested: recovers 1.70 exactly from noisy input.</p>
+<p><strong>TupleJournal</strong> (<code>src/exit/tuple.rs</code>): The accountability primitive. One journal per (market observer, exit observer) pair. Labels: Grace/Violence from treasury reality. Proof curve gates treasury funding. Scalar accumulators attach to each tuple for per-parameter learning.</p>
+<p><strong>DualExcursion</strong> (<code>src/position.rs</code>): Tracks buy-side and sell-side excursions independently per pending entry. Four floats (buy MFE, buy MAE, sell MFE, sell MAE) plus trailing stop state for both sides. 99.9% organic resolution -- both sides resolve through price movement, not timers.</p>
+<p>All five are tested. None are in the candle loop. The market observers produce thoughts that go nowhere except the single-sided MFE/MAE labeling. The exit module exists as an island of proven code.</p>
+<h2 id="2-the-problem">2. The problem<a class="heading-anchor" href="#2-the-problem" aria-hidden="true">#</a></h2>
+<p>The market observer proposes trades. This is wrong. The market observer perceives direction. It does not know how to manage a trade. It does not know what trailing stop distance to use. It does not know when the position it created should close. It fires and forgets.</p>
+<p>The market observer's conviction becomes the sizing signal. But conviction about DIRECTION is not conviction about MANAGEABILITY. A strong directional signal in a volatile regime is a different trade than the same signal in a trending regime. The market observer cannot distinguish these -- it sees direction, not distance.</p>
+<p>The fixed ATR multipliers (k_trail, k_stop, k_tp) fill the gap that should be filled by a learning entity. The multipliers are the same for every trade, regardless of what the market observer thought at entry. A trending thought and a choppy thought get the same stop. This is the last magic.</p>
+<p>The exit module has the primitives to fill this gap -- LearnedStop predicts distance from thought, compute_optimal_distance provides the training signal, TupleJournal provides accountability -- but there is no entity that wires them together. No process that receives a market thought, checks its own experience, decides &quot;I know how to manage this kind of thought,&quot; and proposes the trade.</p>
+<h2 id="3-the-proposed-change">3. The proposed change<a class="heading-anchor" href="#3-the-proposed-change" aria-hidden="true">#</a></h2>
+<h3 id="five-csp-phases-per-candle">Five CSP phases per candle<a class="heading-anchor" href="#five-csp-phases-per-candle" aria-hidden="true">#</a></h3>
+<p>The single-pass candle loop becomes four sequential steps. Reality first. The parallelism is WITHIN Step 2 — all (market, exit) pairs compute simultaneously via par_iter. Steps are sequential. The CSP is in the collect().</p>
+<pre><code>candle arrives
+  │
+  ├─ Step 1: RESOLVE     treasury closes triggered trades
+  │                       accounting, propagate through tuple journals
+  │
+  ├─ Step 2: COMPUTE     par_iter(market_observers) → thoughts            collect()
+  │                       par_iter(exit_observers × thoughts) → compose    collect()
+  │                       → composed thoughts ready
+  │                       → proposals populated
+  │                       → distances computed
+  │
+  ├─ Step 3: PROCESS     using fresh composed thoughts from Step 2:
+  │                       iterate active_trades → update triggers
+  │                       iterate paper entries → tick, resolve → learning
+  │
+  ├─ Step 4: COLLECT     evaluate proposals from Step 2
+  │                       fund or reject — all in this candle
+  │                       proposed_trades is EMPTY after this step
+  │
+  └─ next candle (proposed_trades empty, active_trades updated)
+</code></pre>
+<p>Four steps. Sequential. The parallelism is horizontal inside Step 2 — N market observers × M exit observers compute simultaneously. Each par_iter completes before the next starts. Collect is the handoff. No carry across candles. Propose and fund in the same candle. The proposed_trades map fills in Step 2, drains in Step 4, empty at the end. Clean.</p>
+<h3 id="signal-flow-diagram">Signal flow diagram<a class="heading-anchor" href="#signal-flow-diagram" aria-hidden="true">#</a></h3>
+<pre class="mermaid">flowchart TD
+    OHLCV[OHLCV candle]
+
+    subgraph Treasury
+        Registry[&quot;registry: HashMap‹(M,E), TupleJournal›&quot;]
+        Proposed[&quot;proposed_trades: HashMap‹Id, Proposal›&quot;]
+        Active[&quot;active_trades: HashMap‹Id, Trade›&quot;]
+    end
+
+    subgraph &quot;Step 1: RESOLVE&quot;
+        OHLCV --&gt;|price| Active
+        Active --&gt;|&quot;triggered? → settle&quot;| Registry
+        Registry --&gt;|&quot;propagate()&quot;| Market[Market Observers]
+        Registry --&gt;|&quot;propagate()&quot;| Exit[Exit Observers]
+    end
+
+    subgraph &quot;Step 2: COMPUTE + DISPATCH&quot;
+        OHLCV --&gt;|candle| Market
+        Market --&gt;|&quot;(label, thought)&quot;| Exit
+        Exit --&gt;|&quot;get_or_create_journal()&quot;| Registry
+        Exit --&gt;|&quot;propose_trade()&quot;| Proposed
+    end
+
+    subgraph &quot;Step 3: PROCESS&quot;
+        Market --&gt;|&quot;fresh thoughts&quot;| Active
+        Exit --&gt;|&quot;recommended_distance()&quot;| Active
+    end
+
+    subgraph &quot;Step 4: COLLECT + FUND&quot;
+        Proposed --&gt;|&quot;fund or reject&quot;| Active
+    end
+</pre>
+<p>Signals and their types:</p>
+<ul>
+<li><code>OHLCV → Market Observers</code>: raw candle data</li>
+<li><code>Market Observer[i] → Exit Observer[j]</code>: <code>(label, Vector)</code> — one named thought per (market, exit) pair</li>
+<li><code>Exit Observer → Treasury.registry</code>: <code>get_or_create_journal(market_id, exit_id)</code> — journal lives on treasury</li>
+<li><code>Exit Observer → Treasury.proposed_trades</code>: <code>propose_trade(journal, composed, distance, conviction)</code></li>
+<li><code>Treasury.registry → Market Observer</code>: Win/Loss label (via tuple_journal.propagate)</li>
+<li><code>Treasury.registry → Exit Observer</code>: optimal distance from hindsight (via tuple_journal.propagate)</li>
+<li><code>Treasury.proposed_trades → Treasury.active_trades</code>: funded proposals move, rejected discard</li>
+</ul>
+<p>No signal crosses without going through the tuple journal. The tuple journal is the central routing fiber. Every other connection is point-to-point.</p>
+<h3 id="the-tuple-journal-is-a-closure">The tuple journal is a closure<a class="heading-anchor" href="#the-tuple-journal-is-a-closure" aria-hidden="true">#</a></h3>
+<p>The tuple journal is a closure over <code>(market_observer, exit_observer)</code>. Its identity IS the pair it captured. <code>propagate()</code> is the anonymous function — it knows how to route to THOSE two specific observers because it closed over them.</p>
+<pre><code class="language-rust">// Conceptually:
+let propagate = |outcome, closes, entry_price| {
+    let optimal = compute_optimal_distance(closes, entry_price, 100, 0.05);
+    exit_observer.learned_stop.observe(thought, optimal.distance, optimal.residue);
+    market_observer.resolve(thought, outcome_to_label(outcome));
+    self.track_record.update(outcome);
+};
+</code></pre>
+<p>The closure captures the pair. The closure routes the signal. The closure accumulates the track record. In Rust it's implemented as a struct (closures with state need a struct). But the concept: the tuple journal IS the anonymous function that routes reality to the right observers. The struct is the implementation. The closure is the thought.</p>
+<h3 id="the-treasury-as-registry">The treasury as registry<a class="heading-anchor" href="#the-treasury-as-registry" aria-hidden="true">#</a></h3>
+<p>The treasury holds three maps:</p>
+<pre><code class="language-rust">registry:  Vec&lt;TupleJournal&gt;       // N×M, pre-allocated at startup, permanent
+proposals: Vec&lt;Option&lt;Proposal&gt;&gt;   // N×M, pre-allocated, cleared every candle
+trades:    Vec&lt;Option&lt;Trade&gt;&gt;      // N×M, pre-allocated, insert/remove
+</code></pre>
+<p>Index: <code>i = market_idx * M + exit_idx</code>. The index IS the pair identity. O(1) by arithmetic, not by hash.</p>
+<p>All three are flat vecs. Pre-allocated at startup. Fixed size N×M. Never grow. Never shrink. Each slot is owned by exactly one (market, exit) pair. No two threads ever touch the same slot.</p>
+<p><strong>Mutex-free parallel updates.</strong> Rayon's <code>par_iter_mut</code> writes to disjoint slots. No mutex. No atomic. No lock. The borrow checker proves the writes are disjoint by construction. The flat vec IS the lock-free CSP channel. Each slot is an independent mailbox.</p>
+<ul>
+<li><code>registry[i]</code> — only pair <code>i</code> reads or writes its journal</li>
+<li><code>proposals[i]</code> — only pair <code>i</code> writes its proposal in Step 2, only Step 4 reads</li>
+<li><code>trades[i]</code> — only pair <code>i</code> manages its trade in Step 3, only Step 1 settles</li>
+</ul>
+<p>The <strong>registry</strong> is permanent. Each slot is a closure over (market_observer, exit_observer). Accumulates Grace/Violence across all trades. Never cleared. The institutional memory.</p>
+<p>The <strong>proposals</strong> vec is cleared at the end of every candle. Step 2 fills slots. Step 4 drains them. Empty after Step 4.</p>
+<p>The <strong>trades</strong> vec has Some for active positions, None for empty slots. Step 1 settles and clears to None. Step 4 funds and sets to Some.</p>
+<p>The <strong>proposed_trades</strong> map is the queue. Step 2 (COMPUTE + DISPATCH) inserts proposals via <code>treasury.propose_trade()</code>. Step 4 (COLLECT + FUND) iterates them — sorted by pair track record, conviction, or whatever metric the treasury uses to prioritize — funds the best, rejects the rest. Funded proposals move to <code>active_trades</code>. Rejected proposals are removed. The queue is empty after Step 4.</p>
+<p>The <strong>active_trades</strong> map is the current state. Phase 1 (SETTLE) iterates it — closes what triggered, propagates, removes closed trades. Phase 3 (MANAGE) iterates it — updates triggers from fresh thoughts.</p>
+<p>Three maps. The lifecycle within one candle:</p>
+<ul>
+<li>RESOLVE → close triggered trades, remove from <code>active_trades</code>, propagate</li>
+<li>COMPUTE → market × exit pipeline fills <code>proposed_trades</code></li>
+<li>PROCESS → update triggers on <code>active_trades</code> with fresh thoughts</li>
+<li>COLLECT → fund from <code>proposed_trades</code> into <code>active_trades</code>, drain <code>proposed_trades</code></li>
+</ul>
+<p>No carry across candles. <code>proposed_trades</code> is empty at the end of every candle. Registry grows permanently. <code>active_trades</code> reflects the current state.</p>
+<p>When an exit observer wants to propose a trade with a market observer's thought:</p>
+<ol>
+<li>Look up <code>(market_id, exit_id)</code> in the registry.</li>
+<li>If it doesn't exist → create it. Fresh tuple journal. No history. Ignorance.</li>
+<li>If it exists → use it. Check the track record. Is the curve proven? Does it have allocation?</li>
+</ol>
+<p><strong>Step 1: RESOLVE</strong> — Reality first. Money before thoughts.</p>
+<p>Close triggered trades. For each live entry in <code>active_trades</code>, check current price against trigger. If fired:</p>
+<ol>
+<li>Execute the swap (fees, slippage).</li>
+<li>Update the balance sheet.</li>
+<li>Compute Grace/Violence from actual P&amp;L.</li>
+<li><code>tuple_journal.propagate(outcome, &amp;closes, entry_price)</code> — one call, the tuple does the rest.</li>
+<li>Remove from <code>active_trades</code>.</li>
+</ol>
+<p>Nothing else happens in Step 1. Just reality.</p>
+<p>For each closed trade:</p>
+<ol>
+<li>Execute the swap (target → source, with fees and slippage).</li>
+<li>Update the balance sheet (units moved, fees charged, accumulation recorded).</li>
+<li>Compute Grace/Violence from the actual P&amp;L (including fees — the most honest number).</li>
+<li><code>tuple_journal.propagate(outcome, &amp;closes, entry_price)</code> — one call, the tuple does the rest.</li>
+</ol>
+<p>When a trade closes: settle, propagate, remove from the map. Clean.</p>
+<p><strong>Step 2: COMPUTE + DISPATCH</strong> — Market encodes, exit dispatches to treasury.</p>
+<pre><code>par_iter(market_observers) → [(label, thought), ...]                     collect()
+
+for each (market_observer, thought):
+    for each exit_observer:
+        composed = bundle(thought, exit_judgment_facts)
+        journal = treasury.get_or_create_journal(market_id, exit_id)
+        distance = exit_observer.recommended_distance(composed)
+        if experienced AND high_conviction:
+            treasury.propose_trade(journal, composed, distance, conviction)
+</code></pre>
+<p>The market encoding is parallel (par_iter). The exit dispatch is sequential — it MUTATES the treasury (creates journals, inserts proposals). The treasury's registry and <code>proposed_trades</code> grow during this step.</p>
+<p>Returns: <code>[(market_label, market_thought), ...]</code> — the fresh thoughts for Step 3.</p>
+<p>After this step:</p>
+<ul>
+<li>Registry may have new (market, exit) journals</li>
+<li><code>proposed_trades</code> has this candle's proposals</li>
+<li>Fresh thoughts are ready for active trade management</li>
+</ul>
+<p><strong>Step 3: PROCESS</strong> — Update active entries with fresh thoughts.</p>
+<p>Using the composed thoughts from Step 2:</p>
+<ul>
+<li>Active entries → tick DualExcursion, adjust trailing stop from LearnedStop's recommendation for the CURRENT composed thought.</li>
+<li>Resolved entries → compute optimal distance, feed LearnedStop, label market observer, update TupleJournal.</li>
+<li>Paper entries → tick, resolve, learn.</li>
+</ul>
+<p><strong>Step 4: COLLECT + FUND</strong> — Evaluate and fund proposals from this candle.</p>
+<p>For each proposal from Step 2:</p>
+<ul>
+<li>Look up <code>(market_id, exit_id)</code> in the registry. Create the tuple journal if new.</li>
+<li>Is the pair's curve proven? Is capital available? Does risk allow it?</li>
+<li>Funded → insert into <code>active_trades</code>. Rejected → discard.</li>
+</ul>
+<p><code>proposed_trades</code> is empty after this step. No carry across candles. Propose and fund in the same candle.</p>
+<h3 id="the-exit-observer-has-its-own-vocabulary">The exit observer has its own vocabulary<a class="heading-anchor" href="#the-exit-observer-has-its-own-vocabulary" aria-hidden="true">#</a></h3>
+<p>Each exit observer has a judgment lens — its own vocabulary for evaluating market conditions. From proposal 006:</p>
+<ul>
+<li><strong>Volatility judge</strong>: ATR regime, volatility shift, squeeze state.</li>
+<li><strong>Structure judge</strong>: trend consistency, support/resistance quality.</li>
+<li><strong>Timing judge</strong>: momentum state, reversal signals, duration patterns.</li>
+<li><strong>Exit generalist</strong>: full judgment vocabulary.</li>
+</ul>
+<p>The exit observer receives a market thought and COMPOSES it with its own judgment facts:</p>
+<pre><code class="language-scheme">(bundle
+  market-thought
+  (bind :volatility-regime (scalar $log atr-ratio))
+  (bind :structure-quality (scalar $linear trend-consistency))
+  (bind :squeeze-state     (scalar $linear squeeze)))
+</code></pre>
+<p>The composed thought — market context + exit judgment — is what the LearnedStop sees. This is why there are N exit observers: each composes differently. The volatility judge adds volatility facts. The timing judge adds timing facts. The same market thought produces different compositions, different LearnedStop queries, different distances.</p>
+<p>The LearnedStop IS the exit observer's brain. <code>recommended_distance(composed_thought)</code> is its prediction. <code>observe(composed_thought, optimal_distance, weight)</code> is its learning. The composition makes each exit observer unique. Without it, they'd all return the same distance for the same market thought.</p>
+<h3 id="each-magic-number-gets-its-own-learnedstop">Each magic number gets its own LearnedStop<a class="heading-anchor" href="#each-magic-number-gets-its-own-learnedstop" aria-hidden="true">#</a></h3>
+<p>k_trail, k_stop, and k_tp are all distances. Each gets its own LearnedStop:</p>
+<ul>
+<li><strong>Trail LearnedStop</strong>: &quot;given this thought, what trailing stop distance?&quot; Trained from <code>compute_optimal_distance</code> with the trail parameter.</li>
+<li><strong>Stop LearnedStop</strong>: &quot;given this thought, how far should the safety stop be?&quot; Same sweep, different question.</li>
+<li><strong>TP LearnedStop</strong>: &quot;given this thought, what take-profit distance?&quot; Same sweep, applied to the upside.</li>
+</ul>
+<p>Each learns independently. Each returns the default until enough resolved entries have trained it. The defaults are the current ATR multipliers -- the crutch. As the LearnedStops accumulate experience, the crutch is replaced by learned values. No hard switch. The LearnedStop returns <code>default_distance</code> when empty and blends toward the learned value as pairs accumulate.</p>
+<h3 id="paper-trades-live-inside-the-tuple-journal">Paper trades live inside the tuple journal<a class="heading-anchor" href="#paper-trades-live-inside-the-tuple-journal" aria-hidden="true">#</a></h3>
+<p>The tuple journal — the closure over (market_observer, exit_observer) — holds the paper entries for its pair. Not a separate data structure. Not a global pending queue. Each closure manages its own papers. The papers are internal state of the closure.</p>
+<p>When Step 2 dispatches a market thought to an exit observer, the exit observer looks up the tuple journal on the treasury: <code>registry[market_idx * M + exit_idx]</code>. That closure:</p>
+<ol>
+<li>Receives the composed thought (market + exit judgment)</li>
+<li>Creates a paper entry with a DualExcursion</li>
+<li>Ticks all its existing paper entries with the fresh price</li>
+<li>Resolves any that triggered → compute_optimal_distance → feed LearnedStop → learning</li>
+<li>If conditions met → propose trade via <code>treasury.proposals[i] = Some(proposal)</code></li>
+</ol>
+<p>The papers never leave the closure. The closure IS the paper manager. When papers resolve, the learning happens inside the closure. When a paper is promoted to a live trade, it moves to <code>treasury.trades[i]</code> — but the closure still owns the accountability.</p>
+<p>Live entries are a subset of paper entries that were:</p>
+<ol>
+<li>Proposed by the exit observer (high market conviction + proven distance for this thought).</li>
+<li>Funded by the treasury (TupleJournal proven, capital available, risk allows).</li>
+</ol>
+<p>Both paper and live entries produce learning. Paper is the training ground. Live is the exam. Both live in the same closure — the tuple journal for that (market, exit) pair.</p>
+<h3 id="three-learning-streams-all-simultaneous">Three learning streams — all simultaneous<a class="heading-anchor" href="#three-learning-streams-all-simultaneous" aria-hidden="true">#</a></h3>
+<p><strong>Paper stream</strong> (every candle, every market thought): the tuple journal closure receives the composed thought, ticks its paper entries, adjusts triggers. When a paper entry resolves, the closure computes the optimal distance and feeds the LearnedStop. This is the fast stream. N×M closures, each accumulating thousands of data points. Cheap lessons.</p>
+<p><strong>Live management stream</strong> (every candle, every open position): the tuple journal closure queries its LearnedStop with the CURRENT composed thought — not the entry thought, the current one, because the market changed. The trigger moves every candle. The tuple journal is the authority. The treasury holds the trade, the closure manages it. Real money, real adjustment, real time.</p>
+<p><strong>Reality stream</strong> (on position close): the treasury calls <code>tuple_journal.propagate(outcome, closes, entry_price)</code>. One call. The closure does the rest — records Grace/Violence on its track record, computes the optimal distance, feeds its LearnedStop, labels its market observer Win/Loss. This is the slow stream. Most honest. Final.</p>
+<p>All three feed the same LearnedStop. Paper fills it fast with cheap lessons. Live management keeps it current with the market's state. Reality corrects it with the most honest signal. The learning never stops.</p>
+<h3 id="the-optimal-distance-replaces-all-magic-numbers">The optimal distance replaces ALL magic numbers<a class="heading-anchor" href="#the-optimal-distance-replaces-all-magic-numbers" aria-hidden="true">#</a></h3>
+<p>The market does not use formulas. It uses measurement. <code>compute_optimal_distance</code> sweeps 100+ candidate distances against the actual price history from entry to resolution. It finds the peak residue. That is the market's answer.</p>
+<p>The LearnedStop stores (thought, market_answer) pairs. When a new thought arrives, it queries: &quot;what did the market say about thoughts like this?&quot; The answer is a distance. Not a formula. Not a multiplier. A weighted average of the market's answers for similar thoughts.</p>
+<p>The exit observer proposes only when:</p>
+<ol>
+<li>The market observer has high conviction (strong directional signal).</li>
+<li>The LearnedStop has proven experience for this kind of thought (not returning default).</li>
+</ol>
+<p>Condition 2 is the key difference from today. Today, every high-conviction signal opens a trade with the same fixed stops. Under this proposal, the exit observer gates entries based on its own experience. A thought shape it has never seen stays on paper. A thought shape it has managed successfully before gets proposed.</p>
+<h3 id="what-changes">What changes<a class="heading-anchor" href="#what-changes" aria-hidden="true">#</a></h3>
+<ol>
+<li><p><strong>Candle loop</strong>: single pass becomes three passes (think, manage, settle). Each pass reads the output of the previous. No shared mutation within a pass.</p>
+</li>
+<li><p><strong>Exit observer</strong>: wraps LearnedStop (one per distance parameter). Receives market thoughts. Proposes when experienced. Manages live entries every candle.</p>
+</li>
+<li><p><strong>Paper entries</strong>: every market thought registers. DualExcursion tracks both sides. Resolved paper entries train the LearnedStops.</p>
+</li>
+<li><p><strong>Live entry creation</strong>: the exit observer proposes, not the market observer. The treasury funds proposals from proven tuples.</p>
+</li>
+<li><p><strong>Label flow</strong>: exit observer resolution becomes market observer Win/Loss label. The market observer learns from how the trade was managed, not from a fixed horizon drain.</p>
+</li>
+<li><p><strong>Trailing stop</strong>: per-candle update from <code>recommended_distance(current_thought)</code>. The distance is contextual and learned, not fixed.</p>
+</li>
+</ol>
+<h3 id="what-does-not-change">What does NOT change<a class="heading-anchor" href="#what-does-not-change" aria-hidden="true">#</a></h3>
+<ul>
+<li>The six primitives.</li>
+<li>The observer template (noise subspace + journal).</li>
+<li>The market observers' encoding pipeline.</li>
+<li>The risk branches.</li>
+<li>The accumulation model.</li>
+<li>The treasury's asset management.</li>
+<li>DualExcursion, LearnedStop, compute_optimal_distance, ScalarAccumulator, TupleJournal -- all exist and are tested.</li>
+</ul>
+<h2 id="4-the-algebraic-question">4. The algebraic question<a class="heading-anchor" href="#4-the-algebraic-question" aria-hidden="true">#</a></h2>
+<p>No new algebraic structures. The market observers use the existing pipeline (bind, bundle, journal, online-subspace, cosine, curve). The exit observer does not use the vector algebra for encoding -- it uses the vectors the market observers already produced as keys into a regression. The regression is cosine-weighted averaging, which is the same similarity primitive the journal uses.</p>
+<p>The LearnedStop is <code>cosine(query, stored) * weight</code> summed over pairs. That is the same operation as journal prediction -- weighted similarity against accumulated experience. The difference is the output: the journal outputs a label (Win/Loss), the LearnedStop outputs a scalar (distance). Same geometry, different readout.</p>
+<p>The TupleJournal uses the full algebra: bind, bundle, journal, noise subspace, curve. It operates on composed thoughts (market thought bundled with exit judgment). It replaces the manager journal — there is no separate manager. The tuple journal IS the manager for its (market, exit) pair. Two journals per pair: the market observer journal (direction) and the tuple journal (accountability). The manager is gone.</p>
+<p>The coupling between steps is data flow: Step 1 settles reality. Step 2 produces thoughts + proposals. Step 3 consumes thoughts to update triggers. Step 4 consumes proposals to fund trades. No algebraic coupling. No shared vectors mutated across steps. Three flat N×M vecs with disjoint slots. Mutex-free. CSP.</p>
+<h2 id="5-the-simplicity-question">5. The simplicity question<a class="heading-anchor" href="#5-the-simplicity-question" aria-hidden="true">#</a></h2>
+<p><strong>Is this simple or easy?</strong> Simple. Four steps, each does one thing. Step 1: RESOLVE (reality). Step 2: COMPUTE + DISPATCH (parallel market, sequential exit into treasury). Step 3: PROCESS (tick active trades + papers with fresh thoughts). Step 4: COLLECT + FUND (drain proposals). The tuple journal closure wraps LearnedStop + papers + track record — all tested primitives. The four-step structure makes the data flow explicit. No entangled mutation within a step.</p>
+<p><strong>What's being complected?</strong> The risk is coupling the exit observer's proposal decision to the market observer's conviction. These are independent judgments: &quot;is the direction strong?&quot; and &quot;can I manage this kind of thought?&quot; The proposal gate requires both but they must remain separate measurements. The exit observer does not see conviction -- it sees the thought vector and queries its own experience.</p>
+<p><strong>Could existing forms solve it?</strong> They DO solve it. Every piece exists and is tested:</p>
+<ul>
+<li>LearnedStop: nearest neighbor regression. Tested.</li>
+<li>compute_optimal_distance: hindsight sweep. Tested.</li>
+<li>DualExcursion: dual-sided tracking. Tested, 99.9% organic resolution.</li>
+<li>TupleJournal: accountability primitive. Tested.</li>
+<li>ScalarAccumulator: continuous value learning. Tested.</li>
+</ul>
+<p>The proposal is wiring. The pieces are proven. The question is the topology of the wiring, not the pieces themselves.</p>
+<p><strong>What 005 and 006 attempted that this simplifies:</strong></p>
+<ul>
+<li>005 proposed an exit panel with its own vocabulary lenses. This proposal keeps the vocabulary (volatility, structure, timing) but replaces the exit journal with a LearnedStop. The exit observer's intelligence is nearest neighbor regression on composed thoughts, not a journal with Win/Loss labels.</li>
+<li>006 proposed N x M composition (N market observers x M exit observers) with dual-sided labeling and continuous management scalars. This proposal: the exit observer is simpler -- it is a regression, not a journal. It does not predict Buy/Sell. It predicts a distance. The composition is not bundle -- it is a function call.</li>
+<li>Both 005 and 006 described the exit observer as a full observer with its own encoding pipeline. This proposal: the exit observer has no encoding. It is a LearnedStop with a proposal gate. The intelligence is in the (thought, distance) pairs, not in a separate thought about the thought.</li>
+</ul>
+<h2 id="6-questions-for-designers">6. Questions for designers<a class="heading-anchor" href="#6-questions-for-designers" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>How many exit observers?</strong> Each exit observer has its own judgment vocabulary (volatility, structure, timing, generalist). Each composes the market thought with its own facts, producing a different query into its LearnedStop. The question is not &quot;one or many&quot; — it's many, because they have different lenses. The question is: do we start with all four exit lenses, or start with one (exit generalist) and earn the specialization? The data from the 100k run should inform this — does the optimal distance vary more by volatility regime or by timing context?</p>
+</li>
+<li><p><strong>Paper entry memory.</strong> Every market thought registers as a paper entry. Seven observers, one thought each per candle, each living until both sides of the DualExcursion resolve. At 99.9% organic resolution, entries die. But the buffer is implicit memory pressure. How many concurrent paper entries is reasonable? The DualExcursion is 8 floats per entry. At 7 observers x ~100 candle average lifetime, that is ~700 concurrent entries. Is this the right order? The buffer cap is the last implicit parameter.</p>
+</li>
+<li><p><strong>When does the tuple journal start proposing?</strong> The tuple journal's proof curve gates this. The closure accumulates paper trades from candle 1. The LearnedStop fills. The proof curve evaluates. When the curve validates — the tuple journal has demonstrated Grace over Violence in its high-conviction predictions — it starts proposing. No boot-up parameter. No minimum pair count. The proof curve IS the gate. The same mechanism every observer uses to prove edge. The tuple journal earns the right to propose through measurement.</p>
+</li>
+<li><p><strong>Does the exit observer adjust live stops every candle?</strong> The current proposal says yes: each candle, the exit observer queries <code>recommended_distance(current_thought)</code> for each live entry. The thought changes each candle (new market state). The recommended distance changes as the LearnedStop accumulates new pairs. This means the trailing stop is not fixed at entry -- it adapts to the evolving market context and the exit observer's evolving experience. The question: is per-candle adjustment the right frequency, or should the stop only adjust at discrete events (regime change, DualExcursion milestone)?</p>
+</li>
+<li><p><strong>Label flow direction.</strong> The proposal says: exit resolution becomes market observer Win/Loss label. Today, the label comes from single-sided MFE/MAE at horizon drain. The transition: paper entries resolve via DualExcursion (both sides organically), producing Buy/Sell + weight. The market observer's prediction is compared against this label. The exit observer's management quality is embedded in the resolution timing -- a well-managed entry resolves at a better price than a poorly-managed one. The question: does the dual-sided label from paper entries replace the current MFE/MAE label immediately, or should both run in parallel until the exit observer proves edge?</p>
+</li>
+<li><p><strong>The current thought as query key.</strong> The exit observer queries <code>recommended_distance(current_thought)</code> where <code>current_thought</code> is the market observer's thought at the CURRENT candle, not the entry candle. This means the distance adapts as the market changes -- what started as a trending thought might look choppy 20 candles later, and the recommended distance shifts. Is this correct? The alternative: query with the ENTRY thought (fixed at entry, never changes). The entry thought captures what the market looked like when the trade was opened. The current thought captures what it looks like now. Which is the right key for &quot;what distance should the stop be?&quot;</p>
+</li>
+</ol>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

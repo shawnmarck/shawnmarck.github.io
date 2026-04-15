@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 033 — Learned Scales ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 033 — Learned Scales ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Date:</strong> 2026-04-12
+<strong>Decision:</strong> ACCEPTED — implement</p>
+<h2 id="designers">Designers<a class="heading-anchor" href="#designers" aria-hidden="true">#</a></h2>
+<p>Both accepted.</p>
+<p><strong>Hickey:</strong> No bootstrap default — EMA starts at zero, floor at
+0.001. The <code>* 2.0</code> is a named constant. IncrementalBundle handles
+scale changes correctly by construction (old scale key removed,
+new scale key added — the diff fires).</p>
+<p><strong>Beckman:</strong> Scale drift doesn't corrupt prototypes — the rotation
+is coherent. Both prototypes shift together. The discriminant
+recovers. 1% scale change = cos(shift) ≈ 0.9999. Regime shift
+(50%) = cos ≈ 0.88, recovers in ~25 hours with the slow EMA.
+The <code>* 2.0</code> covers ~89% not 95%. Document as approximate.</p>
+<h2 id="designers-overruled-on-scope">Designers overruled on scope<a class="heading-anchor" href="#designers-overruled-on-scope" aria-hidden="true">#</a></h2>
+<p>Both said global scales on Ctx. <strong>Overruled.</strong> The scale is
+per-asset-pair. BTC/USDC has different ranges than ETH/USDC.
+The same <code>close-sma200</code> atom produces scale 0.30 on BTC and
+0.05 on equities. The scale lives on the post — one post per
+pair, one scale map per post.</p>
+<p>Ctx stays immutable. The scales are mutable state that evolves
+per candle, per pair. The post owns them.</p>
+<h2 id="the-changes">The changes<a class="heading-anchor" href="#the-changes" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>New struct:</strong> <code>ScaleTracker</code> in a new <code>scale_tracker.rs</code>
+module.</p>
+<pre><code class="language-rust">pub struct ScaleTracker {
+    ema_abs: f64,
+    count: usize,
+}
+
+pub const SCALE_COVERAGE: f64 = 2.0; // named constant, ~89% coverage
+
+impl ScaleTracker {
+    pub fn new() -&gt; Self {
+        Self { ema_abs: 0.0, count: 0 }
+    }
+
+    pub fn update(&amp;mut self, value: f64) {
+        self.count += 1;
+        let alpha = 1.0 / (self.count.max(100) as f64);
+        self.ema_abs = (1.0 - alpha) * self.ema_abs + alpha * value.abs();
+    }
+
+    pub fn scale(&amp;self) -&gt; f64 {
+        round_to((SCALE_COVERAGE * self.ema_abs).max(0.001), 2)
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Scale storage on the post:</strong> <code>HashMap&lt;String, ScaleTracker&gt;</code>
+on the Post struct. One map per asset pair.</p>
+<pre><code class="language-rust">pub struct Post {
+    // ... existing fields
+    pub scales: HashMap&lt;String, ScaleTracker&gt;,
+}
+</code></pre>
+</li>
+<li><p><strong>Vocabulary functions accept scales:</strong> Each <code>encode_*_facts</code>
+function receives <code>&amp;mut HashMap&lt;String, ScaleTracker&gt;</code>. It
+updates the tracker for each Linear atom and reads the scale.</p>
+<pre><code class="language-rust">fn encode_with_scale(
+    name: &amp;str, value: f64,
+    scales: &amp;mut HashMap&lt;String, ScaleTracker&gt;,
+) -&gt; ThoughtAST {
+    let tracker = scales.entry(name.to_string())
+        .or_insert_with(ScaleTracker::new);
+    tracker.update(value);
+    let s = tracker.scale();
+    ThoughtAST::Linear {
+        name: name.into(),
+        value: round_to(value, 2),
+        scale: s,
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>All hardcoded Linear scales removed.</strong> Every Linear atom
+uses the learned scale from its ScaleTracker. No exceptions.
+Log and Circular atoms unchanged.</p>
+</li>
+<li><p><strong>Threading:</strong> <code>post.on_candle()</code> already owns the post.
+<code>post.scales</code> is available. Pass <code>&amp;mut post.scales</code> to
+vocabulary functions. In the binary, the scales map flows
+through the same path as the candle.</p>
+</li>
+</ol>
+<h2 id="what-doesnt-change">What doesn't change<a class="heading-anchor" href="#what-doesnt-change" aria-hidden="true">#</a></h2>
+<ul>
+<li>Log encoding (naturally scale-free)</li>
+<li>Circular encoding (fixed period — domain-independent)</li>
+<li>ThoughtAST type (scale is already a field on Linear)</li>
+<li>ThoughtEncoder (encodes whatever AST it receives)</li>
+<li>Cache protocol (the AST key includes the scale — when scale
+changes, the key changes, cache miss, recompute, warm at new scale)</li>
+<li>IncrementalBundle (handles scale changes by construction)</li>
+<li>Reckoner internals</li>
+<li>Extraction pipeline</li>
+</ul>
+<h2 id="bootstrap">Bootstrap<a class="heading-anchor" href="#bootstrap" aria-hidden="true">#</a></h2>
+<p>EMA starts at zero. First candle: <code>scale = max(2.0 * 0.0, 0.001) = 0.001</code>. Near-zero. The encoding uses almost the entire manifold
+for tiny values. Over 100 candles, the EMA converges. By candle
+500, the scale is stable. The noise subspace absorbs the drift.
+Same bootstrap pattern as distances.</p>
+<p>No hardcoded initial value. The machine starts ignorant and
+learns. Always.</p>
+<p><strong>Date:</strong> 2026-04-12
+<strong>Author:</strong> watmin + machine
+<strong>Status:</strong> PROPOSED</p>
+<h2 id="the-problem">The problem<a class="heading-anchor" href="#the-problem" aria-hidden="true">#</a></h2>
+<p>Every Linear atom has a hardcoded scale. <code>close-sma200</code> at 0.1.
+<code>di-spread</code> at 1.0. <code>macd-hist</code> at 0.01. These scales encode
+assumptions about the asset. 0.1 means &quot;the value rarely exceeds
+±0.1.&quot; For BTC, close-sma200 routinely exceeds 0.3. For equities,
+it rarely exceeds 0.05. The scale is wrong for both — too tight
+for BTC, too loose for equities.</p>
+<p>The enterprise is supposed to be pair-agnostic. Any two assets.
+The vocabulary should not know which market it watches. The scales
+should derive from the data.</p>
+<h2 id="the-fix">The fix<a class="heading-anchor" href="#the-fix" aria-hidden="true">#</a></h2>
+<p>Every Linear atom's scale is a learned value — a rolling statistic
+that tracks the indicator's own observed range. The vocabulary
+reads the scale. The encoding uses it. The machine discovers the
+right scale from the data.</p>
+<pre><code class="language-scheme">;; Today: hardcoded
+(Linear &quot;close-sma200&quot; 0.03 0.1)   ;; BTC assumption
+
+;; Target: learned
+(Linear &quot;close-sma200&quot; 0.03 (scale &quot;close-sma200&quot;))
+
+;; Where (scale name) returns the learned scale for this atom.
+;; The scale is the 95th percentile of abs(value) observed so far.
+;; Round to 2 digits — the cache stays finite.
+</code></pre>
+<h2 id="the-scaletracker">The ScaleTracker<a class="heading-anchor" href="#the-scaletracker" aria-hidden="true">#</a></h2>
+<p>A simple streaming statistic per Linear atom. Tracks the range
+of values the atom has seen.</p>
+<pre><code class="language-scheme">(struct scale-tracker
+  [ema-abs : f64]         ;; EMA of absolute values
+  [count   : usize])      ;; observations
+
+(define (update-scale tracker value)
+  (let ((alpha (/ 1.0 (max (:count tracker) 100))))
+    (set! (:ema-abs tracker)
+      (+ (* (- 1.0 alpha) (:ema-abs tracker))
+         (* alpha (abs value))))
+    (inc! (:count tracker))))
+
+(define (get-scale tracker)
+  ;; The scale is ~2x the EMA of absolute values.
+  ;; This covers ~95% of the distribution.
+  ;; Round to 2 digits for cache stability.
+  (round-to (* 2.0 (max (:ema-abs tracker) 0.001)) 2))
+</code></pre>
+<p>The EMA alpha is <code>1 / max(count, 100)</code>. The first 100 observations
+average equally (bootstrap). After 100, the EMA decays — recent
+values weigh more. The scale breathes with the data.</p>
+<p>The <code>* 2.0</code> covers the 95th percentile (for a roughly Gaussian
+distribution, 2σ covers ~95%). The <code>round_to(2)</code> quantizes the
+scale to ~100 possible values. Cache keys change slowly.</p>
+<h2 id="where-it-lives">Where it lives<a class="heading-anchor" href="#where-it-lives" aria-hidden="true">#</a></h2>
+<p>The ScaleTracker lives on the vocabulary struct — each typed
+vocab struct (from Phase 2) holds its own ScaleTrackers.</p>
+<pre><code class="language-rust">struct MomentumThought {
+    pub close_sma20: f64,
+    pub close_sma50: f64,
+    pub close_sma200: f64,
+    pub macd_hist: f64,
+    pub di_spread: f64,
+    pub atr_ratio: f64,
+    // Scales — learned, not hardcoded
+    pub scale_close_sma20: ScaleTracker,
+    pub scale_close_sma50: ScaleTracker,
+    pub scale_close_sma200: ScaleTracker,
+    pub scale_macd_hist: ScaleTracker,
+    pub scale_di_spread: ScaleTracker,
+    // atr_ratio is Log — no scale needed
+}
+</code></pre>
+<p>Wait — the vocab structs are constructed fresh each candle via
+<code>from_candle()</code>. They don't persist. The ScaleTrackers need to
+persist across candles.</p>
+<p>The ScaleTrackers live on the OBSERVER — alongside the noise
+subspace, the reckoner, the incremental bundle. Each observer
+owns its ScaleTrackers for its lens. The vocabulary's <code>forms()</code>
+method receives the scales as parameters.</p>
+<p>Or simpler: one global <code>HashMap&lt;String, ScaleTracker&gt;</code> on Ctx or
+on the post. Each atom name maps to its tracker. Every vocabulary
+call updates the tracker and reads the scale. The map is shared
+across all observers — the same atom should have the same scale
+regardless of which observer encodes it.</p>
+<h2 id="the-flow">The flow<a class="heading-anchor" href="#the-flow" aria-hidden="true">#</a></h2>
+<pre><code class="language-scheme">(define (encode-momentum-facts candle scales)
+  (let ((v (/ (- close sma20) close)))
+    ;; Update the scale tracker for this atom
+    (update-scale (get scales &quot;close-sma20&quot;) v)
+    ;; Read the learned scale
+    (let ((s (get-scale (get scales &quot;close-sma20&quot;))))
+      ;; Encode with the learned scale
+      (Linear &quot;close-sma20&quot; (round-to v 2) s))))
+</code></pre>
+<p>Update, read, encode. Every candle. Every atom. The scale learns
+from the value it encodes. No external knowledge. No asset
+assumption.</p>
+<h2 id="which-atoms-need-scales">Which atoms need scales<a class="heading-anchor" href="#which-atoms-need-scales" aria-hidden="true">#</a></h2>
+<p>Only Linear atoms need learned scales. Log atoms are naturally
+scale-free (they encode ratios). Circular atoms have a fixed
+period (24 hours, 7 days) that is domain-independent.</p>
+<p>From the current vocabulary:</p>
+<ul>
+<li><strong>Linear atoms with hardcoded scales:</strong> ~45 atoms across all
+modules. Each gets a ScaleTracker.</li>
+<li><strong>Log atoms:</strong> ~25 atoms. No change.</li>
+<li><strong>Circular atoms:</strong> ~7 atoms. No change.</li>
+</ul>
+<h2 id="the-cache-impact">The cache impact<a class="heading-anchor" href="#the-cache-impact" aria-hidden="true">#</a></h2>
+<p>The ThoughtAST includes the scale: <code>(Linear &quot;rsi&quot; 0.73 1.0)</code>.
+If the scale changes from 1.0 to 1.01, it's a new cache key.
+The <code>round_to(2)</code> on the scale quantizes to 100 possible values.
+Scales move slowly (EMA with alpha ~0.01). A scale might change
+its rounded value once every few hundred candles. The cache stays
+warm between changes.</p>
+<p>When the scale DOES change, the cache misses for that atom.
+The encoder computes the new vector. The cache warms at the new
+scale. The old scale's entry is in the LRU and will eventually
+evict.</p>
+<h2 id="the-bootstrap">The bootstrap<a class="heading-anchor" href="#the-bootstrap" aria-hidden="true">#</a></h2>
+<p>At candle 1, the ScaleTracker has no observations. The scale
+defaults to a neutral value — 1.0 (or the old hardcoded scale
+if we want backwards compatibility). After 100 candles, the
+scale has converged from the data. After 500, it's stable.</p>
+<p>The bootstrap cost: the first 100 candles have imprecise scales.
+The encoding is slightly wrong. The reckoner accumulates these
+early observations. The noise subspace absorbs the scale
+drift. Same pattern as the distance bootstrap — start ignorant,
+learn quickly, converge.</p>
+<h2 id="what-changes">What changes<a class="heading-anchor" href="#what-changes" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>New struct:</strong> <code>ScaleTracker</code> in <code>thought_encoder.rs</code> or
+a new <code>scale_tracker.rs</code> module.</p>
+</li>
+<li><p><strong>Scale storage:</strong> <code>HashMap&lt;String, ScaleTracker&gt;</code> on the
+post or on a shared struct. Passed to vocabulary functions.</p>
+</li>
+<li><p><strong>Vocabulary functions:</strong> Each Linear atom updates its
+tracker and reads the scale. The <code>forms()</code> method accepts
+the scale map as a parameter.</p>
+</li>
+<li><p><strong>All hardcoded scales removed.</strong> Every Linear scale comes
+from the ScaleTracker. No exceptions.</p>
+</li>
+</ol>
+<h2 id="what-doesnt-change">What doesn't change<a class="heading-anchor" href="#what-doesnt-change" aria-hidden="true">#</a></h2>
+<ul>
+<li>Log and Circular encoding (already scale-free)</li>
+<li>The ThoughtAST type (scale is already a field on Linear)</li>
+<li>The ThoughtEncoder (encodes whatever AST it receives)</li>
+<li>The cache protocol</li>
+<li>The extraction pipeline</li>
+<li>The reckoner internals</li>
+</ul>
+<h2 id="questions">Questions<a class="heading-anchor" href="#questions" aria-hidden="true">#</a></h2>
+<ol>
+<li><p>Should the ScaleTracker live per-observer or globally?
+Per-observer means each lens discovers its own scale for
+shared atoms (rsi might have different ranges through
+different windows). Global means one scale per atom name.</p>
+</li>
+<li><p>The EMA decay rate — should it match the recalib interval?
+Or be independent? Faster decay adapts to regime shifts.
+Slower decay gives more stable cache keys.</p>
+</li>
+<li><p>The <code>* 2.0</code> multiplier assumes roughly Gaussian. Should we
+track the actual percentile instead? A ring buffer of
+recent values, sorted, 95th element. More accurate but
+more state.</p>
+</li>
+</ol>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

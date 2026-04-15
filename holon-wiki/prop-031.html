@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 031 — Broker Derived Thoughts ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 031 — Broker Derived Thoughts ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Date:</strong> 2026-04-12
+<strong>Decision:</strong> ACCEPTED — implement</p>
+<h2 id="designers">Designers<a class="heading-anchor" href="#designers" aria-hidden="true">#</a></h2>
+<p>Both approved.</p>
+<p><strong>Hickey:</strong> Pure functions, correct home. Keep derivation graph
+shallow. ATR as f64 on the pipe (option C). Self-exit-agreement
+is structurally interesting — describes the pairing.</p>
+<p><strong>Beckman:</strong> Algebra holds — derived thoughts are algebraically
+independent of raw components due to atom binding. Two scale
+corrections applied:</p>
+<ol>
+<li>risk-reward-ratio → Log (multiplicative structure)</li>
+<li>conviction-vol → Log(abs) + sign as separate atom (avoids
+saturation at range ~500)</li>
+</ol>
+<h2 id="the-changes">The changes<a class="heading-anchor" href="#the-changes" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>New vocab module:</strong> <code>src/vocab/broker/derived.rs</code> — pure
+functions, 11 atoms total.</p>
+</li>
+<li><p><strong>Broker pipe gains atr_ratio:</strong> One f64 from the enriched
+candle. Computed at grid level.</p>
+</li>
+<li><p><strong>Anomaly norms:</strong> Computed in the broker thread from the
+vectors already on the pipe. <code>market_anomaly.norm()</code> and
+<code>exit_anomaly.norm()</code>. No pipe change needed.</p>
+</li>
+<li><p><strong>Broker thread encodes derived facts:</strong> Appended to the
+bundle alongside opinions + extracted + self.</p>
+</li>
+</ol>
+<h2 id="the-atoms-final-with-corrections">The atoms (final, with corrections)<a class="heading-anchor" href="#the-atoms-final-with-corrections" aria-hidden="true">#</a></h2>
+<pre><code class="language-scheme">;; Distance relative to volatility (2 atoms)
+(Log &quot;trail-atr-multiple&quot; (/ trail (max atr-ratio 0.001)))
+(Log &quot;stop-atr-multiple&quot;  (/ stop  (max atr-ratio 0.001)))
+
+;; Risk-reward ratio (1 atom) — Log per Beckman
+(Log &quot;risk-reward-ratio&quot; (/ trail (max stop 0.001)))
+
+;; Conviction-volatility interaction (2 atoms) — split per Beckman
+(Log    &quot;conviction-vol-magnitude&quot; (* (abs signed-conviction) (/ 1.0 (max atr-ratio 0.001))))
+(Linear &quot;conviction-vol-sign&quot;      (signum signed-conviction) 1.0)
+
+;; Exit confidence (1 atom)
+(Linear &quot;exit-confidence&quot; (* exit-grace-rate (max exit-avg-residue 0.001)) 1.0)
+
+;; Self-exit agreement (1 atom)
+(Linear &quot;self-exit-agreement&quot; (- broker-grace-rate exit-grace-rate) 1.0)
+
+;; Activity rate (1 atom)
+(Log &quot;activity-rate&quot; (/ (max paper-count 1) (max paper-duration 1)))
+
+;; Excursion-trail ratio (1 atom)
+(Linear &quot;excursion-trail-ratio&quot; (/ excursion-avg (max trail 0.001)) 1.0)
+
+;; Signal strength (2 atoms)
+(Log &quot;market-signal-strength&quot; (max (norm market-anomaly) 0.001))
+(Log &quot;exit-signal-strength&quot;   (max (norm exit-anomaly) 0.001))
+</code></pre>
+<p><strong>Date:</strong> 2026-04-12
+<strong>Author:</strong> watmin + machine
+<strong>Status:</strong> PROPOSED</p>
+<h2 id="the-situation">The situation<a class="heading-anchor" href="#the-situation" aria-hidden="true">#</a></h2>
+<p>The broker wiring is clean. Both sides teach. Cache at 97.8%.
+Honest counts. Typed inputs. Opinions in the vocabulary. The
+broker differentiates by exit lens — exit-generalist at 55.6%
+Grace, exit-structure at 28.6%. The signal exists in the raw
+counts but the reckoner can't find it in the thought vectors.</p>
+<p>The broker's noise subspace correctly strips constants. The
+broker's best predictor — &quot;which exit am I paired with&quot; — is
+a fixed property. Constants get stripped. The thing that predicts
+is the thing that gets removed.</p>
+<p>The broker needs thoughts that VARY per candle AND correlate
+with Grace/Violence outcomes. Not raw opinions. DERIVED thoughts.
+Relationships. Ratios. Interactions. The institutional trader's
+toolkit applied to the data already on the pipe.</p>
+<h2 id="the-derived-thoughts">The derived thoughts<a class="heading-anchor" href="#the-derived-thoughts" aria-hidden="true">#</a></h2>
+<p>Nine pure functions. Values already on the pipe in, ThoughtASTs
+out. No new wiring. No new pipes. No new state.</p>
+<pre><code class="language-scheme">;; 1. DISTANCE RELATIVE TO VOLATILITY
+;;    &quot;Is the trail wide or tight for THIS market?&quot;
+;;    0.8% trail / 0.2% ATR = 4x (wide, room to breathe)
+;;    0.8% trail / 1.5% ATR = 0.5x (tight, noise will stop us)
+(Log &quot;trail-atr-multiple&quot; (/ trail (max atr-ratio 0.001)))
+(Log &quot;stop-atr-multiple&quot;  (/ stop  (max atr-ratio 0.001)))
+
+;; 2. RISK-REWARD RATIO
+;;    &quot;How much room to win vs room to lose?&quot;
+;;    trail / stop. High = defensive. Low = aggressive.
+(Linear &quot;risk-reward-ratio&quot; (/ trail (max stop 0.001)) 1.0)
+
+;; 3. CONVICTION-VOLATILITY INTERACTION
+;;    &quot;Is the signal clean or noisy?&quot;
+;;    High conviction + low vol = clean. High conviction + high vol = noise.
+(Linear &quot;conviction-vol&quot; (* signed-conviction (/ 1.0 (max atr-ratio 0.001))) 1.0)
+
+;; 4. EXIT CONFIDENCE
+;;    &quot;Does the exit know what it's doing?&quot;
+;;    grace-rate × residue. Both high = good AND profitable.
+(Linear &quot;exit-confidence&quot; (* exit-grace-rate (max exit-avg-residue 0.001)) 1.0)
+
+;; 5. SELF-EXIT AGREEMENT
+;;    &quot;Am I performing like my exit?&quot;
+;;    Divergence = regime shifted for this pairing.
+(Linear &quot;self-exit-agreement&quot; (- broker-grace-rate exit-grace-rate) 1.0)
+
+;; 6. ACTIVITY RATE
+;;    &quot;How many papers per unit time?&quot;
+;;    High = stretched. Low = selective.
+(Log &quot;activity-rate&quot; (/ (max paper-count 1) (max paper-duration 1)))
+
+;; 7. EXCURSION-TRAIL RATIO
+;;    &quot;Are papers reaching Grace?&quot;
+;;    &gt; 1 = papers typically hit the trail. &lt; 1 = fall short.
+(Linear &quot;excursion-trail-ratio&quot; (/ excursion-avg (max trail 0.001)) 1.0)
+
+;; 8. MARKET SIGNAL STRENGTH
+;;    &quot;How anomalous is this candle?&quot;
+;;    Norm of the market anomaly. High = strong signal candle.
+(Log &quot;market-signal-strength&quot; (max (norm market-anomaly) 0.001))
+
+;; 9. EXIT SIGNAL STRENGTH
+;;    &quot;How anomalous is the exit thought?&quot;
+(Log &quot;exit-signal-strength&quot; (max (norm exit-anomaly) 0.001))
+</code></pre>
+<h2 id="why-these-vary">Why these vary<a class="heading-anchor" href="#why-these-vary" aria-hidden="true">#</a></h2>
+<ul>
+<li>trail-atr-multiple: ATR changes every candle. Same trail, different ratio.</li>
+<li>risk-reward-ratio: trail and stop change as the exit learns.</li>
+<li>conviction-vol: conviction flips and scales every candle.</li>
+<li>exit-confidence: grace-rate rolls, residue rolls.</li>
+<li>self-exit-agreement: both rolling averages drift.</li>
+<li>activity-rate: paper count changes, duration changes.</li>
+<li>excursion-trail-ratio: excursion-avg rolls.</li>
+<li>market-signal-strength: anomaly norm varies every candle.</li>
+<li>exit-signal-strength: anomaly norm varies every candle.</li>
+</ul>
+<p>The noise subspace strips what's constant. These vary. The
+reckoner sees the variation. The discriminant finds which
+variations correlate with Grace.</p>
+<h2 id="where-atr-comes-from">Where ATR comes from<a class="heading-anchor" href="#where-atr-comes-from" aria-hidden="true">#</a></h2>
+<p>The broker needs ATR-ratio for thoughts 1 and 3. ATR-ratio is
+on the candle. It's encoded by the market vocabulary as a fact.
+It MAY be in the extracted market facts (if it survived the
+noise floor). But the broker can't rely on extraction — it needs
+ATR-ratio directly.</p>
+<p>Options:
+A. Add ATR-ratio to the broker pipe. The candle is available
+at the grid level where the pipe is sent.
+B. Use the market anomaly's norm as a volatility proxy (thought 8).
+Not as precise as ATR but always available.
+C. Send the enriched candle's ATR-ratio as an f64 on the pipe.</p>
+<p>Option C is simplest. One f64. Already computed. Already on
+the candle struct.</p>
+<h2 id="what-changes">What changes<a class="heading-anchor" href="#what-changes" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>New vocab module:</strong> <code>src/vocab/broker/derived.rs</code> — nine
+pure functions that take existing pipe values and return
+<code>Vec&lt;ThoughtAST&gt;</code>.</p>
+</li>
+<li><p><strong>Broker pipe gains ATR-ratio:</strong> One f64 added to the broker
+input tuple.</p>
+</li>
+<li><p><strong>Broker pipe gains anomaly norms:</strong> Market anomaly norm and
+exit anomaly norm. Two f64s. Computed at the grid level before
+sending. Or computed in the broker thread from the vectors
+already on the pipe.</p>
+</li>
+<li><p><strong>Broker thread encodes derived facts:</strong> Appended to the
+broker's bundle alongside opinions + extracted + self.</p>
+</li>
+</ol>
+<h2 id="what-doesnt-change">What doesn't change<a class="heading-anchor" href="#what-doesnt-change" aria-hidden="true">#</a></h2>
+<ul>
+<li>All observer encoding and learning</li>
+<li>The extraction pipeline</li>
+<li>The cache protocol</li>
+<li>The paper mechanics</li>
+<li>The simulation</li>
+<li>The broker's propagate() and learning path</li>
+</ul>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

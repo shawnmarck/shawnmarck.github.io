@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 032 — Vocabulary Audit: The Idealized State 🟡 PROPOSED — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 032 — Vocabulary Audit: The Idealized State 🟡 PROPOSED <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<p><strong>Date:</strong> 2026-04-12
+<strong>Author:</strong> watmin + machine
+<strong>Status:</strong> PROPOSED</p>
+<h2 id="context">Context<a class="heading-anchor" href="#context" aria-hidden="true">#</a></h2>
+<p>Both designers reviewed every atom across all vocabulary modules
+against the VSA primers. The findings converge on encoding bugs,
+dead atoms, redundancies, and a duplication epidemic between
+market and exit lenses.</p>
+<p>The reviews are at:</p>
+<ul>
+<li><code>docs/vocab-review-hickey.md</code></li>
+<li><code>docs/vocab-review-beckman.md</code></li>
+</ul>
+<p>This proposal describes the TARGET state — what the vocabulary
+should look like after all fixes. Not a diff. A destination.</p>
+<h2 id="principles">Principles<a class="heading-anchor" href="#principles" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Every atom earns its place.</strong> If two atoms are linearly
+dependent, one dies. If an atom is always constant, it dies.
+If an atom encodes nothing (gap on 24/7 BTC), it dies.</p>
+</li>
+<li><p><strong>Every encoding matches the quantity.</strong> Log for multiplicative
+(ratios, rates, unbounded positive). Linear for bounded additive
+(normalized [0,1] or [-1,1]). Circular for periodic (hour,
+day-of-week). No exceptions.</p>
+</li>
+<li><p><strong>Every scale matches the range.</strong> A Linear atom at scale=1.0
+uses 2π of the encoding. The natural range of the quantity must
+fit within one rotation. If BTC runs 30% from SMA200, scale=0.3
+not 0.1.</p>
+</li>
+<li><p><strong>No duplication across stages.</strong> The exit-regime module is a
+copy of the market-regime module. When the broker composes
+them, eight atoms are doubled. Each stage encodes DISTINCT
+atoms. Shared concepts use the extraction — the exit READS
+the market's regime atoms, it doesn't re-encode them.</p>
+</li>
+<li><p><strong>Names speak.</strong> <code>recalib-freshness</code> is staleness.
+<code>market-direction</code> is signed conviction. Names match what the
+value IS, not what we wish it meant.</p>
+</li>
+</ol>
+<h2 id="market-vocabulary-target-state">Market vocabulary — target state<a class="heading-anchor" href="#market-vocabulary-target-state" aria-hidden="true">#</a></h2>
+<h3 id="momentumrs-6-atoms">momentum.rs (6 atoms)<a class="heading-anchor" href="#momentumrs-6-atoms" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;close-sma20&quot;   (/ (- close sma20) close)  0.1)   ; OK
+(Linear &quot;close-sma50&quot;   (/ (- close sma50) close)  0.15)  ; scale 0.1→0.15
+(Linear &quot;close-sma200&quot;  (/ (- close sma200) close) 0.3)   ; scale 0.1→0.3
+(Linear &quot;macd-hist&quot;     (/ macd-hist close)         0.01)  ; OK
+(Linear &quot;di-spread&quot;     (/ (- di-plus di-minus) 100) 1.0)  ; OK
+(Log    &quot;atr-ratio&quot;     (/ atr close))                      ; OK
+</code></pre>
+<p><strong>Changes:</strong> close-sma50 scale to 0.15. close-sma200 scale to 0.3.</p>
+<h3 id="regimers-8-atoms">regime.rs (8 atoms)<a class="heading-anchor" href="#regimers-8-atoms" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;kama-er&quot;        kama-er                    1.0)   ; OK [0,1]
+(Linear &quot;choppiness&quot;     (/ choppiness 100)         1.0)   ; OK [0,1]
+(Linear &quot;dfa-alpha&quot;      (- dfa-alpha 0.5)          0.5)   ; CENTERED at 0.5
+(Linear &quot;variance-ratio&quot; (- variance-ratio 1.0)     1.0)   ; CENTERED at 1.0
+(Linear &quot;entropy-rate&quot;   entropy-rate               1.0)   ; OK [0,1]
+(Linear &quot;aroon-up&quot;       (/ aroon-up 100)           1.0)   ; OK [0,1]
+(Linear &quot;aroon-down&quot;     (/ aroon-down 100)         1.0)   ; OK [0,1]
+(Linear &quot;fractal-dim&quot;    (- fractal-dim 1.5)        0.5)   ; CENTERED at 1.5
+</code></pre>
+<p><strong>Changes:</strong> dfa-alpha centered (- 0.5, scale 0.5). variance-ratio
+centered (- 1.0). fractal-dim centered (- 1.5, scale 0.5).</p>
+<h3 id="oscillatorsrs-8-atoms">oscillators.rs (8 atoms)<a class="heading-anchor" href="#oscillatorsrs-8-atoms" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;rsi&quot;       (/ rsi 100)                 1.0)   ; FIX: normalize
+(Linear &quot;cci&quot;       (/ cci 300)                 1.0)   ; OK
+(Linear &quot;mfi&quot;       (/ mfi 100)                 1.0)   ; OK
+(Linear &quot;williams-r&quot; (/ (+ williams-r 100) 100) 1.0)   ; OK [-100,0]→[0,1]
+(Log    &quot;roc-1&quot;     (max (abs roc-1) 0.001))            ; OK
+(Log    &quot;roc-3&quot;     (max (abs roc-3) 0.001))            ; OK
+(Log    &quot;roc-6&quot;     (max (abs roc-6) 0.001))            ; OK
+(Log    &quot;roc-12&quot;    (max (abs roc-12) 0.001))           ; OK
+</code></pre>
+<p><strong>Changes:</strong> rsi normalized by /100.</p>
+<h3 id="flowrs-4-atoms-was-6">flow.rs (4 atoms, was 6)<a class="heading-anchor" href="#flowrs-4-atoms-was-6" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Log    &quot;obv-slope&quot;        (max (abs obv-slope) 0.001))  ; OK
+(Log    &quot;vwap-distance&quot;    (max (abs vwap-distance) 0.001)) ; OK
+(Linear &quot;buying-pressure&quot;  buying-pressure           1.0)  ; OK [0,1]
+(Linear &quot;body-ratio&quot;       body-ratio                1.0)  ; OK [-1,1]
+</code></pre>
+<p><strong>Removed:</strong> selling-pressure (= 1 - buying-pressure). volume-ratio
+(redundant with buying-pressure).</p>
+<h3 id="persistencers-3-atoms">persistence.rs (3 atoms)<a class="heading-anchor" href="#persistencers-3-atoms" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;hurst&quot;           hurst                     1.0)  ; OK [0,1]
+(Linear &quot;autocorrelation&quot; autocorrelation            1.0)  ; OK [-1,1]
+(Linear &quot;adx&quot;             (/ adx 100)               1.0)  ; OK [0,1]
+</code></pre>
+<p>No changes.</p>
+<h3 id="price_actionrs-5-atoms-was-7">price_action.rs (5 atoms, was 7)<a class="heading-anchor" href="#price_actionrs-5-atoms-was-7" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;range-ratio&quot;     range-ratio               1.0)  ; OK
+(Linear &quot;consecutive-up&quot;  (/ consecutive-up 10)      1.0)  ; OK
+(Linear &quot;consecutive-down&quot; (/ consecutive-down 10)   1.0)  ; OK
+(Linear &quot;upper-wick&quot;      upper-wick                1.0)  ; OK [0,1]
+(Linear &quot;lower-wick&quot;      lower-wick                1.0)  ; OK [0,1]
+</code></pre>
+<p><strong>Removed:</strong> gap (always zero on BTC). body-ratio-pa (identical
+to body-ratio in flow.rs).</p>
+<h3 id="ichimokurs-6-atoms">ichimoku.rs (6 atoms)<a class="heading-anchor" href="#ichimokurs-6-atoms" aria-hidden="true">#</a></h3>
+<p>No changes. All encoding types and scales are correct.</p>
+<h3 id="keltnerrs-5-atoms-was-6">keltner.rs (5 atoms, was 6)<a class="heading-anchor" href="#keltnerrs-5-atoms-was-6" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;bb-pos&quot;           bb-pos                   1.0)  ; OK [-1,1]ish
+(Log    &quot;bb-width&quot;         (max bb-width 0.001))          ; OK
+(Linear &quot;kelt-pos&quot;         kelt-pos                 1.0)  ; OK
+(Log    &quot;squeeze&quot;          (max squeeze 0.001))           ; FIX: Linear→Log
+(Log    &quot;kelt-upper-dist&quot;  (max (abs kelt-upper-dist) 0.001)) ; OK
+</code></pre>
+<p><strong>Changes:</strong> squeeze from Linear to Log (it's a ratio).
+<strong>Removed:</strong> kelt-lower-dist (symmetric with kelt-upper-dist
+relative to kelt-pos — redundant).</p>
+<h3 id="stochasticrs-3-atoms-was-4">stochastic.rs (3 atoms, was 4)<a class="heading-anchor" href="#stochasticrs-3-atoms-was-4" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;stoch-k&quot;          (/ stoch-k 100)          1.0)  ; OK
+(Linear &quot;stoch-d&quot;          (/ stoch-d 100)          1.0)  ; OK
+(Linear &quot;stoch-kd-spread&quot;  (/ (- stoch-k stoch-d) 100) 1.0) ; OK
+</code></pre>
+<p><strong>Removed:</strong> stoch-cross-delta (derivative of stoch-kd-spread —
+linearly dependent on the spread).</p>
+<h3 id="fibonaccirs-3-atoms-was-8">fibonacci.rs (3 atoms, was 8)<a class="heading-anchor" href="#fibonaccirs-3-atoms-was-8" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;range-pos-12&quot;  range-pos-12               1.0)  ; OK [0,1]
+(Linear &quot;range-pos-24&quot;  range-pos-24               1.0)  ; OK [0,1]
+(Linear &quot;range-pos-48&quot;  range-pos-48               1.0)  ; OK [0,1]
+</code></pre>
+<p><strong>Removed:</strong> All five fib-dist-* atoms (constant shifts of
+range-pos-48 — zero additional information).</p>
+<h3 id="divergencers-3-atoms">divergence.rs (3 atoms)<a class="heading-anchor" href="#divergencers-3-atoms" aria-hidden="true">#</a></h3>
+<p>No changes. Conditional emission is correct.</p>
+<h3 id="timeframers-5-atoms-was-6">timeframe.rs (5 atoms, was 6)<a class="heading-anchor" href="#timeframers-5-atoms-was-6" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;tf-1h-trend&quot;     tf-1h-trend               1.0)   ; OK [-1,1]
+(Log    &quot;tf-1h-ret&quot;       (max (abs tf-1h-ret) 0.001))     ; OK
+(Linear &quot;tf-4h-trend&quot;     tf-4h-trend               1.0)   ; OK [-1,1]
+(Log    &quot;tf-4h-ret&quot;       (max (abs tf-4h-ret) 0.001))     ; OK
+(Linear &quot;tf-agreement&quot;    tf-agreement               1.0)   ; OK [-1,1]
+</code></pre>
+<p><strong>Removed:</strong> tf-5m-1h-align (wrong scale, noisy, redundant
+with tf-agreement).</p>
+<h3 id="standardrs-7-atoms-was-8">standard.rs (7 atoms, was 8)<a class="heading-anchor" href="#standardrs-7-atoms-was-8" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Log    &quot;since-rsi-extreme&quot; (max since-rsi-extreme 1))     ; OK
+(Log    &quot;since-vol-spike&quot;   (max since-vol-spike 1))       ; OK
+(Log    &quot;since-large-move&quot;  (max since-large-move 1))      ; OK
+(Linear &quot;dist-from-high&quot;    dist-from-high           1.0)  ; OK [0,1]
+(Linear &quot;dist-from-low&quot;     dist-from-low            1.0)  ; OK [0,1]
+(Linear &quot;dist-from-midpoint&quot; dist-from-midpoint      1.0)  ; OK [-0.5,0.5]
+(Log    &quot;dist-from-sma200&quot;  (max (abs dist-from-sma200) 0.001)) ; OK
+</code></pre>
+<p><strong>Removed:</strong> session-depth (constant after warmup).</p>
+<h2 id="exit-vocabulary-target-state">Exit vocabulary — target state<a class="heading-anchor" href="#exit-vocabulary-target-state" aria-hidden="true">#</a></h2>
+<h3 id="exitvolatilityrs-6-atoms">exit/volatility.rs (6 atoms)<a class="heading-anchor" href="#exitvolatilityrs-6-atoms" aria-hidden="true">#</a></h3>
+<p>No changes. All correct.</p>
+<h3 id="exitstructurers-5-atoms">exit/structure.rs (5 atoms)<a class="heading-anchor" href="#exitstructurers-5-atoms" aria-hidden="true">#</a></h3>
+<p>No changes. All correct.</p>
+<h3 id="exittimingrs-5-atoms">exit/timing.rs (5 atoms)<a class="heading-anchor" href="#exittimingrs-5-atoms" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;rsi&quot;              (/ rsi 100)              1.0)   ; FIX: normalize
+(Linear &quot;stoch-k&quot;          (/ stoch-k 100)          1.0)   ; OK
+(Linear &quot;stoch-kd-spread&quot;  (/ (- stoch-k stoch-d) 100) 1.0) ; OK
+(Linear &quot;macd-hist&quot;        (/ macd-hist close)       0.01) ; OK
+(Linear &quot;cci&quot;              (/ cci 300)               1.0)  ; OK
+</code></pre>
+<p><strong>Changes:</strong> rsi normalized by /100.</p>
+<h3 id="exitregimers-8-atoms">exit/regime.rs (8 atoms)<a class="heading-anchor" href="#exitregimers-8-atoms" aria-hidden="true">#</a></h3>
+<p>Same centering fixes as market/regime.rs: dfa-alpha, variance-ratio,
+fractal-dim.</p>
+<h3 id="exittimers-2-atoms">exit/time.rs (2 atoms)<a class="heading-anchor" href="#exittimers-2-atoms" aria-hidden="true">#</a></h3>
+<p>No changes.</p>
+<h3 id="exitself_assessmentrs-2-atoms">exit/self_assessment.rs (2 atoms)<a class="heading-anchor" href="#exitself_assessmentrs-2-atoms" aria-hidden="true">#</a></h3>
+<p>No changes.</p>
+<h2 id="duplication-resolution">Duplication resolution<a class="heading-anchor" href="#duplication-resolution" aria-hidden="true">#</a></h2>
+<p>The exit/regime module duplicates market/regime. When both are
+in the broker's composed thought, 8 atoms are doubled.</p>
+<p>The fix is NOT to remove exit/regime. The exit needs regime
+awareness (Proposal 026 proved this). The fix is that the exit
+EXTRACTS the market's regime atoms through the extraction
+pipeline instead of re-encoding them from the candle. The
+extracted atoms have m: prefix — different vectors, no doubling.</p>
+<p>But today, the exit re-encodes from the candle. The extraction
+adds ADDITIONAL atoms from the market anomaly. Both the
+re-encoded and extracted versions exist. The broker sees both.</p>
+<p>Target: the exit drops its re-encoded regime/timing atoms and
+relies SOLELY on extraction from the market anomaly for shared
+concepts. The exit's OWN vocab is only facts the market doesn't
+encode — self-assessment, exit-specific structure thoughts.</p>
+<p>This is a larger architectural change. Deferred. The immediate
+fixes are the encoding bugs and dead atoms.</p>
+<h2 id="broker-vocabulary-target-state">Broker vocabulary — target state<a class="heading-anchor" href="#broker-vocabulary-target-state" aria-hidden="true">#</a></h2>
+<h3 id="brokeropinionsrs-7-atoms">broker/opinions.rs (7 atoms)<a class="heading-anchor" href="#brokeropinionsrs-7-atoms" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;market-signed-conviction&quot; signed-conviction 1.0) ; RENAME
+(Linear &quot;market-conviction&quot;        conviction         1.0) ; OK
+(Linear &quot;market-edge&quot;              edge               1.0) ; OK
+(Log    &quot;exit-trail&quot;               trail)                   ; OK
+(Log    &quot;exit-stop&quot;                stop)                    ; OK
+(Linear &quot;exit-grace-rate&quot;          grace-rate          1.0) ; OK
+(Log    &quot;exit-avg-residue&quot;         avg-residue)             ; OK
+</code></pre>
+<p><strong>Changes:</strong> market-direction → market-signed-conviction (honest name).</p>
+<h3 id="brokerself_assessmentrs-7-atoms">broker/self_assessment.rs (7 atoms)<a class="heading-anchor" href="#brokerself_assessmentrs-7-atoms" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;grace-rate&quot;          grace-rate              1.0) ; OK
+(Log    &quot;paper-duration-avg&quot;  paper-duration)               ; OK
+(Log    &quot;paper-count&quot;         paper-count)                  ; OK
+(Log    &quot;trail-distance&quot;      trail)                        ; OK
+(Log    &quot;stop-distance&quot;       stop)                         ; OK
+(Log    &quot;recalib-staleness&quot;   staleness)                    ; RENAME
+(Log    &quot;excursion-avg&quot;       excursion)                    ; OK
+</code></pre>
+<p><strong>Changes:</strong> recalib-freshness → recalib-staleness (honest name).</p>
+<h3 id="brokerderivedrs-11-atoms">broker/derived.rs (11 atoms)<a class="heading-anchor" href="#brokerderivedrs-11-atoms" aria-hidden="true">#</a></h3>
+<p>No changes. Just implemented. Already reviewed.</p>
+<h2 id="summary">Summary<a class="heading-anchor" href="#summary" aria-hidden="true">#</a></h2>
+<table>
+<thead>
+<tr>
+  <th>Category</th>
+  <th>Before</th>
+  <th>After</th>
+  <th>Delta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Category">Market atoms</td>
+  <td data-label="Before">~90</td>
+  <td data-label="After">~76</td>
+  <td data-label="Delta">-14</td>
+</tr>
+<tr>
+  <td data-label="">Exit atoms</td>
+  <td data-label="">~28</td>
+  <td data-label="">~28</td>
+  <td data-label="">0</td>
+</tr>
+<tr>
+  <td data-label="">Broker atoms</td>
+  <td data-label="">~25</td>
+  <td data-label="">~25</td>
+  <td data-label="">0</td>
+</tr>
+<tr>
+  <td data-label="">Encoding bugs fixed</td>
+  <td data-label="">—</td>
+  <td data-label="">5</td>
+  <td data-label="">—</td>
+</tr>
+<tr>
+  <td data-label="">Dead atoms removed</td>
+  <td data-label="">—</td>
+  <td data-label="">10</td>
+  <td data-label="">—</td>
+</tr>
+<tr>
+  <td data-label="">Redundant atoms removed</td>
+  <td data-label="">—</td>
+  <td data-label="">4</td>
+  <td data-label="">—</td>
+</tr>
+<tr>
+  <td data-label="">Names corrected</td>
+  <td data-label="">—</td>
+  <td data-label="">2</td>
+  <td data-label="">—</td>
+</tr>
+</tbody>
+</table>
+<p>The vocabulary gets SMALLER and MORE HONEST. Fewer atoms, each
+one earning its place, each one encoded correctly.</p>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

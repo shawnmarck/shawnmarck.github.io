@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 054 — Interest-Bearing Positions ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 054 — Interest-Bearing Positions ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland
+<strong>Depends on:</strong> <a class="wikilink" href="prop-044.html">Proposal 044</a>, <a class="wikilink" href="prop-049.html">Proposal 049</a>
+<strong>Dependents:</strong> <a class="wikilink" href="prop-055.html">Proposal 055</a></p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Status:</strong> APPROVED — unanimous after two rounds.</p>
+<p>Five designers. Two rounds. Zero rejections. The game is found.</p>
+<h2 id="the-game">The game<a class="heading-anchor" href="#the-game" aria-hidden="true">#</a></h2>
+<p>The treasury is the bank. The broker borrows. The interest never
+stops. Every candle. Every position. The twist compounds. You
+outrun it or you don't.</p>
+<p>Entry: the phase labeler detects structure (3+ higher lows, 3+
+lower highs). The broker enters during the active condition.
+The broker borrows from the treasury. The clock starts.</p>
+<p>Hold: the interest accrues every candle. The broker holds. The
+position grows or bleeds. The anxiety is the thought.</p>
+<p>Exit (Grace): phase trigger (valley for longs, peak for shorts)
+AND market observer predicts against your direction AND residue
+covers interest + exit fee. All three true → exit. Recover
+principal. Pay interest. Keep the residue. Permanent.</p>
+<p>Exit (Violence): interest exceeds position value. EVERY CANDLE
+this is checked. Not at triggers. Every candle. The interest
+never sleeps. The treasury reclaims the position. The broker
+loses its claim. The asset stays in the treasury. The broker
+is punished through its record.</p>
+<h2 id="the-headless-treasury">The headless treasury<a class="heading-anchor" href="#the-headless-treasury" aria-hidden="true">#</a></h2>
+<p>The treasury has no mind. It is a program with a ledger. It
+does not know why the broker entered. It does not know the
+vocabulary, the predictions, the confidence, the strategy. It
+knows: who borrowed what, when, how much interest has accrued,
+and whether the position produced Grace or Violence.</p>
+<p>The treasury is intentionally ignorant of the proposer's thoughts.
+Outcomes are public. Strategy is private. The proposer who reveals
+nothing and produces Grace is funded. The proposer who publishes
+everything and produces Violence is denied.</p>
+<h2 id="earning-favor">Earning favor<a class="heading-anchor" href="#earning-favor" aria-hidden="true">#</a></h2>
+<p>Each proposer maps to a struct. The struct contains measurable
+data derived from the ledger: papers submitted, papers survived,
+mean Grace residue. The treasury applies a uniform predicate.
+Same threshold for everyone. Fund or deny.</p>
+<p>No record → no real capital. The proposer must pay to build the
+record through paper submissions. Paper costs: gas on Solana,
+computation in the lab. The proposer invests in proving themselves
+before the treasury risks its funds.</p>
+<p>If you borrow our money to gamble, you gamble well. And you
+prove yourself through paper submissions first. The enterprise
+demands good players.</p>
+<h2 id="what-was-decided">What was decided<a class="heading-anchor" href="#what-was-decided" aria-hidden="true">#</a></h2>
+<p><strong>Unanimous across all five:</strong></p>
+<ul>
+<li>Interest as the only stop loss. No price triggers. No distances.</li>
+<li>ATR-proportional rate. Breathes with the market.</li>
+<li>Discrete reckoner on position observer. Exit or hold. Not distances.</li>
+<li>Phase-based entry. 3+ higher lows / lower highs.</li>
+<li>Three-condition exit. Phase trigger + market direction + residue math.</li>
+<li>Paper survival as the gate to real capital.</li>
+<li>Headless treasury. Blind to strategy. Judges outcomes.</li>
+<li>Both sides simultaneously. Longs and shorts can coexist.</li>
+<li>Violence checked every candle. The interest never stops.</li>
+<li>Automatic reclaim. No grace period. No appeals.</li>
+</ul>
+<p><strong>Resolved from debate:</strong></p>
+<ul>
+<li>Favor system replaced with proposer record (struct + predicate).
+Hickey's condition met. No identity-based preferences. No
+asymmetric decay. No rehabilitation protocol. The trailing
+window forgets automatically.</li>
+<li>Correlated samples (Van Tharp) addressed at the measurement
+level inside the struct. Papers from the same phase window
+count as one cluster. Not an architectural change.</li>
+<li>Expectancy (Van Tharp) captured by survival rate + mean Grace
+residue. Two numbers. The struct carries both. The predicate
+reads both.</li>
+</ul>
+<h2 id="what-this-replaces">What this replaces<a class="heading-anchor" href="#what-this-replaces" aria-hidden="true">#</a></h2>
+<ul>
+<li>Distance-based triggers → phase transitions + market prediction</li>
+<li>Continuous reckoner (distance prediction) → discrete reckoner (exit or hold)</li>
+<li>Simulation sweep → interest is the teacher</li>
+<li>Paper stacking (8,000 never resolving) → interest kills dead papers every candle</li>
+<li>Stop loss as price level → interest as time cost</li>
+<li>Separate proof curve / EV gate → paper survival IS the proof</li>
+</ul>
+<h2 id="what-this-keeps">What this keeps<a class="heading-anchor" href="#what-this-keeps" aria-hidden="true">#</a></h2>
+<ul>
+<li>Phase labeler (2.0 ATR smoothing)</li>
+<li>Market observer (direction prediction)</li>
+<li>Position observer (new job: exit advisor, discrete)</li>
+<li>Broker as accountability unit</li>
+<li>Accumulation model (deploy, recover principal, keep residue)</li>
+<li>ThoughtAST (anxiety atoms are just more facts)</li>
+<li>The pipes (same CSP, same 30+ threads)</li>
+</ul>
+<h2 id="the-voices">The voices<a class="heading-anchor" href="#the-voices" aria-hidden="true">#</a></h2>
+<table>
+<thead>
+<tr>
+  <th>Voice</th>
+  <th>Verdict</th>
+  <th>Key Contribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Voice">Seykota</td>
+  <td data-label="Verdict">APPROVED</td>
+  <td data-label="Key Contribution">Interest selects for runners. ATR-proportional.</td>
+</tr>
+<tr>
+  <td data-label="">Van Tharp</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Correlated samples. Struct must carry expectancy.</td>
+</tr>
+<tr>
+  <td data-label="">Wyckoff</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Violence every candle. Treasury must not think.</td>
+</tr>
+<tr>
+  <td data-label="">Hickey</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Strip the favor mechanism. Measurement suffices.</td>
+</tr>
+<tr>
+  <td data-label="">Beckman</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Algebraically closed. Pure fold from ledger to gate.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="implementation-notes">Implementation notes<a class="heading-anchor" href="#implementation-notes" aria-hidden="true">#</a></h2>
+<ul>
+<li><p>Wyckoff's warning: Violence must be evaluated EVERY CANDLE,
+not just at phase triggers. A position can die between triggers.
+The interest check runs in the paper tick loop, not in the
+exit evaluation.</p>
+</li>
+<li><p>The interest rate: ATR-proportional, set by the treasury's
+configuration. One rate for everyone. Breathes with volatility.
+The ONE parameter.</p>
+</li>
+<li><p>The proposer struct: implementation detail. For the lab:
+survival rate + mean residue over a trailing window with
+minimum paper count. For Solana: can be more exotic later.</p>
+</li>
+<li><p>The position observer's reckoner: changes from Continuous to
+Discrete. Two labels: Exit, Hold. The anxiety atoms bundle
+with market thoughts. The reckoner learns which shapes of
+anxiety at which triggers precede Grace exits.</p>
+</li>
+</ul>
+<p>It hurts to lose. It pays to win.</p>
+<p><strong>PERSEVERARE.</strong></p>
+<p><strong>Scope:</strong> userland</p>
+<p><strong>Depends on:</strong> Proposal 044 (pivot biography), 049 (phase labeler),
+053 (reckoner drift findings — distances are the wrong exit mechanism)</p>
+<h2 id="the-finding">The finding<a class="heading-anchor" href="#the-finding" aria-hidden="true">#</a></h2>
+<p>Proposal 053 set out to fix reckoner drift. The ablation ran. The
+noise subspace wasn't the cause. The raw values revealed the reckoner's
+predictions inflate (0.37% → 4.24% trail distance while optimal stays
+flat at 0.3-0.7%). The deeper finding: papers stack — 8,000 active per
+broker at the end, zero resolving for hundreds of candles. The position
+observer stops learning at candle 3000. The distances are self-reinforcing:
+wrong distances prevent resolution, preventing learning, preventing
+correction.</p>
+<p>Distance-based exits are the wrong mechanism. The papers should resolve
+from behavioral observation — the structure breaking — not from a price
+reaching a computed distance.</p>
+<h2 id="the-game">The game<a class="heading-anchor" href="#the-game" aria-hidden="true">#</a></h2>
+<p>The treasury is the bank. The broker is the player. The interest is the
+ante. The residue is the loot.</p>
+<h3 id="entry">Entry<a class="heading-anchor" href="#entry" aria-hidden="true">#</a></h3>
+<p>The phase labeler identifies structure. Three consecutive higher lows
+= the market is building upward — buy condition active. Three
+consecutive lower highs = the market is building downward — sell
+condition active. The condition persists for the duration of the
+streak. Average window: 53 candles (4.4 hours). The market is in
+an active condition 44% of the time.</p>
+<p>During the buy condition: the broker enters longs. During the sell
+condition: the broker enters shorts. The frequency of entry is the
+broker's choice — gated by its own anxiety about the cost of holding.</p>
+<p>Each entry: the broker borrows from the treasury. USDC to buy WBTC
+(long). Or WBTC to sell for USDC (short). The swap costs 0.35%.
+The interest clock starts. The broker now has a claim on a position
+inside the treasury's portfolio.</p>
+<h3 id="hold">Hold<a class="heading-anchor" href="#hold" aria-hidden="true">#</a></h3>
+<p>Every candle the position is open, the treasury charges interest. The
+interest is a per-candle, per-dollar rate. The cost accrues. The
+position either grows (the market moves in the predicted direction)
+or bleeds (the interest accumulates against a flat or adverse position).</p>
+<p>The interest IS the anxiety. The interest IS the stop loss. Not a
+price level — a time cost. Hold too long without profit and the
+interest eats you.</p>
+<p>No distance triggers. No reckoner predicting optimal trail or stop
+distances. No simulation sweeping 20 candidates. The entry is a bet.
+The hold costs money. The market decides.</p>
+<h3 id="the-trigger-points">The trigger points<a class="heading-anchor" href="#the-trigger-points" aria-hidden="true">#</a></h3>
+<p>The phase labeler produces three states on every candle:</p>
+<ul>
+<li><strong>Valley</strong> — the low point. The lows are being tested.</li>
+<li><strong>Peak</strong> — the high point. The highs are being tested.</li>
+<li><strong>Transition</strong> — the candles between peak and valley. Nothing
+to evaluate. Hold. Interest ticks.</li>
+</ul>
+<p>Peaks and valleys are where the machine evaluates. Transitions
+are where the machine waits. The trigger is arriving AT a peak
+or valley — not the movement between them.</p>
+<h3 id="exit-grace">Exit (Grace)<a class="heading-anchor" href="#exit-grace" aria-hidden="true">#</a></h3>
+<p>Three conditions AND'd together. All three must be true.</p>
+<p><strong>Long exit:</strong></p>
+<ol>
+<li>Phase is valley (the lows are being tested)</li>
+<li>Market observer predicts Down (direction turning against me)</li>
+<li>Residue after interest + exit fee is positive (the swap works)</li>
+</ol>
+<p><strong>Short exit:</strong></p>
+<ol>
+<li>Phase is peak (the highs are being tested)</li>
+<li>Market observer predicts Up (direction turning against me)</li>
+<li>Residue after interest + exit fee is positive (the swap works)</li>
+</ol>
+<p>All three true → exit. The broker swaps back. The treasury receives
+principal + accrued interest. The residue stays in the acquired
+asset, held by the treasury, tagged to the broker's claim. Grace.</p>
+<p>Any one false → hold:</p>
+<ul>
+<li>Phase is valley but market says Up → the dip is temporary. Hold.</li>
+<li>Phase is valley and market says Down but residue &lt; fees → the
+swap is arithmetically impossible. Hold. Interest ticks.</li>
+<li>Phase is transition → not an evaluation point. Hold.</li>
+</ul>
+<p>The exit fee is real. If the residue doesn't cover the 0.35% exit
+swap, the exit CANNOT happen. This is not a judgment call. This is
+arithmetic. The fee must be accounted for in every action.</p>
+<h3 id="exit-violence">Exit (Violence)<a class="heading-anchor" href="#exit-violence" aria-hidden="true">#</a></h3>
+<p>The interest accrues past the position value. The trade drifted or
+went adverse. The interest ate the capital. The treasury revokes the
+broker's claim. The asset stays in the treasury — it just moved from
+one side to the other. The treasury rebalances. The broker lost its
+claim, its record takes a Violence mark, its gate tightens.</p>
+<p>No stop loss fires. No price trigger. The trade dies from the cost
+of conviction that was wrong. Natural economic death.</p>
+<h3 id="the-position-observers-new-job">The position observer's new job<a class="heading-anchor" href="#the-position-observers-new-job" aria-hidden="true">#</a></h3>
+<p>The position observer doesn't predict distances anymore. It predicts:
+<strong>should I exit this position at this trigger?</strong></p>
+<p>The three conditions are the position observer's inputs:</p>
+<ol>
+<li>The phase — from the phase labeler (already has this)</li>
+<li>The market observer's prediction — from the chain (already receives)</li>
+<li>The residue math — from the broker's accounting</li>
+</ol>
+<p>The position observer composes these into a thought and makes the
+call. Exit or hold. Discrete. Grace or Violence. The same algebra
+the market observer uses for direction prediction. The same reckoner
+mode (discrete, not continuous).</p>
+<p>The position observer is the exit advisor. The broker is the executor.
+The market observer is the direction advisor. The phase labeler is the
+clock. The treasury is the bank.</p>
+<p>Same entities. Same pipes. Same architecture. Different questions.</p>
+<h3 id="the-runner">The runner<a class="heading-anchor" href="#the-runner" aria-hidden="true">#</a></h3>
+<p>The runner is the trade where the residue grows faster than the
+interest. At candle 10: residue 1x interest — nervous. At candle 50:
+residue 5x interest — comfortable. At candle 200: residue 30x interest
+— the interest is invisible.</p>
+<p>The interest selects FOR runners. Trades that move fast and far survive.
+Trades that drift die from carrying cost. The interest doesn't stop
+runners. The interest kills everything that ISN'T a runner. Natural
+selection through economics.</p>
+<h2 id="the-anxiety-as-thought">The anxiety as thought<a class="heading-anchor" href="#the-anxiety-as-thought" aria-hidden="true">#</a></h2>
+<p>The broker encodes the cost of holding as named facts:</p>
+<pre><code class="language-scheme">(Log &quot;interest-accrued&quot; 0.0034)        ;; total cost so far
+(Linear &quot;residue-vs-interest&quot; 2.3 1.0) ;; how comfortable am I
+(Log &quot;candles-since-entry&quot; 47)         ;; how long have I been in
+(Linear &quot;unrealized-residue&quot; 0.015 1.0) ;; what I'd keep if I left now
+</code></pre>
+<p>These bundle with the market thoughts and the phase structure.
+The reckoner sees the full picture: the market AND the position
+AND the cost. It learns which shapes of anxiety precede Grace
+(get out now, the residue is real) and which precede Violence
+(you held too long, the interest is winning).</p>
+<p>The reckoner's question changes from &quot;predict a distance&quot;
+(continuous, broken) to &quot;should I exit at this transition?&quot;
+(discrete, what we're good at). Grace or Violence. Same two
+labels. Same algebra.</p>
+<h2 id="what-this-replaces">What this replaces<a class="heading-anchor" href="#what-this-replaces" aria-hidden="true">#</a></h2>
+<ul>
+<li><strong>Distance-based triggers</strong> — trail and stop distances computed from
+simulation. Gone. The phase trigger (peak/valley) + market observer
+prediction + residue arithmetic is the exit signal.</li>
+<li><strong>Continuous reckoner on position observer</strong> — predicting optimal
+distances. Gone. The position observer becomes a discrete predictor:
+exit or hold at each trigger point. Same reckoner mode as the market
+observer. Same algebra.</li>
+<li><strong>Simulation sweep</strong> — computing hindsight-optimal distances from
+paper price histories. Gone. The interest is the teacher. Papers
+that outrun the interest are Grace. Papers that don't are Violence.</li>
+<li><strong>Paper stacking</strong> — 8,000 papers that never resolve. Gone. Papers
+resolve at trigger points (peaks/valleys) when all three exit
+conditions are met, or die when interest exceeds position value.</li>
+<li><strong>The noise subspace debate</strong> — whether the reckoner should see raw
+thoughts or anomalies. Irrelevant. The reckoner is discrete now.</li>
+<li><strong>Stop loss as a price level</strong> — gone. The interest IS the stop. The
+cost of holding is the discipline, not an arbitrary distance.</li>
+</ul>
+<h2 id="what-this-keeps">What this keeps<a class="heading-anchor" href="#what-this-keeps" aria-hidden="true">#</a></h2>
+<ul>
+<li><strong>Phase labeler</strong> — 2.0 ATR smoothing. Rising/Falling. Peaks/Valleys.
+The structure detection AND the trigger clock. This is the foundation.</li>
+<li><strong>Market observer</strong> — predicts direction (Up/Down). Unchanged. Used
+for entry conditions (which side to enter) AND exit conditions (is the
+direction turning against my position).</li>
+<li><strong>Position observer</strong> — same entity, new question. Was: predict
+distances (continuous, broken). Now: exit or hold at this trigger
+(discrete, what we're good at). Still composes market thoughts with
+position-specific facts. Still learns from outcomes.</li>
+<li><strong>Broker as accountability unit</strong> — the broker borrows, holds, returns.
+The broker tracks its own Grace/Violence. The gate controls whether
+the broker proposes funded trades. Paper survival IS the proof.</li>
+<li><strong>The accumulation model</strong> — deploy capital, recover principal, keep
+residue. Both directions. Constant accumulation. Unchanged.</li>
+<li><strong>ThoughtAST</strong> — the anxiety atoms are just more facts in the bundle.
+No new encoding mechanism. No new AST variants.</li>
+<li><strong>The pipes</strong> — same CSP. Same channels. Same 30+ threads. The
+interest accrual is one more computation per candle per position.</li>
+</ul>
+<h2 id="the-treasury-as-lender">The treasury as lender<a class="heading-anchor" href="#the-treasury-as-lender" aria-hidden="true">#</a></h2>
+<p>The treasury holds BOTH assets. USDC and WBTC (or any pair). The
+broker can borrow EITHER side. Borrow USDC → buy WBTC (long).
+Borrow WBTC → sell for USDC (short). The treasury doesn't care
+which direction. It lent an asset. It wants that asset back plus
+interest.</p>
+<p>The interest accrues IN THE ASSET THAT WAS BORROWED. Borrow USDC →
+owe USDC interest. Borrow WBTC → owe WBTC interest. The denomination
+follows the loan, not a hardcoded currency. The treasury's primary
+denomination is a configuration — it measures everything in that
+unit, but both sides of the pair are lendable.</p>
+<p>The rate is per-candle, per-unit-of-asset-lent. Every candle, the
+treasury applies a twist. Next candle, more twist. The broker must
+outrun the twist.</p>
+<p>The rate IS the treasury's control mechanism. Higher rate = more
+selective pressure. Only strong runners survive. Lower rate = more
+permissive. Weaker trades survive longer. The rate is the ONE parameter
+the treasury sets. Everything else emerges from the game.</p>
+<h3 id="the-swap-stays-in-the-treasury">The swap stays in the treasury<a class="heading-anchor" href="#the-swap-stays-in-the-treasury" aria-hidden="true">#</a></h3>
+<p>The proposals move funds from one asset to another. The swap stays
+inside the treasury's portfolio. When a broker enters long — USDC
+moves to WBTC. Both are in the treasury. The broker has a CLAIM on
+the WBTC position, not possession. The treasury's total value doesn't
+change at entry — it just rebalanced from one asset to another.</p>
+<p>When the broker exits Grace: the WBTC position is swapped back. The
+treasury recovers USDC principal + interest. The residue stays as
+WBTC in the treasury, tagged to the broker's claim. The broker
+earned WBTC residue. The treasury holds it.</p>
+<p>When the broker &quot;stops out&quot; by interest: the position still exists.
+The WBTC is still in the treasury. The interest exceeded the
+position's value in the lending denomination. The treasury reclaims
+the position. The asset didn't disappear — it moved from one side
+of the treasury to the other. The treasury is WHOLE. The broker
+lost its claim. The broker is punished — no residue, bad record,
+lower gate score.</p>
+<p>The treasury can't lose. It can only rebalance. The broker can
+lose — its claim, its record, its future ability to borrow.</p>
+<h3 id="papers-as-proof">Papers as proof<a class="heading-anchor" href="#papers-as-proof" aria-hidden="true">#</a></h3>
+<p>Papers ARE the simulation. The broker doesn't need a separate sim
+to prove itself. Papers run on real price data with real interest
+ticking. The paper starts at a fixed reference position ($10,000).
+Interest accrues every candle. The paper's value changes with the
+price. The interest erodes the paper's profitability.</p>
+<p>If the paper can't outrun the interest — it dies on its own. No
+one kills it. The math kills it. The papers organically sort the
+brokers. The good ones survive the interest. The bad ones erode.
+No parameters. No thresholds. No magic numbers. Just: can you
+outrun the twist?</p>
+<p>A broker with 100 papers that outran the interest has PROVEN it
+can play the game. The gate opens. Real capital flows. A broker
+whose papers all eroded — the gate stays closed. The papers decided.</p>
+<p>The treasury never moves real funds until the paper trail proves
+the broker can outrun the twist. When the gate opens and real capital
+flows — the broker already knows the game. It played it on paper.
+The real position behaves identically.</p>
+<h3 id="any-asset-pair">Any asset pair<a class="heading-anchor" href="#any-asset-pair" aria-hidden="true">#</a></h3>
+<p>The model is pair-agnostic. USDC/WBTC today. USDC/SOL tomorrow.
+WBTC/ETH. USD/GOLD. The treasury holds both sides of whatever
+pair it's configured for. The interest is denominated in whatever
+was lent. The price per candle is the exchange rate. The game is
+the same everywhere.</p>
+<p>When a position exits Grace:</p>
+<ul>
+<li>Treasury receives: principal + accrued interest (in the lent asset)</li>
+<li>Broker claim: residue in the acquired asset (held by treasury)</li>
+</ul>
+<p>When a position dies (interest exceeds value):</p>
+<ul>
+<li>Treasury rebalances: position stays, broker's claim revoked</li>
+<li>Broker receives: nothing. Record damaged. Gate tightens.</li>
+</ul>
+<h2 id="the-data">The data<a class="heading-anchor" href="#the-data" aria-hidden="true">#</a></h2>
+<p>From the simulation on 652K candles:</p>
+<ul>
+<li>3+ higher low streaks: 2,891 buy windows</li>
+<li>3+ lower high streaks: 2,843 sell windows</li>
+<li>Average window duration: 53 candles (4.4 hours)</li>
+<li>Market active 44% of the time, idle 56%</li>
+<li>Average phase duration: 16 candles</li>
+</ul>
+<p>The structure is real. The windows are abundant. The signal exists.</p>
+<h2 id="questions-for-the-designers">Questions for the designers<a class="heading-anchor" href="#questions-for-the-designers" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>The lending rate.</strong> What should it be? Fixed? ATR-proportional?
+Discovered from the data? The rate is the only parameter.</p>
+</li>
+<li><p><strong>Entry frequency.</strong> One per candle during active phase? One per
+phase window? The constant activity from Proposal 044 says one per
+candle. The interest says each entry must be worth it. Do the brokers
+self-gate from the anxiety, or does the treasury limit entries?</p>
+</li>
+<li><p><strong>The reckoner's new question.</strong> Discrete: &quot;exit or hold at this
+transition?&quot; The position observer becomes a discrete predictor
+with anxiety atoms. Is this the right framing? Or should the
+reckoner stay continuous and predict &quot;how much longer should I hold?&quot;</p>
+</li>
+<li><p><strong>Treasury reclaim.</strong> When the interest exceeds the position value,
+the treasury takes back what's left. Is this automatic? Or does
+the broker get one more transition to evaluate?</p>
+</li>
+<li><p><strong>The residue threshold.</strong> The exit must be arithmetically profitable
+(residue &gt; exit fee). But should the residue also exceed some minimum
+to be &quot;substantial&quot;? A function of interest accrued? A percentage of
+principal? Or does the reckoner learn what &quot;worth it&quot; looks like?</p>
+</li>
+<li><p><strong>Both sides simultaneously.</strong> During a buy window, the broker enters
+longs. Old shorts from prior sell windows may still be open. At a
+structure break, the shorts evaluate exit while new longs enter. The
+treasury lends to both sides. Is this correct? Or should the broker
+only hold one direction at a time?</p>
+</li>
+<li><p><strong>The interest as thought.</strong> The anxiety atoms — interest-accrued,
+residue-vs-interest, candles-since-entry. Are these the right facts?
+What else does the broker feel about its own position?</p>
+</li>
+<li><p><strong>The denomination.</strong> The interest accrues in the lent asset. The
+treasury measures in its primary denomination. The price per candle
+converts between them. Is per-candle twist the right granularity?
+Should the rate be fixed or should it breathe with volatility (ATR)?</p>
+</li>
+<li><p><strong>Rebalancing risk.</strong> The treasury can't lose total value, but it
+CAN become imbalanced — too much WBTC, not enough USDC (or vice
+versa) if many brokers enter the same direction and get stopped out.
+Should the treasury limit directional exposure? Or does the phase
+labeler's symmetry (buy windows ≈ sell windows) naturally balance?</p>
+</li>
+<li><p><strong>Paper erosion as the only gate.</strong> No separate proof curve. No
+rolling percentile. No EV calculation. The papers survive the
+interest or they don't. The survival rate IS the proof. Is this
+sufficient? Or do we still need the broker's EV gate as a
+secondary check?</p>
+</li>
+</ol>
+<h2 id="the-treasury-as-record-keeper">The treasury as record keeper<a class="heading-anchor" href="#the-treasury-as-record-keeper" aria-hidden="true">#</a></h2>
+<p>The treasury owns the paper ledger. Not the broker. The treasury.</p>
+<p>Every paper from every broker is registered with the treasury.
+The treasury tracks: who opened it, when, at what price, how much
+interest has accrued, what the current value is, whether it resolved
+Grace or Violence. The treasury IS the book of record.</p>
+<p>The broker proposes. The treasury records. The treasury grades.</p>
+<p>This is deliberate. The broker cannot grade itself. The broker
+cannot claim &quot;I'm profitable&quot; without the treasury's ledger
+confirming it. The treasury has the complete picture — every
+paper from every broker, every resolution, every interest payment,
+every reclaim. The broker sees its own trades. The treasury sees
+ALL trades from ALL brokers.</p>
+<p>The gate is the treasury's decision, not the broker's. The broker
+says &quot;I want to borrow real capital.&quot; The treasury checks the
+ledger: &quot;your last 200 papers — 140 outran the interest, 60 didn't.
+Your paper survival rate is 70%. Your average residue after interest
+is 0.8%. Approved.&quot; Or: &quot;your last 200 papers — 40 survived, 160
+eroded. Your paper survival rate is 20%. Denied.&quot;</p>
+<p>The paper trail is the PROTOCOL between broker and treasury. The
+broker must prove itself on paper before real capital flows. The
+treasury will not accept any broker who hasn't demonstrated paper
+Grace.</p>
+<h3 id="why-the-treasury-must-own-papers">Why the treasury must own papers<a class="heading-anchor" href="#why-the-treasury-must-own-papers" aria-hidden="true">#</a></h3>
+<p>If the broker owns its own papers, the broker can:</p>
+<ul>
+<li>Selectively report good papers and hide bad ones</li>
+<li>Adjust the accounting to look profitable</li>
+<li>Claim a survival rate it didn't earn</li>
+</ul>
+<p>If the treasury owns the papers:</p>
+<ul>
+<li>Every paper is recorded at registration, not at resolution</li>
+<li>The interest accrues on the treasury's clock, not the broker's</li>
+<li>The resolution is computed by the treasury, not reported by the
+broker</li>
+<li>The ledger is complete, honest, and tamper-proof</li>
+</ul>
+<p>This matters because the system is designed to become a contract
+on Solana. When it does:</p>
+<ul>
+<li>The treasury IS the contract. On-chain.</li>
+<li>Every paper IS a transaction. The proposer pays gas to register.</li>
+<li>The paper trail IS on-chain. Verifiable by anyone.</li>
+<li>The proposer's survival rate IS public. The glass box.</li>
+<li>The gas cost to register a paper IS the broker's skin in the
+game. Bad papers cost gas with no return. The proposer must eat
+the transaction cost for every paper on the book.</li>
+<li>The treasury knows which proposer has what paper rate. This is
+how trust is established. Not by reputation. Not by committee.
+By ledger.</li>
+</ul>
+<p>The protocol:</p>
+<ol>
+<li>Broker registers paper with treasury (gas cost on-chain)</li>
+<li>Treasury records: broker ID, entry price, entry candle, direction</li>
+<li>Interest accrues per candle on the treasury's clock</li>
+<li>At trigger points: treasury evaluates the three exit conditions</li>
+<li>Grace: treasury records residue, marks the paper, credits broker</li>
+<li>Violence: treasury records reclaim, marks the paper, debits broker</li>
+<li>The ledger is the proof. The survival rate is the gate.</li>
+</ol>
+<h3 id="earning-favor">Earning favor<a class="heading-anchor" href="#earning-favor" aria-hidden="true">#</a></h3>
+<p>The treasury keeps a registry. Each proposer (wallet, broker ID,
+whatever the identity is) maps to a struct. The struct contains
+measurable data derived from the ledger. The treasury applies a
+predicate to the struct before lending real capital. The predicate
+returns: fund or deny.</p>
+<p>The struct is built from outcomes only. Papers submitted. Papers
+survived. Mean Grace residue. The treasury does not know WHY the
+proposer's papers survived. It knows THAT they survived. The
+struct is headless — it contains measurements, not strategy.</p>
+<p><strong>No record → no real capital.</strong> A proposer with no paper history
+cannot borrow. Period. The proposer must pay to build the record.
+On Solana: gas per paper transaction. In the trading lab:
+computation cost (zero for now, but the design carries it). The
+proposer INVESTS in proving themselves before the treasury risks
+its funds.</p>
+<p><strong>Record meets threshold → gate opens.</strong> The predicate checks
+the struct. Same threshold for every proposer. The treasury
+applies it equally. No preferences. No variable rates per
+identity. The struct either passes or it doesn't.</p>
+<p><strong>Record degrades → gate closes.</strong> The struct reflects the
+recent ledger. If recent papers erode, the struct degrades. The
+gate closes. The proposer must keep submitting papers — at their
+own cost — to rebuild. The treasury doesn't remember the fall.
+The trailing window forgets automatically. What remains is the
+current performance.</p>
+<p>What's IN the struct and what the predicate CHECKS are
+implementation details. For the trading lab: survival rate plus
+mean residue over a trailing window, with a minimum paper count.
+For Solana: could be more exotic — time-weighted, risk-adjusted,
+regime-partitioned. The design says: the struct exists, it's built
+from the ledger, and the treasury reads it before lending.</p>
+<p>Anyone who wants to risk the treasury's money must have risked
+their own to prove themselves.</p>
+<p>The treasury is intentionally ignorant of the proposer's thoughts.
+The proposer is free to disclose what they are doing — publish
+their vocabulary, explain their strategy, open-source their
+machine. But the treasury is not the authority on strategy. The
+treasury is the authority on outcomes. Private ideas can remain
+private. That is not the treasury's concern.</p>
+<p>The treasury's concern: do you produce Grace or Violence?
+Prosperity or poverty? Proven. Through the ledger. Through the
+struct. Through the predicate that reads it.</p>
+<p>The proposer who publishes everything and produces Violence is
+denied. The proposer who reveals nothing and produces Grace is
+funded. The transparency is in the OUTCOMES, not the strategy.
+The glass box shows the record. The strategy is the proposer's
+business. The outcomes are the treasury's.</p>
+<p>It hurts to lose. It pays to win.</p>
+<h2 id="the-headless-treasury">The headless treasury<a class="heading-anchor" href="#the-headless-treasury" aria-hidden="true">#</a></h2>
+<p>The treasury has no mind. The treasury is a program with a ledger.
+It does not know WHY a broker entered. It does not know the broker's
+vocabulary. It does not know the market observer's prediction. It
+does not know the phase labeler's state. It does not know the
+anxiety atoms. It knows NOTHING about the broker's reasoning.</p>
+<p>The treasury knows:</p>
+<ul>
+<li>Who borrowed what, when</li>
+<li>How much interest has accrued</li>
+<li>Whether the position was returned with residue (Grace) or
+reclaimed by erosion (Violence)</li>
+<li>The survival rate of each broker's papers</li>
+<li>The ledger</li>
+</ul>
+<p>That's it. The treasury is blind to strategy. The treasury sees
+actions and outcomes. The broker is judged for what it DID, not
+for WHY it did it.</p>
+<p>This is deliberate. This is the architecture for multiplayer.</p>
+<p>If the treasury knew the broker's reasoning — its vocabulary, its
+predictions, its confidence — the treasury would be coupled to the
+broker's implementation. Change the vocabulary → the treasury's
+evaluation changes. Add a new market observer → the treasury must
+understand it. The treasury would need to be updated every time a
+broker's strategy evolves. Complected.</p>
+<p>The headless treasury evaluates ONE thing: did the paper outrun
+the interest? Yes → Grace. No → Violence. The broker can use
+Ichimoku. The broker can use regime detection. The broker can use
+an LLM. The broker can use a coin flip. The treasury doesn't know.
+The treasury doesn't care. The ledger records. The survival rate
+judges. The gate opens or closes.</p>
+<p>In a multiplayer environment — multiple proposers, each with their
+own machine, their own vocabulary, their own strategy — the treasury
+is the NEUTRAL arbiter. It cannot favor one strategy over another
+because it cannot SEE strategies. It sees outcomes. Outcomes are
+universal. Strategies are private.</p>
+<p>This is why the treasury must own the paper ledger. The broker
+REPORTS an entry. The treasury RECORDS it. The market MOVES. The
+treasury EVALUATES the exit conditions. The broker never self-reports
+an outcome. The treasury computes the outcome from the entry record
+and the current price and the accrued interest. The outcome is
+derived from the ledger and the market, not from the broker.</p>
+<p>The treasury is:</p>
+<ul>
+<li>Blind to strategy</li>
+<li>Deaf to reasoning</li>
+<li>The sole keeper of the ledger</li>
+<li>The sole evaluator of outcomes</li>
+<li>The sole controller of the gate</li>
+<li>The sole setter of the interest rate</li>
+</ul>
+<p>A program. With a record. No one home.</p>
+<p>On Solana: the contract IS the headless treasury. The proposers
+submit entries as transactions. The contract records them. The
+price oracle provides the market. The contract evaluates the exit
+conditions. The contract computes Grace or Violence. The contract
+adjusts the gate. No human in the loop. No committee. No
+governance token. The measurement is the authority.</p>
+<p>Any proposer. Any strategy. Any vocabulary. One ledger. One rate.
+One gate. The headless treasury doesn't judge your thoughts. It
+judges your outcomes.</p>
+<p><em>Perseverare</em> — but only for those who earn it.</p>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

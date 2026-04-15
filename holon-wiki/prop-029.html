@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 029 — Typed Thought Pipeline ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 029 — Typed Thought Pipeline ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Date:</strong> 2026-04-12
+<strong>Decision:</strong> ACCEPTED — implement in phases</p>
+<h2 id="designers">Designers<a class="heading-anchor" href="#designers" aria-hidden="true">#</a></h2>
+<p>Both accepted unanimously after reading the VSA primers.</p>
+<p><strong>Hickey:</strong> The flat extract beats 028's hierarchy. Typed structs
+are the most important change — the compiler becomes the
+proofreader. Don't defer. Exit needs its own noise subspace.
+Broker must receive both (ast, anomaly) pairs independently.</p>
+<p><strong>Beckman:</strong> The algebra closes. The pipeline is a chain of
+morphisms. Exit MUST have a noise subspace — at ~128 atoms and
+D=10,000, the expected noise per probe exceeds 1.0 without
+stripping. The noise subspace is algebraically required. Broker
+reads both pairs: `broker-facts + extract(market-ast, market-anomaly)</p>
+<ul>
+<li>extract(exit-ast, exit-anomaly)`.</li>
+</ul>
+<h2 id="the-noise-floor">The noise floor<a class="heading-anchor" href="#the-noise-floor" aria-hidden="true">#</a></h2>
+<p>The threshold for &quot;present&quot; vs &quot;noise&quot;:</p>
+<pre><code>5.0 / sqrt(dims)
+</code></pre>
+<p>At D=10,000: <code>5.0 / 100.0 = 0.05</code>. Two random bipolar vectors
+have expected cosine 0 with standard deviation <code>1/sqrt(D) = 0.01</code>.
+At 5 sigma, any cosine above 0.05 is statistically significant.
+Below 0.05 is random alignment.</p>
+<p>This is the consumer's default threshold. Not baked into the
+primitive. The consumer applies it. The expression is:
+<code>5.0 / (dims as f64).sqrt()</code>.</p>
+<h2 id="the-changes-phased">The changes — phased<a class="heading-anchor" href="#the-changes-phased" aria-hidden="true">#</a></h2>
+<h3 id="phase-1-fix-the-scoping-flat-extract-immediate">Phase 1: Fix the scoping + flat extract (immediate)<a class="heading-anchor" href="#phase-1-fix-the-scoping-flat-extract-immediate" aria-hidden="true">#</a></h3>
+<ol>
+<li><p><strong>Flat extract primitive:</strong> <code>extract(vec, forms, encoder) → Vec&lt;(ThoughtAST, f64)&gt;</code>. Map, encode (cache hit), cosine.
+No hierarchy. No threshold. In <code>thought_encoder.rs</code>.</p>
+</li>
+<li><p><strong>Scoping fix:</strong> Move extraction INTO the N×M grid. Each
+(mi, ei) slot extracts from ONE market observer's
+(ast, anomaly). The exit vec is per-slot, not shared.
+N×M exit encodings instead of M.</p>
+</li>
+<li><p><strong>Consumer-side filtering:</strong> The exit filters extracted forms
+above <code>5.0 / sqrt(dims)</code>. The original ASTs pass through —
+not transformed to presences. The forms that survived the
+market's noise stripping AND pass the noise floor become
+facts in the exit's vocabulary.</p>
+</li>
+<li><p><strong>Exit gains noise subspace:</strong> Every thinker that produces
+(ast, anomaly) strips its own noise. The market observer
+has one. The broker has one. The exit gains one.
+<code>OnlineSubspace::new(dims, 8)</code>. The exit's anomaly is
+what survived BOTH the market's stripping AND the exit's
+own stripping.</p>
+</li>
+</ol>
+<h3 id="phase-2-typed-structs-next-session">Phase 2: Typed structs (next session)<a class="heading-anchor" href="#phase-2-typed-structs-next-session" aria-hidden="true">#</a></h3>
+<ol start="5">
+<li><p><strong>Vocabulary structs:</strong> Each vocabulary module defines a
+struct. Fields ARE the facts. <code>ToAst</code> trait for encoding.
+<code>forms()</code> for extraction queries. Compiler-enforced
+boundaries.</p>
+</li>
+<li><p><strong>Pipeline types:</strong> The communication type <code>(ThoughtAST, Vector)</code> becomes <code>(T: ToAst, Vector)</code> — the type parameter
+prevents wrong piping.</p>
+</li>
+<li><p><strong>Broker receives both pairs:</strong> <code>(market-ast, market-anomaly)</code>
+AND <code>(exit-ast, exit-anomaly)</code> independently. The broker
+extracts from both. The broker's full thought:
+<code>broker-self + extract(market) + extract(exit)</code>.</p>
+</li>
+</ol>
+<h3 id="phase-3-broker-extraction-future">Phase 3: Broker extraction (future)<a class="heading-anchor" href="#phase-3-broker-extraction-future" aria-hidden="true">#</a></h3>
+<ol start="8">
+<li>The broker reads both stages' frozen superpositions.
+The broker's typed struct declares which forms it reads
+from each. The compiler enforces the contract.</li>
+</ol>
+<h2 id="what-supersedes">What supersedes<a class="heading-anchor" href="#what-supersedes" aria-hidden="true">#</a></h2>
+<ul>
+<li>Proposal 027: the principle stands. The flat extract replaces
+the m:-prefix mirrored AST approach.</li>
+<li>Proposal 028: the hierarchical algorithm is replaced by the
+flat primitive + consumer-side hierarchy if desired.</li>
+<li>The scoping bug in the current implementation is fixed.</li>
+</ul>
+<h2 id="what-doesnt-change">What doesn't change<a class="heading-anchor" href="#what-doesnt-change" aria-hidden="true">#</a></h2>
+<ul>
+<li>The market observer's encoding or learning</li>
+<li>The reckoner internals</li>
+<li>The paper mechanics</li>
+<li>The simulation functions</li>
+<li>The fold structure</li>
+<li>The reward cascade (proposals 021-023)</li>
+<li>The noise-anomaly alignment (proposal 024)</li>
+</ul>
+<p><strong>Date:</strong> 2026-04-12
+<strong>Author:</strong> watmin + machine
+<strong>Status:</strong> PROPOSED</p>
+<h2 id="the-pipeline">The pipeline<a class="heading-anchor" href="#the-pipeline" aria-hidden="true">#</a></h2>
+<p>Each stage of the enterprise produces a pair: the thought AST
+(the dictionary) and the anomaly vector (the frozen superposition
+of noteworthy thoughts). Each consumer receives the prior stage's
+pair and is free to do whatever work it wants on that data.</p>
+<pre><code class="language-scheme">(define (process raw-candle)
+  (let* ((candle (enrich raw-candle))
+         ;; Market: candle → (ast, anomaly)
+         ((market-ast market-anomaly)
+          (market-observer candle))
+         ;; Exit: candle + market's outputs → (ast, anomaly)
+         ((exit-ast exit-anomaly)
+          (exit-observer candle market-ast market-anomaly))
+         ;; Broker: candle + both outputs → proposal
+         )
+    (broker candle
+            market-ast market-anomaly
+            exit-ast exit-anomaly)))
+</code></pre>
+<p>This is one (market, exit, broker) triple. The full enterprise
+is N×M of these.</p>
+<h2 id="the-communication-type">The communication type<a class="heading-anchor" href="#the-communication-type" aria-hidden="true">#</a></h2>
+<p>Each stage produces <code>(ThoughtAST, Vector)</code>:</p>
+<ul>
+<li>The AST is the dictionary — the tree of forms this stage encoded</li>
+<li>The Vector is the anomaly — the noise-stripped superposition</li>
+</ul>
+<p>Together they are a self-describing message. The AST tells you
+what forms COULD be inside. The Vector holds which ones ARE.</p>
+<h2 id="the-consumers-freedom">The consumer's freedom<a class="heading-anchor" href="#the-consumers-freedom" aria-hidden="true">#</a></h2>
+<p>The consumer receives <code>(ThoughtAST, Vector)</code> from the prior stage.
+The consumer is free to:</p>
+<ol>
+<li><p>Walk the AST — it's data. Filter it. Select forms by type.
+Take only <code>Bind</code> nodes. Take only <code>Linear</code> nodes. Take only
+forms with specific names. Whatever work the consumer wants.</p>
+</li>
+<li><p>Encode the selected forms — cache hits. Get the vector for
+each form of interest.</p>
+</li>
+<li><p>Cosine each form's vector against the anomaly — measure
+presence. &quot;Is this form here?&quot;</p>
+</li>
+<li><p>Choose a threshold — the consumer decides what &quot;here&quot; means.
+High cosine = present. Low cosine = absent. The cutoff is
+the consumer's choice. Not the extraction's. Not the
+producer's. The consumer's.</p>
+</li>
+<li><p>Use the present forms — append them to the consumer's own
+facts, encode them into the consumer's own thought, feed
+them to the consumer's own reckoner.</p>
+</li>
+</ol>
+<pre><code class="language-scheme">;; The exit as consumer — one possible strategy:
+(define (exit-observer candle market-ast market-anomaly)
+  (let* (;; Own facts about this candle (28 atoms)
+         (own-facts (exit-lens-facts lens candle self))
+         ;; Read the market's frozen superposition
+         ;; Consumer chooses: all Bind forms (leaves) above 0.01
+         (market-forms (filter bind? (flatten market-ast)))
+         (measured (extract market-anomaly market-forms encoder))
+         (present (filter (lambda (pair)
+                    (&gt; (abs (second pair)) 0.01))
+                    measured))
+         ;; The original ASTs — not transformed, not m:-prefixed.
+         ;; The actual facts the market found noteworthy.
+         (absorbed (map first present))
+         ;; Encode: own facts + absorbed market facts
+         (all-facts (append own-facts absorbed))
+         (thought (encode all-facts))
+         ;; Strip own noise
+         (anomaly (anomalous-component noise-subspace thought)))
+    ;; Return OUR pair for the next consumer
+    (list (Bundle all-facts) anomaly)))
+</code></pre>
+<h2 id="the-extract-primitive">The extract primitive<a class="heading-anchor" href="#the-extract-primitive" aria-hidden="true">#</a></h2>
+<pre><code class="language-scheme">(extract thought-vec forms encoder) → Vec&lt;(ThoughtAST, f64)&gt;
+</code></pre>
+<p>Flat. Simple. A batch of queries against a frozen vector.
+Map forms → encode each (cache hit) → cosine each → return pairs.</p>
+<p>No hierarchy in the primitive. No threshold in the primitive.
+No recursion in the primitive. The consumer provides the forms.
+The consumer applies the threshold. The consumer decides the
+hierarchy. The primitive just measures.</p>
+<pre><code class="language-scheme">(define (extract thought-vec forms encoder)
+  (map (lambda (form)
+    (let ((form-vec (encode encoder form)))
+      (pair form (cosine thought-vec form-vec))))
+    forms))
+</code></pre>
+<h2 id="typed-asts">Typed ASTs<a class="heading-anchor" href="#typed-asts" aria-hidden="true">#</a></h2>
+<p>The ThoughtAST for momentum is not the same type as the
+ThoughtAST for regime. Today both are <code>Vec&lt;ThoughtAST&gt;</code> — the
+compiler can't distinguish them. You can pipe momentum facts
+where regime facts are expected.</p>
+<p>Each vocabulary becomes a struct. The struct fields ARE the facts.</p>
+<pre><code class="language-rust">struct MomentumThought {
+    close_sma20: f64,
+    close_sma50: f64,
+    close_sma200: f64,
+    macd_hist: f64,
+    di_spread: f64,
+    atr_ratio: f64,
+}
+
+struct RegimeThought {
+    kama_er: f64,
+    choppiness: f64,
+    dfa_alpha: f64,
+    variance_ratio: f64,
+    entropy_rate: f64,
+    aroon_up: f64,
+    aroon_down: f64,
+    fractal_dim: f64,
+}
+</code></pre>
+<p>Each struct implements <code>ToAst</code>:</p>
+<pre><code class="language-rust">trait ToAst {
+    fn to_ast(&amp;self) -&gt; ThoughtAST;
+    fn forms(&amp;self) -&gt; Vec&lt;ThoughtAST&gt;;  // the queries this type knows
+}
+</code></pre>
+<p>The <code>forms()</code> method returns the ASTs this vocabulary produces.
+The consumer calls <code>extract(anomaly, thought.forms(), encoder)</code>
+to query all of them. Or the consumer filters <code>forms()</code> first —
+take only the ones it cares about.</p>
+<p>The compiler enforces: you can't pass <code>MomentumThought</code> where
+<code>RegimeThought</code> is expected. The types prevent wrong piping.
+The 600-atom bug (extracting from all 6 market observers instead
+of one) becomes a compile error — the exit's function signature
+says which market type it accepts.</p>
+<h2 id="the-scoping-fix">The scoping fix<a class="heading-anchor" href="#the-scoping-fix" aria-hidden="true">#</a></h2>
+<p>The current implementation pre-computes M exit vecs shared across
+all N market observers. With extraction, this is wrong — each
+(mi, ei) pair sees a different market observer's noteworthy
+thoughts. The exit vec is no longer shared.</p>
+<p>The extraction moves INTO the N×M grid. Each slot:</p>
+<ol>
+<li>Takes its one market observer's (ast, anomaly)</li>
+<li>Extracts the forms it cares about</li>
+<li>Encodes its own facts + absorbed market facts</li>
+<li>Produces its own exit vec</li>
+</ol>
+<p>N×M exit encodings instead of M. More encoding. But honest —
+each exit sees the market it's paired with. And the extraction
+cost drops from 6×100 to 1×100 per slot.</p>
+<h2 id="what-changes">What changes<a class="heading-anchor" href="#what-changes" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong><code>extract()</code> primitive:</strong> flat batch query. <code>(vec, forms, encoder) → Vec&lt;(ThoughtAST, f64)&gt;</code>. Replaces the hierarchical
+version from 028.</p>
+</li>
+<li><p><strong>Pipeline shape:</strong> each stage produces <code>(ThoughtAST, Vector)</code>.
+Each consumer receives the prior stage's pair.</p>
+</li>
+<li><p><strong>Exit encoding moves into the grid:</strong> each (mi, ei) slot
+computes its own exit vec with extracted market facts.</p>
+</li>
+<li><p><strong>Typed thought structs:</strong> each vocabulary module defines a
+struct. <code>ToAst</code> trait for encoding. <code>forms()</code> for extraction
+queries. Compiler-enforced boundaries.</p>
+</li>
+<li><p><strong>Consumer-side filtering:</strong> no threshold in the primitive.
+The consumer walks the AST, selects forms, calls extract,
+filters by cosine. Point-in-code opinions on decomposition.</p>
+</li>
+</ol>
+<h2 id="what-doesnt-change">What doesn't change<a class="heading-anchor" href="#what-doesnt-change" aria-hidden="true">#</a></h2>
+<ul>
+<li>The market observer's encoding or learning</li>
+<li>The noise subspace mechanics</li>
+<li>The reckoner internals</li>
+<li>The paper mechanics</li>
+<li>The simulation functions</li>
+<li>The fold structure</li>
+</ul>
+<h2 id="questions">Questions<a class="heading-anchor" href="#questions" aria-hidden="true">#</a></h2>
+<ol>
+<li><p>The typed structs are a large refactor — every vocabulary
+module changes. Should we implement extract + scoping first
+(proposals 027-028 corrected) and defer typed structs?</p>
+</li>
+<li><p>The exit produces its own <code>(ast, anomaly)</code>. Should the exit
+have its own noise subspace for stripping? Currently it
+doesn't. The market observer has one. The broker has one.
+The exit is the only stage without noise stripping.</p>
+</li>
+<li><p>Each (mi, ei) slot produces a unique exit vec. The broker
+thread receives the composed vector. Should the broker also
+receive the exit's <code>(ast, anomaly)</code> pair so it can extract
+from both stages independently?</p>
+</li>
+</ol>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

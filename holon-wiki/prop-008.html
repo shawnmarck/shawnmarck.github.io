@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 008 — Accumulation and Curve Learning ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 008 — Accumulation and Curve Learning ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<h2 id="runner-phase-accepted">Runner phase: ACCEPTED<a class="heading-anchor" href="#runner-phase-accepted" aria-hidden="true">#</a></h2>
+<p>Both designers accepted. The runner is a state machine, specifiable
+from first principles. Parameters are learned. Mechanism is architecture.</p>
+<p>TradePhase enum: Active → PrincipalRecovered → Runner → Settled.
+Distances gains runner-trail (fourth learnable scalar).
+Applied to the guide.</p>
+<h2 id="curve-learning-resolved-differently-than-proposed">Curve learning: RESOLVED differently than proposed<a class="heading-anchor" href="#curve-learning-resolved-differently-than-proposed" aria-hidden="true">#</a></h2>
+<p>The meta-journal dissolved. It was never a separate entity.</p>
+<h3 id="the-discovery">The discovery<a class="heading-anchor" href="#the-discovery" aria-hidden="true">#</a></h3>
+<p>The curve produces a scalar: <code>edge-at(conviction) → f64</code>. The edge is
+the accuracy at this conviction level. Range: [0.0, 1.0]. No floor at
+0.5 — accuracy below 0.5 is anti-correlation (the flip signal).</p>
+<p>The consumer doesn't need the curve object, the snapshot, or the
+parameters. The consumer needs ONE SCALAR — the edge — as a fact in
+its bundle. The consumer's reckoner learns whether that scalar predicts
+Grace. The same mechanism that handles RSI handles the producer's edge.</p>
+<h3 id="the-protocol">The protocol<a class="heading-anchor" href="#the-protocol" aria-hidden="true">#</a></h3>
+<p>Every learned message carries three things:</p>
+<pre><code>(thought: Vector, prediction: Prediction, edge: f64)
+</code></pre>
+<ul>
+<li><strong>thought</strong> — what you know. The encoded facts.</li>
+<li><strong>prediction</strong> — what you think will happen.</li>
+<li><strong>edge</strong> — how accurate you are when you predict this strongly.
+[0.0, 1.0]. The coupling of knowledge and judgment, measured by the curve.</li>
+</ul>
+<p>The consumer encodes the edge as a scalar fact:</p>
+<pre><code class="language-scheme">(Linear &quot;producer-edge&quot; edge 1.0)
+</code></pre>
+<p>The consumer bundles it with market facts. The reckoner learns:</p>
+<ul>
+<li>edge 0.65 + momentum → Grace (trust this observer)</li>
+<li>edge 0.38 + momentum → Grace on OPPOSITE direction (the flip — discovered organically)</li>
+<li>edge 0.50 → noise (ignore this observer)</li>
+</ul>
+<p>No new primitives. No new entities. No CurveSnapshot struct. No curve
+vocabulary module. One f64 attached to the message. The tools compose.</p>
+<h3 id="what-the-consumer-discovers-without-looking">What the consumer discovers without looking<a class="heading-anchor" href="#what-the-consumer-discovers-without-looking" aria-hidden="true">#</a></h3>
+<ul>
+<li><strong>Right-leaning curve</strong> — high conviction → high accuracy. The reckoner
+learns &quot;high edge = trust.&quot;</li>
+<li><strong>Bell curve</strong> — middle conviction is best. The reckoner learns &quot;edge
+around 0.57 = trust, edge at 0.70 = overfit.&quot;</li>
+<li><strong>Anti-correlation</strong> — consistently below 0.5. The reckoner learns
+&quot;this producer is a contrarian indicator.&quot;</li>
+<li><strong>The flip</strong> — emerges from the data. No hardcoded logic. The
+measurement IS the flip.</li>
+</ul>
+<h3 id="the-designers-conditions-met-or-dissolved">The designers' conditions — met or dissolved<a class="heading-anchor" href="#the-designers-conditions-met-or-dissolved" aria-hidden="true">#</a></h3>
+<p>Hickey's condition: &quot;demonstrate that curve parameters are stable enough
+to be values.&quot; → Dissolved. The consumer doesn't observe curve parameters.
+The consumer observes one scalar that is always a value — the edge at
+this conviction right now.</p>
+<p>Beckman's condition: &quot;prove the Jacobian's spectral radius &lt; 1.&quot; →
+Dissolved. There is no feedback loop to characterize. The edge is a
+read-only observation. The consumer's reckoner does not feed back into
+the producer's curve. The consumer learns FROM the edge but does not
+CHANGE the edge.</p>
+<h2 id="questions-for-designers">Questions for designers<a class="heading-anchor" href="#questions-for-designers" aria-hidden="true">#</a></h2>
+<p><strong>Q1: Is the protocol (thought, prediction, edge) the right channel signature?</strong>
+Every learned message carries all three. The consumer is free to use
+any subset.</p>
+<p><strong>Q2: Is edge ∈ [0.0, 1.0] correct?</strong> No floor at 0.5 — anti-correlation
+is information. Or should the edge be (accuracy - base) ∈ [-0.5, 0.5]
+to center at zero?</p>
+<p><strong>Q3: Does this resolve the curve learning placeholder in the guide?</strong>
+The meta-journal is dissolved. The consumer's existing reckoner learns
+from the edge scalar. No new machinery needed.</p>
+<h2 id="the-confusion">The confusion<a class="heading-anchor" href="#the-confusion" aria-hidden="true">#</a></h2>
+<p>The designers said &quot;coordinate for later&quot; on two features:</p>
+<ol>
+<li>The runner phase (principal recovery → residue rides on house money)</li>
+<li>Curve learning (the meta-journal — the system thinks about how well it thinks)</li>
+</ol>
+<p>The builder is confused. These feel like they should be designable from
+first principles. The accumulation model is the architecture's tolerance
+mechanism — without it, the system needs high accuracy to survive. With
+it, the system only needs the wins to leave something behind. The curve
+learning is the self-awareness mechanism — without it, the system measures
+but doesn't think about its own measurements.</p>
+<p>Are these truly &quot;observe first, design later&quot;? Or are they designable NOW
+from the architecture we already have?</p>
+<h2 id="question-1-the-runner-phase">Question 1: The runner phase<a class="heading-anchor" href="#question-1-the-runner-phase" aria-hidden="true">#</a></h2>
+<p>The current Trade lifecycle: Active → Settled.</p>
+<p>The proposed lifecycle:</p>
+<pre><code>Active → take-profit fires → PrincipalRecovered
+  principal returns to available
+  residue continues as Runner with wider stop
+Runner → runner's stop fires → RunnerSettled
+  residue returns to available (permanent gain)
+</code></pre>
+<p>The designers said: &quot;You cannot design the runner well until you know what
+residue actually looks like in practice.&quot; But:</p>
+<ul>
+<li>The trailing stop mechanism already exists (Levels on Trade)</li>
+<li>The principal amount is known at funding time</li>
+<li>The take-profit level is known at funding time</li>
+<li>The &quot;wider stop&quot; for the runner is itself a distance — learnable by the
+same cascade (reckoner → accumulator → crutch)</li>
+</ul>
+<p><strong>Can the runner phase be specified as a state transition on the Trade
+struct?</strong> The mechanism is the same — a trailing stop at a different
+distance. The only new thing is: the Trade has states, and the treasury
+handles settlement differently depending on the state.</p>
+<p>Is this really something we need data to design? Or is it a state machine
+we can draw right now?</p>
+<h2 id="question-2-curve-learning">Question 2: Curve learning<a class="heading-anchor" href="#question-2-curve-learning" aria-hidden="true">#</a></h2>
+<p>The current curve: records (conviction, correct?) pairs. Reports (amplitude,
+exponent). That's measurement.</p>
+<p>The proposed meta-journal: the curve's (amplitude, exponent) ARE observations.
+Feed them to a reckoner. The reckoner learns: &quot;when amplitude was high
+AND exponent was steep, the next N predictions were accurate.&quot; The curve's
+shape predicts future performance.</p>
+<p>The designers said: &quot;Feeding the curve's output back into encoding creates
+a circular dependency whose convergence is unknown.&quot; But:</p>
+<ul>
+<li>The reckoner already handles circular feedback (observations shape the
+discriminant which shapes predictions which become observations)</li>
+<li>The meta-journal doesn't feed into the SAME reckoner — it's a separate
+reckoner at a higher level</li>
+<li>The book describes exactly this recursion: &quot;Layer N is an engram library
+of layer N-1 states&quot;</li>
+</ul>
+<p><strong>Can the meta-journal be specified as a reckoner that observes curve
+parameters?</strong> The mechanism is the same — observe, predict, resolve.
+The only new thing is: the input is curve state, not candle state.</p>
+<p>Is the circular dependency real? Or is it the same feedback loop the
+enterprise already uses, applied one level up?</p>
+<h2 id="what-the-datamancer-needs">What the datamancer needs<a class="heading-anchor" href="#what-the-datamancer-needs" aria-hidden="true">#</a></h2>
+<p>For each question:</p>
+<ol>
+<li>Can it be designed from first principles NOW?</li>
+<li>If yes, what's the minimal specification?</li>
+<li>If no, what specific observation is needed first?</li>
+</ol>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

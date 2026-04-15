@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 044 — Pivot Biography ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 044 — Pivot Biography ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland
+<strong>Depends on:</strong> <a class="wikilink" href="prop-040.html">Proposal 040</a>, <a class="wikilink" href="prop-043.html">Proposal 043</a>
+<strong>Dependents:</strong> <a class="wikilink" href="prop-045.html">Proposal 045</a>, <a class="wikilink" href="prop-054.html">Proposal 054</a></p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Decision: APPROVED. Van Tharp's caps rejected. Wyckoff's volume adopted.</strong></p>
+<p>Seykota approved clean. The pivot series scalars are &quot;the minimal
+sufficient description of trend structure.&quot;</p>
+<p>Van Tharp wanted hard caps: 4-5 concurrent trades per broker, 20%
+aggregate heat, locked 1R. <strong>Rejected.</strong> The objective is maximal
+residue generation. As many trades as possible. The treasury will
+manage risk when the treasury is built. The broker's job is to
+generate residue, not to manage capital. Trust the reckoner to
+learn from portfolio-heat. Don't cap what we haven't measured.</p>
+<p>Wyckoff wanted volume at the pivots. <strong>Adopted.</strong> Two additional
+atoms on the pivot series:</p>
+<pre><code class="language-scheme">;; Effort: was the pivot on heavy or light volume?
+(Linear &quot;pivot-volume-ratio&quot;
+  (/ (volume-at-pivot) (avg-volume-recent))
+  1.0)
+
+;; Effort vs result: did the volume produce proportional movement?
+;; Heavy volume + small range = absorption (accumulation/distribution).
+;; Light volume + big range = no resistance (breakout).
+(Linear &quot;pivot-effort-result&quot;
+  (/ (range-at-pivot) (volume-at-pivot-normalized))
+  1.0)
+</code></pre>
+<p>These complete the pivot series. Price tells WHAT is happening.
+Volume tells WHY.</p>
+<h2 id="the-full-vocabulary">The full vocabulary<a class="heading-anchor" href="#the-full-vocabulary" aria-hidden="true">#</a></h2>
+<h3 id="pivot-series-atoms-8-on-the-broker-per-pivot">Pivot series atoms (8 — on the broker, per pivot)<a class="heading-anchor" href="#pivot-series-atoms-8-on-the-broker-per-pivot" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Linear &quot;pivot-low-trend&quot; ...)        ;; low-to-low: rising or falling
+(Linear &quot;pivot-high-trend&quot; ...)       ;; high-to-high: momentum
+(Linear &quot;pivot-range-trend&quot; ...)      ;; range: expanding or compressing
+(Linear &quot;pivot-spacing-trend&quot; ...)    ;; spacing: accelerating or decelerating
+(Log &quot;candles-since-pivot&quot; ...)       ;; current pause duration
+(Log &quot;pivot-count-in-trade&quot; ...)      ;; structure depth
+(Linear &quot;pivot-volume-ratio&quot; ...)     ;; effort at pivot (Wyckoff)
+(Linear &quot;pivot-effort-result&quot; ...)    ;; effort vs result (Wyckoff)
+</code></pre>
+<h3 id="trade-biography-atoms-3-per-trade-to-exit-observer">Trade biography atoms (3 — per trade, to exit observer)<a class="heading-anchor" href="#trade-biography-atoms-3-per-trade-to-exit-observer" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Log &quot;pivots-since-entry&quot; ...)        ;; temporal age in pivots
+(Log &quot;pivots-survived&quot; ...)           ;; resilience
+(Linear &quot;entry-vs-pivot-avg&quot; ...)     ;; where entered relative to recent pivots
+</code></pre>
+<h3 id="portfolio-biography-atoms-10-on-the-broker">Portfolio biography atoms (10 — on the broker)<a class="heading-anchor" href="#portfolio-biography-atoms-10-on-the-broker" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(Log &quot;active-trade-count&quot; ...)        ;; how many running
+(Log &quot;oldest-trade-pivots&quot; ...)       ;; age of oldest
+(Log &quot;newest-trade-pivots&quot; ...)       ;; age of youngest
+(Log &quot;portfolio-excursion&quot; ...)       ;; weighted avg excursion
+(Linear &quot;portfolio-heat&quot; ...)         ;; total exposure
+(Linear &quot;pivot-price-trend&quot; ...)      ;; regression of pivot prices
+(Linear &quot;pivot-regularity&quot; ...)       ;; stddev/mean of spacing
+(Linear &quot;pivot-entry-ratio&quot; ...)      ;; fraction of pivots that were entries
+(Log &quot;pivot-avg-spacing&quot; ...)         ;; mean candles between pivots
+(Linear &quot;pivot-price-vs-avg&quot; ...)     ;; current price vs pivot avg
+</code></pre>
+<h2 id="what-changes">What changes<a class="heading-anchor" href="#what-changes" aria-hidden="true">#</a></h2>
+<ol>
+<li>Broker gains <code>pivot_memory: VecDeque&lt;PivotRecord&gt;</code> (bounded at 10)</li>
+<li>Broker gains pivot detection (conviction threshold)</li>
+<li>Trade biography atoms (3) added to the trade update chain</li>
+<li>Portfolio biography atoms (10) composed with broker's thought</li>
+<li>Pivot series atoms (8) computed from pivot memory</li>
+<li>No hard caps on concurrent trades. No max trades per broker.
+The reckoner learns from portfolio-heat. The treasury (when
+built) manages aggregate risk.</li>
+</ol>
+<h2 id="what-doesnt-change">What doesn't change<a class="heading-anchor" href="#what-doesnt-change" aria-hidden="true">#</a></h2>
+<ul>
+<li>The pipeline. The observers. The chains. The telemetry.</li>
+<li>The trade atoms (040). The market lenses (042).</li>
+<li>Papers still register every candle (043).</li>
+<li>The three primitives. The architecture just is.</li>
+</ul>
+<h2 id="answers-to-the-six-questions">Answers to the six questions<a class="heading-anchor" href="#answers-to-the-six-questions" aria-hidden="true">#</a></h2>
+<ol>
+<li><strong>Pivot detection:</strong> conviction. No separate mechanism.</li>
+<li><strong>Pivot memory:</strong> 10 pivots. Fixed. Don't discover this.</li>
+<li><strong>Chain transport:</strong> computed atoms only. Not raw records.</li>
+<li><strong>Portfolio biography:</strong> compose with market thought in broker reckoner.</li>
+<li><strong>Entry cap:</strong> none. The reckoner learns. The treasury caps.</li>
+<li><strong>Simultaneous buy/sell:</strong> independent. Never netted. Different campaigns.</li>
+</ol>
+<p><strong>Scope:</strong> userland</p>
+<p><strong>Depends on:</strong> Proposal 043 (broker survival), 040 (exit vocabulary)</p>
+<h2 id="the-thought">The thought<a class="heading-anchor" href="#the-thought" aria-hidden="true">#</a></h2>
+<p>The market observers find pivot points. Moments in time where
+conviction spikes — &quot;something is happening here.&quot; Between
+pivots, silence. The default is wait.</p>
+<p>The pivot points are where the machine ACTS. Not every candle.
+At the pivots. Enter or exit — same moment, same mechanism.
+What determines the action is not the candle. It is the
+HISTORY of prior actions at prior pivots.</p>
+<p>A broker does not manage one trade. A broker manages a
+PORTFOLIO of trades. A local dip produces 3 pivots — 3
+entries from the same broker, each at a different price, each
+with its own trail, each alive simultaneously. A peak comes —
+the oldest 2 exit, the newest holds. A single broker can have
+many active trades. One new entry per pivot, but many running
+at once.</p>
+<p>The constant activity: a dip is felt across many intervals.
+Each interval is worth actioning. A peak is the same. The
+broker enters at each pivot during the dip. Each entry is its
+own position. Each position has its own biography — when it
+was born, how many pivots it has survived, what the market
+looked like when it entered. At the peak, each position is
+evaluated independently. Some exit. Some hold. The exits
+release residue. The holds ride the next move.</p>
+<h2 id="the-current-state">The current state<a class="heading-anchor" href="#the-current-state" aria-hidden="true">#</a></h2>
+<p>The broker registers papers every candle. The exit observer
+thinks about the current trade (10 atoms from Proposal 040)
+and the current market (extracted from the market observer's
+anomaly). Neither knows what happened at prior pivots. Neither
+remembers the sequence of actions that led here.</p>
+<p>The system is amnesiac about its own decisions. It sees this
+candle. It sees this trade. It does not see the PATTERN of
+its own behavior across time.</p>
+<h2 id="the-pivot-point">The pivot point<a class="heading-anchor" href="#the-pivot-point" aria-hidden="true">#</a></h2>
+<p>A pivot is a candle where the market observer's conviction
+exceeds a threshold — where the anomaly is strong enough that
+the noise subspace says &quot;this is noteworthy.&quot; The pivot is not
+a signal to act. The pivot is a signal to EVALUATE.</p>
+<p>At each pivot, each ACTIVE TRADE has its own context:</p>
+<pre><code class="language-scheme">;; Broker has 3 active trades. Same pivot. Each sees it differently.
+
+;; Trade 1: entered 5 pivots ago at the start of the dip.
+(trade-biography trade-1
+  (Log &quot;pivots-since-entry&quot; 5)
+  (Linear &quot;entry-vs-pivot-avg&quot; -0.03 1.0)  ;; entered below avg pivot price
+  (Log &quot;pivots-survived&quot; 5)                 ;; survived 5 pivots = runner
+  (Log &quot;excursion&quot; 0.047)                   ;; captured 4.7%
+  (Linear &quot;retracement&quot; 0.12 1.0))          ;; 12% off peak
+
+;; Context: this is a runner. 5 pivots deep. 4.7% captured.
+;; The exit observer sets a WIDE trail — let it breathe.
+
+;; Trade 2: entered 2 pivots ago at a higher low.
+(trade-biography trade-2
+  (Log &quot;pivots-since-entry&quot; 2)
+  (Linear &quot;entry-vs-pivot-avg&quot; 0.01 1.0)   ;; entered near avg pivot price
+  (Log &quot;pivots-survived&quot; 2)                 ;; young
+  (Log &quot;excursion&quot; 0.018)                   ;; captured 1.8%
+  (Linear &quot;retracement&quot; 0.31 1.0))          ;; 31% off peak
+
+;; Context: young trade, moderate excursion, significant retracement.
+;; The exit observer sets a TIGHT trail — protect the principal.
+
+;; Trade 3: entered THIS pivot. Newborn.
+(trade-biography trade-3
+  (Log &quot;pivots-since-entry&quot; 0)
+  (Linear &quot;entry-vs-pivot-avg&quot; 0.02 1.0)   ;; entered above avg
+  (Log &quot;pivots-survived&quot; 0)                 ;; just born
+  (Log &quot;excursion&quot; 0.0)                     ;; nothing yet
+  (Linear &quot;retracement&quot; 0.0 1.0))           ;; no peak yet
+
+;; Context: brand new. The exit observer uses the default trail.
+;; The market will teach this trade what it should become.
+</code></pre>
+<p>Same broker. Same candle. Three trades. Three biographies.
+Three different trail distances from the exit observer. The
+runner gets room. The young trade gets protection. The newborn
+gets the default. Each correct given its biography.</p>
+<h2 id="the-brokers-portfolio">The broker's portfolio<a class="heading-anchor" href="#the-brokers-portfolio" aria-hidden="true">#</a></h2>
+<p>At any given candle, a broker may have N active trades:</p>
+<pre><code class="language-scheme">;; A dip produces 3 pivots over 150 candles.
+;; Candle 100: pivot. Broker enters trade-1. (1 active)
+;; Candle 147: pivot. Broker enters trade-2. (2 active)
+;; Candle 198: pivot. Broker enters trade-3. (3 active)
+
+;; The move extends. 2 more pivots.
+;; Candle 243: pivot. All 3 trades evaluated.
+;;   trade-1: 4.7% excursion, survived 3 pivots → hold (wide trail)
+;;   trade-2: 2.1% excursion, survived 1 pivot → hold (medium trail)
+;;   trade-3: 0.8% excursion, survived 0 pivots → hold (tight trail)
+;;   Broker enters trade-4. (4 active)
+
+;; Candle 301: pivot. Peak area.
+;;   trade-1: 6.2% excursion, survived 4 pivots, retracing → EXIT.
+;;            Principal returns. Residue: 5.5%. Permanent.
+;;   trade-2: 3.8% excursion, survived 2 pivots → hold
+;;   trade-3: 2.1% excursion, survived 1 pivot → hold
+;;   trade-4: 0.9% excursion, survived 0 pivots → hold
+;;   (3 active. 1 exited with residue.)
+
+;; Another broker at candle 301 — same pivot, different biography:
+;; Has been waiting. No active trades. This pivot is its ENTRY.
+;; Buy and sell at the same moment. Constant accumulation.
+</code></pre>
+<p>The portfolio IS the biography. The number of active trades.
+Their ages. Their excursions. Their survival count. These are
+all facts. All encodable. The exit observer sees the trade's
+individual biography. The broker sees the portfolio's shape.</p>
+<h2 id="the-biography-atoms">The biography atoms<a class="heading-anchor" href="#the-biography-atoms" aria-hidden="true">#</a></h2>
+<p>Two levels of biography. The TRADE biography flows to the exit
+observer (per-trade). The PORTFOLIO biography flows to the
+broker's own reckoner (aggregate).</p>
+<h3 id="trade-biography-per-trade-to-exit-observer">Trade biography (per-trade, to exit observer)<a class="heading-anchor" href="#trade-biography-per-trade-to-exit-observer" aria-hidden="true">#</a></h3>
+<p>Extends the 10 trade atoms from Proposal 040:</p>
+<pre><code class="language-scheme">;; NEW — pivot-aware trade atoms
+(Log &quot;pivots-since-entry&quot; ...)      ;; how many pivots old
+(Log &quot;pivots-survived&quot; ...)         ;; pivots where exit could have fired but didn't
+(Linear &quot;entry-vs-pivot-avg&quot; ...)   ;; where I entered relative to recent pivot prices
+</code></pre>
+<p>These compose with the existing trade atoms (excursion,
+retracement, age, peak-age, signaled, trail-distance,
+stop-distance, r-multiple, heat, trail-cushion). The exit
+observer now thinks about the trade's TEMPORAL POSITION in
+the sequence of pivots, not just its price position.</p>
+<h3 id="portfolio-biography-aggregate-to-broker-reckoner">Portfolio biography (aggregate, to broker reckoner)<a class="heading-anchor" href="#portfolio-biography-aggregate-to-broker-reckoner" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">;; The broker's portfolio state at this candle
+(Log &quot;active-trade-count&quot; ...)      ;; how many running
+(Log &quot;oldest-trade-pivots&quot; ...)     ;; age of the oldest runner
+(Log &quot;newest-trade-pivots&quot; ...)     ;; age of the youngest
+(Log &quot;portfolio-excursion&quot; ...)     ;; weighted avg excursion across trades
+(Linear &quot;portfolio-heat&quot; ...)       ;; total exposure as fraction of capital
+
+;; The broker's pivot memory — the shape of recent decisions
+(Linear &quot;pivot-price-trend&quot; ...)    ;; regression slope of recent pivot prices
+(Linear &quot;pivot-regularity&quot; ...)     ;; stddev/mean of pivot spacing
+(Linear &quot;pivot-entry-ratio&quot; ...)    ;; fraction of recent pivots that were entries
+(Log &quot;pivot-avg-spacing&quot; ...)       ;; mean candles between pivots
+(Linear &quot;pivot-price-vs-avg&quot; ...)   ;; current price vs mean of recent pivot prices
+</code></pre>
+<p>The portfolio biography tells the broker: &quot;I have 4 trades
+running. The oldest is 5 pivots deep. The youngest was just
+entered. My recent pivots have been entries at rising prices,
+47 candles apart. This is an accumulation pattern.&quot; Or: &quot;I
+have 1 trade running. It's 8 pivots deep. My recent pivots
+have been flat. This is distribution. The next pivot may be
+my exit.&quot;</p>
+<h2 id="the-pivot-detection">The pivot detection<a class="heading-anchor" href="#the-pivot-detection" aria-hidden="true">#</a></h2>
+<p>A pivot is detected when the market observer's conviction
+exceeds a threshold. The conviction already measures
+&quot;something is happening.&quot; High conviction = pivot. The
+machinery exists. No new mechanism needed.</p>
+<h2 id="the-brokers-pivot-memory">The broker's pivot memory<a class="heading-anchor" href="#the-brokers-pivot-memory" aria-hidden="true">#</a></h2>
+<p>The broker maintains a bounded list of recent pivots:</p>
+<pre><code class="language-scheme">(struct pivot-record
+  candle        ;; when
+  price         ;; at what price
+  conviction    ;; how strong
+  action        ;; what I did (enter, exit-N, hold)
+  trade-count)  ;; how many active trades at this pivot
+
+(define PIVOT_MEMORY 10)  ;; remember last 10 pivots
+</code></pre>
+<p>At each candle, the broker checks: is this a pivot? If yes,
+record it. At each pivot, evaluate EACH active trade
+independently — the exit observer produces a trail distance
+per trade given that trade's biography. Some trades exit.
+Some hold. New trades may enter. The pivot record captures
+the aggregate action.</p>
+<h2 id="the-exit-observers-view">The exit observer's view<a class="heading-anchor" href="#the-exit-observers-view" aria-hidden="true">#</a></h2>
+<p>The exit observer already evaluates per-trade (Proposal 040).
+The chain already carries trade atoms per active paper. This
+proposal adds 3 pivot-aware atoms to each trade's thought.
+The exit observer now sees:</p>
+<ol>
+<li><strong>Market</strong> — what the candle says (via extraction)</li>
+<li><strong>Trade</strong> — what THIS position says (040 atoms + 3 pivot atoms)</li>
+<li>The exit observer predicts trail distance for THIS trade
+given THIS trade's full biography.</li>
+</ol>
+<p>A runner (5 pivots survived, high excursion, entered below
+average pivot price) gets a wide trail. A newborn (0 pivots,
+no excursion) gets a tight trail. Same exit observer. Same
+reckoner. Different thought. Different distance. The biography
+IS the context.</p>
+<h2 id="why-this-matters">Why this matters<a class="heading-anchor" href="#why-this-matters" aria-hidden="true">#</a></h2>
+<p>A single broker can:</p>
+<ul>
+<li>Enter at a local dip (pivot 1)</li>
+<li>Enter AGAIN at a higher low (pivot 2)</li>
+<li>Enter AGAIN at a confirmed breakout (pivot 3)</li>
+<li>Hold all three through noise</li>
+<li>Exit the oldest at the peak (residue captured)</li>
+<li>Hold the younger two through the next dip</li>
+<li>Enter fresh at the next dip (pivot 7)</li>
+</ul>
+<p>This is constant activity. Not scalping — accumulating. Each
+entry is small. Each has its own trail. Each survives or dies
+on its own merits. The ones that survive become runners. The
+runners produce residue. The residue is permanent.</p>
+<p>And ACROSS brokers: while Broker A exits its oldest trade at
+the peak, Broker B enters fresh. The capital recycles. The
+residue stays. The portfolio rotates. Both are correct given
+their biographies.</p>
+<p>The 22 brokers don't just differ by lens. They differ by
+biography. They differ by HOW MANY trades are active. They
+differ by WHEN they entered. They differ by WHAT they did at
+the last 10 pivots. The diversity isn't perception. It's
+experience. And experience is the thought.</p>
+<h2 id="the-pivot-series-as-scalars">The pivot series as scalars<a class="heading-anchor" href="#the-pivot-series-as-scalars" aria-hidden="true">#</a></h2>
+<p>The pivots are not just moments. They form a SERIES. The
+series has shape. The shape degrades before the stop fires.
+The shape IS the exit signal.</p>
+<pre><code class="language-scheme">;; The pivot series for one trade:
+;;   low  $100 → high $108    range $8     higher high
+;;   low  $106 → high $112    range $6     higher low, higher high
+;;   low  $110 → high $111    range $1     higher low, range compressing
+;;   low  $106                              LOWER LOW — pattern broke. GET OUT.
+
+;; Each pivot is relative to the prior. Each relationship is a scalar.
+
+(define (pivot-series-atoms pivots)
+  (list
+    ;; Low-to-low trend: are the lows still rising?
+    ;; 100 → 106 → 110 = rising. 110 → 106 = FALLING. Get out.
+    (Linear &quot;pivot-low-trend&quot;
+      (/ (- (last-low pivots) (prev-low pivots))
+         (prev-low pivots))
+      1.0)
+
+    ;; High-to-high trend: are the highs still rising?
+    ;; 108 → 112 = rising. 112 → 111 = FALLING. Momentum dying.
+    (Linear &quot;pivot-high-trend&quot;
+      (/ (- (last-high pivots) (prev-high pivots))
+         (prev-high pivots))
+      1.0)
+
+    ;; Range compression: is the range expanding or dying?
+    ;; 8 → 6 → 1 = compressing. The energy is leaving.
+    (Linear &quot;pivot-range-trend&quot;
+      (/ (last-range pivots) (prev-range pivots))
+      1.0)
+
+    ;; Spacing trend: are pivots getting closer or farther?
+    ;; Accelerating pivots = urgency. Decelerating = exhaustion.
+    (Linear &quot;pivot-spacing-trend&quot;
+      (/ (last-spacing pivots) (prev-spacing pivots))
+      1.0)
+
+    ;; How many candles since the last pivot? Are we in a pause?
+    ;; Long pause after compressed range = the move is over.
+    (Log &quot;candles-since-pivot&quot; (- current-candle (candle (last pivots))))
+
+    ;; The pivot count in this trade's lifetime.
+    ;; More pivots = more structure = more information.
+    (Log &quot;pivot-count-in-trade&quot; (count-pivots-since-entry pivots trade))))
+</code></pre>
+<p>The exit observer sees these alongside the trade atoms (040)
+and the per-trade biography. The pivot series tells the exit
+what the trailing stop cannot: the STRUCTURE is degrading.
+Lower low. Falling high. Compressed range. The stop fires
+after the damage. The pivot series sees it forming.</p>
+<p>The same series works for entries. Rising lows, expanding
+range, regular spacing — the structure is building. Enter.
+The market observer's conviction fires at the pivots. The
+pivot series tells the broker WHETHER this pivot is an entry
+or just noise.</p>
+<p>The scalars are all relative — this pivot vs the last pivot.
+No absolute prices. No magic levels. The relationship between
+consecutive pivots IS the thought. The sequence of
+relationships IS the biography of the move.</p>
+<h2 id="the-sequence-encoding">The sequence encoding<a class="heading-anchor" href="#the-sequence-encoding" aria-hidden="true">#</a></h2>
+<p>holon-rs has <code>encode_sequence</code> with four modes. The one that
+matters: <strong>Positional</strong>. Each item is permuted by its position
+index. <code>permute(thought, i)</code>. Position 0 is geometrically
+distinct from position 1. ABC ≠ CBA. The order IS the geometry.</p>
+<p>The pivot series is not 8 individual atoms. The pivot series is
+a SINGLE positional-encoded vector of the last N pivot thoughts
+AND the gaps between them.</p>
+<p>The gaps are part of the sequence. The market alternates between
+active periods (pivots) and silent periods (gaps). Both are
+thoughts. Both have atoms. Both occupy positions in the sequence.</p>
+<pre><code class="language-scheme">;; The sequence as the market shows it:
+;;
+;; up-1:  12 candles, conviction 0.08, close-avg $71,200, vol-ratio 1.3
+;; gap-1:  3 candles, no conviction, price drifted +$150, vol-ratio 0.4
+;; down-1: 8 candles, conviction 0.06, close-avg $72,850, vol-ratio 1.1
+;; gap-2:  5 candles, no conviction, price drifted -$250, vol-ratio 0.3
+;; up-2:   6 candles, conviction 0.11, close-avg $72,100, vol-ratio 1.8
+;; gap-3: 47 candles, no conviction, price drifted +$1300, vol-ratio 0.6
+;;         ^ long gap. slow grind up. or exhaustion before reversal.
+;; down-2: 4 candles, conviction 0.04, close-avg $73,100, vol-ratio 0.7
+;;         ^ weak conviction. low volume. the highs are dying.
+
+;; Each pivot is a thought:
+(define (pivot-thought pivot)
+  (bundle
+    (bind (atom &quot;pivot-direction&quot;) (encode-direction (:direction pivot)))
+    (Linear &quot;pivot-conviction&quot; (:conviction pivot) 1.0)
+    (Log &quot;pivot-duration&quot; (:duration pivot))
+    (Linear &quot;pivot-close-avg&quot; (:close-avg-relative pivot) 1.0)
+    (Linear &quot;pivot-volume-ratio&quot; (:volume-ratio pivot) 1.0)
+    (Linear &quot;pivot-effort-result&quot; (:effort-result pivot) 1.0)))
+
+;; Each gap is a thought:
+(define (gap-thought gap)
+  (bundle
+    (bind (atom &quot;gap&quot;) (atom &quot;pause&quot;))
+    (Log &quot;gap-duration&quot; (:duration gap))
+    (Linear &quot;gap-drift&quot; (:price-drift-pct gap) 1.0)
+    (Linear &quot;gap-volume&quot; (:avg-volume-ratio gap) 1.0)))
+
+;; The SEQUENCE is one vector:
+;; permute(up-1-thought,    0)
+;; permute(gap-1-thought,   1)
+;; permute(down-1-thought,  2)
+;; permute(gap-2-thought,   3)
+;; permute(up-2-thought,    4)
+;; permute(gap-3-thought,   5)    ← position 5 = deep in the series
+;; permute(down-2-thought,  6)
+;; bundle all → one vector. The reckoner sees the whole story.
+</code></pre>
+<p>The positional encoding preserves the rhythm: active, silent,
+active, silent. The reckoner sees:</p>
+<ul>
+<li><strong>Short gaps between pivots</strong> = urgency. The market is moving.</li>
+<li><strong>Long gaps</strong> = exhaustion or accumulation. Context determines which.</li>
+<li><strong>Weakening conviction at successive pivots</strong> = the move is dying.</li>
+<li><strong>Strengthening conviction</strong> = the move is building.</li>
+<li><strong>Gap drift in the direction of the trend</strong> = slow grind. Healthy.</li>
+<li><strong>Gap drift against the trend</strong> = pressure building. Reversal forming.</li>
+</ul>
+<p>All of this is IMPLICIT in the geometry. The reckoner discovers
+which positional patterns predict. We don't hand-code &quot;lower low
+= get out.&quot; We encode the sequence. The reckoner learns that the
+geometric signature of &quot;lower low after compressed range after
+long gap&quot; predicts Violence.</p>
+<p>The individual scalar atoms from the pivot series section above
+(low-trend, high-trend, range-trend, spacing-trend) are EXPLICIT
+summaries of what the positional encoding holds IMPLICITLY. Both
+can coexist — the scalars for the exit observer's per-trade view,
+the positional sequence for the broker's full-series view.</p>
+<h2 id="the-thoughtast-extension">The ThoughtAST extension<a class="heading-anchor" href="#the-thoughtast-extension" aria-hidden="true">#</a></h2>
+<p>The ThoughtAST currently has six variants:</p>
+<pre><code class="language-rust">pub enum ThoughtAST {
+    Atom(String),
+    Linear { name: String, value: f64, scale: f64 },
+    Log { name: String, value: f64 },
+    Circular { name: String, value: f64, period: f64 },
+    Bind(Box&lt;ThoughtAST&gt;, Box&lt;ThoughtAST&gt;),
+    Bundle(Vec&lt;ThoughtAST&gt;),
+}
+</code></pre>
+<p>This proposal adds a seventh:</p>
+<pre><code class="language-rust">    Sequential(Vec&lt;ThoughtAST&gt;),
+</code></pre>
+<p>The encoder evaluates each child, permutes by position, bundles:</p>
+<pre><code class="language-rust">ThoughtAST::Sequential(items) =&gt; {
+    let mut vecs = Vec::new();
+    let mut all_misses = Vec::new();
+    for (i, item) in items.iter().enumerate() {
+        let (v, misses) = self.encode(item);
+        vecs.push(Primitives::permute(&amp;v, i as i32));
+        all_misses.extend(misses);
+    }
+    let refs: Vec&lt;&amp;Vector&gt; = vecs.iter().collect();
+    (Primitives::bundle(&amp;refs), all_misses)
+}
+</code></pre>
+<p><code>Primitives::permute</code> and <code>Primitives::bundle</code> already exist in
+holon-rs. <code>Sequential</code> is a composition of existing primitives,
+not a new primitive. The algebra doesn't change. The AST gains
+a form that says &quot;order matters.&quot;</p>
+<p>The vocabulary produces:</p>
+<pre><code class="language-rust">ThoughtAST::Sequential(vec![
+    pivot_thought(up_1),     // position 0 — permute(thought, 0)
+    gap_thought(gap_1),      // position 1 — permute(thought, 1)
+    pivot_thought(down_1),   // position 2 — permute(thought, 2)
+    gap_thought(gap_2),      // position 3 — permute(thought, 3)
+    pivot_thought(up_2),     // position 4 — permute(thought, 4)
+])
+</code></pre>
+<p>Each pivot thought and gap thought is itself a Bundle of scalar
+atoms. The Sequential wraps the series. The permutation preserves
+order. The reckoner sees one vector that encodes the full rhythm.</p>
+<p>The EDN representation:</p>
+<pre><code class="language-scheme">(sequential
+  (bundle
+    (bind (atom &quot;pivot-direction&quot;) (atom &quot;up&quot;))
+    (linear &quot;pivot-conviction&quot; 0.08 1.0)
+    (log &quot;pivot-duration&quot; 12)
+    (linear &quot;pivot-volume-ratio&quot; 1.3 1.0))
+  (bundle
+    (bind (atom &quot;gap&quot;) (atom &quot;pause&quot;))
+    (log &quot;gap-duration&quot; 3)
+    (linear &quot;gap-drift&quot; 0.002 1.0))
+  (bundle
+    (bind (atom &quot;pivot-direction&quot;) (atom &quot;down&quot;))
+    (linear &quot;pivot-conviction&quot; 0.06 1.0)
+    (log &quot;pivot-duration&quot; 8)
+    (linear &quot;pivot-volume-ratio&quot; 1.1 1.0)))
+</code></pre>
+<h2 id="the-algebraic-question">The algebraic question<a class="heading-anchor" href="#the-algebraic-question" aria-hidden="true">#</a></h2>
+<p><code>Sequential</code> is a derived form — <code>permute</code> + <code>bundle</code> composed.
+It does not extend the algebra. It extends the AST with a form
+that makes ordered sequences expressible in the thought language.
+The question for the architects: is this a valid AST extension,
+or should the vocabulary produce explicit <code>Bind(position_atom, thought)</code> pairs bundled together? The Sequential form is sugar
+for what the algebra already supports. The sugar makes the
+intent visible: &quot;this is ordered.&quot;</p>
+<h2 id="the-simplicity-question">The simplicity question<a class="heading-anchor" href="#the-simplicity-question" aria-hidden="true">#</a></h2>
+<p>The trade biography adds 3 atoms per trade. The portfolio
+biography adds ~10 atoms per broker. The pivot memory adds a
+bounded VecDeque of ~20 entries (10 pivots + 10 gaps) per broker.
+The pivot detection reuses conviction. The sequence encoding
+reuses <code>permute</code> and <code>bundle</code>. No new mechanisms. The complexity
+is in the VOCABULARY, not the machinery.</p>
+<h2 id="questions-for-strategy-designers-seykota-van-tharp-wyckoff">Questions for strategy designers (Seykota, Van Tharp, Wyckoff)<a class="heading-anchor" href="#questions-for-strategy-designers-seykota-van-tharp-wyckoff" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Pivot detection:</strong> should the pivot be defined by market
+observer conviction, or does it need its own mechanism?</p>
+</li>
+<li><p><strong>Pivot memory size:</strong> 10 pivots? 20? Should it be
+discovered or fixed?</p>
+</li>
+<li><p><strong>Trade biography on the chain:</strong> the 3 new trade atoms
+flow through the existing chain to the exit observer. Should
+the pivot memory also flow, or should only the computed atoms
+travel?</p>
+</li>
+<li><p><strong>Portfolio biography scope:</strong> the broker's portfolio state
+(active count, oldest, newest) — does this compose with the
+market thought in the broker's reckoner, or should it be a
+separate input?</p>
+</li>
+<li><p><strong>Entry decisions:</strong> at a pivot with 3 active trades, should
+the broker still enter a 4th? What governs the maximum
+concurrent trades? A hard cap? The portfolio-heat atom
+(the reckoner learns when heat is too high)?</p>
+</li>
+<li><p><strong>The simultaneous buy/sell across brokers:</strong> when Broker A
+exits and Broker B enters at the same pivot, the treasury
+sees both proposals. Should the treasury treat these as
+independent (fund both) or netted?</p>
+</li>
+<li><p><strong>The gap thoughts:</strong> the gaps between pivots are encoded as
+thoughts in the sequence (duration, drift, volume). Is this
+the right vocabulary for the silence? What else does a trader
+see in the pause between pivots?</p>
+</li>
+</ol>
+<h2 id="questions-for-architecture-designers-hickey-beckman">Questions for architecture designers (Hickey, Beckman)<a class="heading-anchor" href="#questions-for-architecture-designers-hickey-beckman" aria-hidden="true">#</a></h2>
+<ol start="8">
+<li><p><strong>Sequential as AST form:</strong> <code>Sequential(Vec&lt;ThoughtAST&gt;)</code> is
+sugar for <code>permute</code> + <code>bundle</code>. Should this be a first-class
+AST variant, or should the vocabulary produce explicit
+<code>Bind(position_atom, thought)</code> pairs? The sugar makes intent
+visible. The desugared form keeps the AST minimal.</p>
+</li>
+<li><p><strong>Composability:</strong> the Sequential produces one vector. That
+vector bundles with other thoughts (trade atoms, market
+extraction). Does the positional permutation interfere with
+the outer bundle? The permuted elements live in rotated
+subspaces — they compose cleanly with non-permuted elements?</p>
+</li>
+<li><p><strong>Caching:</strong> the Sequential's children are pivot/gap thoughts
+that recur across candles (a pivot thought is the same for
+its entire duration). Should the encoder cache the Sequential
+as a whole, or cache each child and recompute the permuted
+bundle? The children change rarely. The sequence shifts by
+one when a new pivot arrives.</p>
+</li>
+</ol>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

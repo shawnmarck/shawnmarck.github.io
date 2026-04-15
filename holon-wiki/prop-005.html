@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 005 — Co-Learning Panels — Positions as Message Queues ⏳ Open — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 005 — Co-Learning Panels — Positions as Message Queues ⏳ Open <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<p><strong>Scope: userland</strong> — uses existing forms (journal, observer, predict, resolve, online-subspace). No new language forms.</p>
+<hr />
+<h2 id="1-the-current-state">1. The current state<a class="heading-anchor" href="#1-the-current-state" aria-hidden="true">#</a></h2>
+<p>The enterprise has two observer pipelines, both using the same two templates (prediction journal + noise subspace):</p>
+<p><strong>Market panel</strong> (six observers: momentum, structure, volume, narrative, regime, generalist). Each observer encodes candle-derived thoughts through its lens, strips noise via OnlineSubspace, predicts direction via Journal. Labels are Win/Loss, determined by MFE vs MAE at horizon drain. The manager aggregates opinions and the desk opens positions when conviction is sufficient.</p>
+<p><strong>Exit observer</strong> (one, in <code>market/exit.rs</code>). Encodes position state every N candles (P&amp;L, MFE, MAE, hold duration, stop distance, ATR shift, phase, direction). Learns Hold/Exit from whether the position improved or deteriorated over the next interval. Currently aspirational — it learns but does not yet modulate the trailing stop. The safety stop (k_stop x ATR) and take-profit (k_tp x ATR) are fixed parameters.</p>
+<p><strong>Position lifecycle</strong> follows the accumulation model: deploy source, swap to target, manage via trailing stop and take-profit, recover principal on TP (keeping residue as accumulation), close on stop or runner trail. Phases: Active, Runner, Closed.</p>
+<p>The two halves exist. The templates are proven. The plumbing works.</p>
+<h2 id="2-the-problem">2. The problem<a class="heading-anchor" href="#2-the-problem" aria-hidden="true">#</a></h2>
+<p>The market observers cannot validate their own predictions. The label that says &quot;you were right&quot; comes from the position lifecycle — specifically from horizon drain, where MFE vs MAE is compared after a fixed number of candles. The quality of market observer learning depends entirely on the resolution mechanism, and the resolution mechanism learns nothing.</p>
+<p>The exit observer accumulates knowledge about position management but nobody consults it. It can distinguish &quot;this position is deteriorating&quot; from &quot;this position is improving&quot; but the trailing stop ignores it. The stop/TP levels are fixed ATR multiples — parameters, not predictions.</p>
+<p>Two learning systems, neither coupled to the other. The market panel produces entries that the exit observer could evaluate, but the exit observer's judgment never flows back as market panel labels. The exit observer sees positions that the market panel created, but has no channel to say &quot;this entry was easy to manage&quot; or &quot;this entry was a disaster from candle one.&quot;</p>
+<h2 id="3-the-proposed-change">3. The proposed change<a class="heading-anchor" href="#3-the-proposed-change" aria-hidden="true">#</a></h2>
+<h3 id="positions-as-the-message-queue">Positions as the message queue<a class="heading-anchor" href="#positions-as-the-message-queue" aria-hidden="true">#</a></h3>
+<p>The position IS the communication channel between two independent panels. This is CSP: two processes, one bounded channel, messages passed through the position lifecycle.</p>
+<pre><code>Market Panel                    Exit Panel
+(predict direction)             (predict hold/exit)
+      │                               │
+      │   &quot;enter here, this           │
+      │    direction, this             │
+      │    conviction&quot;                 │
+      ▼                               │
+┌──────────────┐                      │
+│   Position   │◄─────────────────────┘
+│  (the message)   reads state each candle
+│              │
+│  lives, accumulates state:
+│  P&amp;L, MFE, MAE, duration,
+│  stop distance, ATR shift
+└──────┬───────┘
+       │
+       │  &quot;this is how it ended&quot;
+       │  (resolution label)
+       ▼
+Market Panel learns
+</code></pre>
+<p><strong>Producer</strong>: market panel creates positions (via manager + treasury).
+<strong>Consumer</strong>: exit panel reads position state each candle the position is open.
+<strong>Message format</strong>: ManagedPosition struct — already defined in <code>position.wat</code>.
+<strong>Acknowledgment</strong>: position resolution flows back as the market panel's Win/Loss label.
+<strong>Backpressure</strong>: treasury (won't fund more positions than available capital).
+<strong>Bounded channel</strong>: ring buffer on pending entries (safety valve).</p>
+<h3 id="two-independent-panels-same-template">Two independent panels, same template<a class="heading-anchor" href="#two-independent-panels-same-template" aria-hidden="true">#</a></h3>
+<p>Both panels use the identical observer architecture from <code>observer.wat</code>: facts -&gt; noise subspace -&gt; residual -&gt; journal -&gt; predict. The configuration axes differ:</p>
+<table>
+<thead>
+<tr>
+  <th>Axis</th>
+  <th>Market Panel</th>
+  <th>Exit Panel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Axis">Vocabulary</td>
+  <td data-label="Market Panel">RSI, MACD, harmonics, regime ...</td>
+  <td data-label="Exit Panel">Treasury state: equity, deployed, drawdown, utilization, phase. Position state: P&amp;L, MFE, MAE, hold duration, stop distance. Market context: ATR regime, volatility shift since entry.</td>
+</tr>
+<tr>
+  <td data-label="">Labels</td>
+  <td data-label="">Win / Loss</td>
+  <td data-label="">Hold / Exit</td>
+</tr>
+<tr>
+  <td data-label="">Question</td>
+  <td data-label="">&quot;Enter this direction?&quot;</td>
+  <td data-label="">&quot;Should this position stay open?&quot;</td>
+</tr>
+<tr>
+  <td data-label="">Input</td>
+  <td data-label="">Candle stream</td>
+  <td data-label="">Treasury + position snapshot stream</td>
+</tr>
+<tr>
+  <td data-label="">Resolution</td>
+  <td data-label="">From exit panel outcomes</td>
+  <td data-label="">From portfolio improvement/decay</td>
+</tr>
+</tbody>
+</table>
+<p>The exit observer's vocabulary IS the treasury's state at a point in time. The treasury doesn't know it's being observed — it just IS. The exit observer reads the snapshot the same way market observers read candle indicators. The encoding pipeline is identical: facts bound to atoms, bundled into a thought vector. Different inputs, same algebra.</p>
+<p>The exit panel is not one observer — it is a panel of observers, each with a lens over a different aspect of the treasury + position state. Possible specializations: portfolio health (equity trajectory, drawdown, utilization), position dynamics (P&amp;L, MFE/MAE ratio, hold duration), market context since entry (ATR change, regime shift). Same manager aggregation pattern as the market panel. The exit manager reads exit observer opinions, encoded as Holon vectors, and predicts the aggregate Hold/Exit.</p>
+<h3 id="the-dependency-exit-learns-first-market-learns-from-exit">The dependency: exit learns first, market learns from exit<a class="heading-anchor" href="#the-dependency-exit-learns-first-market-learns-from-exit" aria-hidden="true">#</a></h3>
+<p>The market observers cannot learn anything honest until the exit observers are trained. This is not a limitation — it is the design.</p>
+<p>The exit panel learns from the world directly: did the position improve or deteriorate after this candle? That's a question the market answers every candle. The exit panel doesn't need the market observers for this. It needs open positions and price movement. It learns Hold/Exit from raw outcomes.</p>
+<p>The market panel has nothing honest to learn from until the exit panel has proven edge. Before that, any label the market panel receives is either arbitrary (horizon drain) or dishonest (rigged simulation parameters). The market panel is BLOCKED — not by code, but by epistemology. There is no honest label to give it.</p>
+<p>Once the exit panel proves edge (its curve validates), its resolutions become the market panel's labels. The exit panel says &quot;this position was a Win because I held through the dip and rode it to accumulation&quot; or &quot;this position was a Loss because it deteriorated from candle one and I couldn't save it.&quot; Those are honest labels. The market panel can learn from them.</p>
+<h3 id="the-co-learning-loop">The co-learning loop<a class="heading-anchor" href="#the-co-learning-loop" aria-hidden="true">#</a></h3>
+<p>The positive feedback loop is not poisonous because each side learns from the WORLD, not from each other's predictions:</p>
+<ol>
+<li>Exit panel learns Hold/Exit from position outcomes (the world).</li>
+<li>Exit panel proves edge. Its resolutions become honest labels.</li>
+<li>Market panel learns Win/Loss from exit panel resolutions (the world, filtered through learned management).</li>
+<li>Market panel makes better entry predictions. Positions are cleaner.</li>
+<li>Cleaner positions give the exit panel clearer signal. It learns better.</li>
+<li>Better exit management produces higher-quality labels for the market panel.</li>
+<li>Goto 4.</li>
+</ol>
+<p>Neither panel learns from the other's OPINION. They learn from the other's OUTCOME. The world is the ground truth at every step. The exit panel doesn't ask the market panel &quot;was this a good entry?&quot; — it observes the position and sees for itself. The market panel doesn't ask the exit panel &quot;should I have entered?&quot; — it receives the resolution and learns from what happened.</p>
+<p>The panels do not share journals. They do not see each other's thoughts. They communicate ONLY through the position lifecycle. Each operates on its own fiber — the market panel over candle-space, the exit panel over position-space — coupled through the shared base (the position struct).</p>
+<h3 id="the-mfemae-approximation-and-why-it-must-be-replaced">The MFE/MAE approximation — and why it must be replaced<a class="heading-anchor" href="#the-mfemae-approximation-and-why-it-must-be-replaced" aria-hidden="true">#</a></h3>
+<p>The current MFE/MAE labels (proposal 004, revised) are better than the simulation labels they replaced — 50/50 instead of 91/9. But they are still magic numbers. The horizon (360 candles) is arbitrary. The binary split (MFE &gt; |MAE|?) is crude. The weight (|MFE - |MAE||) is a heuristic. These are approximations of what a trained exit panel would provide honestly.</p>
+<p>The MFE/MAE calculation IS the exit expert — just a dumb version of it. A fixed window, a fixed comparison, no learning. The exit panel replaces the approximation with a learned resolution. It doesn't ask &quot;after 360 candles, was MFE &gt; MAE?&quot; It asks &quot;right now, should this position stay open?&quot; — and it learns the answer from every position it has ever watched.</p>
+<p>The MFE/MAE labels are the bootstrap. They prove the architecture works with honest labels. The exit panel is the convergence — when the approximation is replaced by the thing it was approximating.</p>
+<h3 id="what-the-exit-panel-replaces">What the exit panel replaces<a class="heading-anchor" href="#what-the-exit-panel-replaces" aria-hidden="true">#</a></h3>
+<p>Today the trailing stop is <code>k_trail x ATR</code> from the extreme rate. The exit panel's prediction modulates this:</p>
+<ul>
+<li>Exit with high conviction: tighten the trail (the position is deteriorating).</li>
+<li>Hold with high conviction: loosen the trail (the position is improving).</li>
+<li>Low conviction: trail unchanged (safety parameters hold).</li>
+</ul>
+<p>The safety stop (<code>k_stop x ATR</code>) remains as an invariant floor. The exit panel operates above it — it can only tighten or loosen the trail, never remove the stop. The stop is the guardrail, not the strategy. The exit panel learns the strategy.</p>
+<h3 id="what-the-exit-panel-changes-about-market-labels">What the exit panel changes about market labels<a class="heading-anchor" href="#what-the-exit-panel-changes-about-market-labels" aria-hidden="true">#</a></h3>
+<p>Today, market observers learn from horizon drain: MFE vs MAE after N candles. In the co-learning model, market observers learn from position resolution — how the exit panel managed the trade. A position that the exit panel held through a dip and rode to accumulation is a Win with high weight. A position that the exit panel exited early because it detected immediate deterioration is a Loss with high weight. The exit panel's management quality becomes the market panel's label quality.</p>
+<p>Grace and violence carry across the channel:</p>
+<ul>
+<li><strong>Grace</strong> (market panel): how much residue was accumulated — the exit panel held well.</li>
+<li><strong>Violence</strong> (market panel): how much was lost — the exit panel couldn't save it.</li>
+<li><strong>Grace</strong> (exit panel): how much the position improved after a Hold prediction.</li>
+<li><strong>Violence</strong> (exit panel): how much the position lost after a Hold prediction (should have exited).</li>
+</ul>
+<h2 id="4-the-algebraic-question">4. The algebraic question<a class="heading-anchor" href="#4-the-algebraic-question" aria-hidden="true">#</a></h2>
+<p>No new algebraic structures. Both panels use the existing monoid:</p>
+<ul>
+<li><strong>Bundle</strong>: superposition of observer opinions (market manager, exit manager).</li>
+<li><strong>Bind</strong>: role-filler binding (exit facts bound to position atoms, same as market facts bound to indicator atoms).</li>
+<li><strong>Journal</strong>: prediction + resolution for both panels. Win/Loss journal for market. Hold/Exit journal for exit.</li>
+<li><strong>OnlineSubspace</strong>: noise stripping for both panels. Position-space noise model for exit, candle-space noise model for market.</li>
+<li><strong>Cosine</strong>: similarity scoring for predictions in both panels.</li>
+<li><strong>Curve</strong>: proof gate for both panels. An exit observer must prove predictive edge before its opinion modulates the trail.</li>
+</ul>
+<p>The coupling between panels is not algebraic — it is architectural. The position struct is data, not a vector operation. The label flow is a function call, not a new primitive. The co-learning emerges from how we wire the existing forms, not from extending them.</p>
+<p>The accumulation model (<code>accumulation.wat</code>) is unchanged. Principal recovery, residue, runner phase — all the same. The exit panel decides WHEN to trigger these transitions, but the transitions themselves are the same operations.</p>
+<h2 id="5-the-simplicity-question">5. The simplicity question<a class="heading-anchor" href="#5-the-simplicity-question" aria-hidden="true">#</a></h2>
+<p><strong>Is this simple or easy?</strong> Simple. Two instances of the same template (observer panel), connected by a data structure that already exists (ManagedPosition). No new types. No new primitives. No new encoding tricks.</p>
+<p><strong>What's being complected?</strong> The risk is complecting position management with prediction. The exit panel predicts Hold/Exit but the ACTION is trail modulation. These must stay separate: the prediction is a vector operation, the trail modulation is arithmetic on the position struct. The exit panel offers an opinion. The desk acts on it (or doesn't). Same boundary as market observers: they perceive, they don't decide.</p>
+<p><strong>Could existing forms solve it?</strong> They DO solve it. That is the point. The observer template (<code>observer.wat</code>) already supports arbitrary vocabulary and labels. The exit observer encoding (<code>exit.wat</code>) already exists. The manager aggregation pattern already works. The proposal is: wire the second instance of what we already have, and connect the two through the position lifecycle.</p>
+<p>The only new code is: (a) exit manager aggregation (same pattern as market manager), (b) trail modulation from exit conviction (arithmetic), (c) label routing from position resolution back to market panel (a function call).</p>
+<h2 id="6-questions-for-designers">6. Questions for designers<a class="heading-anchor" href="#6-questions-for-designers" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Exit observer specialization</strong>: Mirror the market panel. Specialists and a generalist. Each exit specialist sees the treasury through one lens — silos. The exit generalist sees the full vocabulary — superposition. The exit manager aggregates. The question is not whether to specialize but what the lenses are. Candidates: portfolio health (equity, drawdown, utilization), position dynamics (P&amp;L trajectory, MFE/MAE, duration), market context (ATR shift, regime change since entry), risk state (correlation, volatility, streak). The designers should validate whether these lenses are orthogonal enough to justify separation.</p>
+</li>
+<li><p><strong>Exit observation frequency</strong>: Every candle. Hide nothing. If the signal is noisy, the noise subspace learns what &quot;normal treasury state&quot; looks like and strips it. The residual — what's unusual about this snapshot — is what the journal sees. That's the two-stage pipeline. We don't gate the input. We filter the noise algebraically. The question for designers: does this hold, or is there a reason the exit panel's noise subspace would fail where the market panel's succeeds?</p>
+</li>
+<li><p><strong>Label feedback timing</strong>: The market panel learns when a position resolves. If that takes a long N, so be it. That is the learning. We cannot know until we observe. Intermediate feedback would be imposing our schedule on the market's answer — the same mistake as the horizon. The position resolves when the exit panel says it resolves. The market panel waits. Patience is not a limitation. Impatience is a lie.</p>
+</li>
+<li><p><strong>Exit learning without positions</strong>: The exit panel does not need open positions to learn. It needs a snapshot of the portfolio state at the moment a thought was encoded — equity, deployment, drawdown, ATR, phase. That snapshot IS the exit thought. Resolution: did the portfolio state improve or deteriorate N candles later? Same pattern as market observers: encode state, predict, resolve against what actually happened. No paper positions. No simulated lifecycle. Just snapshots and outcomes.</p>
+</li>
+<li><p><strong>Trail modulation bounds</strong>: The conviction is a scalar. The curve maps conviction to accuracy. The modulation magnitude IS the conviction — high conviction Hold means loosen proportionally, high conviction Exit means tighten proportionally. No separate bounds. No magic multiplier. The same scalar encoding that drives position sizing in the market panel drives trail modulation in the exit panel. The curve tells us how much to trust the opinion. The opinion tells us which direction. The algebra already knows.</p>
+</li>
+<li><p><strong>Transition from horizon drain</strong>: There is no transition. The horizon drain is removed. The market panel is starved until the exit panel can feed it. But it is not idle — it encodes every candle, builds thoughts, strips noise, predicts. The noise subspace learns what normal looks like. The thought encoder refines the vocabulary. The market panel does everything except learn labels. It watches. It prepares. Then the exit panel resolves a position and sends back: these facts were good, these facts were bad. Asynchronously. Whenever the position resolves. The market panel's journal receives the label and learns which of its accumulated thoughts predicted the outcome. This IS the co-learning — the market panel derives the thoughts and filters the noise, the exit panel tells it which thoughts mattered. Neither can function without the other.</p>
+</li>
+</ol>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

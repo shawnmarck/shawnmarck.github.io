@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 053 — Reckoner Drift ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 053 — Reckoner Drift ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland (touches holon-rs internals)</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Status:</strong> APPROVED — ablation first, then ship.</p>
+<p>Five designers. Three debate rounds. One ignorant reader. 21 files.
+Unanimous on direction. The ablation gates the implementation.</p>
+<h2 id="the-diagnosis">The diagnosis<a class="heading-anchor" href="#the-diagnosis" aria-hidden="true">#</a></h2>
+<p>The position observer's noise subspace evolves underneath the reckoner.
+The reckoner's bucketed prototypes were accumulated from anomalies under
+old definitions of &quot;normal.&quot; Current anomalies don't match old prototypes.
+The dot products decrease. The predictions drift. 91% error at candle
+1000, 722% at candle 10000.</p>
+<p>Beckman proved it: the diagram does not commute. The projection operator
+is time-dependent. The reckoner's codomain shifts. Decay (0.999) is a
+scalar contraction — it shrinks prototypes but cannot rotate them.</p>
+<p>Wyckoff added: the anomaly is the wrong input even if it were stable.
+The background (volatility, trend, compression) IS what determines
+optimal distances. Stripping it removes the answer.</p>
+<p>Two independent reasons the anomaly fails: instability AND irrelevance.</p>
+<h2 id="the-fix">The fix<a class="heading-anchor" href="#the-fix" aria-hidden="true">#</a></h2>
+<p>The position observer's reckoner sees the raw thought, not the anomaly.</p>
+<p>Today:</p>
+<pre><code>thought → noise_subspace.update() → anomalous_component() → reckoner.query(anomaly)
+</code></pre>
+<p>After:</p>
+<pre><code>thought → noise_subspace.update() → reckoner.query(thought)
+                                   → anomaly_score as vocab atom (Hickey's annotation)
+</code></pre>
+<p>The noise subspace stays. It still learns the background. But it becomes
+an annotator (contributes a scalar fact about anomaly magnitude), not a
+filter (transforms the input vector). A peer, not a pipeline stage.</p>
+<h2 id="the-touch-points">The touch points<a class="heading-anchor" href="#the-touch-points" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong><code>src/programs/app/position_observer_program.rs</code> lines 220-226</strong> —
+<code>reckoner_distances(&amp;position_anomaly)</code> becomes
+<code>reckoner_distances(&amp;position_raw)</code>. The noise subspace still
+updates. The anomaly vector still computes (for the chain). The
+reckoner just stops seeing it.</p>
+</li>
+<li><p><strong><code>src/programs/app/position_observer_program.rs</code> line 226</strong> —
+the <code>position_distances</code> query uses raw, not anomaly.</p>
+</li>
+<li><p><strong><code>src/domain/position_observer.rs</code> line 72</strong> —
+<code>reckoner_distances</code> already takes <code>&amp;Vector</code>. No signature change.
+The callers change what they pass.</p>
+</li>
+<li><p><strong><code>src/domain/position_observer.rs</code> line 153</strong> —
+<code>observe_distances</code> learns from <code>position_thought</code>. The learn
+signal in <code>PositionLearn</code> carries <code>position_thought</code>. This must
+match what the reckoner was queried on — the raw thought, not the
+anomaly. Verify that <code>broker_program.rs</code> sends the raw thought in
+the learn signal.</p>
+</li>
+<li><p><strong>The chain types</strong> — <code>MarketPositionChain</code> carries both
+<code>position_raw</code> and <code>position_anomaly</code>. The downstream broker
+already has both. The broker's composition may stay as-is
+(bundling anomalies for its own purposes) while the position
+reckoner sees raw.</p>
+</li>
+<li><p><strong>Hickey's annotation</strong> — add anomaly magnitude as a vocabulary
+atom. <code>(Log &quot;anomaly-magnitude&quot; score)</code> where score is the residual
+ratio from the noise subspace. This goes into the position
+observer's fact bundle so the reckoner sees it as one more scalar
+input, not as a vector transformation.</p>
+</li>
+</ol>
+<h2 id="the-ablation-first">The ablation (FIRST)<a class="heading-anchor" href="#the-ablation-first" aria-hidden="true">#</a></h2>
+<p>Three variants, 10k candles each. Same data. Same seed. Same everything
+except the reckoner's input.</p>
+<ul>
+<li><p><strong>Variant A: raw thought only.</strong> The main fix. Reckoner queries and
+learns from the raw thought. No noise stripping on the reckoner path.</p>
+</li>
+<li><p><strong>Variant B: raw thought + anomaly score.</strong> Raw thought plus a scalar
+<code>(Log &quot;anomaly-magnitude&quot; score)</code> atom in the fact bundle. Tests
+whether the anomaly carries signal the raw thought does not.</p>
+</li>
+<li><p><strong>Variant C: frozen-subspace anomaly.</strong> Snapshot the subspace at
+candle 500. Use the frozen snapshot for all subsequent anomaly
+computation. Tests whether the drift (not the stripping) is the
+cause. The engram path nobody tested.</p>
+</li>
+</ul>
+<p>Plus a <strong>naive baseline</strong>: default distances (no reckoner prediction).
+Without this, any improvement after the fix is uninterpretable.</p>
+<h3 id="pre-registered-success-criteria">Pre-registered success criteria<a class="heading-anchor" href="#pre-registered-success-criteria" aria-hidden="true">#</a></h3>
+<p>Measure trail error and stop error at candle 1000 and candle 10000
+for each variant.</p>
+<ul>
+<li><p><strong>Drift resolved:</strong> error at 10000 is not significantly worse than
+error at 1000. The ratio 10000/1000 should be &lt; 2.0 (today: 7.9x).</p>
+</li>
+<li><p><strong>Absolute improvement:</strong> error at 10000 should be lower than the
+current 722% trail / 479% stop.</p>
+</li>
+<li><p><strong>Better than naive:</strong> error should be lower than the naive baseline
+at both time points. If raw thought is not better than default
+distances, the reckoner is the problem, not the stripping.</p>
+</li>
+</ul>
+<h3 id="market-observer-measurement">Market observer measurement<a class="heading-anchor" href="#market-observer-measurement" aria-hidden="true">#</a></h3>
+<p>One SQL query. Accuracy partitioned by candle range (0-2k, 2k-4k,
+4k-6k, 6k-8k, 8k-10k). If accuracy degrades over time, the market
+observer has the same drift. If stable, discrete classification is
+resilient as predicted.</p>
+<h2 id="what-we-dont-know">What we don't know<a class="heading-anchor" href="#what-we-dont-know" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Is the 91% error cold-start or drift?</strong> The subspace starts
+nearly empty — early anomalies are nearly the full thought. As it
+absorbs background, anomalies shrink and rotate. The ablation
+separates these — if raw thoughts show low error at candle 1000,
+the 91% was stripping damage from day one, not drift.</p>
+</li>
+<li><p><strong>Does the anomaly carry signal the raw thought does not?</strong>
+The consensus says no — Wyckoff argued the background IS the
+signal for distances. But nobody tested it. Variant B is the test.
+If B outperforms A, the anomaly magnitude carried something.</p>
+</li>
+<li><p><strong>Does the market observer drift too?</strong> Everyone says &quot;measure it.&quot;
+Nobody has. The discrete reckoner may be robust to mild rotation,
+but it hasn't been verified.</p>
+</li>
+<li><p><strong>What does success look like?</strong> Pre-registered above. If the
+ablation shows error stable at 200% instead of growing to 722%,
+is that success? The naive baseline answers: if raw thought at
+200% is better than defaults, the reckoner adds value. If not,
+the reckoner is the problem.</p>
+</li>
+<li><p><strong>Is the reckoner good at distance prediction at all?</strong> The
+ignorant's sharpest tension. Removing drift may reveal that K=10
+bucketed accumulators are a weak tool for continuous prediction.
+The naive baseline tests this directly.</p>
+</li>
+</ol>
+<h2 id="what-we-dont-agree-on">What we don't agree on<a class="heading-anchor" href="#what-we-dont-agree-on" aria-hidden="true">#</a></h2>
+<ol start="6">
+<li><p><strong>Whether the broker's composition should change.</strong> The broker
+bundles <code>market_anomaly</code> with <code>position_anomaly</code>. If the position
+observer stops producing a meaningful anomaly for the reckoner,
+should the broker compose with position raw instead? Nobody
+addressed this. Deferred until after ablation.</p>
+</li>
+<li><p><strong>Whether to touch the market observer.</strong> Hickey and Beckman lean
+toward measuring first then possibly removing stripping from
+market observers too. Seykota and Wyckoff say leave it — discrete
+classification is resilient. Deferred pending measurement (the
+market observer query above).</p>
+</li>
+</ol>
+<h2 id="the-sequence">The sequence<a class="heading-anchor" href="#the-sequence" aria-hidden="true">#</a></h2>
+<ol>
+<li>Run the ablation (variants A, B, C + naive baseline, 10k each)</li>
+<li>Measure — error at 1000 vs 10000, ratio, absolute values</li>
+<li>Query market observer accuracy by candle range</li>
+<li>If A or B confirms: ship the fix (touch points 1-6 above)</li>
+<li>If C outperforms A: reconsider engrams (the five would be surprised)</li>
+<li>If naive beats all: the reckoner needs deeper work, not just input changes</li>
+</ol>
+<h2 id="the-voices">The voices<a class="heading-anchor" href="#the-voices" aria-hidden="true">#</a></h2>
+<table>
+<thead>
+<tr>
+  <th>Voice</th>
+  <th>Final Verdict</th>
+  <th>Key Contribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Voice">Seykota</td>
+  <td data-label="Final Verdict">APPROVED</td>
+  <td data-label="Key Contribution">Discrete/continuous distinction. Ablation design.</td>
+</tr>
+<tr>
+  <td data-label="">Van Tharp</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">R-multiple corruption is existential. Pre-register criteria.</td>
+</tr>
+<tr>
+  <td data-label="">Wyckoff</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Background IS the signal. Irrelevance argument.</td>
+</tr>
+<tr>
+  <td data-label="">Hickey</td>
+  <td data-label="">APPROVED</td>
+  <td data-label="">Annotate, don't transform. Scalar anomaly as vocab atom.</td>
+</tr>
+<tr>
+  <td data-label="">Beckman</td>
+  <td data-label="">CONDITIONAL</td>
+  <td data-label="">Non-commuting diagram. The categorical proof.</td>
+</tr>
+<tr>
+  <td data-label="">Ignorant</td>
+  <td data-label="">—</td>
+  <td data-label="">Cold-start vs drift. No devil's advocate. Bridge ends mid-span.</td>
+</tr>
+</tbody>
+</table>
+<p>The debate is resolved. The ablation is next. The bridge completes
+when the measurement returns.</p>
+<p><strong>Scope:</strong> userland (touches holon-rs internals)</p>
+<h2 id="the-finding">The finding<a class="heading-anchor" href="#the-finding" aria-hidden="true">#</a></h2>
+<p>The position observer's prediction error INCREASES over time:</p>
+<pre><code>              Trail Error    Stop Error
+First 1000:   0.91 (91%)     0.89 (89%)
+Last 1000:    7.22 (722%)    4.79 (479%)
+</code></pre>
+<p>The continuous reckoners accumulate experience (132K/143K) but
+predictions diverge from optimal. The more they learn, the worse
+they get.</p>
+<h2 id="the-mechanism">The mechanism<a class="heading-anchor" href="#the-mechanism" aria-hidden="true">#</a></h2>
+<p>The position observer has a noise subspace (OnlineSubspace /
+CCIPCA) that learns the background. It strips the background
+from the thought vector, producing the ANOMALY — the part that
+is unusual. The anomaly is what the reckoner sees.</p>
+<p>The reckoner has 10 bucketed accumulators. Each bucket holds a
+prototype (accumulated sum of thought vectors) and a center
+(the scalar value this bucket represents). The query finds the
+buckets whose prototypes best match the current thought (via
+dot product) and interpolates their centers.</p>
+<p>The problem: the noise subspace evolves. At candle 1000, the
+subspace has absorbed 1000 candles of &quot;normal.&quot; The anomaly
+vector reflects what is unusual RELATIVE TO 1000 candles of
+experience. At candle 10000, the subspace has absorbed 10000
+candles. The definition of &quot;normal&quot; has shifted. The anomaly
+for the same market state looks DIFFERENT at candle 10000 than
+it did at candle 1000.</p>
+<p>The reckoner's bucket prototypes were accumulated from anomalies
+under old definitions of &quot;normal.&quot; The current anomalies don't
+match the old prototypes. The dot products between current
+thoughts and old bucket prototypes DECREASE. The interpolation
+becomes noisier. The predictions drift.</p>
+<p>The reckoner decays old observations (0.999 per observation —
+effective window ~1000 observations). But the decay only shrinks
+the old prototypes. It doesn't realign them with the current
+noise subspace's definition of &quot;normal.&quot;</p>
+<h2 id="the-coupling">The coupling<a class="heading-anchor" href="#the-coupling" aria-hidden="true">#</a></h2>
+<pre><code>candle → thought → noise_subspace.strip() → anomaly → reckoner.query()
+                         ↓
+                   subspace EVOLVES
+                   (absorbs more &quot;normal&quot;)
+                         ↓
+                   old anomalies ≠ new anomalies
+                         ↓
+                   reckoner prototypes misaligned
+                         ↓
+                   predictions degrade
+</code></pre>
+<p>The noise subspace and the reckoner are coupled but evolve at
+different rates. The subspace changes what &quot;anomalous&quot; means.
+The reckoner's prototypes were learned under old definitions.
+The definitions drift apart. The predictions degrade.</p>
+<h2 id="the-questions">The questions<a class="heading-anchor" href="#the-questions" aria-hidden="true">#</a></h2>
+<ol>
+<li><p><strong>Is the noise subspace the cause?</strong> Can we verify by running
+WITHOUT noise stripping and measuring whether the error still
+grows? If the error stabilizes without stripping, the subspace
+drift is confirmed.</p>
+</li>
+<li><p><strong>Should the reckoner see the raw thought instead of the
+anomaly?</strong> The noise subspace was designed to strip &quot;normal&quot;
+so the reckoner only learns from &quot;unusual&quot; signals. But if
+the stripping itself causes drift, maybe the reckoner should
+see the full thought. The raw thought is stable — it doesn't
+depend on the subspace's evolving definition of normal.</p>
+</li>
+<li><p><strong>Can the reckoner realign?</strong> The decay (0.999) kills old
+prototypes after ~1000 observations. But the prototypes are
+accumulated from anomalies whose definition has shifted. Even
+recent prototypes (last 1000 observations) were accumulated
+under a drifting subspace. Can the reckoner track the drift?</p>
+</li>
+<li><p><strong>Is this a fundamental tension between stripping and
+learning?</strong> The noise subspace needs time to learn what's
+normal. The reckoner needs stable inputs to learn. The
+subspace's learning makes the reckoner's inputs unstable.
+Are these irreconcilable? Or is there a synchronization
+mechanism?</p>
+</li>
+<li><p><strong>Does the market observer have the same problem?</strong> The
+market observer also has a noise subspace + reckoner. Does
+its accuracy degrade over time too? The market observer's
+accuracy is measured (recalib_wins/recalib_total). The
+position observer's wasn't until this session.</p>
+</li>
+</ol>
+<h2 id="the-engram-question">The engram question<a class="heading-anchor" href="#the-engram-question" aria-hidden="true">#</a></h2>
+<p>Holon has engrams — named, serializable snapshots of a trained
+OnlineSubspace. An engram freezes the subspace at a moment:
+the mean, the k principal components, the threshold state. The
+engram can score any new vector against that frozen state.</p>
+<p>If the drift comes from the subspace evolving underneath the
+reckoner, engrams offer a possible fix:</p>
+<ol>
+<li><p><strong>Periodic snapshots.</strong> Snapshot the subspace every N candles.
+When the reckoner predicts, score the current thought against
+the SNAPSHOT that was active when the reckoner last learned —
+not against the current live subspace. The reckoner and the
+snapshot are synchronized.</p>
+</li>
+<li><p><strong>Engram-per-regime.</strong> Different market regimes produce
+different &quot;normal&quot; backgrounds. The subspace for a trending
+market looks different from a choppy market. Engrams could
+store regime-specific snapshots. The reckoner learns per-engram.</p>
+</li>
+<li><p><strong>The anomaly IS the engram's residual, not the live
+subspace's residual.</strong> The reckoner sees what the FROZEN
+subspace considers anomalous, not what the EVOLVING subspace
+considers anomalous. The frozen subspace is stable. The
+reckoner's inputs are stable.</p>
+</li>
+</ol>
+<p>But this may be overengineering. The simpler question: should
+the reckoner see the RAW thought (before noise stripping)
+instead of the anomaly? The raw thought is stable — it doesn't
+depend on the subspace at all.</p>
+<h2 id="for-the-designers">For the designers<a class="heading-anchor" href="#for-the-designers" aria-hidden="true">#</a></h2>
+<p>This may be architectural — a tension in the substrate, not
+the application. The panel should consider:</p>
+<ul>
+<li>Is the noise subspace the cause? (Verify by running without it)</li>
+<li>Should the reckoner see raw thoughts instead of anomalies?</li>
+<li>Can engrams synchronize the subspace and reckoner?</li>
+<li>Is this a fundamental tension in the substrate?</li>
+<li>Does the market observer have the same drift?</li>
+</ul>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>

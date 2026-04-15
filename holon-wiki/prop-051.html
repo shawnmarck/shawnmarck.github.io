@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 051 — Training Loops: What Exists, What's Missing ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 051 — Training Loops: What Exists, What's Missing ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Decision: APPROVED. Delete the binary path. Keep the continuous reckoners.</strong></p>
+<p>Five voices. Two rounds. One ignorant. Twenty-two files of debate.
+One answer.</p>
+<h2 id="change-1-delete-the-binary-graceviolence-learning-path">Change 1: Delete the binary Grace/Violence learning path<a class="heading-anchor" href="#change-1-delete-the-binary-graceviolence-learning-path" aria-hidden="true">#</a></h2>
+<p>The position observer receives two contradictory teachers:</p>
+<p><strong>Path A (stays):</strong> <code>observe_scalar(reckoner, thought, optimal, weight)</code>.
+The continuous reckoners learn: &quot;for THIS thought, the optimal
+trail was X.&quot; The simulation provides the optimal. The reckoner
+accumulates. This is the honest teacher.</p>
+<p><strong>Path B (deleted):</strong> The journey grading. Error ratio against a
+rolling percentile median. Binary Grace/Violence label. Feeds
+<code>outcome_window</code> and <code>residue_window</code>. Produces <code>grace_rate</code> and
+<code>avg_residue</code> atoms that loop back into the next thought encoding.
+The Red Queen. The limit cycle. grace_rate → 0.0.</p>
+<h3 id="the-surgery">The surgery<a class="heading-anchor" href="#the-surgery" aria-hidden="true">#</a></h3>
+<p><strong><code>src/programs/app/broker_program.rs</code>:</strong></p>
+<ul>
+<li>Delete the deferred batch training loop (the journey grading
+section that computes error ratios and sends ExitLearn with
+is_grace/residue). Lines ~196-229 approximately.</li>
+<li>Keep the immediate resolution signal that sends optimal
+distances to the position observer.</li>
+<li>Remove <code>journey_errors: VecDeque&lt;f64&gt;</code> usage (already on Broker).</li>
+</ul>
+<p><strong><code>src/domain/broker.rs</code>:</strong></p>
+<ul>
+<li>Remove <code>journey_errors: VecDeque&lt;f64&gt;</code> field from Broker.</li>
+</ul>
+<p><strong><code>src/programs/app/position_observer_program.rs</code>:</strong></p>
+<ul>
+<li>Remove <code>is_grace</code> and <code>residue</code> fields from <code>PositionLearn</code>.</li>
+<li>Update <code>drain_position_learn</code> to not pass them.</li>
+</ul>
+<p><strong><code>src/domain/position_observer.rs</code>:</strong></p>
+<ul>
+<li>Remove <code>outcome_window: VecDeque&lt;bool&gt;</code>.</li>
+<li>Remove <code>residue_window: VecDeque&lt;f64&gt;</code>.</li>
+<li>Remove <code>grace_rate: f64</code> and <code>avg_residue: f64</code> fields.</li>
+<li>Remove lines 153-170 from <code>observe_distances</code> (the self-
+assessment window update). Keep lines 150-151 (the continuous
+reckoner observe_scalar calls).</li>
+</ul>
+<p><strong><code>src/vocab/exit/self_assessment.rs</code>:</strong></p>
+<ul>
+<li>Remove <code>grace_rate</code> and <code>avg_residue</code> atoms. Or remove the
+entire file if nothing else uses it.</li>
+</ul>
+<p><strong><code>src/domain/lens.rs</code>:</strong></p>
+<ul>
+<li>Remove <code>position_self_assessment_facts</code> call (or update it
+to not include grace_rate/avg_residue).</li>
+</ul>
+<p><strong><code>src/types/log_entry.rs</code>:</strong></p>
+<ul>
+<li>Remove <code>grace_rate</code> and <code>avg_residue</code> from
+PositionObserverSnapshot. Or keep as 0.0 placeholders until
+a replacement metric is designed.</li>
+</ul>
+<h3 id="what-stays">What stays<a class="heading-anchor" href="#what-stays" aria-hidden="true">#</a></h3>
+<ul>
+<li><code>observe_scalar(trail_reckoner, thought, optimal_trail, weight)</code></li>
+<li><code>observe_scalar(stop_reckoner, thought, optimal_stop, weight)</code></li>
+<li>The continuous reckoners accumulating from honest signal</li>
+<li>The market context atoms (regime, time, phase)</li>
+<li>The trade atoms (excursion, retracement, age, etc.)</li>
+<li>The phase series (Sequential encoding)</li>
+<li>The noise subspace (stripping normal from signal)</li>
+</ul>
+<h3 id="what-this-fixes">What this fixes<a class="heading-anchor" href="#what-this-fixes" aria-hidden="true">#</a></h3>
+<ol>
+<li>The Red Queen limit cycle — no rolling median, no self-reference</li>
+<li>Direction contamination — removed. The continuous reckoners
+learn from simulation-optimal distances, not trade outcomes</li>
+<li>The contradictory teachers — one path, one signal</li>
+<li>grace_rate oscillating to 0.0 — the oscillation source is gone</li>
+</ol>
+<h3 id="what-comes-after-empirical-not-this-proposal">What comes after (empirical, not this proposal)<a class="heading-anchor" href="#what-comes-after-empirical-not-this-proposal" aria-hidden="true">#</a></h3>
+<ul>
+<li>Measure: run 10k, query DB, does the position observer converge?</li>
+<li>R-multiple normalization (Van Tharp)</li>
+<li>Broker reckoner restoration with clean signals</li>
+<li>Phase boundary weight scaling</li>
+<li>Volume-price divergence atoms (Wyckoff)</li>
+</ul>
+<h3 id="the-principle-seykota">The principle (Seykota)<a class="heading-anchor" href="#the-principle-seykota" aria-hidden="true">#</a></h3>
+<p>Never give a continuous learner a binary teacher.</p>
+<h3 id="the-invariant-beckman">The invariant (Beckman)<a class="heading-anchor" href="#the-invariant-beckman" aria-hidden="true">#</a></h3>
+<p>No learner shall be graded against a statistic derived from
+its own output distribution.</p>
+<p><strong>Scope:</strong> userland</p>
+<p><strong>This is not a change proposal.</strong> This is a request for criticism
+of the current training loops. The builder doesn't know what to
+propose. The builder wants feedback on what exists.</p>
+<h2 id="the-current-training-loops">The current training loops<a class="heading-anchor" href="#the-current-training-loops" aria-hidden="true">#</a></h2>
+<h3 id="market-observer-learns-direction">Market observer — learns direction<a class="heading-anchor" href="#market-observer-learns-direction" aria-hidden="true">#</a></h3>
+<p>The broker resolves a paper. Did the predicted direction match
+the actual price movement? (<code>price &gt; resolution.entry_price</code>
+for Up.) Correct → learn the predicted direction. Incorrect →
+learn the opposite.</p>
+<p>Weight is doubled at phase boundaries (<code>phase_duration &lt;= 5</code>).
+The market observer learns MORE at structural turns but does
+not KNOW about the phase structure. It thinks about the candle
+through its market lens. The phase connection is only the
+weight modulation.</p>
+<p>Signal: broker → market_learn_tx → market observer learn mailbox.
+Label: Correct/Incorrect (directional accuracy).
+Weight: facts.weight × 2.0 at phase boundaries, × 1.0 otherwise.</p>
+<h3 id="position-observer-learns-distances">Position observer — learns distances<a class="heading-anchor" href="#position-observer-learns-distances" aria-hidden="true">#</a></h3>
+<p>Each paper resolution sends an immediate Grace/Violence signal.
+Deferred batch training: the broker's journey grading uses a
+per-broker rolling percentile (N=200, median) of error ratios.
+Each batch observation is labeled Grace (error below median)
+or Violence (error above median).</p>
+<p>The position observer THINKS about phases:</p>
+<ul>
+<li>Core lens: regime + time + 5 trade atoms</li>
+<li>Full lens: regime + time + phase label + phase duration +
+Sequential series + phase scalars + 13 trade atoms</li>
+</ul>
+<p>Signal: broker → position_learn_tx → position observer learn mailbox.
+Label: Grace/Violence from trade outcome (immediate) and
+error-vs-median (deferred batch).</p>
+<h3 id="broker-learns-accountability">Broker — learns accountability<a class="heading-anchor" href="#broker-learns-accountability" aria-hidden="true">#</a></h3>
+<p>The broker's reckoner predicts from the composed thought:
+market_anomaly + position_anomaly + portfolio_biography.</p>
+<p>Grace/Violence from paper outcomes. The broker grades the
+PAIR — did this (market, position) pairing produce residue?</p>
+<p>The portfolio biography includes phase trend atoms (valley-
+trend, peak-trend, regularity, entry-ratio, avg-spacing).</p>
+<p>Papers register every candle (Proposal 043). Papers never stop.
+Funding is gated at <code>resolved &gt;= 200 &amp;&amp; ev &gt; 0.0</code> (not yet
+implemented — awaiting treasury).</p>
+<h3 id="phase-labeler-ground-truth">Phase labeler — ground truth<a class="heading-anchor" href="#phase-labeler-ground-truth" aria-hidden="true">#</a></h3>
+<p>The indicator bank labels every candle as valley, peak, or
+transition. Two tracking states (Rising/Falling), three labels
+derived from position relative to the tracked extreme. 1.0 ATR
+smoothing. The labeler is NOT a predictor. It is a measurement.
+It classifies the present moment from price structure.</p>
+<p>The phase label rides the Candle. Every observer sees it. The
+position observer thinks about it. The market observer's weight
+is modulated by it. The broker's portfolio biography includes
+phase trend scalars computed from it.</p>
+<h2 id="the-questions">The questions<a class="heading-anchor" href="#the-questions" aria-hidden="true">#</a></h2>
+<p>The builder doesn't trust the broker yet. The infrastructure is
+proven — six wards, 81 files, near-zero findings. The wiring is
+correct. But:</p>
+<ol>
+<li><p><strong>Are the training labels honest?</strong> The market observer learns
+from directional accuracy. The position observer learns from
+trade outcome + journey grading. The broker learns from paper
+outcomes. Are these the right signals for each learner?</p>
+</li>
+<li><p><strong>Is the weight modulation (2× at phase boundaries) the right
+connection between the phase labeler and the market observer?</strong>
+Should the market observer think about phases directly? Or is
+weight modulation the correct level of coupling — the market
+observer stays focused on the candle, the phases just tell it
+which candles matter more?</p>
+</li>
+<li><p><strong>The position observer's grace_rate oscillates to 0.0.</strong>
+Experience keeps growing (508K core, 250K full) but the
+journey grading labels everything Violence during long
+stretches. The rolling percentile median converges and
+everything exceeds it. Is this a grading problem or a
+distance-prediction problem?</p>
+</li>
+<li><p><strong>Papers live ~8 candles and resolve 41% Grace.</strong> Is this
+the right lifecycle? Should papers live longer (hold
+architecture, Proposal 038)? Should they resolve differently?</p>
+</li>
+<li><p><strong>The broker composes market + position + portfolio into one
+thought.</strong> Is this the right composition? Should the broker
+think about the phase structure directly (not through the
+portfolio biography)? Should the broker have its own phase
+atoms?</p>
+</li>
+<li><p><strong>What's missing?</strong> What training signal should exist but
+doesn't? What connection between components would improve
+learning? What feedback loop is broken or absent?</p>
+</li>
+</ol>
+<h2 id="for-the-designers">For the designers<a class="heading-anchor" href="#for-the-designers" aria-hidden="true">#</a></h2>
+<p>Five voices. Three strategy (Seykota, Van Tharp, Wyckoff).
+Two architecture (Hickey, Beckman). Each should criticize what
+exists and propose what's missing. Multiple rounds of debate.</p>
+<p>The builder doesn't have a bias. The builder wants new thoughts.</p>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>
