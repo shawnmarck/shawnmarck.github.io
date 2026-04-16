@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html">T0-014 — RegimeObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -243,44 +243,31 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
       Broker — the accountability primitive <span class="badge badge-explain">EXPLAIN</span>
     </h1>
     
-    <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The broker binds one <a class="wikilink" href="pg-market-observer.html">market observer</a> to one <a class="wikilink" href="pg-exit-observer.html">position observer</a> in an N×M grid. It owns a minimal state machine: outcome counts, a grace-rate gate, and an active direction. The broker submits papers to the <a class="wikilink" href="pg-treasury.html">treasury</a>, discovers outcomes by reading paper state, encodes anxiety atoms, and records results. <strong>8 fields, 4 methods, 6 tests.</strong> No paper trades, no accumulators, no PropagationFacts, no EMA, no runner history — all stripped in the backlog sweep.</p>
+    <div class="prose prose-invert max-w-none"><p><strong>TL;DR:</strong> The broker binds one <a class="wikilink" href="pg-market-observer.html">market observer</a> to one regime observer in an N×M grid. It owns a state machine: outcome counts, a grace-rate gate, a noise subspace, and a gate reckoner (Hold/Exit). The broker submits papers to the <a class="wikilink" href="pg-treasury.html">treasury</a>, discovers outcomes by reading paper state, composes a full thought (market + regime + portfolio + phase + time), and predicts Hold/Exit from the anomaly. <strong>10 fields, 4 methods, 6 tests.</strong> No paper trades, no accumulators, no PropagationFacts, no EMA, no runner history — all stripped.</p>
 <hr />
 <h2 id="what-it-is">What it is<a class="heading-anchor" href="#what-it-is" aria-hidden="true">#</a></h2>
 <blockquote>
-<p><em>&quot;The accountability primitive. Binds one market observer + one position observer. The broker owns the game — gate 4, anxiety atoms, exit/hold decisions. The treasury owns papers and capital.&quot;</em> — broker.rs</p>
+<p><em>&quot;The accountability primitive. Binds one market observer + one regime observer. The broker owns the game — gate 4, anxiety atoms, exit/hold decisions. The treasury owns papers and capital.&quot;</em> — broker.rs</p>
 </blockquote>
-<p>The broker sits at the intersection of a market observer (which predicts direction) and a position observer (which proposes risk parameters). It receives <a class="wikilink" href="pg-chain-types.html">chains</a> from the post, submits papers to the treasury, checks outcomes, and encodes anxiety atoms for gate 4 (to be built).</p>
+<p>The broker sits at the intersection of a market observer (which predicts direction) and a regime observer (which enriches with regime vocabulary and rhythms). It receives chains from the post, submits papers to the treasury, checks outcomes, composes the full thought, and predicts Hold/Exit via gate 4.</p>
 <p>Crucially:</p>
 <ul>
 <li>The broker <strong>submits</strong> but the treasury <strong>owns</strong> papers and capital.</li>
 <li>The broker <strong>records</strong> outcomes via <code>record_outcome()</code> — simple counts, no PropagationFacts.</li>
 <li>The broker <strong>gates</strong> itself with a grace-rate threshold (<code>&gt; 0.5</code>).</li>
+<li>The broker <strong>composes</strong> the full thought: market rhythms + regime rhythms + portfolio rhythms + phase + time.</li>
+<li>The broker <strong>predicts</strong> Hold/Exit from the anomaly of the composed thought via the gate reckoner.</li>
 </ul>
 <hr />
 <h2 id="the-nm-grid">The N×M Grid<a class="heading-anchor" href="#the-nm-grid" aria-hidden="true">#</a></h2>
-<p>Brokers live in a flat array indexed by <code>slot_idx</code>. With N market observers and M position observers:</p>
-<pre><code>slot_idx = market_idx × M + position_idx
+<p>Brokers live in a flat array indexed by <code>slot_idx</code>. With N market observers and M regime observers:</p>
+<pre><code>slot_idx = market_idx × M + regime_idx
 market_idx = slot_idx / M       (integer division)
-position_idx = slot_idx % M
+regime_idx = slot_idx % M
 </code></pre>
-<p>Each broker's <code>slot_idx</code> is <strong>its identity</strong> — it determines which market observer and which position observer it binds. For example: <code>slot_idx=5, M=3</code> → <code>market_idx=1, position_idx=2</code>. Verified in <code>test_market_position_idx</code>.</p>
+<p>Each broker's <code>slot_idx</code> is <strong>its identity</strong> — it determines which market observer and which regime observer it binds. For example: <code>slot_idx=5, M=3</code> → <code>market_idx=1, regime_idx=2</code>.</p>
 <hr />
-<h2 id="core-data-flow">Core Data Flow<a class="heading-anchor" href="#core-data-flow" aria-hidden="true">#</a></h2>
-<pre class="mermaid">flowchart TD
-    chain[&quot;MarketPositionChain arrives&lt;br&gt;via queue&quot;] --&gt; direction[&quot;Extract Direction&lt;br&gt;from market_prediction&quot;]
-    direction --&gt; submit[&quot;Submit paper to treasury&lt;br&gt;(TreasuryHandle::submit_paper)&quot;]
-    submit --&gt; check[&quot;Check active papers&lt;br&gt;(TreasuryHandle::get_paper_state)&quot;]
-    check --&gt;|Active| keep[&quot;Keep receipt&quot;]
-    check --&gt;|Grace| record_grace[&quot;broker.record_outcome(Grace)&lt;br&gt;increments grace_count&quot;]
-    check --&gt;|Violence| record_violence[&quot;broker.record_outcome(Violence)&lt;br&gt;increments violence_count&quot;]
-    record_grace --&gt; anxiety
-    record_violence --&gt; anxiety
-    keep --&gt; anxiety[&quot;Encode anxiety atoms&lt;br&gt;candles-remaining, time-pressure,&lt;br&gt;unrealized-residue, paper-age&quot;]
-    anxiety --&gt; snapshot[&quot;DB snapshot (every 100 candles)&quot;]
-    anxiety --&gt; telemetry[&quot;Emit telemetry metrics&quot;]
-</pre>
-<hr />
-<h2 id="fields-8-total">Fields (8 total)<a class="heading-anchor" href="#fields-8-total" aria-hidden="true">#</a></h2>
+<h2 id="fields-10-total">Fields (10 total)<a class="heading-anchor" href="#fields-10-total" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -304,10 +291,10 @@ position_idx = slot_idx % M
   <td data-label="">Position in the N×M grid. <strong>THE identity.</strong></td>
 </tr>
 <tr>
-  <td data-label=""><code>position_count</code></td>
+  <td data-label=""><code>regime_count</code></td>
   <td data-label=""><code>usize</code></td>
   <td data-label="">constructor arg</td>
-  <td data-label="">M — needed to derive <code>market_idx</code> and <code>position_idx</code></td>
+  <td data-label="">M — needed to derive <code>market_idx</code> and <code>regime_idx</code></td>
 </tr>
 <tr>
   <td data-label=""><code>trade_count</code></td>
@@ -339,102 +326,86 @@ position_idx = slot_idx % M
   <td data-label=""><code>None</code></td>
   <td data-label="">Current active direction. <code>None</code> = cold start</td>
 </tr>
+<tr>
+  <td data-label=""><code>noise_subspace</code></td>
+  <td data-label=""><code>OnlineSubspace</code></td>
+  <td data-label=""><code>new(dims, 32)</code></td>
+  <td data-label="">Learns normal composed thoughts. Anomaly drives gate 4.</td>
+</tr>
+<tr>
+  <td data-label=""><code>gate_reckoner</code></td>
+  <td data-label=""><code>Reckoner</code></td>
+  <td data-label=""><code>new(&quot;gate-{slot}&quot;, dims, recalib, Discrete([&quot;Hold&quot;,&quot;Exit&quot;]))</code></td>
+  <td data-label="">Gate 4 — Hold/Exit classifier. Proposal 056.</td>
+</tr>
 </tbody>
 </table>
 <hr />
 <h2 id="methods-4-total">Methods (4 total)<a class="heading-anchor" href="#methods-4-total" aria-hidden="true">#</a></h2>
-<h3 id="brokernewobserver_names-slot_idx-position_count"><code>Broker::new(observer_names, slot_idx, position_count)</code><a class="heading-anchor" href="#brokernewobserver_names-slot_idx-position_count" aria-hidden="true">#</a></h3>
-<p>Constructor. Asserts <code>position_count &gt; 0</code> (divide-by-zero guard). All counters start at zero. <code>active_direction</code> starts as <code>None</code> (cold start).</p>
-<h3 id="market_idx-position_idx"><code>market_idx()</code> / <code>position_idx()</code><a class="heading-anchor" href="#market_idx-position_idx" aria-hidden="true">#</a></h3>
-<p>Grid derivation from <code>slot_idx</code> and <code>position_count</code>. Pure integer math:</p>
-<ul>
-<li><code>market_idx = slot_idx / position_count</code></li>
-<li><code>position_idx = slot_idx % position_count</code></li>
-</ul>
+<h3 id="brokernewobserver_names-slot_idx-regime_count-dims-recalib_interval"><code>Broker::new(observer_names, slot_idx, regime_count, dims, recalib_interval)</code><a class="heading-anchor" href="#brokernewobserver_names-slot_idx-regime_count-dims-recalib_interval" aria-hidden="true">#</a></h3>
+<p>Constructor. Asserts <code>regime_count &gt; 0</code> (divide-by-zero guard). Five constructor args. Creates noise subspace (32 components) and gate reckoner (Discrete: Hold/Exit).</p>
+<h3 id="market_idx-regime_idx"><code>market_idx()</code> / <code>regime_idx()</code><a class="heading-anchor" href="#market_idx-regime_idx" aria-hidden="true">#</a></h3>
+<p>Grid derivation from <code>slot_idx</code> and <code>regime_count</code>. Pure integer math.</p>
 <h3 id="gate_open"><code>gate_open()</code><a class="heading-anchor" href="#gate_open" aria-hidden="true">#</a></h3>
-<p>Two-phase gate:</p>
-<pre><code class="language-rust">pub fn gate_open(&amp;self) -&gt; bool {
-    let cold_start = self.grace_count &lt; 50 || self.violence_count &lt; 50;
-    cold_start || self.expected_value &gt; 0.5
-}
-</code></pre>
-<ol>
-<li><strong>Cold start</strong> — if either outcome count is below 50, the gate is <strong>always open</strong>. Not enough data to judge.</li>
-<li><strong>Warm</strong> — after ≥50 of both Grace and Violence, the gate opens only when <code>expected_value &gt; 0.5</code>. A broker must have a <strong>majority grace rate</strong> to keep trading. Note: <code>0.5</code> is NOT enough — the threshold is strictly greater than 0.5.</li>
-</ol>
+<p>Two-phase gate: cold start (&lt; 50 of either outcome → always open), warm (≥50 of both → <code>expected_value &gt; 0.5</code>). Threshold is strictly greater than 0.5.</p>
 <h3 id="record_outcomeoutcome"><code>record_outcome(outcome)</code><a class="heading-anchor" href="#record_outcomeoutcome" aria-hidden="true">#</a></h3>
-<p>Updates the track record:</p>
-<pre><code class="language-rust">pub fn record_outcome(&amp;mut self, outcome: Outcome) {
-    match outcome {
-        Outcome::Grace =&gt; self.grace_count += 1,
-        Outcome::Violence =&gt; self.violence_count += 1,
-    }
-    self.trade_count += 1;
-    self.expected_value = self.grace_count as f64 / self.trade_count as f64;
-}
-</code></pre>
-<p>Simple grace rate. No EMA, no dollar P&amp;L, no swap fees, no PropagationFacts return value. The method mutates the broker directly.</p>
+<p>Simple grace rate. No EMA, no dollar P&amp;L.</p>
 <hr />
-<h2 id="the-broker-program-thread-body">The Broker Program (Thread Body)<a class="heading-anchor" href="#the-broker-program-thread-body" aria-hidden="true">#</a></h2>
-<p>The companion file <code>broker_program.rs</code> (207 lines) contains the broker's runtime loop.</p>
-<h3 id="function-signature">Function signature<a class="heading-anchor" href="#function-signature" aria-hidden="true">#</a></h3>
-<pre><code class="language-rust">pub fn broker_program(
-    chain_rx: QueueReceiver&lt;MarketPositionChain&gt;,
-    cache: CacheHandle&lt;ThoughtAST, Vector&gt;,
-    vm: VectorManager,
-    scalar: Arc&lt;ScalarEncoder&gt;,
-    console: ConsoleHandle,
-    db_tx: QueueSender&lt;LogEntry&gt;,
-    mut broker: Broker,
-    treasury: TreasuryHandle,
-) -&gt; Broker
+<h2 id="thought-composition-proposal-056">Thought Composition (Proposal 056)<a class="heading-anchor" href="#thought-composition-proposal-056" aria-hidden="true">#</a></h2>
+<p>The broker_program composes one full thought per candle:</p>
+<pre><code>market rhythms (the market observer's full AST)
++ regime rhythms (each one an indicator rhythm AST from regime observer)
++ portfolio rhythms (5 portfolio indicators as rhythm streams)
++ phase rhythm (bundled bigrams of trigrams with structural deltas)
++ time facts (hour, day-of-week — top-level, not rhythms)
 </code></pre>
-<p>Returns the trained <code>Broker</code> when the chain source disconnects — <em>&quot;the accounting comes home&quot;</em>.</p>
-<h3 id="per-candle-loop-5-steps">Per-candle loop (5 steps)<a class="heading-anchor" href="#per-candle-loop-5-steps" aria-hidden="true">#</a></h3>
-<ol>
-<li><strong>Direction</strong> — Extract <code>Direction</code> from <code>chain.market_prediction</code>. Set <code>broker.active_direction</code>.</li>
-<li><strong>Submit paper</strong> — Direction determines asset pair (Up: source→target, Down: target→source). Call <code>treasury.submit_paper()</code>. If approved, push receipt to <code>active_receipts</code>.</li>
-<li><strong>Discover outcomes</strong> — Iterate <code>active_receipts</code>, call <code>treasury.get_paper_state()</code> for each. Active papers are kept. Grace/Violence outcomes call <code>broker.record_outcome()</code>, then the receipt is removed.</li>
-<li><strong>Encode anxiety atoms</strong> — For each active receipt, compute 4 atoms and encode them via the cache. Plus an <code>active-positions</code> count atom. The encoded vector is available for gate 4 (to be built).</li>
-<li><strong>Logging</strong> — <code>BrokerSnapshot</code> every 100 candles. <code>PhaseSnapshot</code> every candle (slot 0 only). Telemetry every candle. Console diagnostic every 1000 candles.</li>
-</ol>
-<h3 id="anxiety-atoms-4-per-receipt">Anxiety atoms (4 per receipt)<a class="heading-anchor" href="#anxiety-atoms-4-per-receipt" aria-hidden="true">#</a></h3>
-<p>Computed by <code>anxiety_atoms(receipt, current_candle, current_price)</code>:</p>
+<p>All bundled into one <code>ThoughtAST::Bundle</code>. Encoded once. Noise subspace strips background. Gate reckoner predicts Hold/Exit from the anomaly.</p>
+<h3 id="portfolio-rhythm-streams-5">Portfolio Rhythm Streams (5)<a class="heading-anchor" href="#portfolio-rhythm-streams-5" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
-  <th>Atom</th>
-  <th>Encoding</th>
-  <th>Description</th>
+  <th>Rhythm</th>
+  <th>Bounds</th>
+  <th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td data-label="Atom"><code>candles-remaining</code></td>
-  <td data-label="Encoding"><code>Log</code></td>
-  <td data-label="Description">Candles left until deadline. Floored at 1.0</td>
+  <td data-label="Rhythm"><code>avg-paper-age</code></td>
+  <td data-label="Bounds">[0, 500], delta 100</td>
+  <td data-label="Meaning">Average age of active papers</td>
 </tr>
 <tr>
-  <td data-label=""><code>time-pressure</code></td>
-  <td data-label=""><code>Linear</code></td>
-  <td data-label=""><code>age / total_life</code> — fraction of position lifespan consumed</td>
+  <td data-label=""><code>avg-time-pressure</code></td>
+  <td data-label="">[0, 1], delta 0.2</td>
+  <td data-label="">Average time-pressure across active papers</td>
 </tr>
 <tr>
-  <td data-label=""><code>unrealized-residue</code></td>
-  <td data-label=""><code>Linear</code></td>
-  <td data-label=""><code>(current_value - amount) / amount</code> — percentage unrealized P&amp;L</td>
+  <td data-label=""><code>avg-unrealized-residue</code></td>
+  <td data-label="">[-0.1, 0.1], delta 0.05</td>
+  <td data-label="">Average unrealized P&amp;L across active papers</td>
 </tr>
 <tr>
-  <td data-label=""><code>paper-age</code></td>
-  <td data-label=""><code>Log</code></td>
-  <td data-label="">How old the paper is in candles. Floored at 1.0</td>
+  <td data-label=""><code>grace-rate</code></td>
+  <td data-label="">[0, 1], delta 0.2</td>
+  <td data-label="">Current grace rate</td>
+</tr>
+<tr>
+  <td data-label=""><code>active-positions</code></td>
+  <td data-label="">[0, 500], delta 100</td>
+  <td data-label="">Number of active papers</td>
 </tr>
 </tbody>
 </table>
-<p>Plus one global atom: <code>active-positions</code> (Log encoding of receipt count).</p>
+<h3 id="gate-4-now-wired">Gate 4 — Now Wired<a class="heading-anchor" href="#gate-4-now-wired" aria-hidden="true">#</a></h3>
+<ol>
+<li>Compose full thought → encode → noise subspace → anomaly</li>
+<li><code>gate_reckoner.predict(anomaly)</code> → Hold (label 0) or Exit (label 1)</li>
+<li>If Exit and gate is open → propose exit to treasury</li>
+<li>On resolution: <code>gate_reckoner.observe(anomaly, label, weight)</code> — the reckoner learns</li>
+</ol>
 <hr />
 <h2 id="what-was-removed-backlog-sweep">What was removed (backlog sweep)<a class="heading-anchor" href="#what-was-removed-backlog-sweep" aria-hidden="true">#</a></h2>
-<p>The broker was <strong>stripped to essentials</strong>. All of the following no longer exist in <code>broker.rs</code>:</p>
 <table>
 <thead>
 <tr>
@@ -490,32 +461,7 @@ position_idx = slot_idx % M
   <td data-label="">Replaced by <code>record_outcome()</code></td>
 </tr>
 <tr>
-  <td data-label=""><code>avg_grace_net</code> / <code>avg_violence_net</code></td>
-  <td data-label="">EMA of dollar P&amp;L</td>
-  <td data-label="">Not tracked</td>
-</tr>
-<tr>
-  <td data-label=""><code>swap_fee</code>, reference capital</td>
-  <td data-label="">Dollar P&amp;L computation</td>
-  <td data-label="">Not computed</td>
-</tr>
-<tr>
-  <td data-label=""><code>default_distances</code></td>
-  <td data-label="">Distance fallback</td>
-  <td data-label="">Not needed</td>
-</tr>
-<tr>
-  <td data-label=""><code>cumulative_grace</code> / <code>cumulative_violence</code></td>
-  <td data-label="">Weighted sums</td>
-  <td data-label="">Simple counts only</td>
-</tr>
-<tr>
-  <td data-label=""><code>next_paper_id</code></td>
-  <td data-label="">Monotonic paper IDs</td>
-  <td data-label="">Treasury assigns IDs</td>
-</tr>
-<tr>
-  <td data-label="">24 fields → <strong>8 fields</strong></td>
+  <td data-label="">24 fields → <strong>10 fields</strong></td>
   <td data-label="">—</td>
   <td data-label="">—</td>
 </tr>
@@ -524,28 +470,25 @@ position_idx = slot_idx % M
   <td data-label="">—</td>
   <td data-label="">—</td>
 </tr>
-<tr>
-  <td data-label="">18 tests → <strong>6 tests</strong></td>
-  <td data-label="">—</td>
-  <td data-label="">—</td>
-</tr>
 </tbody>
 </table>
 <hr />
 <h2 id="verified-properties">Verified Properties<a class="heading-anchor" href="#verified-properties" aria-hidden="true">#</a></h2>
 <ol>
-<li><strong>No shared mutation.</strong> The broker owns its 8 fields and mutates only itself. No observer references.</li>
+<li><strong>No shared mutation.</strong> The broker owns its 10 fields and mutates only itself.</li>
 <li><strong>Gate has two distinct modes</strong> with a clear boundary at 50 resolved trades.</li>
-<li><strong>expected_value is simple grace rate</strong> — <code>grace_count / trade_count</code>. Not EMA, not dollar P&amp;L.</li>
-<li><strong>Gate threshold is <code>&gt; 0.5</code></strong>, not <code>&gt; 0.0</code>. A 50/50 broker is suppressed.</li>
+<li><strong>expected_value is simple grace rate</strong> — <code>grace_count / trade_count</code>.</li>
+<li><strong>Gate threshold is <code>&gt; 0.5</code></strong>, not <code>&gt; 0.0</code>.</li>
 <li><strong>6 tests</strong> cover construction, grid math, cold-start gate, low-grace gate, high-grace gate, and outcome recording.</li>
+<li><strong>Noise subspace learns normal composed thoughts</strong> — anomaly drives gate 4.</li>
+<li><strong>Gate reckoner is Discrete Hold/Exit</strong> — learned from anomaly, not raw thought.</li>
 </ol>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
 <li><strong><a href="T0-018-broker-rust.md">T0-018</a></strong> — Full context-free verification of both source files.</li>
-<li><code>src/domain/broker.rs</code> — 146 lines (70 production + 76 test). The domain struct.</li>
-<li><code>src/programs/app/broker_program.rs</code> — 207 lines. The broker thread body.</li>
+<li><code>src/domain/broker.rs</code> — 170 lines (91 production + 79 test). The domain struct.</li>
+<li><code>src/programs/app/broker_program.rs</code> — 353 lines. The broker thread body.</li>
 </ul>
 </div>
   </main>

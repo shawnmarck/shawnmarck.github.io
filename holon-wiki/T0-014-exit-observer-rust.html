@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#08090a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<title>T0-014 — PositionObserver (Rust) — Verification — Holon Wiki</title>
+<title>T0-014 — RegimeObserver (Rust) — Verification — Holon Wiki</title>
 <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 <script>
 tailwind.config = {
@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html" class="active" aria-current="page">T0-014 — PositionObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html" class="active" aria-current="page">T0-014 — RegimeObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -240,14 +240,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <div class="md:ml-[320px] flex-1 min-w-0">
   <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
     <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
-      T0-014 — PositionObserver (Rust) — Verification <span class="badge badge-what">WHAT</span>
+      T0-014 — RegimeObserver (Rust) — Verification <span class="badge badge-what">WHAT</span>
     </h1>
     
-    <div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/domain/position_observer.rs</code> (34 lines: 17 production, 17 test)
-<strong>Context:</strong> None. Read only what the code says.</p>
+    <div class="prose prose-invert max-w-none"><p><strong>Source:</strong> <code>holon-lab-trading/src/domain/regime_observer.rs</code> (34 lines: 17 production, 17 test)
+<strong>Context:</strong> None. Read only what the code says.
+<strong>Previous name:</strong> PositionObserver (renamed in commit <code>5bf46ca</code>)</p>
 <hr />
 <h2 id="1-what-it-is">1. What It Is<a class="heading-anchor" href="#1-what-it-is" aria-hidden="true">#</a></h2>
-<p>A <code>PositionObserver</code>. The module docstring (lines 1–3) says:</p>
+<p>A <code>RegimeObserver</code>. The module docstring (lines 1–3) says:</p>
 <blockquote>
 <p><em>&quot;Thought middleware. Composes market thoughts with position-specific facts through a lens. Does not learn. Does not predict. Quality is measured through the BROKER's curve.&quot;</em></p>
 </blockquote>
@@ -267,61 +268,25 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tr>
   <td data-label="#">1</td>
   <td data-label="Field"><code>lens</code></td>
-  <td data-label="Type"><code>PositionLens</code></td>
+  <td data-label="Type"><code>RegimeLens</code></td>
   <td data-label="Comment">&quot;Which judgment vocabulary.&quot; Enum: <code>Core</code> or <code>Full</code>.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Fields removed (were present in the old 291-line version):</strong></p>
-<table>
-<thead>
-<tr>
-  <th>Old Field</th>
-  <th>Type</th>
-  <th>Why removed</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td data-label="Old Field"><code>trail_reckoner</code></td>
-  <td data-label="Type"><code>Reckoner</code></td>
-  <td data-label="Why removed">Distances never worked — reaped</td>
-</tr>
-<tr>
-  <td data-label=""><code>stop_reckoner</code></td>
-  <td data-label=""><code>Reckoner</code></td>
-  <td data-label="">Distances never worked — reaped</td>
-</tr>
-<tr>
-  <td data-label=""><code>default_distances</code></td>
-  <td data-label=""><code>Distances</code></td>
-  <td data-label="">Broker owns the cascade — reaped</td>
-</tr>
-<tr>
-  <td data-label=""><code>noise_subspace</code></td>
-  <td data-label=""><code>OnlineSubspace</code></td>
-  <td data-label="">No encoding here — reaped</td>
-</tr>
-<tr>
-  <td data-label=""><code>incremental</code></td>
-  <td data-label=""><code>IncrementalBundle</code></td>
-  <td data-label="">No encoding here — reaped</td>
-</tr>
-</tbody>
-</table>
+<p><strong>Note:</strong> The lens enum was renamed from <code>PositionLens</code> to <code>RegimeLens</code> (commit <code>5bf46ca: gaze: position observer → regime observer — complete rename</code>). The two variants (<code>Core</code>, <code>Full</code>) are unchanged.</p>
 <hr />
 <h2 id="3-methods">3. Methods<a class="heading-anchor" href="#3-methods" aria-hidden="true">#</a></h2>
-<h3 id="newlens-positionlens--gt-self"><code>new(lens: PositionLens) -&gt; Self</code><a class="heading-anchor" href="#newlens-positionlens--gt-self" aria-hidden="true">#</a></h3>
+<h3 id="newlens-regimelens--gt-self"><code>new(lens: RegimeLens) -&gt; Self</code><a class="heading-anchor" href="#newlens-regimelens--gt-self" aria-hidden="true">#</a></h3>
 <p>Constructor. Sets <code>self.lens = lens</code>. That is the entire implementation.</p>
-<pre><code class="language-rust">pub fn new(lens: PositionLens) -&gt; Self {
+<pre><code class="language-rust">pub fn new(lens: RegimeLens) -&gt; Self {
     Self { lens }
 }
 </code></pre>
 <p><strong>No other methods.</strong> No <code>reckoner_distances</code>. No <code>observe_distances</code>. No <code>strip_noise</code>. No <code>recommended_distances</code>.</p>
 <hr />
 <h2 id="4-the-program-thread">4. The Program Thread<a class="heading-anchor" href="#4-the-program-thread" aria-hidden="true">#</a></h2>
-<p>The struct is a data carrier. The actual computation lives in <code>position_observer_program.rs</code> (213 lines). Key behaviors:</p>
-<h3 id="41-positionslot">4.1 PositionSlot<a class="heading-anchor" href="#41-positionslot" aria-hidden="true">#</a></h3>
+<p>The struct is a data carrier. The actual computation lives in <code>regime_observer_program.rs</code> (157 lines). Key behaviors:</p>
+<h3 id="41-regimeslot">4.1 RegimeSlot<a class="heading-anchor" href="#41-regimeslot" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -338,31 +303,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </tr>
 <tr>
   <td data-label=""><code>output_tx</code></td>
-  <td data-label=""><code>QueueSender&lt;MarketPositionChain&gt;</code></td>
+  <td data-label=""><code>QueueSender&lt;MarketRegimeChain&gt;</code></td>
   <td data-label="">Sends to exactly one broker</td>
 </tr>
 </tbody>
 </table>
-<h3 id="42-position_lens_facts">4.2 <code>position_lens_facts</code><a class="heading-anchor" href="#42-position_lens_facts" aria-hidden="true">#</a></h3>
+<h3 id="42-regime_lens_facts">4.2 <code>regime_lens_facts</code><a class="heading-anchor" href="#42-regime_lens_facts" aria-hidden="true">#</a></h3>
 <p>Called once per candle with <code>(lens, candle, scales)</code>. Returns <code>Vec&lt;ThoughtAST&gt;</code>:</p>
 <ul>
 <li><code>Core</code>: exit-regime (8 facts) + exit-time (2 facts) = <strong>10</strong> facts.</li>
 <li><code>Full</code>: exit-regime (8) + exit-time (2) + phase-current (1) + phase-series (1) + phase-scalars (1) = <strong>13</strong> facts.</li>
 </ul>
 <p>Computed on the first slot's candle, then cloned for all subsequent slots in the same round.</p>
-<h3 id="43-market-fact-extraction">4.3 Market Fact Extraction<a class="heading-anchor" href="#43-market-fact-extraction" aria-hidden="true">#</a></h3>
-<ol>
-<li><code>collect_facts(&amp;chain.market_ast)</code> → iterates over AST atoms.</li>
-<li>Each fact is encoded into a <code>Vector</code> via <code>encode()</code>.</li>
-<li>Two cosine similarity passes against <code>chain.market_anomaly</code> and <code>chain.market_raw</code>.</li>
-<li>Facts with <code>|cosine| &gt; noise_floor</code> are bound as <code>ThoughtAST::Bind(&quot;market&quot;, fact)</code> or <code>ThoughtAST::Bind(&quot;market-raw&quot;, fact)</code>.</li>
-</ol>
+<h3 id="43-regime-rhythm-encoding-proposal-056">4.3 Regime Rhythm Encoding (Proposal 056)<a class="heading-anchor" href="#43-regime-rhythm-encoding-proposal-056" aria-hidden="true">#</a></h3>
+<p>The regime observer now also builds indicator rhythm ASTs from the candle window using <code>regime_rhythm_specs(lens)</code>. These rhythm ASTs encode time-series patterns in regime indicators (kama-er, choppiness, entropy-rate, etc.) as bundled bigrams of trigrams — the same pattern used by market observers. The rhythms are included in the <code>MarketRegimeChain</code> alongside the static lens facts.</p>
 <h3 id="44-downstream-composition">4.4 Downstream Composition<a class="heading-anchor" href="#44-downstream-composition" aria-hidden="true">#</a></h3>
-<p>Produces a <code>MarketPositionChain</code> with all <code>MarketChain</code> fields forwarded plus <code>position_facts: Vec&lt;ThoughtAST&gt;</code>. <strong>No encoding</strong> — sends raw AST downstream. The broker encodes when it composes with anxiety.</p>
-<h3 id="45-telemetry">4.5 Telemetry<a class="heading-anchor" href="#45-telemetry" aria-hidden="true">#</a></h3>
-<p>Emits per-candle metrics: <code>slot_recv</code>, <code>collect_facts</code>, <code>extract_anomaly</code>, <code>extract_raw</code>, <code>send</code>, <code>total</code> (all in nanoseconds), plus <code>anomaly_facts_queried</code>, <code>raw_facts_queried</code>, <code>slots_count</code>. Snapshot logged every candle; console diagnostic every 1000 candles.</p>
+<p>Produces a <code>MarketRegimeChain</code> with all <code>MarketChain</code> fields forwarded plus <code>regime_facts: Vec&lt;ThoughtAST&gt;</code>. <strong>No encoding</strong> — sends raw AST downstream. The broker encodes when it composes the full thought.</p>
 <hr />
-<h2 id="5-marketpositionchain-chainrs-38-lines">5. MarketPositionChain (chain.rs, 38 lines)<a class="heading-anchor" href="#5-marketpositionchain-chainrs-38-lines" aria-hidden="true">#</a></h2>
+<h2 id="5-marketregimechain-chainrs-38-lines">5. MarketRegimeChain (chain.rs, 38 lines)<a class="heading-anchor" href="#5-marketregimechain-chainrs-38-lines" aria-hidden="true">#</a></h2>
 <table>
 <thead>
 <tr>
@@ -423,13 +381,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </tr>
 <tr>
   <td data-label="">9</td>
-  <td data-label=""><code>position_facts</code></td>
+  <td data-label=""><code>regime_facts</code></td>
   <td data-label=""><code>Vec&lt;ThoughtAST&gt;</code></td>
-  <td data-label=""><strong>Produced</strong> by position observer</td>
+  <td data-label=""><strong>Produced</strong> by regime observer</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Fields that do NOT exist</strong> (old wiki was wrong): <code>position_raw</code>, <code>position_anomaly</code>, <code>position_ast</code>, <code>position_distances</code>. The chain docstring confirms: <em>&quot;No encoding. No vectors. No distances. The broker encodes.&quot;</em></p>
+<p><strong>Previous name:</strong> <code>MarketPositionChain</code> (renamed along with the observer). The docstring confirms: <em>&quot;No encoding. No vectors. No distances. The broker encodes.&quot;</em></p>
 <hr />
 <h2 id="6-tests">6. Tests<a class="heading-anchor" href="#6-tests" aria-hidden="true">#</a></h2>
 <p>2 tests in <code>#[cfg(test)] mod tests</code>:</p>
@@ -444,23 +402,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tbody>
 <tr>
   <td data-label="#">1</td>
-  <td data-label="Test"><code>test_position_observer_new</code></td>
-  <td data-label="What it verifies">Constructs with <code>PositionLens::Core</code>, asserts <code>obs.lens == Core</code></td>
+  <td data-label="Test"><code>test_regime_observer_new</code></td>
+  <td data-label="What it verifies">Constructs with <code>RegimeLens::Core</code>, asserts <code>obs.lens == Core</code></td>
 </tr>
 <tr>
   <td data-label="">2</td>
-  <td data-label=""><code>test_position_observer_lens</code></td>
-  <td data-label="">Constructs with <code>PositionLens::Full</code>, asserts <code>obs.lens == Full</code></td>
+  <td data-label=""><code>test_regime_observer_lens</code></td>
+  <td data-label="">Constructs with <code>RegimeLens::Full</code>, asserts <code>obs.lens == Full</code></td>
 </tr>
 </tbody>
 </table>
-<p>Both are trivially simple — the struct has one field and one constructor. The complexity lives in the program thread and the lens wiring, which have their own tests.</p>
+<p>Both are trivially simple — the struct has one field and one constructor.</p>
 <hr />
 <h2 id="7-discrepancies">7. Discrepancies<a class="heading-anchor" href="#7-discrepancies" aria-hidden="true">#</a></h2>
-<p>None. The docstring accurately describes the struct: <em>&quot;Does not learn. Does not predict.&quot;</em> The old version had a docstring contradiction (&quot;no noise-subspace&quot; but had one). That discrepancy is gone — the struct is now exactly what the docstring says.</p>
+<p>None. The docstring accurately describes the struct: <em>&quot;Does not learn. Does not predict.&quot;</em></p>
 <hr />
 <h2 id="8-summary">8. Summary<a class="heading-anchor" href="#8-summary" aria-hidden="true">#</a></h2>
-<p><code>PositionObserver</code> is a pure lens carrier: 1 field, 1 constructor, 34 total lines. All learning, prediction, and encoding logic has been stripped. The domain struct is a data tag — &quot;which vocabulary does this observer use?&quot; The program thread (<code>position_observer_program.rs</code>) does the actual work: computing lens-specific facts, extracting market facts via cosine similarity, and composing <code>MarketPositionChain</code> values with raw <code>ThoughtAST</code> position facts for downstream brokers. The <code>MarketPositionChain</code> has 9 fields (including <code>position_facts: Vec&lt;ThoughtAST&gt;</code>) and no position-encoded vectors or distances.</p>
+<p><code>RegimeObserver</code> is a pure lens carrier: 1 field, 1 constructor, 34 total lines. All learning, prediction, and encoding logic has been stripped. The domain struct is a data tag — &quot;which vocabulary does this observer use?&quot; The program thread (<code>regime_observer_program.rs</code>) does the actual work: computing lens-specific facts, building regime rhythm ASTs, and composing <code>MarketRegimeChain</code> values with raw <code>ThoughtAST</code> regime facts for downstream brokers.</p>
+<p><strong>Name change:</strong> <code>PositionObserver</code> → <code>RegimeObserver</code> (commit <code>5bf46ca</code>). All references to <code>PositionLens</code> → <code>RegimeLens</code>. All references to <code>MarketPositionChain</code> → <code>MarketRegimeChain</code>. All references to <code>position_facts</code> → <code>regime_facts</code>.</p>
 </div>
   </main>
 </div>

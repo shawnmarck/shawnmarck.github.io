@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html">T0-014 — RegimeObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -260,7 +260,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </blockquote>
 <hr />
 <h2 id="the-ast-thoughtast-enum">The AST — <code>ThoughtAST</code> enum<a class="heading-anchor" href="#the-ast-thoughtast-enum" aria-hidden="true">#</a></h2>
-<p>Seven variants, each mapping to a specific evaluation strategy:</p>
+<p>Nine variants, each mapping to a specific evaluation strategy:</p>
 <table>
 <thead>
 <tr>
@@ -291,14 +291,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label="">Encode scalar via <code>ScalarEncoder</code> with <code>ScalarMode::Circular { period }</code>.</td>
 </tr>
 <tr>
+  <td data-label=""><code>Thermometer { value, min, max }</code></td>
+  <td data-label=""><code>f64, f64, f64</code></td>
+  <td data-label="">Encode scalar via <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> with <code>ScalarMode::Thermometer { min, max }</code>. Linear gradient that survives bipolar thresholding. <code>cosine(a,b) = 1.0 - 2.0 * |a-b| / (max-min)</code>. Proposal 056.</td>
+</tr>
+<tr>
   <td data-label=""><code>Bind(left, right)</code></td>
-  <td data-label="">two <code>ThoughtAST</code></td>
-  <td data-label="">Recursively encode both, then <code>Primitives::bind(&amp;l, &amp;r)</code>.</td>
+  <td data-label="">two <code>Arc&lt;ThoughtAST&gt;</code></td>
+  <td data-label="">Recursively encode both, then <code>Primitives::bind(&amp;l, &amp;r)</code>. Arc-shared — no tree copies.</td>
 </tr>
 <tr>
   <td data-label=""><code>Bundle(children)</code></td>
   <td data-label=""><code>Vec&lt;ThoughtAST&gt;</code></td>
   <td data-label="">Encode all children, then <code>Primitives::bundle(&amp;vecs)</code>. Superposition (set semantics).</td>
+</tr>
+<tr>
+  <td data-label=""><code>Permute(child, shift)</code></td>
+  <td data-label=""><code>Arc&lt;ThoughtAST&gt;</code>, <code>i32</code></td>
+  <td data-label="">Encode child, then <code>Primitives::permute(&amp;v, shift)</code>. Circular permutation of dimensions by <code>shift</code> positions. Proposal 056.</td>
 </tr>
 <tr>
   <td data-label=""><code>Sequential(items)</code></td>

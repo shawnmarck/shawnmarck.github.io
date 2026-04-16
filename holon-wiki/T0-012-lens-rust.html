@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html">T0-014 — RegimeObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -245,7 +245,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     
     <div class="prose prose-invert max-w-none"><p><strong>Files read:</strong></p>
 <ul>
-<li><code>src/domain/lens.rs</code> (258 lines)</li>
+<li><code>src/domain/lens.rs</code> (466 lines)</li>
 <li><code>src/types/enums.rs</code> (247 lines)</li>
 </ul>
 <hr />
@@ -270,14 +270,17 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </code></pre>
 <p>Derives: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code></p>
 <p>Display strings: <code>dow-trend</code>, <code>dow-volume</code>, <code>dow-cycle</code>, <code>dow-generalist</code>, <code>pring-impulse</code>, <code>pring-confirmation</code>, <code>pring-regime</code>, <code>pring-generalist</code>, <code>wyckoff-effort</code>, <code>wyckoff-persistence</code>, <code>wyckoff-position</code></p>
-<h3 id="positionlens-2-variants">PositionLens — 2 variants<a class="heading-anchor" href="#positionlens-2-variants" aria-hidden="true">#</a></h3>
-<pre><code>pub enum PositionLens {
+<h3 id="regimelens-2-variants">RegimeLens — 2 variants<a class="heading-anchor" href="#regimelens-2-variants" aria-hidden="true">#</a></h3>
+<pre><code>pub enum RegimeLens {
     Core,   // 5 trade atoms — lean
     Full,   // 13 trade atoms — rich
 }
 </code></pre>
 <p>Derives: <code>Clone, Copy, Debug, PartialEq, Eq, Hash</code></p>
 <p>Display strings: <code>core</code>, <code>full</code></p>
+<blockquote>
+<p><strong>Name change:</strong> Previously <code>PositionLens</code>. Renamed to <code>RegimeLens</code> in commit <code>5bf46ca</code> (gaze: position observer → regime observer — complete rename). The two variants (<code>Core</code>, <code>Full</code>) are unchanged.</p>
+</blockquote>
 <hr />
 <h2 id="lens-wiring-lensrs">Lens Wiring (lens.rs)<a class="heading-anchor" href="#lens-wiring-lensrs" aria-hidden="true">#</a></h2>
 <h3 id="shared-module-all-market-lenses">Shared Module (all market lenses)<a class="heading-anchor" href="#shared-module-all-market-lenses" aria-hidden="true">#</a></h3>
@@ -336,7 +339,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tr>
   <td data-label=""><strong>WyckoffEffort</strong></td>
   <td data-label="">Wyckoff</td>
-  <td data-label=""><code>flow</code>, <code>price_action</code>, <code>oscillators</code>, <code>standard</code></td>
+  <td data-label=""><code>flow</code>, <code>price_action</code>, <code>oscillators</code></td>
 </tr>
 <tr>
   <td data-label=""><strong>WyckoffPersistence</strong></td>
@@ -350,8 +353,11 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Change:</strong> <code>WyckoffEffort</code> no longer includes <code>standard</code> (was <code>flow</code>, <code>price_action</code>, <code>oscillators</code>, <code>standard</code>; now <code>flow</code>, <code>price_action</code>, <code>oscillators</code>). <code>WyckoffPersistence</code> no longer includes <code>standard</code> (was <code>persistence</code>, <code>regime</code>, <code>momentum</code>, <code>oscillators</code>; unchanged but <code>standard</code> was never included here).</p>
+</blockquote>
 <p><strong>Generalist property:</strong> Each <code>*Generalist</code> is the union of its school's three specialist lenses (superset of modules).</p>
-<h3 id="position-lens-module-map">Position Lens → Module Map<a class="heading-anchor" href="#position-lens-module-map" aria-hidden="true">#</a></h3>
+<h3 id="regime-lens-module-map">Regime Lens → Module Map<a class="heading-anchor" href="#regime-lens-module-map" aria-hidden="true">#</a></h3>
 <p>Modules are in <code>vocab::exit::*</code> and <code>vocab::shared::*</code>.</p>
 <table>
 <thead>
@@ -378,6 +384,77 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <li><code>stochastic</code> — removed from all lenses</li>
 <li>Their modules still exist but are no longer called</li>
 <li><code>fibonacci</code> is used only by <code>WyckoffPosition</code></li>
+</ul>
+<hr />
+<h2 id="indicator-rhythm-specs-proposal-056">Indicator Rhythm Specs (Proposal 056)<a class="heading-anchor" href="#indicator-rhythm-specs-proposal-056" aria-hidden="true">#</a></h2>
+<p>New in this version. Each market/regime lens returns a list of <code>IndicatorSpec</code> values for rhythm encoding via <code>build_rhythm_asts()</code>. These specs define which candle fields are encoded as indicator rhythm ASTs — the time-series movie that replaces static atom facts for the broker's thought composition.</p>
+<h3 id="indicatorspec-struct">IndicatorSpec struct<a class="heading-anchor" href="#indicatorspec-struct" aria-hidden="true">#</a></h3>
+<pre><code class="language-rust">pub struct IndicatorSpec {
+    pub atom_name: &amp;'static str,
+    pub extractor: fn(&amp;Candle) -&gt; f64,
+    pub value_min: f64,
+    pub value_max: f64,
+    pub delta_range: f64,
+}
+</code></pre>
+<h3 id="spec-functions">Spec Functions<a class="heading-anchor" href="#spec-functions" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Function</th>
+  <th>Indicators</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Function"><code>momentum_specs()</code></td>
+  <td data-label="Indicators">close-sma20, close-sma50, close-sma200, macd-hist, plus-di, minus-di, atr-ratio (7)</td>
+</tr>
+<tr>
+  <td data-label=""><code>oscillator_specs()</code></td>
+  <td data-label="">rsi, stoch-k, williams-r, cci, mfi, roc-1, roc-3, roc-6, roc-12 (9)</td>
+</tr>
+<tr>
+  <td data-label=""><code>flow_specs()</code></td>
+  <td data-label="">obv-slope, volume-accel, vwap-distance (3)</td>
+</tr>
+<tr>
+  <td data-label=""><code>persistence_specs()</code></td>
+  <td data-label="">hurst, autocorrelation, adx (3)</td>
+</tr>
+<tr>
+  <td data-label=""><code>regime_specs()</code></td>
+  <td data-label="">kama-er, choppiness, dfa-alpha, variance-ratio, entropy-rate, aroon-up, aroon-down, fractal-dim (8)</td>
+</tr>
+<tr>
+  <td data-label=""><code>keltner_specs()</code></td>
+  <td data-label="">bb-pos, bb-width, kelt-pos, squeeze (4)</td>
+</tr>
+<tr>
+  <td data-label=""><code>timeframe_specs()</code></td>
+  <td data-label="">tf-1h-ret, tf-4h-ret, tf-agreement (3)</td>
+</tr>
+<tr>
+  <td data-label=""><code>divergence_specs()</code></td>
+  <td data-label="">rsi-div-bull, rsi-div-bear (2)</td>
+</tr>
+<tr>
+  <td data-label=""><code>price_action_specs()</code></td>
+  <td data-label="">range-ratio, gap, consecutive-up, consecutive-down (4)</td>
+</tr>
+<tr>
+  <td data-label=""><code>fibonacci_specs()</code></td>
+  <td data-label="">range-pos-12, range-pos-24, range-pos-48 (3)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="market-rhythm-lens-map">Market Rhythm Lens Map<a class="heading-anchor" href="#market-rhythm-lens-map" aria-hidden="true">#</a></h3>
+<p><code>market_rhythm_specs(lens)</code> mirrors the structure of <code>market_lens_facts</code> — same modules per lens. Time is a top-level fact on the candle, not a rhythm.</p>
+<h3 id="regime-rhythm-lens-map">Regime Rhythm Lens Map<a class="heading-anchor" href="#regime-rhythm-lens-map" aria-hidden="true">#</a></h3>
+<p><code>regime_rhythm_specs(lens)</code>:</p>
+<ul>
+<li><code>Core</code>: <code>regime_specs()</code> (8 indicators)</li>
+<li><code>Full</code>: <code>regime_specs()</code> + <code>phase-duration</code> (9 indicators)</li>
 </ul>
 <hr />
 <h2 id="vocabulary-module-reference">Vocabulary Module Reference<a class="heading-anchor" href="#vocabulary-module-reference" aria-hidden="true">#</a></h2>
@@ -424,7 +501,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tr>
   <td data-label=""><code>encode_standard_facts</code></td>
   <td data-label=""><code>vocab::market::standard</code></td>
-  <td data-label="">DowVolume, DowCycle, DowGeneralist, WyckoffEffort, WyckoffPosition</td>
+  <td data-label="">DowVolume, DowCycle, DowGeneralist, WyckoffPosition</td>
 </tr>
 <tr>
   <td data-label=""><code>encode_keltner_facts</code></td>
@@ -467,7 +544,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label="">Full</td>
 </tr>
 <tr>
-  <td data-label=""><code>phase_series_thought</code></td>
+  <td data-label=""><code>phase_rhythm_thought</code></td>
   <td data-label=""><code>vocab::exit::phase</code></td>
   <td data-label="">Full</td>
 </tr>
@@ -479,12 +556,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </tbody>
 </table>
 <hr />
-<h2 id="tests-lensrs-lines-192258">Tests (lens.rs, lines 192–258)<a class="heading-anchor" href="#tests-lensrs-lines-192258" aria-hidden="true">#</a></h2>
+<h2 id="tests-lensrs-lines-400466">Tests (lens.rs, lines 400–466)<a class="heading-anchor" href="#tests-lensrs-lines-400466" aria-hidden="true">#</a></h2>
 <ol>
 <li><code>test_market_lens_facts_differ_by_lens</code> — asserts DowTrend ≠ WyckoffEffort ≠ PringImpulse by fact count</li>
 <li><code>test_generalists_include_school_modules</code> — asserts DowGeneralist ≥ each Dow specialist, PringGeneralist ≥ each Pring specialist by fact count</li>
-<li><code>test_position_lens_facts_variants</code> — asserts Core produces exactly 10 facts (regime 8 + time 2), Full produces exactly 13 facts (regime 8 + time 2 + phase 3)</li>
+<li><code>test_regime_lens_facts_variants</code> — asserts Core produces exactly 10 facts (regime 8 + time 2), Full produces exactly 13 facts (regime 8 + time 2 + phase 3)</li>
 </ol>
+<blockquote>
+<p><strong>Test name change:</strong> Previously <code>test_position_lens_facts_variants</code>. Renamed to <code>test_regime_lens_facts_variants</code>.</p>
+</blockquote>
 </div>
   </main>
 </div>

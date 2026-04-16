@@ -132,7 +132,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
   
-  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  <a href="T0-014-exit-observer-rust.html">T0-014 — RegimeObserver (Rust) — Verification</a>
   
   <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
   
@@ -244,21 +244,23 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     </h1>
     
     <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by <a class="wikilink" href="pg-broker.html">Broker</a> instances, created every candle, and resolved when either a trailing stop or a fixed stop loss fires. All learning signals — market observer corrections, position observer batch training, scalar accumulator updates, P&amp;L accounting — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is &quot;hypothetical accountability.&quot;</p>
+<p>A <strong>paper trade</strong> is a simulated position that never executes on a real market. It tracks a single predicted direction (Up or Down) against live prices to measure whether the market observer's prediction was correct — producing binary outcomes (<strong>Grace</strong> or <strong>Violence</strong>) that drive all learning in the system. Paper trades are owned by the <strong>Treasury</strong>, created every candle by broker submission, and resolved when a deadline fires. The broker discovers outcomes by reading paper state — it does not own or tick papers itself. All learning signals — market observer corrections, broker gate reckoner training — originate from paper trade resolutions. No real capital is ever at risk; the entire mechanism is &quot;hypothetical accountability.&quot;</p>
+<blockquote>
+<p><strong>Architecture note (Proposal 056):</strong> Paper trades were previously owned by the broker (<code>register_paper</code>, <code>tick_papers</code>, <code>close_all_runners</code>). The broker was stripped to essentials and the treasury now owns all paper lifecycle management. The broker submits proposals and reads state via <code>TreasuryHandle</code>.</p>
+</blockquote>
 <hr />
 </div>
     
     <div class="prose prose-invert max-w-none"><h2 id="lifecycle">Lifecycle<a class="heading-anchor" href="#lifecycle" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
-    created[&quot;Created\n(register_paper)&quot;] --&gt;|&quot;price moves against prediction\nhits fixed stop&quot;| violence[&quot;Violence\n(resolved, never signaled)&quot;]
-    created --&gt;|&quot;price moves in predicted direction\nfar enough to cross trail threshold&quot;| runner[&quot;signaled = true\nnow a Runner&quot;]
-    runner --&gt;|&quot;price reverses\ncrosses trailing stop&quot;| grace[&quot;resolved\n(Grace — was signaled)&quot;]
-    runner --&gt;|&quot;price continues favorably&quot;| ratchet[&quot;extreme/trail ratchet\nkeeps running&quot;]
-    created --&gt;|&quot;price never moves enough\nin either direction&quot;| open[&quot;stays open indefinitely&quot;]
+    created[&quot;Created\n(treasury.submit_paper)&quot;] --&gt;|deadline fires| resolved[&quot;Resolved&quot;]
+    resolved --&gt;|price moved in predicted direction| grace[&quot;Grace — paper lived&quot;]
+    resolved --&gt;|price moved against prediction| violence[&quot;Violence — deadline hit&quot;]
+    broker[&quot;Broker discovers outcome\n(treasury.get_paper_state)&quot;] --&gt;|Grace| record_grace[&quot;record_outcome(Grace)&quot;]
+    broker --&gt;|Violence| record_violence[&quot;record_outcome(Violence)&quot;]
 </pre>
-<p>Each paper is created at the candle's entry price. On every subsequent candle, <code>tick(current_price)</code> is called. The paper is removed once resolved.</p>
 <blockquote>
-<p>Source: T0-015 § Lifecycle Summary; T0-018 § 7.7</p>
+<p><strong>Removed:</strong> The old lifecycle had <code>tick_papers()</code>, <code>trail_distance</code>, <code>stop_distance</code>, <code>RunnerHistory</code>, and <code>compute_position_batch()</code>. All stripped in the backlog sweep. The treasury now handles paper lifecycle with simple deadline-based resolution.</p>
 </blockquote>
 <hr />
 <h2 id="resolution-classifications">Resolution Classifications<a class="heading-anchor" href="#resolution-classifications" aria-hidden="true">#</a></h2>
@@ -273,45 +275,19 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tbody>
 <tr>
   <td data-label="Outcome"><strong>Grace</strong></td>
-  <td data-label="Condition"><code>signaled == true</code> — trail crossed at some point</td>
+  <td data-label="Condition">Paper survived to deadline with favorable outcome</td>
   <td data-label="Meaning">Market confirmed the prediction.</td>
 </tr>
 <tr>
   <td data-label=""><strong>Violence</strong></td>
-  <td data-label=""><code>resolved &amp;&amp; !signaled</code> — stop fired before trail ever crossed</td>
+  <td data-label="">Deadline hit, unfavorable outcome</td>
   <td data-label="">Prediction was wrong.</td>
-</tr>
-<tr>
-  <td data-label=""><strong>Runner</strong></td>
-  <td data-label=""><code>signaled &amp;&amp; !resolved</code> — trail crossed, still running</td>
-  <td data-label="">Not yet resolved.</td>
 </tr>
 </tbody>
 </table>
-<p>These are mutually exclusive in any given state. An unsignaled, unresolved paper matches none of the three.</p>
 <blockquote>
-<p>Source: T0-015 § Resolution Classifications</p>
+<p>Source: T0-018 § record_outcome</p>
 </blockquote>
-<h3 id="stop-priority">Stop priority<a class="heading-anchor" href="#stop-priority" aria-hidden="true">#</a></h3>
-<p>Violence is checked <em>before</em> Grace on each tick. If both triggers would fire simultaneously, Violence wins — a price that hits the stop and the trail-cross threshold on the same tick is classified as Violence, not Grace.</p>
-<blockquote>
-<p>Source: T0-015 § tick — &quot;Key ordering&quot;</p>
-</blockquote>
-<hr />
-<h2 id="triggers">Triggers<a class="heading-anchor" href="#triggers" aria-hidden="true">#</a></h2>
-<h3 id="trail-grace">Trail (Grace)<a class="heading-anchor" href="#trail-grace" aria-hidden="true">#</a></h3>
-<p>A trailing stop that follows the best price in the predicted direction:</p>
-<ul>
-<li><strong>Up predictions:</strong> <code>trail_level = extreme - extreme × trail_distance</code>. Only ratchets upward.</li>
-<li><strong>Down predictions:</strong> <code>trail_level = extreme + extreme × trail_distance</code>. Only ratchets downward.</li>
-</ul>
-<p>The <code>extreme</code> tracks the best price seen so far (monotonically favorable). The trail level follows with a gap of <code>trail_distance</code> percent.</p>
-<h3 id="stop-violence">Stop (Violence)<a class="heading-anchor" href="#stop-violence" aria-hidden="true">#</a></h3>
-<p>A fixed stop loss set at creation, never moves:</p>
-<ul>
-<li><strong>Up predictions:</strong> <code>entry - entry × stop_distance</code> (below entry).</li>
-<li><strong>Down predictions:</strong> <code>entry + entry × stop_distance</code> (above entry).</li>
-</ul>
 <hr />
 <h2 id="paperentry-fields">PaperEntry Fields<a class="heading-anchor" href="#paperentry-fields" aria-hidden="true">#</a></h2>
 <table>
@@ -326,169 +302,89 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tr>
   <td data-label="Field"><code>paper_id</code></td>
   <td data-label="Type"><code>usize</code></td>
-  <td data-label="Purpose">Unique ID assigned by the <a class="wikilink" href="pg-broker.html">Broker</a>.</td>
+  <td data-label="Purpose">Unique ID assigned by the treasury</td>
 </tr>
 <tr>
   <td data-label=""><code>composed_thought</code></td>
   <td data-label=""><code>Vector</code></td>
-  <td data-label="">Composed thought (market + position) at entry.</td>
-</tr>
-<tr>
-  <td data-label=""><code>market_thought</code></td>
-  <td data-label=""><code>Vector</code></td>
-  <td data-label="">Raw market thought (for market observer learning at resolution).</td>
-</tr>
-<tr>
-  <td data-label=""><code>position_thought</code></td>
-  <td data-label=""><code>Vector</code></td>
-  <td data-label="">Position observer's own encoded facts (Proposal 026).</td>
+  <td data-label="">Composed thought (market + regime) at entry</td>
 </tr>
 <tr>
   <td data-label=""><code>prediction</code></td>
   <td data-label=""><code>Direction</code></td>
-  <td data-label=""><code>Up</code> or <code>Down</code>.</td>
+  <td data-label=""><code>Up</code> or <code>Down</code></td>
 </tr>
 <tr>
   <td data-label=""><code>entry_price</code></td>
   <td data-label=""><code>Price</code></td>
-  <td data-label="">Price at creation.</td>
-</tr>
-<tr>
-  <td data-label=""><code>distances</code></td>
-  <td data-label=""><code>Distances</code></td>
-  <td data-label=""><code>{ trail: f64, stop: f64 }</code> — percentage thresholds.</td>
-</tr>
-<tr>
-  <td data-label=""><code>extreme</code></td>
-  <td data-label=""><code>f64</code></td>
-  <td data-label="">Best price in predicted direction seen so far.</td>
-</tr>
-<tr>
-  <td data-label=""><code>trail_level</code></td>
-  <td data-label=""><code>Price</code></td>
-  <td data-label="">Current trailing stop level.</td>
-</tr>
-<tr>
-  <td data-label=""><code>stop_level</code></td>
-  <td data-label=""><code>Price</code></td>
-  <td data-label="">Fixed stop loss.</td>
-</tr>
-<tr>
-  <td data-label=""><code>signaled</code></td>
-  <td data-label=""><code>bool</code></td>
-  <td data-label="">Has the trail trigger crossed?</td>
-</tr>
-<tr>
-  <td data-label=""><code>resolved</code></td>
-  <td data-label=""><code>bool</code></td>
-  <td data-label="">Has any trigger fired?</td>
-</tr>
-<tr>
-  <td data-label=""><code>age</code></td>
-  <td data-label=""><code>usize</code></td>
-  <td data-label="">Tick count survived.</td>
+  <td data-label="">Price at creation</td>
 </tr>
 <tr>
   <td data-label=""><code>entry_candle</code></td>
   <td data-label=""><code>usize</code></td>
-  <td data-label="">Candle number at creation.</td>
+  <td data-label="">Candle number at creation</td>
 </tr>
 <tr>
-  <td data-label=""><code>price_history</code></td>
-  <td data-label=""><code>Vec&lt;f64&gt;</code></td>
-  <td data-label="">Every tick's price, starting with entry.</td>
+  <td data-label=""><code>deadline</code></td>
+  <td data-label=""><code>usize</code></td>
+  <td data-label="">Candle at which paper resolves</td>
+</tr>
+<tr>
+  <td data-label=""><code>amount</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Capital allocated</td>
+</tr>
+<tr>
+  <td data-label=""><code>units_acquired</code></td>
+  <td data-label=""><code>f64</code></td>
+  <td data-label="">Units obtained at entry price</td>
+</tr>
+<tr>
+  <td data-label=""><code>source_asset</code></td>
+  <td data-label=""><code>Asset</code></td>
+  <td data-label="">From asset</td>
+</tr>
+<tr>
+  <td data-label=""><code>target_asset</code></td>
+  <td data-label=""><code>Asset</code></td>
+  <td data-label="">To asset</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p>Source: T0-015 § Fields</p>
+<p>Source: T0-015 § Fields (current version after treasury migration)</p>
 </blockquote>
 <hr />
-<h2 id="excursion">Excursion<a class="heading-anchor" href="#excursion" aria-hidden="true">#</a></h2>
-<p><code>excursion()</code> measures how far price moved in the predicted direction, as a fraction of entry:</p>
-<ul>
-<li>Up: <code>(extreme - entry) / entry</code></li>
-<li>Down: <code>(entry - extreme) / entry</code></li>
-</ul>
-<p>Always ≥ 0. Zero at creation. Used as the &quot;amount&quot; in Grace resolutions — the realized gain fraction.</p>
-<blockquote>
-<p>Source: T0-015 § excursion()</p>
-</blockquote>
-<hr />
-<h2 id="broker-integration">Broker Integration<a class="heading-anchor" href="#broker-integration" aria-hidden="true">#</a></h2>
+<h2 id="broker-integration-post-056">Broker Integration (Post-056)<a class="heading-anchor" href="#broker-integration-post-056" aria-hidden="true">#</a></h2>
 <h3 id="creation">Creation<a class="heading-anchor" href="#creation" aria-hidden="true">#</a></h3>
-<p>The <a class="wikilink" href="pg-broker.html">Broker</a> creates a paper every candle via <code>register_paper()</code>, which assigns a monotonic <code>paper_id</code> and pushes the paper onto a <code>VecDeque</code>. Three separate thoughts are recorded: composed, market, and position (Proposal 026 — position observer learns from its own thought, not composed).</p>
-<blockquote>
-<p>Source: T0-018 § 7.5</p>
-</blockquote>
-<h3 id="ticking">Ticking<a class="heading-anchor" href="#ticking" aria-hidden="true">#</a></h3>
-<p><code>tick_papers()</code> returns two vectors:</p>
+<p>The <a class="wikilink" href="pg-broker.html">Broker</a> submits a paper proposal every candle via <code>treasury.submit_paper(from_asset, to_asset, price)</code>. The treasury decides whether to fund it. If approved, the broker receives a <code>PositionReceipt</code>.</p>
+<h3 id="discovery">Discovery<a class="heading-anchor" href="#discovery" aria-hidden="true">#</a></h3>
+<p>The broker iterates its <code>active_receipts</code>, calling <code>treasury.get_paper_state(paper_id)</code> for each:</p>
+<ul>
+<li><strong>Active</strong> → keep receipt</li>
+<li><strong>Grace</strong> → <code>broker.record_outcome(Grace)</code>, remove receipt</li>
+<li><strong>Violence</strong> → <code>broker.record_outcome(Violence)</code>, remove receipt</li>
+<li><strong>None</strong> → remove receipt (unknown state)</li>
+</ul>
+<h3 id="learning-flow">Learning Flow<a class="heading-anchor" href="#learning-flow" aria-hidden="true">#</a></h3>
 <ol>
-<li><strong><code>market_signals</code></strong> — Grace signals and Violence stops, for market observer learning.</li>
-<li><strong><code>runner_resolutions</code></strong> — completed runners with position batch data, for position observer + broker learning.</li>
-</ol>
-<p>When a paper first signals Grace (trail crosses), a <a class="wikilink" href="pg-broker.html">RunnerHistory</a> is created and the broker begins accumulating per-candle thoughts, distances, and prices. When the runner resolves, <code>compute_position_batch()</code> produces deferred batch training data using a suffix-extremum pass and sparse sampling (only when optimal trail changed by &gt;10% relative).</p>
-<blockquote>
-<p>Source: T0-018 § 7.7</p>
-</blockquote>
-<h3 id="direction-flip">Direction Flip<a class="heading-anchor" href="#direction-flip" aria-hidden="true">#</a></h3>
-<p>When the market observer's active direction flips, <code>close_all_runners()</code> force-resolves all active runners as Grace. Non-runner papers that haven't resolved survive the flip (they'll hit stop naturally).</p>
-<blockquote>
-<p>Source: T0-018 § 7.6</p>
-</blockquote>
-<hr />
-<h2 id="from-resolution-to-learning">From Resolution to Learning<a class="heading-anchor" href="#from-resolution-to-learning" aria-hidden="true">#</a></h2>
-<p>Resolutions flow through <code>propagate()</code>, which performs three actions:</p>
-<ol>
-<li><strong>Track record</strong> — updates cumulative grace/violence and counts.</li>
-<li><strong>Scalar accumulator learning</strong> — accumulators observe the <em>optimal</em> (hindsight) distances, weighted by outcome, teaching what trail/stop would have been ideal.</li>
-<li><strong>Dollar P&amp;L + EMA</strong> — against a fixed $10,000 reference capital with swap fees on entry and exit. Grace P&amp;L uses excursion as the gain fraction; Violence P&amp;L uses stop distance as the loss fraction. EMA alpha = 0.038 (half-life ~50 papers). Produces <code>expected_value = grace_rate × avg_grace_net + (1 - grace_rate) × avg_violence_net</code>.</li>
+<li><strong>Broker records outcome</strong> — <code>record_outcome(Grace)</code> or <code>record_outcome(Violence)</code> updates counts and grace rate.</li>
+<li><strong>Broker's gate reckoner learns</strong> — On gate 4 resolution, the gate reckoner observes the anomaly with the correct Hold/Exit label.</li>
+<li><strong>Market observer learns</strong> — Through broker propagation on resolution.</li>
 </ol>
 <blockquote>
-<p>Source: T0-018 § 7.8</p>
+<p><strong>What was removed:</strong> The old <code>propagate()</code> method that returned <code>PropagationFacts</code>. Scalar accumulator learning (<code>trail_distance</code>, <code>stop_distance</code>). Dollar P&amp;L computation with EMA. <code>cascade_distances()</code> with three-tier fallback. <code>close_all_runners()</code> on direction flip. All gone. The broker calls <code>record_outcome()</code> and the gate reckoner learns from anomaly.</p>
 </blockquote>
 <hr />
 <h2 id="the-gate">The Gate<a class="heading-anchor" href="#the-gate" aria-hidden="true">#</a></h2>
 <p>Paper trade outcomes power the broker's gate via <code>gate_open()</code>:</p>
 <ul>
 <li><strong>Cold start</strong> (&lt; 50 of either outcome): gate always open — not enough data.</li>
-<li><strong>Warm</strong> (≥ 50 of both): gate open only when <code>expected_value &gt; 0.0</code>.</li>
+<li><strong>Warm</strong> (≥ 50 of both): gate open only when <code>expected_value &gt; 0.5</code>.</li>
 </ul>
-<p>A broker with negative expected value is suppressed — it cannot propose funded trades.</p>
+<p>A broker with a 50/50 or worse grace rate is suppressed — it cannot propose funded trades.</p>
 <blockquote>
-<p>Source: T0-018 § 7.3</p>
-</blockquote>
-<hr />
-<h2 id="distance-cascade">Distance Cascade<a class="heading-anchor" href="#distance-cascade" aria-hidden="true">#</a></h2>
-<p>Trail and stop distances come from a three-tier fallback:</p>
-<table>
-<thead>
-<tr>
-  <th>Tier</th>
-  <th>Source</th>
-  <th>Condition</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td data-label="Tier">1</td>
-  <td data-label="Source">Reckoner answer (position observer)</td>
-  <td data-label="Condition"><code>Some(dists)</code> → return immediately</td>
-</tr>
-<tr>
-  <td data-label="">2</td>
-  <td data-label=""><a class="wikilink" href="T0-007-accumulator.html">ScalarAccumulator</a> extraction</td>
-  <td data-label="">If accumulator has observations. Clamped to [0.1%, 10%].</td>
-</tr>
-<tr>
-  <td data-label="">3</td>
-  <td data-label="">Default distances</td>
-  <td data-label="">Constructor-provided fallback.</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>Source: T0-018 § 7.4</p>
+<p>Source: T0-018 § gate_open</p>
 </blockquote>
 <hr />
 <h2 id="design-principles">Design Principles<a class="heading-anchor" href="#design-principles" aria-hidden="true">#</a></h2>
@@ -503,41 +399,36 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tbody>
 <tr>
   <td data-label="Principle">No real execution</td>
-  <td data-label="Source">T0-015 § What is a PaperEntry</td>
+  <td data-label="Source">T0-015</td>
   <td data-label="Quote">&quot;It does not execute.&quot;</td>
 </tr>
 <tr>
+  <td data-label="">Treasury owns papers</td>
+  <td data-label="">T0-018</td>
+  <td data-label="">&quot;The broker submits papers and reads state.&quot;</td>
+</tr>
+<tr>
   <td data-label="">Values up, not effects down</td>
-  <td data-label="">T0-018 § Module Purpose</td>
+  <td data-label="">T0-018</td>
   <td data-label="">&quot;All outputs flow upward as return values — no shared mutation.&quot;</td>
 </tr>
 <tr>
   <td data-label="">Broker doesn't touch observers</td>
-  <td data-label="">T0-018 § Finding 2</td>
-  <td data-label="">&quot;<code>propagate()</code> returns <code>PropagationFacts</code> — the broker does not touch observer state.&quot;</td>
+  <td data-label="">T0-018</td>
+  <td data-label="">&quot;No shared observer references. No PropagationFacts.&quot;</td>
 </tr>
 <tr>
-  <td data-label="">Market learns anomaly, not composed</td>
-  <td data-label="">T0-018 § Key Design Decisions</td>
-  <td data-label="">Proposal 024: &quot;market observer learns from the anomaly, not composed thought&quot;</td>
-</tr>
-<tr>
-  <td data-label="">Position learns its own thought</td>
-  <td data-label="">T0-018 § Key Design Decisions</td>
-  <td data-label="">Proposal 026: &quot;position learns from position_thought, not composed&quot;</td>
-</tr>
-<tr>
-  <td data-label="">Pure accounting</td>
-  <td data-label="">T0-018 § Key Design Decisions</td>
-  <td data-label="">Proposal 035: &quot;no reckoner, no noise subspace. Pure accounting + gate + log&quot;</td>
+  <td data-label="">Simple grace rate</td>
+  <td data-label="">T0-018</td>
+  <td data-label="">&quot;<code>grace_count / trade_count</code>. No EMA, no dollar P&amp;L.&quot;</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
-<li><a href="T0-015-paper-entry-rust">T0-015</a>: <code>PaperEntry</code> verification — <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines, 12 tests)</li>
-<li><a href="T0-018-broker-rust">T0-018</a>: <code>Broker</code> verification — <code>holon-lab-trading/src/domain/broker.rs</code> (887 lines, 18 tests)</li>
+<li><a href="T0-015-paper-entry-rust">T0-015</a>: <code>PaperEntry</code> verification — <code>holon-lab-trading/src/trades/paper_entry.rs</code> (370 lines)</li>
+<li><a href="T0-018-broker-rust">T0-018</a>: <code>Broker</code> verification — <code>holon-lab-trading/src/domain/broker.rs</code> (170 lines, 10 fields)</li>
 </ul>
 </div>
   </main>
