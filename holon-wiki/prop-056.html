@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#08090a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Proposal 056 — Thought Architecture ✅ Resolved — Holon Wiki</title>
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: { colors: {
+    bg: '#08090a', surface: '#0f1011', 'surface-raised': '#191a1b',
+    'surface-overlay': '#28282c', border: 'rgba(255,255,255,0.08)',
+    'border-subtle': 'rgba(255,255,255,0.05)', accent: '#7170ff',
+    'accent-hover': '#828fff', provenance: '#d29922',
+  }}}
+}
+</script>
+<style>
+.wikilink{color:#7170ff;text-decoration:none;border-bottom:1px dotted rgba(113,112,255,.3);transition:border-color .15s,color .15s}
+.wikilink:hover{border-bottom-style:solid;border-bottom-color:#7170ff;color:#828fff}
+.badge{display:inline-block;padding:2px 8px;border-radius:2px;font-size:10px;font-weight:510;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px;vertical-align:middle;line-height:1.5}
+.badge-why{background:rgba(255,255,255,.05);color:#d8b4fe}.badge-how{background:rgba(255,255,255,.05);color:#6ee7b7}
+.badge-describe{background:rgba(255,255,255,.05);color:#93c5fd}.badge-what{background:rgba(255,255,255,.05);color:#fbbf24}
+.badge-explain{background:rgba(255,255,255,.05);color:#c4b5fd}
+.tldr{background:rgba(210,153,34,.06);border-left:3px solid #d29922;border-radius:0 6px 6px 0}
+.prose blockquote{border-left:3px solid #d29922;background:rgba(210,153,34,.04);border-radius:0 6px 6px 0}
+#sidebar .tier{padding:24px 24px 4px;font-size:10px;color:#6e737d;text-transform:uppercase;letter-spacing:1.5px;font-weight:510}
+#sidebar a{display:flex;align-items:center;padding:5px 24px 5px 32px;color:#8a8f98;text-decoration:none;font-size:13px;font-weight:510;line-height:1.4;transition:color .15s,background .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:32px}
+#sidebar a:hover{color:#d0d6e0;background:rgba(255,255,255,.02)}
+#sidebar a.active{color:#7170ff;background:rgba(255,255,255,.02);border-right:2px solid #7170ff}
+#sidebar.open{transform:translateX(0)!important;box-shadow:4px 0 24px rgba(0,0,0,.5)}
+.search-results{display:none;position:absolute;background:#28282c;border:1px solid rgba(255,255,255,.08);border-top:none;border-radius:0 0 6px 6px;max-height:400px;overflow-y:auto;z-index:100;width:288px;left:32px}
+.mermaid{background:#191a1b;border:1px solid rgba(255,255,255,.08);border-radius:8px;text-align:center}.mermaid svg{max-width:100%;height:auto}
+.mermaid code,.mermaid pre{background:none!important;padding:0!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+.heading-anchor{color:#62666d!important;margin-left:12px;text-decoration:none;font-weight:400;transition:color .15s;vertical-align:middle}
+.heading-anchor:hover{color:#7170ff!important}
+.prose code::before,.prose code::after{content:none!important}
+pre{background:#191a1b;border-radius:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170ff;outline-offset:2px}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49}
+#sidebar.open~#sidebar-backdrop{display:block}
+.skip-nav{position:absolute;top:-100%;left:50%;transform:translateX(-50%);background:#7170ff;color:#fff;padding:8px 16px;border-radius:0 0 6px 6px;font-size:14px;z-index:100;text-decoration:none;transition:top .15s}
+.skip-nav:focus{top:0}
+@media(max-width:480px){
+.wikilink{border-bottom-width:1.5px;border-bottom-style:solid;border-bottom-color:rgba(113,112,255,.5)}
+.prose table thead{display:none}.prose table tr{display:block;margin-bottom:16px;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#0f1011}
+.prose table td{display:block;padding:2px 0;border:none;text-align:left!important}
+.prose table td::before{content:attr(data-label);font-weight:590;font-size:12px;color:#8a8f98;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px}
+.tldr,blockquote{overflow-wrap:break-word;word-break:break-word}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/scheme.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({theme:"dark",themeVariables:{primaryColor:"#28282c",lineColor:"rgba(255,255,255,0.08)",textColor:"#d0d6e0",fontSize:"14px",nodeBorder:"#7170ff",mainBkg:"#191a1b",clusterBkg:"#191a1b",edgeLabelBackground:"#191a1b"}});document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('pre code:not(.hljs):not(.language-mermaid)').forEach(function(el){if(el.classList.contains('language-wat'))el.classList.replace('language-wat','language-scheme');hljs.highlightElement(el)})});</script>
+<script src="holon-search.js" defer></script>
+</head>
+<body class="bg-bg text-[#d0d6e0] font-['Inter_Variable',Inter,'SF_Pro_Text','Segoe_UI',system-ui,sans-serif] text-base leading-normal min-h-screen antialiased flex">
+<a href="#content" class="skip-nav">Skip to content</a>
+<button id="menu-toggle" class="flex md:hidden fixed top-4 left-4 z-[60] items-center justify-center bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.08)] rounded text-[#d0d6e0] px-3.5 py-2.5 text-lg cursor-pointer font-sans leading-none min-w-[44px] min-h-[44px] active:scale-95 transition-transform" aria-label="Menu" aria-expanded="false">&#9776;</button>
+<nav id="sidebar" aria-label="Site navigation" class="fixed inset-y-0 left-0 z-50 w-[320px] max-md:!w-full bg-surface border-r border-[rgba(255,255,255,0.08)] overflow-y-auto -translate-x-full md:translate-x-0 transition-transform duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+  <div class="text-accent px-6 pt-6 pb-4 text-[11px] uppercase tracking-[2px] font-medium border-b border-[rgba(255,255,255,0.08)]">Holon Wiki</div>
+  <div class="px-6 py-4">
+    <input id="holon-search" class="w-full py-2 px-3 border border-[rgba(255,255,255,0.08)] rounded bg-[rgba(255,255,255,0.02)] text-[#d0d6e0] text-base font-sans outline-none focus:border-accent transition-colors" type="text" placeholder="Search the graph..." autocomplete="off" />
+    <div id="holon-results" class="search-results"></div>
+  </div>
+      <a href="tree.html" class="flex items-center gap-2 px-6 py-2 text-[#7170ff] text-[13px] font-medium hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Site Map
+  </a>
+  
+  <div class="tier">Conceptual Leaves</div>
+  
+  <a href="T-1-000-primers.html">The Primers — Conceptual Foundations from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-001-story.html">The Story — History of Decisions from algebraic-intelligence.dev</a>
+  
+  <a href="T-1-002-book.html">T-1-002: The Book — Philosophical Foundations and Design Philosophy</a>
+  
+  <a href="T-1-003-web-guide.html">T-1-003: The Guide (web version) — The Published Blueprint</a>
+  
+  <a href="T-1-004-lab-guide.html">T-1-004 — Lab GUIDE.md Verification</a>
+  
+  <a href="T-1-005-lab-circuit.html">T-1-005 — Lab Circuit (CIRCUIT.md)</a>
+  
+  <a href="T-1-006-lab-order.html">T-1-006 — Lab Order (ORDER.md)</a>
+  
+  
+  <div class="tier">Substrate</div>
+  
+  <a href="T0-001-vector.html">Vector — the atomic data structure of holon-rs</a>
+  
+  <a href="T0-002-primitives.html">T0-002: Primitives — atom, bind, bundle, and the algebraic structure of holon-rs</a>
+  
+  <a href="T0-003-cosine.html">T0-003: Cosine Similarity — the only measurement in holon-rs</a>
+  
+  <a href="T0-004-encoder.html">T0-004 — Scalar Encoding</a>
+  
+  <a href="T0-005-vector-manager.html">T0-005 · VectorManager</a>
+  
+  <a href="T0-006-walkable.html">T0-006 · Walkable — the AST traversal trait and thought expression tree</a>
+  
+  <a href="T0-007-accumulator.html">T0-007: Accumulator</a>
+  
+  <a href="T0-008-reckoner.html">T0-008 — Reckoner: The Learning Primitive</a>
+  
+  <a href="T0-009-engram.html">T0-009: Engram — Observation Storage and Retrieval</a>
+  
+  
+  <div class="tier">Language</div>
+  
+  <a href="T1-001-wat-language.html">The wat Language — forms, evaluation, and structural types</a>
+  
+  <a href="T1-002-wat-stdlib.html">The wat Standard Library — built-in operations</a>
+  
+  <a href="T1-003-wat-proposals.html">T1-003: wat Proposals System</a>
+  
+  
+  <div class="tier">Enterprise Rust</div>
+  
+  <a href="T0-010-subspace.html">T0-010: Subspace — Noise Modeling and Thought Projection</a>
+  
+  <a href="T0-011-thought-encoder-rust.html">T0-011 — ThoughtEncoder (Rust) — Verification</a>
+  
+  <a href="T0-012-lens-rust.html">T0-012: Lens (Rust) — Context-Free Ignorant Verification</a>
+  
+  <a href="T0-013-market-observer-rust.html">T0-013: MarketObserver (Rust) — Verification</a>
+  
+  <a href="T0-014-exit-observer-rust.html">T0-014 — PositionObserver (Rust) — Verification</a>
+  
+  <a href="T0-015-paper-entry-rust.html">T0-015 — PaperEntry (Rust) — Verification</a>
+  
+  <a href="T0-016-services-rust.html">T0-016 — Services (Rust) — Verification</a>
+  
+  <a href="T0-017-wat-vm-rust.html">T0-017: wat-vm + chain types (Rust) — Verification</a>
+  
+  <a href="T0-018-broker-rust.html">T0-018: Broker (Rust) — Context-Free Verification</a>
+  
+  <a href="T0-019-indicator-bank-rust.html">T0-019: indicator_bank.rs — Verified Documentation</a>
+  
+  
+  <div class="tier">Enterprise Spec</div>
+  
+  <a href="T2-001-thought-encoder.html">ThoughtEncoder — the AST walker that produces vectors from thought expressions</a>
+  
+  <a href="T2-002-encoder-service.html">Encoder Service — the distributed caching layer for thought encoding</a>
+  
+  <a href="T2-003-engram-gate.html">EngramGate — gating observations by subspace alignment</a>
+  
+  <a href="T2-004-vocabulary.html">T2-004 — Vocabulary</a>
+  
+  <a href="T2-005-lens.html">T2-005 — Lens</a>
+  
+  <a href="T3-broker-wat.html">T3 — Broker (wat spec) Verification</a>
+  
+  <a href="T3-treasury-wat.html">T3 — Treasury (wat spec) — SUPERSEDED</a>
+  
+  
+  <div class="tier">Trading Lab Proposals</div>
+  
+  <a href="prop-index.html">Trading Lab Proposals</a>
+  
+  
+  <div class="tier">Wat Language Proposals</div>
+  
+  <a href="wat-prop-index.html">Wat Language Proposals</a>
+  
+  
+  <div class="tier">Wiki Composites</div>
+  
+  <a href="pg-atom.html">Atom — the irreducible unit of meaning</a>
+  
+  <a href="pg-bind.html">Bind — the self-inverse combinator</a>
+  
+  <a href="pg-broker.html">Broker — the accountability primitive</a>
+  
+  <a href="pg-bundle.html">Bundle — the lossy consensus operator</a>
+  
+  <a href="pg-chain-types.html">Chain Types</a>
+  
+  <a href="pg-conviction.html">Conviction — the strength of a prediction</a>
+  
+  <a href="pg-curve.html">Curve — the conviction-to-accuracy mapping</a>
+  
+  <a href="pg-disposable-machine.html">Disposable Machine</a>
+  
+  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  
+  <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
+  
+  <a href="pg-fact.html">Fact — a scalar claim about the world, encoded as a vector.</a>
+  
+  <a href="pg-four-step-loop.html">Four-Step Loop — observe, predict, execute, learn</a>
+  
+  <a href="pg-grace-and-violence.html">Grace and Violence — the two outcomes of every paper trade.</a>
+  
+  <a href="pg-lens.html">Lens — the vocabulary subset selector.</a>
+  
+  <a href="pg-market-observer.html">Market Observer — Perceiving Market Direction Through Noise</a>
+  
+  <a href="pg-panel-of-experts.html">Panel of Experts</a>
+  
+  <a href="pg-paper-trade.html">Paper Trade — hypothetical accountability without execution</a>
+  
+  <a href="pg-programs.html">Programs — the concurrent pipeline architecture</a>
+  
+  <a href="pg-proposal-system.html">Proposal System</a>
+  
+  <a href="pg-reckoner.html">Reckoner — the geometric learning primitive</a>
+  
+  <a href="pg-services.html">Services — Queue, Topic, and Mailbox</a>
+  
+  <a href="pg-signal-propagation.html">Signal Propagation — How Learning Flows Backward Through the Organism</a>
+  
+  <a href="pg-thought-encoding.html">Thought Encoding — the pipeline from thought to vector</a>
+  
+  <a href="pg-thought-space.html">Thought Space — the vector geometry where meaning lives</a>
+  
+  <a href="pg-thought-system.html">Thought System — how candles become thoughts and thoughts become meaning</a>
+  
+  <a href="pg-treasury.html">Treasury — the bank. Headless. Blind to strategy.</a>
+  
+  <a href="pg-vocabulary-evolution.html">Vocabulary Evolution — how the system's words emerged and changed</a>
+  
+  <a href="pg-vocabulary.html">Vocabulary — the named atoms that give the system its words.</a>
+  
+  <a href="pg-wards.html">Wards — the principle of scoped, disposable cognition</a>
+  
+  <a href="pg-wat-vm.html">wat-vm — the training harness</a>
+  
+  
+</nav>
+<div id="sidebar-backdrop"></div>
+<div class="md:ml-[320px] flex-1 min-w-0">
+  <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
+    <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
+      Proposal 056 — Thought Architecture ✅ Resolved <span class="badge badge-design">DESIGN</span>
+    </h1>
+    
+    <div class="prose prose-invert max-w-none"><p><strong>Scope:</strong> userland</p>
+<h2 id="resolution">Resolution<a class="heading-anchor" href="#resolution" aria-hidden="true">#</a></h2>
+<p><strong>Status: ACCEPTED</strong></p>
+<p><strong>Date: 2026-04-15</strong></p>
+<h2 id="decision">Decision<a class="heading-anchor" href="#decision" aria-hidden="true">#</a></h2>
+<p>Unanimous approval from five designers across two review rounds.</p>
+<h2 id="what-was-decided">What Was Decided<a class="heading-anchor" href="#what-was-decided" aria-hidden="true">#</a></h2>
+<p>Three thinkers. Clear boundaries. Each thinks in rhythms, not snapshots.</p>
+<p><strong>Market observer</strong> thinks about direction. Per-indicator rhythms
+from the candle window — bundled bigrams of trigrams. One rhythm
+per indicator. The atom wraps the whole rhythm. ~15 rhythm vectors.</p>
+<p><strong>Regime observer</strong> (renamed from position observer) is middleware.
+Thinks about regime character over time — kama-er, choppiness,
+entropy, fractal dimension as rhythms. Circular rhythms for hour
+and day-of-week. Passes market rhythms through with anomaly
+filtering. ~10-13 rhythm vectors.</p>
+<p><strong>Broker-observer</strong> thinks about action. Composes market rhythms +
+regime rhythms + its own portfolio rhythms + the phase rhythm.
+One thought. One encode. One question: do I get out now? Hold/Exit
+reckoner. ~31-34 items in the outer bundle.</p>
+<h2 id="key-findings">Key Findings<a class="heading-anchor" href="#key-findings" aria-hidden="true">#</a></h2>
+<p><strong>Thermometer encoding.</strong> The rotation-based scalar encoding
+(ScalarMode::Linear) destroys small differences after bipolar
+thresholding. +0.07 and -0.07 encode identically at scale=1.0.
+ScalarMode::Thermometer fills dimensions proportionally —
+exact linear gradient, sign-preserving. Added to holon-rs.</p>
+<p><strong>Bundled bigrams of trigrams.</strong> Positional encoding (Sequential)
+fails — same shape at different offsets is a different thought.
+Chained encoding fails — different prefix makes same suffix
+unrecognizable. Bundled bigrams of trigrams: local order in the
+trigram, local progression in the pair, all pairs equally
+recoverable in the bundle. Shape-preserving. Offset-independent.</p>
+<p><strong>Noise subspace separates regimes.</strong> Raw rhythm cosine between
+uptrend and downtrend: 0.72-0.96. After subspace strips the
+background: -0.09 to -0.10. The signal is in the anomaly direction.
+Measured on real BTC candles (3k and 10k). Not synthetic.</p>
+<p><strong>Delta braiding: 13% margin.</strong> Hickey asked whether sequential
+and structural deltas should be separated. Measured: 6.10x vs
+6.89x separation. Not worth the complexity. Datamancer override.</p>
+<p><strong>Circular values don't get deltas.</strong> Hour wraps 23→0. The
+thermometer delta would be -23. Circular-rhythm variant uses
+circular encoding with no delta. The wrap is handled by the
+encoding, not by computing differences.</p>
+<h2 id="capacity-budget-d10000">Capacity Budget (D=10,000)<a class="heading-anchor" href="#capacity-budget-d10000" aria-hidden="true">#</a></h2>
+<p>Inner rhythm: up to 100 bigram-pairs per indicator (sqrt(D)).
+100 pairs → 103 candles covered.</p>
+<p>Outer bundle: ~31-34 items. Budget: 100. Comfortable.</p>
+<p>Binds cost zero capacity. Only bundles count.</p>
+<h2 id="artifacts">Artifacts<a class="heading-anchor" href="#artifacts" aria-hidden="true">#</a></h2>
+<h3 id="proposal">Proposal<a class="heading-anchor" href="#proposal" aria-hidden="true">#</a></h3>
+<ul>
+<li><code>PROPOSAL.md</code> — the full design</li>
+</ul>
+<h3 id="reviews">Reviews<a class="heading-anchor" href="#reviews" aria-hidden="true">#</a></h3>
+<ul>
+<li><code>review-hickey.md</code> / <code>review-hickey-2.md</code> — CONDITIONAL → APPROVED</li>
+<li><code>review-beckman.md</code> / <code>review-beckman-2.md</code> — CONDITIONAL → APPROVED</li>
+<li><code>review-seykota.md</code> — APPROVED</li>
+<li><code>review-vantharp.md</code> / <code>review-vantharp-2.md</code> — CONDITIONAL → APPROVED</li>
+<li><code>review-wyckoff.md</code> — APPROVED</li>
+</ul>
+<h3 id="examples-wat">Examples (wat)<a class="heading-anchor" href="#examples-wat" aria-hidden="true">#</a></h3>
+<ul>
+<li><code>indicator-rhythm.wat</code> — the generic function + RSI + hour examples</li>
+<li><code>market-observer-thought.wat</code> — 15 indicator rhythms</li>
+<li><code>regime-core-thought.wat</code> — 10 regime rhythms</li>
+<li><code>regime-full-thought.wat</code> — 13 regime + phase rhythms</li>
+<li><code>broker-thought.wat</code> — composed thought with portfolio rhythms</li>
+<li><code>bullish-momentum.wat</code> — rising valleys, strengthening rallies</li>
+<li><code>exhaustion-top.wat</code> — weakening rallies, longer pauses</li>
+<li><code>breakdown.wat</code> — lower high after higher highs</li>
+<li><code>choppy-range.wat</code> — peaks and valleys at similar levels</li>
+<li><code>recovery-bottom.wat</code> — three rising valleys from a crash</li>
+</ul>
+<h3 id="proofs-rust-tests">Proofs (Rust tests)<a class="heading-anchor" href="#proofs-rust-tests" aria-hidden="true">#</a></h3>
+<ul>
+<li><code>prove_rhythm_real_data.rs</code> — real BTC regime separation</li>
+<li><code>prove_rhythm_with_subspace.rs</code> — synthetic regime separation</li>
+<li><code>prove_delta_braiding.rs</code> — braided vs separated (13% margin)</li>
+<li><code>prove_indicator_rhythm.rs</code> — encoding property tests</li>
+<li><code>debug_rhythm.rs</code> — layer-by-layer introspection</li>
+<li><code>debug_thermometer.rs</code> — thermometer gradient verification</li>
+<li><code>debug_scalar.rs</code> — Linear encoding failure diagnosis</li>
+</ul>
+<h3 id="holon-rs">holon-rs<a class="heading-anchor" href="#holon-rs" aria-hidden="true">#</a></h3>
+<ul>
+<li><code>ScalarMode::Thermometer { min, max }</code> — commit <code>8a7f48d</code></li>
+</ul>
+<h2 id="non-blocking-notes-for-implementation">Non-Blocking Notes for Implementation<a class="heading-anchor" href="#non-blocking-notes-for-implementation" aria-hidden="true">#</a></h2>
+<ol>
+<li>Throughput at rhythm scale — measure, floor 100 candles/s (Hickey)</li>
+<li>Capacity near sqrt(D) boundary — monitor (Beckman)</li>
+<li>ScaleTracker warmup for delta ranges (Beckman)</li>
+<li>Expectancy, 1R, circuit breaker — deferred to trading framework proposal (Van Tharp)</li>
+</ol>
+<h2 id="what-this-proved">What This Proved<a class="heading-anchor" href="#what-this-proved" aria-hidden="true">#</a></h2>
+<p>Named continuous values encoded as thermometer vectors. Progressions
+of those values over time as bundled bigrams of trigrams. Pattern
+recognition of thoughts — first &quot;these don't matter&quot; (noise subspace),
+then &quot;these mean Grace or Violence&quot; (reckoner). Measured on real data.
+The architecture of structured interpretation that improves with
+experience and produces actionable predictions from named concepts.</p>
+<p>The thoughts survived.</p>
+<h2 id="the-problem">The Problem<a class="heading-anchor" href="#the-problem" aria-hidden="true">#</a></h2>
+<p>Three thinkers. Each thinks about different things. The boundaries
+between what each thinks are unclear, violated, or missing. The
+phase sequence is unbounded. The structural relations between
+phases (higher highs, lower lows, weakening rallies) are not
+encoded. The broker-observer has no name.</p>
+<h2 id="who-thinks-what">Who Thinks What<a class="heading-anchor" href="#who-thinks-what" aria-hidden="true">#</a></h2>
+<h3 id="market-observer">Market Observer<a class="heading-anchor" href="#market-observer" aria-hidden="true">#</a></h3>
+<p>Thinks about direction. &quot;Is the market going up or down?&quot;</p>
+<p>Input: candle window through its lens (momentum, structure, volume, regime, etc.)
+Output: thought vector, anomaly vector, raw vector, prediction (Up/Down), edge
+Learns: via its own reckoner, self-graded at peaks and valleys</p>
+<p><strong>Current state:</strong> The market observer encodes ~33 facts from the
+CURRENT candle only. A photograph. The window sampler selects a
+slice of history but the vocabulary runs on one candle. The
+progression of indicators across the window is invisible.</p>
+<p><strong>Proposed:</strong> The market observer thinks in indicator rhythm. The
+vocabulary runs on EACH candle in the window. Each candle produces
+a fact bundle. The candle bundles form the sequence. Trigrams of
+consecutive candle bundles → bigram-pairs → bundled rhythm. The
+same encoding as the phase rhythm, applied to indicator evolution.</p>
+<p>Each candle's facts can carry deltas relative to the previous
+candle — &quot;RSI moved +0.06&quot;, &quot;volume dropped -0.3&quot;. The rhythm
+encodes how the indicators evolved, not just where they are.</p>
+<p>The window sampler determines how far back the observer looks.
+The trim to sqrt(D) bigram-pairs applies. The most recent candles
+survive. The budget determines the memory depth.</p>
+<pre><code>window: [candle_t-N, ..., candle_t-1, candle_t]
+each candle → fact bundle (33 facts + deltas from previous candle)
+trigrams: sliding window of 3 candle bundles
+pairs: sliding window of 2 trigrams
+rhythm: bundle(all pairs) → one vector
+</code></pre>
+<p>The market observer's thought IS the rhythm of the indicators
+across its window. Not a snapshot — a movie.</p>
+<p>See: <a href="examples/market-observer-thought.wat">examples/market-observer-thought.wat</a>
+(example shows current single-candle form — to be updated when
+the indicator rhythm encoding is implemented)</p>
+<h3 id="regime-observer-middleware">Regime Observer (Middleware)<a class="heading-anchor" href="#regime-observer-middleware" aria-hidden="true">#</a></h3>
+<p>Thinks about interpretation. &quot;Which of the market observer's facts
+are anomalous? What does the market look like through my lens?&quot;</p>
+<p>Input: MarketChain (market thought + anomaly + raw + candle)
+Output: MarketRegimeChain (market data + regime-specific facts)
+Learns: nothing. Pure middleware. Two lenses:</p>
+<p><strong>Core lens</strong>: regime facts + time facts. The consensus minimum.
+Sees the character of the market (trending vs choppy, persistent vs
+mean-reverting) and the time context (hour, day). Does not see phases.</p>
+<p><strong>Full lens</strong>: regime facts + time facts + phase current facts + phase
+scalar summaries. Sees everything Core sees plus the current phase
+state (label, direction, duration) and summary statistics of the
+phase history (avg duration, avg range).</p>
+<p>The regime observer extracts from the market anomaly: for each of
+the ~33 market facts, cosine against the anomaly vector. Facts above
+the noise floor pass through as <code>(bind (atom &quot;market&quot;) fact)</code>. Facts
+above noise floor in the raw pass as <code>(bind (atom &quot;market-raw&quot;) fact)</code>.
+This IS the regime observer's interpretation — which market thoughts
+are anomalous right now.</p>
+<p>The phase sequence is NOT a regime observer thought. It is a fact
+about the market that flows on the candle. The broker-observer owns it.</p>
+<p>See: <a href="examples/regime-core-thought.wat">examples/regime-core-thought.wat</a>,
+<a href="examples/regime-full-thought.wat">examples/regime-full-thought.wat</a></p>
+<h3 id="broker-observer">Broker-Observer<a class="heading-anchor" href="#broker-observer" aria-hidden="true">#</a></h3>
+<p>Thinks about action. &quot;Given what I see, do I need to get out right now?&quot;</p>
+<p>Input: MarketRegimeChain (position facts + market data + candle)
+Output: Hold/Exit decision, paper proposals, exit proposals
+Learns: gate reckoner (Hold/Exit from Grace/Violence outcomes)</p>
+<p>The broker-observer's thought is a composition:</p>
+<ol>
+<li>Market indicator rhythms (from the market observer — one per indicator)</li>
+<li>Regime observer's lens facts (regime, time, phase current, phase scalars)</li>
+<li>Portfolio anxiety (age spread, pressure, unrealized P&amp;L, track record)</li>
+<li>Phase rhythm (bundled bigrams of trigrams — one vector)</li>
+</ol>
+<p>One thought. One encode. One question: do I get out now?</p>
+<p>See: <a href="examples/broker-thought.wat">examples/broker-thought.wat</a></p>
+<h2 id="the-indicator-rhythm">The Indicator Rhythm<a class="heading-anchor" href="#the-indicator-rhythm" aria-hidden="true">#</a></h2>
+<h3 id="the-problem">The Problem<a class="heading-anchor" href="#the-problem" aria-hidden="true">#</a></h3>
+<p>The market observer sees one candle — a photograph. It encodes ~33
+facts from the current candle's indicators. &quot;RSI is 0.68.&quot; It does
+not see &quot;RSI was 0.55, 0.58, 0.62, 0.68.&quot; The progression is
+invisible. The reckoner accumulates many single-candle snapshots
+over time, but each individual thought is memoryless.</p>
+<h3 id="the-solution-per-indicator-rhythm">The Solution: Per-Indicator Rhythm<a class="heading-anchor" href="#the-solution-per-indicator-rhythm" aria-hidden="true">#</a></h3>
+<p>Each indicator the lens selects gets its own rhythm vector. Two
+variants based on the indicator's nature:</p>
+<p><strong><code>indicator-rhythm</code></strong> — for continuous values (RSI, ADX, ATR, etc.).
+Thermometer encoding for values. Thermometer encoding for deltas.
+The atom wraps the WHOLE rhythm, not each candle's fact (Beckman:
+factor the constant out of the per-candle encoding).</p>
+<p><strong><code>circular-rhythm</code></strong> — for periodic values (hour, day-of-week).
+Circular encoding, no delta. The wrap from 23→0 is handled by
+circular similarity, not by computing a delta of -23.</p>
+<pre><code class="language-scheme">;; Continuous indicators: thermometer + delta
+(define (indicator-rhythm window atom-name extract-fn
+                          value-min value-max delta-range dims)
+  (let facts
+    (map-indexed (lambda (i candle)
+      (let value (extract-fn candle))
+      (if (= i 0)
+        (thermometer value value-min value-max)
+        (let prev (extract-fn (nth window (- i 1))))
+        (bundle
+          (thermometer value value-min value-max)
+          (bind (atom &quot;delta&quot;)
+                (thermometer (- value prev)
+                             (- 0 delta-range) delta-range)))))
+    window))
+  ;; trigrams → bigram-pairs → trim → bundle → bind atom
+  ...
+  (bind (atom atom-name) raw-rhythm))
+
+;; Periodic indicators: circular, no delta
+(define (circular-rhythm window atom-name extract-fn period dims)
+  (let facts
+    (map (lambda (candle)
+      (circular (extract-fn candle) period))
+    window))
+  ...
+  (bind (atom atom-name) raw-rhythm))
+</code></pre>
+<p>The atom appears ONCE — wrapping the final rhythm vector. Not N
+times inside the per-candle facts. Two RSI rhythms (rising vs
+falling) differ in their raw progression, not in the shared atom
+structure. The atom identifies. The raw rhythm differentiates.</p>
+<p>The delta IS the causality. &quot;RSI rose 0.07 then rose 0.06&quot; — the
+deceleration is in the scalars. &quot;RSI positive then negative&quot; — the
+reversal is a sign flip in the delta. The reckoner doesn't need a
+rule. The direction on the sphere where delta flips sign IS reversal.</p>
+<p>Bounds come from the indicator's nature — not magic numbers:</p>
+<ul>
+<li>RSI: <code>thermometer 0.0 100.0</code> — Wilder's definition</li>
+<li>Bollinger position: <code>thermometer 0.0 1.0</code> — by construction</li>
+<li>Hour: <code>circular 24.0</code> — by the clock</li>
+<li>Deltas: symmetric <code>thermometer -range +range</code> — from ScaleTracker</li>
+</ul>
+<h3 id="the-market-observers-thought">The Market Observer's Thought<a class="heading-anchor" href="#the-market-observers-thought" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">(define (market-thought window dims)
+  (bundle
+    (indicator-rhythm window &quot;rsi&quot;       (lambda (c) (:rsi c))       0.0 100.0 10.0 dims)
+    (indicator-rhythm window &quot;macd-hist&quot; (lambda (c) (:macd-hist c)) -50.0 50.0 20.0 dims)
+    (indicator-rhythm window &quot;bb-pos&quot;    (lambda (c) (:bb-pos c))    0.0 1.0 0.2 dims)
+    (indicator-rhythm window &quot;adx&quot;       (lambda (c) (:adx c))       0.0 100.0 10.0 dims)
+    (indicator-rhythm window &quot;atr-ratio&quot; (lambda (c) (:atr-ratio c)) 0.0 0.05 0.01 dims)
+    (indicator-rhythm window &quot;obv-slope&quot; (lambda (c) (:obv-slope c)) -2.0 2.0 1.0 dims)
+    ;; ... one call per indicator the lens selects ...
+    ))
+</code></pre>
+<p>One call per indicator. One rhythm per indicator. One bundle of all
+rhythms. The lens determines which indicators. The window sampler
+determines how far back. The dims determine the trim budget.</p>
+<h3 id="emergent-pairs">Emergent Pairs<a class="heading-anchor" href="#emergent-pairs" aria-hidden="true">#</a></h3>
+<p>Each indicator rhythm is its own vector. MACD falling while RSI
+rising → two rhythm vectors pointing in different directions. The
+outer bundle holds both. The reckoner's discriminant learns: &quot;when
+the RSI rhythm points HERE and the MACD rhythm points THERE at the
+same time, Violence follows.&quot; The meaningful pairs emerge from the
+geometry. The noise subspace strips what doesn't matter.</p>
+<p>We don't name the combinations. The reckoner discovers them.</p>
+<h3 id="coverage-pairs-trigrams-candles">Coverage: Pairs → Trigrams → Candles<a class="heading-anchor" href="#coverage-pairs-trigrams-candles" aria-hidden="true">#</a></h3>
+<p>Overlapping windows mean pairs trace back further than their count.
+100 pairs → 101 trigrams → 103 candles. Each pair shares a trigram
+with the next. Each trigram shares two candles with the next.</p>
+<table>
+<thead>
+<tr>
+  <th>Pairs (budget)</th>
+  <th>Trigrams</th>
+  <th>Candles covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Pairs (budget)">40</td>
+  <td data-label="Trigrams">41</td>
+  <td data-label="Candles covered">43</td>
+</tr>
+<tr>
+  <td data-label="">64</td>
+  <td data-label="">65</td>
+  <td data-label="">67</td>
+</tr>
+<tr>
+  <td data-label="">100</td>
+  <td data-label="">101</td>
+  <td data-label="">103</td>
+</tr>
+<tr>
+  <td data-label="">141</td>
+  <td data-label="">142</td>
+  <td data-label="">144</td>
+</tr>
+</tbody>
+</table>
+<p>The window sampler selects 12 to 2016 candles (log-uniform,
+median ~155, p25 ~43, p75 ~560). At D=10,000:</p>
+<ul>
+<li>Window of 43 candles → 40 pairs. Under budget. No trim.</li>
+<li>Window of 155 candles → 152 pairs. Trimmed to 100 → covers last 103 candles.</li>
+<li>Window of 560 candles → trimmed to 100 → covers last 103 candles.</li>
+</ul>
+<p>The trim determines memory depth. Larger windows than sqrt(D)+2
+candles see no benefit — the oldest candles fall off. The window
+sampler may over-select but the trim caps the actual thought.</p>
+<h2 id="the-phase-sequence">The Phase Sequence<a class="heading-anchor" href="#the-phase-sequence" aria-hidden="true">#</a></h2>
+<h3 id="current-state">Current State<a class="heading-anchor" href="#current-state" aria-hidden="true">#</a></h3>
+<p>Each phase record has 5 facts: label atom + duration + range + move + volume.
+No structural relations. Each record is isolated. The broker cannot see
+&quot;the highs are falling&quot; because no record knows about the record before it.</p>
+<h3 id="proposed-structural-deltas">Proposed: Structural Deltas<a class="heading-anchor" href="#proposed-structural-deltas" aria-hidden="true">#</a></h3>
+<p>Each phase record carries 10 facts:</p>
+<p><strong>Own properties (4):</strong></p>
+<ul>
+<li><code>rec-duration</code> (log) — how long this phase lasted</li>
+<li><code>rec-move</code> (linear, signed) — net price movement as % of open</li>
+<li><code>rec-range</code> (linear) — high-low range as % of average</li>
+<li><code>rec-volume</code> (linear) — average volume during this phase</li>
+</ul>
+<p><strong>Prior-bundle deltas (3):</strong>
+Relative to the phase immediately before me. The linkage.</p>
+<ul>
+<li><code>prior-duration-delta</code> (linear, signed) — my duration vs previous phase's duration, as ratio</li>
+<li><code>prior-move-delta</code> (linear, signed) — my move vs previous phase's move</li>
+<li><code>prior-volume-delta</code> (linear, signed) — my volume vs previous phase's volume</li>
+</ul>
+<p><strong>Prior-same-phase deltas (3):</strong>
+Relative to the last occurrence of this same phase type. The structural momentum.</p>
+<ul>
+<li><code>same-move-delta</code> (linear, signed) — my move vs last same-type's move</li>
+<li><code>same-duration-delta</code> (linear, signed) — my duration vs last same-type's duration</li>
+<li><code>same-volume-delta</code> (linear, signed) — my volume vs last same-type's volume</li>
+</ul>
+<p>The first record has no priors — own properties only. The second has
+prior-bundle deltas but may not have prior-same-phase deltas. Each
+subsequent record gets richer.</p>
+<h3 id="four-phase-types">Four Phase Types<a class="heading-anchor" href="#four-phase-types" aria-hidden="true">#</a></h3>
+<table>
+<thead>
+<tr>
+  <th>Label</th>
+  <th>Direction</th>
+  <th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Label"><code>phase-transition-up</code></td>
+  <td data-label="Direction">Up</td>
+  <td data-label="Meaning">Price moving from valley to peak</td>
+</tr>
+<tr>
+  <td data-label=""><code>phase-peak</code></td>
+  <td data-label="">None</td>
+  <td data-label="">Price pausing at a high</td>
+</tr>
+<tr>
+  <td data-label=""><code>phase-transition-down</code></td>
+  <td data-label="">Down</td>
+  <td data-label="">Price moving from peak to valley</td>
+</tr>
+<tr>
+  <td data-label=""><code>phase-valley</code></td>
+  <td data-label="">None</td>
+  <td data-label="">Price pausing at a low</td>
+</tr>
+</tbody>
+</table>
+<p>The rhythm: move, pause, move, pause. The transitions carry direction
+and magnitude. The pauses carry duration and range. The deltas carry
+the trend of the trend.</p>
+<h3 id="why-this-encodes-quotthree-lower-lowsquot">Why This Encodes &quot;Three Lower Lows&quot;<a class="heading-anchor" href="#why-this-encodes-quotthree-lower-lowsquot" aria-hidden="true">#</a></h3>
+<p>Three valleys, each with negative <code>same-move-delta</code>:</p>
+<ul>
+<li>Valley 1: no prior-same delta (first valley)</li>
+<li>Valley 2: <code>same-move-delta = -0.005</code> (slightly lower)</li>
+<li>Valley 3: <code>same-move-delta = -0.012</code> (much lower)</li>
+</ul>
+<p>These appear in trigrams: <code>(valley → trans-up → peak)</code> where the
+valley's <code>same-move-delta</code> is increasingly negative. The trigrams
+encode the shape. The chain preserves that the decline progressed
+in this order. The reckoner learns this region predicts Violence.</p>
+<p>No rule. No boolean. The geometry encodes it as a direction with
+scalar strength.</p>
+<h2 id="encoding-bundled-bigrams-of-trigrams">Encoding: Bundled Bigrams of Trigrams<a class="heading-anchor" href="#encoding-bundled-bigrams-of-trigrams" aria-hidden="true">#</a></h2>
+<h3 id="the-design-space">The Design Space<a class="heading-anchor" href="#the-design-space" aria-hidden="true">#</a></h3>
+<p>Four encoding modes exist in holon-rs:</p>
+<table>
+<thead>
+<tr>
+  <th>Mode</th>
+  <th>Order</th>
+  <th>Pattern Recognition</th>
+  <th>Problem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Mode"><strong>Bundle</strong></td>
+  <td data-label="Order">None</td>
+  <td data-label="Pattern Recognition">Each item recoverable</td>
+  <td data-label="Problem">&quot;A then B&quot; == &quot;B then A&quot;</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Positional</strong></td>
+  <td data-label="">Fixed slots</td>
+  <td data-label="">Position-dependent</td>
+  <td data-label="">Same shape at different offsets = different thought</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Chained</strong></td>
+  <td data-label="">Total ordering</td>
+  <td data-label="">Recent on surface</td>
+  <td data-label="">Same suffix + different prefix = different thought</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Ngram</strong></td>
+  <td data-label="">Local ordering</td>
+  <td data-label="">Offset-independent</td>
+  <td data-label="">✓</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Positional</strong> (what Sequential does now) fails because &quot;peak at
+position 3&quot; differs from &quot;peak at position 7.&quot; The shape should be
+recognizable regardless of when it appeared.</p>
+<p><strong>Chained</strong> fails because different history prefixes rotate the final
+vector into different orientations. The same recent pattern with
+different early history is unrecognizable.</p>
+<p><strong>Bundled ngrams</strong> succeed: each ngram preserves local order via bind.
+The ngrams are bundled — each one equally recoverable by cosine,
+regardless of when it occurred. The same shape is recognizable at
+any offset.</p>
+<h3 id="three-layers">Three Layers<a class="heading-anchor" href="#three-layers" aria-hidden="true">#</a></h3>
+<p><strong>Layer 1 — Phase record.</strong> One phase. 4-10 facts: own properties +
+prior-bundle deltas + prior-same-phase deltas. Encoded as a bundle.
+Produces one vector.</p>
+<p><strong>Layer 2 — Trigram.</strong> Three consecutive phase records. One full cycle:
+pause → move → pause. Internally ordered via bind + permute.</p>
+<pre><code>trigram = bind(bind(encode(phase_A), permute(encode(phase_B), 1)),
+              permute(encode(phase_C), 2))
+</code></pre>
+<p>&quot;Valley → transition-up → peak&quot; differs from &quot;peak → transition-up →
+valley.&quot; The trigram IS the shape of one cycle. Produces one vector.</p>
+<p><strong>Layer 3 — Bigram of trigrams.</strong> Two consecutive trigrams. &quot;This cycle
+then that cycle.&quot; Ordered via bind.</p>
+<pre><code>pair = bind(trigram_i, trigram_i+1)
+</code></pre>
+<p>&quot;Exhaustion-cycle then panic-cycle&quot; IS a specific direction in
+hyperspace. Produces one vector.</p>
+<p><strong>Layer 4 — Rhythm.</strong> All bigram-pairs bundled. Unordered. Each pair
+equally recoverable. The rhythm is the SET of all cycle-to-cycle
+progressions.</p>
+<pre><code>rhythm = bundle(pair_0, pair_1, ..., pair_N)
+</code></pre>
+<p>One vector. One thought. One slot in the broker's outer bundle.</p>
+<h3 id="example-9-phases-1-rhythm-vector">Example: 9 Phases → 1 Rhythm Vector<a class="heading-anchor" href="#example-9-phases-1-rhythm-vector" aria-hidden="true">#</a></h3>
+<pre><code class="language-scheme">;; 9 phases from the labeler
+phases:   [valley, trans-up, peak, trans-down, valley, trans-up, peak, trans-down, valley]
+
+;; 7 trigrams (sliding window of 3)
+tri-0: valley → trans-up → peak         ;; the rally cycle
+tri-1: trans-up → peak → trans-down     ;; the top
+tri-2: peak → trans-down → valley       ;; the selloff cycle
+tri-3: trans-down → valley → trans-up   ;; the bottom
+tri-4: valley → trans-up → peak         ;; another rally cycle
+tri-5: trans-up → peak → trans-down     ;; another top
+tri-6: peak → trans-down → valley       ;; another selloff
+
+;; 6 bigram-pairs (sliding window of 2 trigrams)
+pair-0: bind(tri-0, tri-1)   ;; rally THEN top
+pair-1: bind(tri-1, tri-2)   ;; top THEN selloff
+pair-2: bind(tri-2, tri-3)   ;; selloff THEN bottom
+pair-3: bind(tri-3, tri-4)   ;; bottom THEN rally
+pair-4: bind(tri-4, tri-5)   ;; rally THEN top (again)
+pair-5: bind(tri-5, tri-6)   ;; top THEN selloff (again)
+
+;; The rhythm — bundle all pairs
+rhythm: bundle(pair-0, pair-1, pair-2, pair-3, pair-4, pair-5)
+</code></pre>
+<p>Pair-0 and pair-4 are both &quot;rally then top.&quot; If the second rally was
+weaker (smaller scalars in the phase deltas), the two pairs point in
+similar-but-not-identical directions. They REINFORCE the common shape
+in the bundle. The scalar differences create SPREAD around that
+direction. The reckoner reads both the pattern and the drift.</p>
+<h3 id="order-lives-in-the-deltas-not-the-container">Order Lives in the Deltas, Not the Container<a class="heading-anchor" href="#order-lives-in-the-deltas-not-the-container" aria-hidden="true">#</a></h3>
+<p>The bundle is a set — it loses the order of pairs. &quot;Pair-0 happened
+before pair-4&quot; is not expressed. But the ORDER is not lost. It moved
+from the container to the content.</p>
+<p>Each phase record carries <code>same-move-delta</code>: &quot;I moved X% less than the
+last phase of my type.&quot; This IS ordering. A weakening sequence of
+rallies produces:</p>
+<ul>
+<li>Rally 1: no same-move-delta (first rally)</li>
+<li>Rally 2: <code>same-move-delta = -0.01</code> (weaker than rally 1)</li>
+<li>Rally 3: <code>same-move-delta = -0.02</code> (weaker than rally 2)</li>
+</ul>
+<p>The delta on rally 3 says &quot;I am weaker than my predecessor.&quot; It
+doesn't need to know where rally 2 is in the bundle. The relation
+is IN the scalar. The degradation is encoded on each record, not
+between records.</p>
+<p>The bundle sees &quot;rallies with increasingly negative same-move-delta.&quot;
+The composite direction drifts toward weakness. The reckoner reads
+the drift. The ordering that the bundle lost is carried by the
+deltas the bundle contains.</p>
+<p>If the deltas were absent — if each phase only had its own properties —
+the bundle truly couldn't distinguish &quot;strong then weak&quot; from &quot;weak
+then strong.&quot; The deltas make the distinction. They are the linkage.</p>
+<h3 id="why-familiar-shapes-stay-familiar">Why Familiar Shapes Stay Familiar<a class="heading-anchor" href="#why-familiar-shapes-stay-familiar" aria-hidden="true">#</a></h3>
+<p>Bind is deterministic. The same two vectors always produce the same
+result. A trigram of &quot;valley(rising) → transition-up(strong) → peak&quot;
+produces the same vector whether it appears in January or July. A
+bigram of &quot;rally-cycle then top-cycle&quot; produces the same vector
+regardless of what happened before or after.</p>
+<p>The bundle preserves each pair independently. Cosine against any
+individual pair recovers it. The reckoner's discriminant learns:
+&quot;when pair(exhaustion-cycle, panic-cycle) is present in the rhythm
+bundle, Violence follows.&quot; It doesn't matter WHEN that pair appeared
+in the history. It matters that it's THERE.</p>
+<p>Two different market histories that share the same cycle-to-cycle
+transitions produce similar rhythm vectors. That IS the recognition.
+The shape is the direction. The scalars carry the magnitude. The
+reckoner discriminates.</p>
+<h3 id="capacity">Capacity<a class="heading-anchor" href="#capacity" aria-hidden="true">#</a></h3>
+<p>Two separate Kanerva limits, both comfortable:</p>
+<p><strong>Inner (rhythm bundle):</strong> each bigram-pair is one item. Budget =
+sqrt(D) pairs before interference.</p>
+<table>
+<thead>
+<tr>
+  <th>Dimensions</th>
+  <th>sqrt(D)</th>
+  <th>Pair Budget</th>
+  <th>Time Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Dimensions">4,096</td>
+  <td data-label="sqrt(D)">64</td>
+  <td data-label="Pair Budget">64 pairs</td>
+  <td data-label="Time Coverage">~2-3 days</td>
+</tr>
+<tr>
+  <td data-label="">10,000</td>
+  <td data-label="">100</td>
+  <td data-label="">100 pairs</td>
+  <td data-label="">~4-7 days</td>
+</tr>
+<tr>
+  <td data-label="">20,000</td>
+  <td data-label="">141</td>
+  <td data-label="">141 pairs</td>
+  <td data-label="">~1-2 weeks</td>
+</tr>
+</tbody>
+</table>
+<p>Typical: 1 day → 4-28 pairs. 1 week → 38-198 pairs. At D=10,000,
+most weeks fit. Choppy markets may need trimming.</p>
+<p>The budget scales with the architecture. More dims = longer memory.
+The trim is derived from <code>sqrt(dims)</code>, not hardcoded.</p>
+<p><strong>Outer (broker's thought bundle):</strong> each rhythm is one vector.</p>
+<ul>
+<li>Market indicator rhythms: ~10-15 (one per lens indicator)</li>
+<li>Regime lens facts: ~10-15</li>
+<li>Extracted market facts: ~10-20 (after anomaly filtering)</li>
+<li>Anxiety facts: ~11 (age/pressure/unrealized spreads + track record)</li>
+<li>Phase rhythm: 1</li>
+</ul>
+<p>Total: ~42-62 items at D=10,000 (budget: 100). Comfortable.
+At D=4,096 (budget: 64): tight. The lens must be selective.</p>
+<p><strong>Bind operations inside trigrams and pairs cost ZERO capacity.</strong>
+Bind rotates — it doesn't consume bundle slots. Only the final
+bundle of pairs counts against the Kanerva limit.</p>
+<h3 id="trim-strategy">Trim Strategy<a class="heading-anchor" href="#trim-strategy" aria-hidden="true">#</a></h3>
+<p>If the bigram-pair count exceeds <code>sqrt(dims)</code>:</p>
+<ol>
+<li>Take the last <code>sqrt(dims)</code> pairs from the right (most recent)</li>
+<li>Bundle them</li>
+<li>The oldest surviving pair is the earliest progression</li>
+<li>The most recent is the latest</li>
+</ol>
+<p>The trim is a safety bound. The budget scales with dims. Moving to
+20,000 dims extends the memory from ~100 to ~141 pairs without
+changing any code — just the dimension parameter.</p>
+<h2 id="migration">Migration<a class="heading-anchor" href="#migration" aria-hidden="true">#</a></h2>
+<h3 id="phase-rhythm-encoding-vocabexitphasers">Phase Rhythm Encoding (<code>vocab/exit/phase.rs</code>)<a class="heading-anchor" href="#phase-rhythm-encoding-vocabexitphasers" aria-hidden="true">#</a></h3>
+<p><code>phase_series_thought</code> replaced by <code>phase_rhythm</code>:</p>
+<ul>
+<li>Walk the history computing deltas (prior-bundle and prior-same-phase)</li>
+<li>Each record: bundle of 4-10 facts → encode → one vector</li>
+<li>Sliding window of 3 records → trigram (bind + permute) → one vector</li>
+<li>Sliding window of 2 trigrams → bigram-pair (bind) → one vector</li>
+<li>Bundle all pairs → trim to <code>sqrt(dims)</code> from the right if needed</li>
+<li>Return one <code>Vector</code> (not a ThoughtAST — the encoding is done here)</li>
+</ul>
+<h3 id="lens-domainlensrs">Lens (<code>domain/lens.rs</code>)<a class="heading-anchor" href="#lens-domainlensrs" aria-hidden="true">#</a></h3>
+<p>Remove <code>phase_series_thought</code> from Full lens. The lens produces
+lens-specific interpretation facts. The sequence is not lens-specific.</p>
+<h3 id="broker-program-programsappbroker_programrs">Broker Program (<code>programs/app/broker_program.rs</code>)<a class="heading-anchor" href="#broker-program-programsappbroker_programrs" aria-hidden="true">#</a></h3>
+<p><code>broker_thought_ast</code> adds the sequence:</p>
+<ol>
+<li>Start with regime facts (from chain)</li>
+<li>Add anxiety facts (portfolio state)</li>
+<li>Add phase sequence (from <code>chain.candle.phase_history</code>, trimmed, with deltas)</li>
+<li>Encode once. Predict once.</li>
+</ol>
+<h3 id="phaserecord-typespivotrs">PhaseRecord (<code>types/pivot.rs</code>)<a class="heading-anchor" href="#phaserecord-typespivotrs" aria-hidden="true">#</a></h3>
+<p>No changes needed. The record already carries duration, close_open,
+close_final, close_min, close_max, close_avg, volume_avg. The deltas
+are computed at encoding time from adjacent records, not stored.</p>
+<h2 id="noise-subspace-every-thinker-strips-its-own-background">Noise Subspace: Every Thinker Strips Its Own Background<a class="heading-anchor" href="#noise-subspace-every-thinker-strips-its-own-background" aria-hidden="true">#</a></h2>
+<h3 id="the-principle">The Principle<a class="heading-anchor" href="#the-principle" aria-hidden="true">#</a></h3>
+<p>The <code>OnlineSubspace</code> learns the manifold of normal. The anomaly is
+what the subspace cannot explain — the deviation from the background.
+The surprise fingerprint unbinds the anomaly to find which components
+drove the deviation. This is the memory layer's core contribution.</p>
+<p>With rhythm-based thoughts, the subspace learns normal rhythm
+bundles. When a rhythm bundle deviates — because some indicators
+are evolving in unusual ways — the anomaly captures the deviation.
+The subspace doesn't know about atoms or binds. It sees vectors.
+A bundle of 15 rhythms is one vector. The subspace learns the
+typical direction that vector points. When it deviates, the
+deviation IS the signal.</p>
+<h3 id="one-subspace-per-thinker">One Subspace Per Thinker<a class="heading-anchor" href="#one-subspace-per-thinker" aria-hidden="true">#</a></h3>
+<p>Each thinker produces its own thought vector. Each thinker has its
+own noise subspace that learns what's normal for THAT thinker's
+specific question.</p>
+<p><strong>Market observer subspace:</strong> learns normal market indicator rhythm
+bundles. &quot;The indicators usually evolve like THIS.&quot; The anomaly:
+&quot;today's indicator rhythms are unusual — RSI is doing something
+it doesn't normally do.&quot; The reckoner predicts from the anomaly,
+not the raw thought. It learns which deviations from normal predict
+Up vs Down.</p>
+<p><strong>Regime observer subspace:</strong> learns normal regime rhythm bundles.
+&quot;The regime character usually evolves like THIS.&quot; The anomaly:
+&quot;the regime shifted — kama-er dropped while entropy spiked.&quot; The
+regime observer strips its own background. What survives is the
+regime shift, not the regime's usual state.</p>
+<p><strong>Broker-observer subspace:</strong> learns normal composed thought bundles
+(market rhythms + regime rhythms + portfolio rhythms + phase rhythm).
+&quot;My full picture usually looks like THIS.&quot; The anomaly: &quot;something
+is unusual about the combination of market state + regime + my
+portfolio + the phase rhythm.&quot; The gate reckoner predicts Hold/Exit
+from the anomaly — what's unusual about the broker's full situation.</p>
+<h3 id="the-surprise-fingerprint-at-each-level">The Surprise Fingerprint at Each Level<a class="heading-anchor" href="#the-surprise-fingerprint-at-each-level" aria-hidden="true">#</a></h3>
+<p>Because the thought is built from reversible VSA operations, the
+anomaly can be decomposed. Unbind the anomalous component against
+any indicator rhythm's atom to find that rhythm's contribution to
+the deviation.</p>
+<pre><code class="language-scheme">;; After the market observer encodes and strips noise:
+(let anomaly (anomalous-component subspace market-thought))
+
+;; Which rhythm drove the anomaly?
+(for-each indicator-name lens-indicators
+  (let rhythm-vec (unbind anomaly (atom indicator-name)))
+  (let surprise (norm rhythm-vec))
+  ;; high surprise → this indicator's rhythm is anomalous
+  )
+</code></pre>
+<p>The same unbinding technique from the DDoS domain. The same algebra.
+Different vocabulary. The field is a rhythm instead of a packet field.
+The surprise says &quot;this indicator's evolution is unusual right now.&quot;</p>
+<h3 id="anomaly-filtering-between-thinkers">Anomaly Filtering Between Thinkers<a class="heading-anchor" href="#anomaly-filtering-between-thinkers" aria-hidden="true">#</a></h3>
+<p>The regime observer currently filters market facts by cosining
+them against the market observer's anomaly. With rhythms, this
+becomes: cosine each market rhythm vector against the market
+anomaly vector. Rhythms with high presence in the anomaly pass
+through — they are what's unusual about the market right now.
+Rhythms with low presence are the background — the noise subspace
+absorbed them.</p>
+<p>The broker-observer receives the filtered rhythms. Only the
+anomalous market rhythms arrive. The regime rhythms come with
+their own anomaly filtering (regime observer's subspace). The
+broker's own subspace then strips what's normal about the
+combination. What survives all three filters is the triple
+anomaly — what's unusual about the market AND the regime AND
+the portfolio AND the phase structure, all at once.</p>
+<h2 id="naming">Naming<a class="heading-anchor" href="#naming" aria-hidden="true">#</a></h2>
+<p>The broker program becomes the broker-observer program. The broker
+domain struct stays <code>Broker</code>. The file stays <code>broker_program.rs</code>.
+The doc comment, the console diagnostics, and the telemetry namespace
+change to <code>broker-observer</code>.</p>
+<h2 id="scalar-encoding-thermometer">Scalar Encoding: Thermometer<a class="heading-anchor" href="#scalar-encoding-thermometer" aria-hidden="true">#</a></h2>
+<p>The rotation-based scalar encoding (<code>ScalarMode::Linear</code>) fails for
+indicator rhythms. Small value differences produce tiny rotation angles
+that bipolar thresholding destroys. <code>+0.07</code> and <code>-0.07</code> encode to
+IDENTICAL vectors at <code>scale=1.0</code>. The sign — the direction of change —
+is invisible.</p>
+<p><strong>Thermometer encoding</strong> fills dimensions proportionally to the value's
+position in a range. Value in [min, max] → first <code>frac * D</code> dimensions
+= +1, rest = -1. The cosine between two thermometer vectors is exact:</p>
+<pre><code>cosine(a, b) = 1.0 - 2.0 * |a - b| / (max - min)
+</code></pre>
+<p>Linear gradient. No rotation. No thresholding loss. Sign-preserving
+for symmetric ranges.</p>
+<p>Added to holon-rs as <code>ScalarMode::Thermometer { min, max }</code>. Third
+scalar mode alongside <code>Linear</code> (rotation) and <code>Circular</code> (wrapping).</p>
+<p><strong>Bounds come from the indicator's nature:</strong></p>
+<ul>
+<li>RSI: <code>Thermometer { min: 0.0, max: 100.0 }</code> — Wilder's definition</li>
+<li>Bollinger position: <code>Thermometer { min: 0.0, max: 1.0 }</code></li>
+<li>ATR ratio: <code>Thermometer { min: 0.0, max: 0.05 }</code></li>
+<li>Deltas: <code>Thermometer { min: -range, max: range }</code> — symmetric, from ScaleTracker</li>
+</ul>
+<p>No magic numbers. The math defines the bounds. The ScaleTracker
+learns them for deltas.</p>
+<h2 id="proof">Proof<a class="heading-anchor" href="#proof" aria-hidden="true">#</a></h2>
+<h3 id="synthetic-measured">Synthetic (measured)<a class="heading-anchor" href="#synthetic-measured" aria-hidden="true">#</a></h3>
+<p>Raw rhythm cosine between uptrend and downtrend windows: <strong>0.96</strong>.
+Nearly identical. The shared structure dominates. Without the noise
+subspace, rhythm encoding alone cannot separate market regimes.</p>
+<p>Train an <code>OnlineSubspace(D=10000, k=32)</code> on 200 uptrend rhythm
+windows (4 indicators, 50 candles each). Test against unseen
+uptrends, downtrends, and choppy markets.</p>
+<pre><code>Residual separation (synthetic):
+  uptrend (familiar):   6.29
+  downtrend (novel):    21.94   — 3.49x higher
+  chop (novel):         39.57   — 6.29x higher
+
+Anomaly cosine (synthetic):
+  raw rhythm:   uptrend vs downtrend = 0.9643
+  after strip:  uptrend vs downtrend = 0.1223
+</code></pre>
+<h3 id="real-btc-data-measured">Real BTC data (measured)<a class="heading-anchor" href="#real-btc-data-measured" aria-hidden="true">#</a></h3>
+<p>3,000 real 5-minute BTC candles from <code>data/btc_5m_raw.parquet</code>.
+IndicatorBank computes RSI, MACD, ADX, OBV. 50-candle windows.
+Thermometer encoding. Subspace trained on first half, tested on
+second half. Regimes classified by net price movement (&gt;1% = up,
+&lt;-1% = down).</p>
+<pre><code>Anomaly cosine (real BTC):
+  raw rhythm:   uptrend vs downtrend = 0.7978
+  after strip:  uptrend vs downtrend = -0.0910
+</code></pre>
+<p>Confirmed at 10,000 candles:</p>
+<pre><code>Anomaly cosine (real BTC, 10k):
+  raw rhythm:   uptrend vs downtrend = 0.7227
+  after strip:  uptrend vs downtrend = -0.0991
+</code></pre>
+<p>The subspace separates regimes by DIRECTION, not magnitude. The
+raw cosine (0.72-0.80) drops to near-orthogonal (-0.09 to -0.10)
+after the background is stripped. The reckoner reads direction
+(cosine against discriminant). The anomaly component is where the
+signal lives.</p>
+<p>Four indicators. Fifty candles. One subspace. Real data. The
+architecture holds.</p>
+<h3 id="delta-braiding-measured">Delta braiding (measured)<a class="heading-anchor" href="#delta-braiding-measured" aria-hidden="true">#</a></h3>
+<p>Hickey asked: do sequential and structural deltas need to be
+separated? Measured both approaches on synthetic data:</p>
+<pre><code>Braided:   6.10x separation (uptrend vs downtrend)
+Separated: 6.89x separation
+Margin: 13%
+</code></pre>
+<p>Both produce 6x+ separation. The braiding doesn't kill the signal.
+The 13% margin on synthetic data likely vanishes on real data with
+noise. The deltas stay together. Datamancer override, confirmed
+by measurement.</p>
+<h3 id="test-files">Test files<a class="heading-anchor" href="#test-files" aria-hidden="true">#</a></h3>
+<ul>
+<li><code>tests/prove_rhythm_real_data.rs</code> — real BTC regime separation</li>
+<li><code>tests/prove_rhythm_with_subspace.rs</code> — synthetic regime separation</li>
+<li><code>tests/prove_delta_braiding.rs</code> — braided vs separated deltas</li>
+<li><code>tests/prove_indicator_rhythm.rs</code> — encoding property tests</li>
+<li><code>tests/debug_rhythm.rs</code> — layer-by-layer introspection</li>
+<li><code>tests/debug_thermometer.rs</code> — thermometer gradient verification</li>
+<li><code>tests/debug_scalar.rs</code> — Linear encoding failure diagnosis</li>
+</ul>
+<h2 id="reviewer-resolution">Reviewer Resolution<a class="heading-anchor" href="#reviewer-resolution" aria-hidden="true">#</a></h2>
+<p>Five designers reviewed. Two approved (Seykota, Wyckoff). Three
+conditional (Hickey, Beckman, Van Tharp). All conditions addressed:</p>
+<table>
+<thead>
+<tr>
+  <th>Condition</th>
+  <th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td data-label="Condition">Real data proof (Hickey, Beckman)</td>
+  <td data-label="Resolution">Measured on 3k and 10k real BTC candles. Anomaly cosine -0.09 to -0.10.</td>
+</tr>
+<tr>
+  <td data-label="">Factor shared atom (Beckman)</td>
+  <td data-label="">Atom wraps the whole rhythm, not each candle. One bind per indicator.</td>
+</tr>
+<tr>
+  <td data-label="">Circular time values (Beckman)</td>
+  <td data-label=""><code>circular-rhythm</code> variant — no thermometer deltas for periodic values.</td>
+</tr>
+<tr>
+  <td data-label="">Strengthen proof (Beckman)</td>
+  <td data-label="">Added real data test. N=50 windows per regime.</td>
+</tr>
+<tr>
+  <td data-label="">Delta braiding (Hickey)</td>
+  <td data-label="">Measured: 13% margin. Datamancer override — deltas stay together.</td>
+</tr>
+<tr>
+  <td data-label="">Throughput (Hickey)</td>
+  <td data-label="">Cache handles it (98% hit rate measured). Not proven at rhythm scale yet.</td>
+</tr>
+<tr>
+  <td data-label="">Define 1R / expectancy (Van Tharp)</td>
+  <td data-label="">Future work — not this proposal's scope.</td>
+</tr>
+<tr>
+  <td data-label="">D=10k minimum (Van Tharp)</td>
+  <td data-label="">Agreed. All proofs run at D=10,000.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="examples">Examples<a class="heading-anchor" href="#examples" aria-hidden="true">#</a></h2>
+<p>Full worked examples:</p>
+<ul>
+<li><a href="examples/indicator-rhythm.wat">examples/indicator-rhythm.wat</a> — the generic function + RSI example expansion</li>
+<li><a href="examples/market-observer-thought.wat">examples/market-observer-thought.wat</a> — 15 indicator rhythms via the generic function</li>
+<li><a href="examples/regime-core-thought.wat">examples/regime-core-thought.wat</a> — 10 regime rhythms + market rhythms</li>
+<li><a href="examples/regime-full-thought.wat">examples/regime-full-thought.wat</a> — 13 regime+phase rhythms + market rhythms</li>
+<li><a href="examples/broker-thought.wat">examples/broker-thought.wat</a> — composed: market + regime + portfolio rhythms + phase rhythm</li>
+<li><a href="examples/bullish-momentum.wat">examples/bullish-momentum.wat</a> — three rising valleys, strengthening rallies</li>
+<li><a href="examples/exhaustion-top.wat">examples/exhaustion-top.wat</a> — weakening rallies, longer pauses</li>
+<li><a href="examples/breakdown.wat">examples/breakdown.wat</a> — lower high after higher highs</li>
+<li><a href="examples/choppy-range.wat">examples/choppy-range.wat</a> — peaks and valleys at similar levels</li>
+<li><a href="examples/recovery-bottom.wat">examples/recovery-bottom.wat</a> — three rising valleys from a crash</li>
+</ul>
+</div>
+  </main>
+</div>
+<script>!function(){var t=document.getElementById('menu-toggle'),s=document.getElementById('sidebar'),b=document.getElementById('sidebar-backdrop');t.addEventListener('click',function(){var o=s.classList.toggle('open');t.setAttribute('aria-expanded',o)});b.addEventListener('click',function(){s.classList.remove('open');t.setAttribute('aria-expanded','false')})}();</script>
+</body>
+</html>
