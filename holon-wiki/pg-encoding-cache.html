@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#08090a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;510;590;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<title>Encoding Cache — the distributed LRU encoding service — Holon Wiki</title>
+<title>Encoding Cache — generic batch-only LRU cache program — Holon Wiki</title>
 <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 <script>
 tailwind.config = {
@@ -190,7 +190,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-disposable-machine.html">Disposable Machine</a>
   
-  <a href="pg-encoding-cache.html" class="active" aria-current="page">Encoding Cache — the distributed LRU encoding service</a>
+  <a href="pg-encoding-cache.html" class="active" aria-current="page">Encoding Cache — generic batch-only LRU cache program</a>
   
   <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
   
@@ -240,35 +240,37 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <div class="md:ml-[320px] flex-1 min-w-0">
   <main id="content" class="max-w-4xl px-4 py-10 md:px-8 md:py-10 lg:px-10 lg:py-12">
     <h1 class="text-[#f7f8f8] text-3xl md:text-[32px] font-normal tracking-[-0.704px] leading-[1.13] mb-6">
-      Encoding Cache — the distributed LRU encoding service <span class="badge badge-explain">EXPLAIN</span>
+      Encoding Cache — generic batch-only LRU cache program <span class="badge badge-explain">EXPLAIN</span>
     </h1>
     
     <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>The <strong>Encoding Cache</strong> (<a class="wikilink" href="pg-encoding-cache.html">EncoderService</a>) is a single-threaded pipe loop that owns the persistent LRU composition cache for <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a>→<a class="wikilink" href="T0-001-vector.html">Vector</a> mappings. It serves N concurrent callers without any mutex — each caller gets its own three-pipe <code>EncoderHandle</code>, and the service thread iterates all handles once per loop iteration. Callers compute vectors locally on cache misses and fire-and-forget install them back. The cache is purely a store — it never computes, only stores and retrieves. Three <code>Arc&lt;AtomicUsize&gt;</code> counters (hits, misses, cache-size) provide lock-free observability. Shutdown is automatic when all handles drop.</p>
+<p>The encoding pipeline produces vectors from ASTs. The AST-to-vector algebra lives in <code>encoding::encode::encode()</code> with a two-tier cache (L1 per-entity + L2 shared). The <strong>L2 cache</strong> is a generic <code>cache::&lt;K, V&gt;()</code> program — a single-threaded driver that owns a persistent LRU store behind crossbeam pipe pairs. It serves N concurrent callers without any mutex — each caller gets its own <code>CacheHandle&lt;K, V&gt;</code> (two bounded-1 pipes: request + response). The driver blocks on crossbeam <code>Select</code>, drains all pending requests, groups them writes-first/reads-second, processes in batch, and responds. Atomic counters track hits and misses. Telemetry flows through a gate pattern (<code>CacheStats</code>). Shutdown is automatic when all handles drop.</p>
 <hr />
 </div>
     
     <div class="prose prose-invert max-w-none"><h2 id="what-the-encoding-cache-is">What the encoding cache IS<a class="heading-anchor" href="#what-the-encoding-cache-is" aria-hidden="true">#</a></h2>
-<p>The <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> produces vectors from ASTs, but recomputing every subtree on every candle is expensive. The encoding cache is the solution: a shared, cross-candle LRU cache that sits between callers and the encoder. It stores the results of expensive tree walks so that structurally identical ASTs can skip re-evaluation entirely.</p>
-<blockquote>
-<p>&quot;ThoughtEncoder cache as a single-threaded pipe loop. The encoder holds an LRU cache. Each caller gets its own pipe set (EncoderHandle). The loop iterates all pipes once per iteration. No mutex. One thread. N callers. One cache.&quot;
-— encoder-service.wat, lines 1–7 <em>(T2-002)</em></p>
-</blockquote>
-<p>The cache is the persistent layer; the <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a>'s own composition map serves as a per-candle working set.</p>
-<blockquote>
-<p>&quot;The ThoughtEncoder holds a local per-candle working set; the EncoderService holds the persistent cross-candle LRU cache shared across all N observer threads.&quot;
-— T2-002, Relationship to ThoughtEncoder</p>
-</blockquote>
+<p>The encoding pipeline produces vectors from ASTs via the free function <code>encode(state, l2_cache, ast, vm, scalar)</code>, but recomputing every subtree on every candle is expensive. The encoding cache (L2) is the sharing layer. L1 is the memo: a per-entity <code>LruCache&lt;u64, Vector&gt;</code> inside <code>EncodeState</code> that absorbs repeated lookups across candles within a single entity. The L2 cache is a shared, cross-entity cache program (<code>cache::&lt;K, V&gt;()</code>) that sits behind pipes — callers batch-get/batch-set through <code>CacheHandle&lt;K, V&gt;</code>.</p>
+<p>The <code>encode()</code> function uses both tiers in four phases:</p>
+<ol>
+<li><strong>Walk the tree</strong>, collect L1 misses (by precomputed u64 key).</li>
+<li><strong>Batch-get L2</strong> for L1 misses. Populate L1 from L2 hits.</li>
+<li><strong>Compute remaining misses</strong> sequentially with L1 memoization.</li>
+<li><strong>Install computed results</strong> into L1 and confirmed-batch-set to L2.</li>
+</ol>
 <hr />
 <h2 id="architecture-one-thread-n-callers-zero-mutexes">Architecture — one thread, N callers, zero mutexes<a class="heading-anchor" href="#architecture-one-thread-n-callers-zero-mutexes" aria-hidden="true">#</a></h2>
-<h3 id="encoderhandle-per-caller-pipe-set">EncoderHandle — per-caller pipe set<a class="heading-anchor" href="#encoderhandle-per-caller-pipe-set" aria-hidden="true">#</a></h3>
-<p>Each caller receives an <code>EncoderHandle</code> containing three pipes:</p>
-<pre><code class="language-scheme">(struct encoder-handle
-  [lookup  : Sender&lt;ThoughtAST&gt;]          ; bounded 1
-  [answer  : Receiver&lt;Option&lt;Vector&gt;&gt;]    ; bounded 1
-  [install : Sender&lt;(ThoughtAST, Vector)&gt;]) ; unbounded, fire and forget
+<h3 id="cachehandleltk-vgt-per-caller-pipe-pair">CacheHandle&lt;K, V&gt; — per-caller pipe pair<a class="heading-anchor" href="#cachehandleltk-vgt-per-caller-pipe-pair" aria-hidden="true">#</a></h3>
+<p>Each caller receives a <code>CacheHandle&lt;K, V&gt;</code> containing two bounded-1 pipes:</p>
+<pre><code class="language-scheme">(struct cache-handle
+  [req-tx  : Sender&lt;CacheRequest&lt;K, V&gt;&gt;]   ; bounded 1, caller → driver
+  [resp-rx : Receiver&lt;CacheResponse&lt;K, V&gt;&gt;]) ; bounded 1, driver → caller
 </code></pre>
-<p><em>(T2-002, lines 22–25)</em></p>
+<pre><code class="language-rust">pub struct CacheHandle&lt;K, V&gt; {
+    client_idx: usize,
+    req_tx: QueueSender&lt;CacheRequest&lt;K, V&gt;&gt;,
+    resp_rx: QueueReceiver&lt;CacheResponse&lt;K, V&gt;&gt;,
+}
+</code></pre>
 <table>
 <thead>
 <tr>
@@ -280,172 +282,152 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </thead>
 <tbody>
 <tr>
-  <td data-label="Pipe"><code>lookup</code></td>
+  <td data-label="Pipe"><code>req_tx</code></td>
   <td data-label="Capacity">bounded 1</td>
-  <td data-label="Direction">caller → service</td>
-  <td data-label="Purpose">Send a <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> for cache lookup</td>
+  <td data-label="Direction">caller → driver</td>
+  <td data-label="Purpose">Send <code>BatchGet</code> or <code>BatchSet</code> request</td>
 </tr>
 <tr>
-  <td data-label=""><code>answer</code></td>
+  <td data-label=""><code>resp_rx</code></td>
   <td data-label="">bounded 1</td>
-  <td data-label="">service → caller</td>
-  <td data-label="">Receive <code>Some(Vector)</code> (hit) or <code>None</code> (miss)</td>
-</tr>
-<tr>
-  <td data-label=""><code>install</code></td>
-  <td data-label="">unbounded</td>
-  <td data-label="">caller → service</td>
-  <td data-label="">Fire-and-forget insertion of computed (AST, Vector) pair</td>
+  <td data-label="">driver → caller</td>
+  <td data-label="">Receive <code>BatchGet(results)</code> or <code>BatchSetAck</code></td>
 </tr>
 </tbody>
 </table>
-<h3 id="encoder-get-blocking-lookup"><code>encoder-get</code> — blocking lookup<a class="heading-anchor" href="#encoder-get-blocking-lookup" aria-hidden="true">#</a></h3>
-<p>Sends AST on <code>lookup</code>, blocks on <code>answer</code>, receives <code>Option&lt;Vector&gt;</code>. Bounded-1 on both sides provides natural backpressure.</p>
-<p><em>(T2-002, lines 28–31)</em></p>
-<h3 id="encoder-set-fire-and-forget-install"><code>encoder-set</code> — fire-and-forget install<a class="heading-anchor" href="#encoder-set-fire-and-forget-install" aria-hidden="true">#</a></h3>
-<p>Sends <code>(AST, Vector)</code> pair on <code>install</code>. Non-blocking, unbounded capacity. The caller does not wait for confirmation.</p>
-<p><em>(T2-002, lines 34–36)</em></p>
+<h3 id="request-response-types">Request / response types<a class="heading-anchor" href="#request-response-types" aria-hidden="true">#</a></h3>
+<pre><code class="language-rust">enum CacheRequest&lt;K, V&gt; {
+    BatchGet { client: usize, keys: Vec&lt;K&gt; },
+    BatchSet { client: usize, entries: Vec&lt;(K, V)&gt; },
+}
+
+enum CacheResponse&lt;K, V&gt; {
+    BatchGet(Vec&lt;(K, Option&lt;V&gt;)&gt;),   // each key paired with hit/miss
+    BatchSetAck,                      // confirmed install
+}
+</code></pre>
+<h3 id="batch_get-blocking-batch-lookup"><code>batch_get</code> — blocking batch lookup<a class="heading-anchor" href="#batch_get-blocking-batch-lookup" aria-hidden="true">#</a></h3>
+<p>Sends <code>BatchGet { keys }</code>, blocks on response, receives <code>Vec&lt;(K, Option&lt;V&gt;)&gt;</code> — each key paired with its lookup result. Returns <code>None</code> if the driver has disconnected.</p>
+<pre><code class="language-rust">pub fn batch_get(&amp;self, keys: Vec&lt;K&gt;) -&gt; Option&lt;Vec&lt;(K, Option&lt;V&gt;)&gt;&gt;
+</code></pre>
+<h3 id="batch_set-confirmed-batch-install"><code>batch_set</code> — confirmed batch install<a class="heading-anchor" href="#batch_set-confirmed-batch-install" aria-hidden="true">#</a></h3>
+<p>Sends <code>BatchSet { entries }</code>, blocks until the driver acknowledges. The driver has committed all entries to the LRU before the ack is sent. No fire-and-forget — every install is confirmed.</p>
+<pre><code class="language-rust">pub fn batch_set(&amp;self, entries: Vec&lt;(K, V)&gt;)
+</code></pre>
 <hr />
-<h2 id="service-thread-loop-three-phases-per-iteration">Service thread loop — three phases per iteration<a class="heading-anchor" href="#service-thread-loop-three-phases-per-iteration" aria-hidden="true">#</a></h2>
-<p>The service runs an infinite loop. Each iteration has three phases:</p>
-<h3 id="pass-1-drain-installs">Pass 1 — Drain installs<a class="heading-anchor" href="#pass-1-drain-installs" aria-hidden="true">#</a></h3>
-<p>Iterates all install receivers. Drains each one completely via <code>try-recv</code>. Every <code>(ast, vec)</code> pair is inserted into the LRU cache. Updates the <code>cache-size</code> atomic.</p>
-<blockquote>
-<p>&quot;Pass 1: drain ALL install pipes. Put into cache.&quot;
-— encoder-service.wat, line 84 <em>(T2-002)</em></p>
-</blockquote>
-<p><strong>Critical ordering guarantee</strong>: installs are drained <em>before</em> lookups are serviced. This means a value installed on the previous loop iteration is available for lookup on the current one, implementing eventual consistency with a single-iteration latency: <em>&quot;miss on candle N, hit on N+1&quot;</em>.</p>
-<blockquote>
-<p>&quot;The GUIDE (line 1440) declares the compositions field as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> and explains the eventual-consistency model (lines 1441–1446): <em>'miss on candle N, hit on N+1'</em>. The EncoderService implements this.&quot;
-— T2-002, Relationship to ThoughtEncoder</p>
-</blockquote>
-<h3 id="pass-2-service-lookups">Pass 2 — Service lookups<a class="heading-anchor" href="#pass-2-service-lookups" aria-hidden="true">#</a></h3>
-<p>Iterates all lookup receivers. For each pending AST: checks the LRU cache, increments <code>hits</code> or <code>misses</code> atomic accordingly, sends result (<code>Some(Vector)</code> or <code>None</code>) back on the corresponding answer pipe. On channel disconnect: marks that handle as closed.</p>
-<blockquote>
-<p>&quot;Pass 2: service ALL pending lookup pipes.&quot;
-— encoder-service.wat, line 93 <em>(T2-002)</em></p>
-</blockquote>
-<h3 id="pass-3-shutdown-check-amp-idle-blocking">Pass 3 — Shutdown check &amp; idle blocking<a class="heading-anchor" href="#pass-3-shutdown-check-amp-idle-blocking" aria-hidden="true">#</a></h3>
-<p>If all handles are disconnected, the loop breaks and the thread exits. Otherwise, uses <code>select</code> over all open pipes to block until any channel has data. <strong>Zero CPU when idle.</strong></p>
-<blockquote>
-<p>&quot;Block until ANY channel has data. Zero CPU when idle.&quot;
-— encoder-service.wat, lines 112–113 <em>(T2-002)</em></p>
-</blockquote>
+<h2 id="driver-loop-writes-first-reads-second">Driver loop — writes-first, reads-second<a class="heading-anchor" href="#driver-loop-writes-first-reads-second" aria-hidden="true">#</a></h2>
+<p>The driver runs an infinite loop inside <code>cache::&lt;K, V&gt;()</code>:</p>
+<h3 id="block-on-select">Block on Select<a class="heading-anchor" href="#block-on-select" aria-hidden="true">#</a></h3>
+<p>Uses <code>crossbeam::channel::Select</code> to block until any client request queue has data. Zero CPU when idle. If all clients have disconnected, the driver emits final telemetry and exits.</p>
+<h3 id="drain-all-pending-requests">Drain all pending requests<a class="heading-anchor" href="#drain-all-pending-requests" aria-hidden="true">#</a></h3>
+<p>Iterates all client queues, draining every pending <code>try_recv</code>. Requests are grouped into two bins: writes (<code>BatchSet</code>) and reads (<code>BatchGet</code>). Disconnected clients are marked closed.</p>
+<h3 id="process-writes-first">Process writes first<a class="heading-anchor" href="#process-writes-first" aria-hidden="true">#</a></h3>
+<p>All <code>BatchSet</code> requests are processed before any reads. Each entry is inserted into the LRU. <code>BatchSetAck</code> is sent to the caller. The writes-first ordering ensures freshest data is visible to subsequent reads in the same iteration.</p>
+<h3 id="process-reads-second">Process reads second<a class="heading-anchor" href="#process-reads-second" aria-hidden="true">#</a></h3>
+<p>All <code>BatchGet</code> requests are processed next. Each key is looked up in the LRU. Results are paired as <code>(K, Option&lt;V&gt;)</code> and sent back. The driver uses batched atomic counter updates — one <code>fetch_add</code> per batch (not per key) for both hits and misses.</p>
+<h3 id="gate-telemetry">Gate telemetry<a class="heading-anchor" href="#gate-telemetry" aria-hidden="true">#</a></h3>
+<p>After each iteration, the driver checks <code>can_emit()</code>. If the gate is open, it snapshots <code>CacheStats</code> (hits, misses, cache_size, ns_gets, ns_sets, gets_serviced, sets_drained, evictions), calls <code>emit(stats)</code>, and resets the accumulator. This avoids per-key overhead for telemetry — one emission per gate open.</p>
 <hr />
 <h2 id="protocol-summary">Protocol summary<a class="heading-anchor" href="#protocol-summary" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
-    caller_lookup[&quot;Caller&quot;] --&gt;|&quot;write AST to lookup pipe&quot;| block[&quot;block on answer&quot;]
-    block --&gt;|&quot;receive Some/None&quot;| result{&quot;Some\n(hit) or None\n(miss)&quot;}
-    result --&gt;|&quot;None&quot;| compute[&quot;compute locally&quot;]
-    compute --&gt;|&quot;write (AST, Vector)\nto install pipe\n(fire and forget)&quot;| drain
+    caller[&quot;Caller&quot;] --&gt;|&quot;batch_get(keys)&quot;| block[&quot;block on resp_rx&quot;]
+    block --&gt;|&quot;Vec&lt;(K, Option&lt;V&gt;)&gt;&quot;| result{&quot;hits\nor misses?&quot;}
+    result --&gt;|&quot;misses&quot;| compute[&quot;compute locally&quot;]
+    compute --&gt;|&quot;batch_set(entries)\n(confirmed)&quot;| drain
 
-    subgraph encoder[&quot;Encoder service loop&quot;]
-        drain[&quot;Pass 1: drain installs&quot;] --&gt; service[&quot;Pass 2: service lookups&quot;]
-        service --&gt; select[&quot;Pass 3: select,\nblock until data&quot;]
-        select --&gt; drain
+    subgraph driver[&quot;Cache driver loop&quot;]
+        select[&quot;crossbeam Select\nblock until data&quot;]
+        drain2[&quot;drain all queues\nwrites + reads&quot;]
+        writes[&quot;process BatchSet\n(writes first)&quot;]
+        reads[&quot;process BatchGet\n(reads second)&quot;]
+        gate[&quot;gate: can_emit?\nemit CacheStats&quot;]
+        select --&gt; drain2
+        drain2 --&gt; writes
+        writes --&gt; reads
+        reads --&gt; gate
+        gate --&gt; select
     end
 </pre>
-<p><em>(T2-002, lines 9–12)</em></p>
-<p>This implements the <strong>&quot;values up&quot; principle</strong>: callers compute locally on cache misses rather than requesting computation from the service. The service is purely a cache — it never computes vectors, only stores and retrieves them.</p>
-<blockquote>
-<p>&quot;The encode function NEVER writes to the cache. Misses are returned as values — the enterprise collects them and inserts between candles. Values up, not queues down.&quot;
-— thought-encoder.wat, lines 11–13 <em>(T2-001)</em></p>
-</blockquote>
+<p>This implements the <strong>two-tier values-up principle</strong>: callers compute on L1 miss; computed results are confirmed-batch-set to L2 for cross-entity sharing. The cache never computes — it stores and retrieves.</p>
 <hr />
-<h2 id="encoderservice-struct">EncoderService struct<a class="heading-anchor" href="#encoderservice-struct" aria-hidden="true">#</a></h2>
-<pre><code class="language-scheme">(struct encoder-service
-  [handle     : JoinHandle&lt;()&gt;]
-  [hits       : Arc&lt;AtomicUsize&gt;]         ; cache hit counter
-  [misses     : Arc&lt;AtomicUsize&gt;]         ; cache miss counter
-  [cache-size : Arc&lt;AtomicUsize&gt;])        ; current cache occupancy
+<h2 id="cachedriverhandle-and-cachestats">CacheDriverHandle and CacheStats<a class="heading-anchor" href="#cachedriverhandle-and-cachestats" aria-hidden="true">#</a></h2>
+<h3 id="cachedriverhandle">CacheDriverHandle<a class="heading-anchor" href="#cachedriverhandle" aria-hidden="true">#</a></h3>
+<pre><code class="language-rust">pub struct CacheDriverHandle {
+    name: String,
+    thread: Option&lt;thread::JoinHandle&lt;()&gt;&gt;,
+    pub hits: Arc&lt;AtomicUsize&gt;,    // total cache hits since startup
+    pub misses: Arc&lt;AtomicUsize&gt;,  // total cache misses since startup
+}
 </code></pre>
-<p><em>(T2-002, lines 43–47)</em></p>
-<p>The service does <strong>not</strong> hold sender copies — the handles ARE the senders. When all handles drop, the channels close and the encoder thread exits automatically.</p>
-<blockquote>
-<p>&quot;Does NOT hold sender copies — the handles ARE the senders. When all handles drop, the channels close, the cascade flows, the encoder thread exits.&quot;
-— encoder-service.wat, lines 39–41 <em>(T2-002)</em></p>
-</blockquote>
-<h3 id="lock-free-observability">Lock-free observability<a class="heading-anchor" href="#lock-free-observability" aria-hidden="true">#</a></h3>
-<p>Three accessors provide atomic reads from any thread:</p>
+<p>No <code>Drop</code> impl — joining in <code>Drop</code> would deadlock if senders are still alive. The shutdown cascade guarantees correctness: all <code>CacheHandle</code> drops → driver drains remaining requests → driver exits. Call <code>join()</code> explicitly when you need to wait.</p>
+<h3 id="cachestats">CacheStats<a class="heading-anchor" href="#cachestats" aria-hidden="true">#</a></h3>
+<pre><code class="language-rust">pub struct CacheStats {
+    pub hits: usize,
+    pub misses: usize,
+    pub cache_size: usize,
+    pub ns_gets: u64,
+    pub ns_sets: u64,
+    pub gets_serviced: usize,
+    pub sets_drained: usize,
+    pub evictions: usize,
+}
+</code></pre>
+<p>Emitted through the gate pattern: <code>can_emit()</code> / <code>emit(stats)</code> callbacks passed to <code>cache()</code>. The gate avoids per-key overhead — stats accumulate between gates, one snapshot per open.</p>
+<hr />
+<h2 id="creation-and-shutdown">Creation and shutdown<a class="heading-anchor" href="#creation-and-shutdown" aria-hidden="true">#</a></h2>
+<h3 id="cacheltk-vgtname-capacity-num_clients-can_emit-emit-vecltcachehandleltk-vgtgt-cachedriverhandle"><code>cache::&lt;K, V&gt;(name, capacity, num_clients, can_emit, emit) → (Vec&lt;CacheHandle&lt;K, V&gt;&gt;, CacheDriverHandle)</code><a class="heading-anchor" href="#cacheltk-vgtname-capacity-num_clients-can_emit-emit-vecltcachehandleltk-vgtgt-cachedriverhandle" aria-hidden="true">#</a></h3>
+<p>Creates N <code>CacheHandle</code>s (one per caller) and the driver thread. For each client, creates two bounded-1 pipe pairs (request + response). Spawns the driver with the receiver halves. The driver owns the <code>LruCache&lt;K, V&gt;</code> and polls client queues directly — no mailbox, no fan-in thread.</p>
+<pre><code class="language-rust">pub fn cache&lt;K, V&gt;(
+    name: &amp;str,
+    capacity: usize,
+    num_clients: usize,
+    can_emit: Box&lt;dyn Fn() -&gt; bool + Send&gt;,
+    emit: Box&lt;dyn Fn(CacheStats) + Send&gt;,
+) -&gt; (Vec&lt;CacheHandle&lt;K, V&gt;&gt;, CacheDriverHandle)
+where
+    K: Send + Clone + Hash + Eq + 'static,
+    V: Send + Clone + 'static,
+</code></pre>
+<h3 id="cachedriverhandlejoinself"><code>CacheDriverHandle::join(self)</code><a class="heading-anchor" href="#cachedriverhandlejoinself" aria-hidden="true">#</a></h3>
+<p>Blocks until the driver thread exits. The driver exits when all client handles have been dropped. The cascade is the shutdown guarantee.</p>
+<hr />
+<h2 id="two-tier-memory-model">Two-tier memory model<a class="heading-anchor" href="#two-tier-memory-model" aria-hidden="true">#</a></h2>
+<p>The encoding pipeline uses two cache tiers with fundamentally different scopes:</p>
 <table>
 <thead>
 <tr>
-  <th>Accessor</th>
-  <th>Reads</th>
-  <th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td data-label="Accessor"><code>hit-count</code></td>
-  <td data-label="Reads"><code>Arc&lt;AtomicUsize&gt;</code> hits</td>
-  <td data-label="Purpose">Cache hit count</td>
-</tr>
-<tr>
-  <td data-label=""><code>miss-count</code></td>
-  <td data-label=""><code>Arc&lt;AtomicUsize&gt;</code> misses</td>
-  <td data-label="">Cache miss count</td>
-</tr>
-<tr>
-  <td data-label=""><code>cache-len</code></td>
-  <td data-label=""><code>Arc&lt;AtomicUsize&gt;</code> cache-size</td>
-  <td data-label="">Current occupancy</td>
-</tr>
-</tbody>
-</table>
-<p><em>(T2-002, lines 135–142)</em></p>
-<hr />
-<h2 id="spawn-and-shutdown">Spawn and shutdown<a class="heading-anchor" href="#spawn-and-shutdown" aria-hidden="true">#</a></h2>
-<h3 id="encoder-service-spawnn-callers-cache-capacity-encoderservice-vecltencoderhandlegt"><code>encoder-service-spawn(n-callers, cache-capacity) → (EncoderService, Vec&lt;EncoderHandle&gt;)</code><a class="heading-anchor" href="#encoder-service-spawnn-callers-cache-capacity-encoderservice-vecltencoderhandlegt" aria-hidden="true">#</a></h3>
-<p>Creates the service and N handles. For each caller, creates three pipe pairs (lookup/answer bounded-1, install unbounded). Spawns the service thread with the receiver halves.</p>
-<p><em>(T2-002, lines 51–122)</em></p>
-<h3 id="encoder-service-shutdownsvc"><code>encoder-service-shutdown(svc)</code><a class="heading-anchor" href="#encoder-service-shutdownsvc" aria-hidden="true">#</a></h3>
-<p>Joins the thread handle. Requires that all handles have already been dropped.</p>
-<blockquote>
-<p>&quot;The cascade must have already closed all handles.&quot;
-— encoder-service.wat, line 125 <em>(T2-002)</em></p>
-</blockquote>
-<hr />
-<h2 id="relationship-to-thoughtencoder-memory-model">Relationship to ThoughtEncoder memory model<a class="heading-anchor" href="#relationship-to-thoughtencoder-memory-model" aria-hidden="true">#</a></h2>
-<p>The <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> maintains two kinds of memory with fundamentally different semantics:</p>
-<table>
-<thead>
-<tr>
-  <th>Memory</th>
+  <th>Tier</th>
   <th>Semantics</th>
   <th>Owner</th>
   <th>Eviction</th>
+  <th>Keys</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td data-label="Memory"><strong>Atoms</strong> — dictionary</td>
-  <td data-label="Semantics">Finite, pre-computed, permanent</td>
-  <td data-label="Owner"><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a></td>
-  <td data-label="Eviction">Never</td>
+  <td data-label="Tier"><strong>L1</strong> — per-entity memo</td>
+  <td data-label="Semantics">Local <code>LruCache&lt;u64, Vector&gt;</code> in <code>EncodeState</code></td>
+  <td data-label="Owner">Per observer thread</td>
+  <td data-label="Eviction">Capacity-based (default 16 384)</td>
+  <td data-label="Keys">Precomputed u64 hashes</td>
 </tr>
 <tr>
-  <td data-label=""><strong>Compositions</strong> — cache</td>
-  <td data-label="">Infinite, optimistic, use-if-we-have-it</td>
-  <td data-label="">EncoderService (LRU)</td>
+  <td data-label=""><strong>L2</strong> — shared cache program</td>
+  <td data-label=""><code>cache::&lt;u64, Vector&gt;()</code> behind pipes</td>
+  <td data-label="">Single driver thread</td>
   <td data-label="">Capacity-based</td>
+  <td data-label="">Precomputed u64 hashes</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>&quot;Finite. Known at startup. Pre-computed. Never evicted.&quot;
-— thought-encoder.wat, line 8 <em>(T2-001)</em></p>
-</blockquote>
-<blockquote>
-<p>&quot;Infinite. Optimistic. Use it if we have it. Compute if we don't.&quot;
-— thought-encoder.wat, line 9 <em>(T2-001)</em></p>
-</blockquote>
-<p>The GUIDE declares <code>compositions</code> as <code>LruCache&lt;ThoughtAST, Vector&gt;</code> (GUIDE line 1440). The wat file declares it as <code>Map&lt;ThoughtAST, Vector&gt;</code> with capacity 4096, annotated <em>&quot;LRU moved to EncoderService&quot;</em>. Per CLAUDE.md: <em>&quot;When layers diverge, the guide is right.&quot;</em> The EncoderService holds the true LRU; the <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a>'s composition map is the per-candle working set.</p>
-<blockquote>
-<p>&quot;Same structure, same vector.&quot;
-— GUIDE.md, line 1475 <em>(T2-001)</em></p>
-</blockquote>
-<p>The AST structure IS the cache key — structural equality (with <code>round_to</code> quantization at vocabulary emission time for reliable float hashing) determines identity.</p>
+<h3 id="key-design">Key design<a class="heading-anchor" href="#key-design" aria-hidden="true">#</a></h3>
+<ul>
+<li><strong>Precomputed hashes</strong>: <code>ThoughtAST::precomputed_hash()</code> produces a u64 at AST construction time. All cache lookups use integer keys — O(1), nanoseconds, no tree walking.</li>
+<li><strong>L1 is the memo</strong>: absorbs repeated lookups across candles within one entity. No pipe overhead — direct <code>LruCache</code> access.</li>
+<li><strong>L2 is the sharing layer</strong>: cross-entity sharing via the generic <code>cache()</code> program. Observers in different entities can benefit from each other's computations.</li>
+</ul>
+<h3 id="atoms-never-evicted">Atoms (never evicted)<a class="heading-anchor" href="#atoms-never-evicted" aria-hidden="true">#</a></h3>
+<p>The permanent atom dictionary lives in <code>VectorManager</code> — finite, pre-computed, never evicted. Atoms are resolved by name, not cached.</p>
 <hr />
 <h2 id="design-principles">Design principles<a class="heading-anchor" href="#design-principles" aria-hidden="true">#</a></h2>
 <table>
@@ -458,46 +440,56 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <tbody>
 <tr>
   <td data-label="Principle"><strong>No mutex</strong></td>
-  <td data-label="How the cache implements it">Single-threaded ownership of the cache; callers communicate via pipes</td>
+  <td data-label="How the cache implements it">Single-threaded driver owns the LRU; callers communicate via crossbeam bounded-1 pipe pairs</td>
 </tr>
 <tr>
   <td data-label=""><strong>Values up, not queues down</strong></td>
-  <td data-label="">Callers compute on miss; the cache never computes</td>
+  <td data-label="">Callers compute on L1 miss; results confirmed-batch-set to L2</td>
 </tr>
 <tr>
-  <td data-label=""><strong>Eventual consistency</strong></td>
-  <td data-label="">Install-drain-before-lookup ordering gives one-iteration latency</td>
+  <td data-label=""><strong>Two-tier</strong></td>
+  <td data-label="">L1 per-entity memo + L2 shared cache program</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Precomputed hashes</strong></td>
+  <td data-label="">u64 keys, O(1) lookups, no tree walking</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Writes-before-reads</strong></td>
+  <td data-label="">BatchSet processed before BatchGet in each iteration — freshest data for reads</td>
 </tr>
 <tr>
   <td data-label=""><strong>Graceful shutdown</strong></td>
-  <td data-label="">Handle-drop cascades channel closes; thread auto-exits</td>
+  <td data-label="">Handle-drop cascades channel disconnects; driver auto-exits</td>
 </tr>
 <tr>
   <td data-label=""><strong>Zero-idle CPU</strong></td>
-  <td data-label=""><code>select</code> blocks until any pipe has data</td>
+  <td data-label="">crossbeam <code>Select</code> blocks until any client queue has data</td>
 </tr>
 <tr>
-  <td data-label=""><strong>Lock-free stats</strong></td>
-  <td data-label=""><code>Arc&lt;AtomicUsize&gt;</code> for hit/miss/size — readable from any thread</td>
+  <td data-label=""><strong>Batched atomics</strong></td>
+  <td data-label="">One <code>fetch_add</code> per batch, not per key</td>
+</tr>
+<tr>
+  <td data-label=""><strong>Gate telemetry</strong></td>
+  <td data-label=""><code>CacheStats</code> emitted through <code>can_emit</code>/<code>emit</code> callbacks — no per-key overhead</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="related-concepts">Related Concepts<a class="heading-anchor" href="#related-concepts" aria-hidden="true">#</a></h2>
 <ul>
-<li><a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> — The AST evaluator that produces vectors. Stateless in production; depends on the EncoderService for caching.</li>
-<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — The AST enum (<code>Atom</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Bind</code>, <code>Bundle</code>, <code>Sequential</code>). Its structure is the cache key.</li>
+<li>EncodeState — Per-entity encoding state holding the L1 <code>LruCache&lt;u64, Vector&gt;</code>. Created once per observer thread.</li>
+<li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — The AST enum. Its <code>precomputed_hash()</code> produces the u64 cache key.</li>
 <li><a class="wikilink" href="pg-thought-encoding.html">Thought Encoding</a> — The full pipeline from vocabulary emission through encoding to cached vectors.</li>
 <li><a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> — Provides the permanent atom dictionary (never-evicted memory).</li>
-<li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — Downstream optimization that diffs fact sets between candles to avoid re-encoding unchanged facts.</li>
-<li><a class="wikilink" href="pg-encoding-cache.html">EncoderService</a> — This page's subject; the service struct and its pipe-based protocol.</li>
+<li>CacheDriverHandle — This page's subject; the driver handle, <code>CacheStats</code>, and the generic <code>cache()</code> program.</li>
 </ul>
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
-<li><a href="T2-001-thought-encoder">T2-001</a> — ThoughtEncoder, <code>wat/thought-encoder.wat</code> (198 lines), GUIDE.md lines 1416–1597</li>
-<li><a href="T2-002-encoder-service">T2-002</a> — EncoderService, <code>wat/encoder-service.wat</code> (142 lines)</li>
-<li><a href="T0-011-thought-encoder-rust">T0-011</a> — ThoughtEncoder (Rust) verification, <code>holon-lab-trading/src/encoding/thought_encoder.rs</code></li>
+<li><code>holon-lab-trading/src/programs/stdlib/cache.rs</code> — Generic cache program (391 lines): <code>CacheHandle</code>, <code>CacheDriverHandle</code>, <code>CacheStats</code>, <code>cache::&lt;K, V&gt;()</code>, driver loop with Select, writes-first/reads-second batching, gate telemetry.</li>
+<li><code>holon-lab-trading/src/encoding/encode.rs</code> — Encoding pipeline (302 lines): <code>EncodeState</code>, <code>encode()</code> free function, two-tier cache usage (L1 + L2), four-phase encode algorithm.</li>
 </ul>
 </div>
   </main>

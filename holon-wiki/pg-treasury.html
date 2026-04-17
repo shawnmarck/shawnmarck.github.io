@@ -190,7 +190,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-disposable-machine.html">Disposable Machine</a>
   
-  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  <a href="pg-encoding-cache.html">Encoding Cache — generic batch-only LRU cache program</a>
   
   <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
   
@@ -279,58 +279,19 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p><strong>One mailbox. Two event types. Per-broker response queues.</strong> The <a class="wikilink" href="pg-broker.html">broker</a> holds a <code>TreasuryHandle</code>. It sends <code>TreasuryRequest</code> into the shared mailbox and blocks on its own <code>QueueReceiver&lt;TreasuryResponse&gt;</code>. No polling. No spinning. No deadlock.</p>
 <hr />
 <h2 id="the-treasury-struct">The Treasury Struct<a class="heading-anchor" href="#the-treasury-struct" aria-hidden="true">#</a></h2>
-<p><strong>Source:</strong> <code>src/domain/treasury.rs</code> (784 lines). 8 fields:</p>
-<table>
-<thead>
-<tr>
-  <th>Field</th>
-  <th>Type</th>
-  <th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td data-label="Field"><code>papers</code></td>
-  <td data-label="Type"><code>HashMap&lt;u64, PaperPosition&gt;</code></td>
-  <td data-label="Purpose">All paper positions — the source of truth</td>
-</tr>
-<tr>
-  <td data-label=""><code>real_positions</code></td>
-  <td data-label=""><code>HashMap&lt;u64, RealPosition&gt;</code></td>
-  <td data-label="">All real positions — actual capital deployed</td>
-</tr>
-<tr>
-  <td data-label=""><code>proposer_records</code></td>
-  <td data-label=""><code>HashMap&lt;usize, ProposerRecord&gt;</code></td>
-  <td data-label="">Per-broker track records — the gate reads these</td>
-</tr>
-<tr>
-  <td data-label=""><code>balances</code></td>
-  <td data-label=""><code>HashMap&lt;String, f64&gt;</code></td>
-  <td data-label="">Asset balances (e.g. &quot;USDC&quot; → 100_000.0)</td>
-</tr>
-<tr>
-  <td data-label=""><code>next_paper_id</code></td>
-  <td data-label=""><code>u64</code></td>
-  <td data-label="">Auto-incrementing paper ID counter</td>
-</tr>
-<tr>
-  <td data-label=""><code>next_position_id</code></td>
-  <td data-label=""><code>u64</code></td>
-  <td data-label="">Auto-incrementing real position ID counter</td>
-</tr>
-<tr>
-  <td data-label=""><code>entry_fee</code></td>
-  <td data-label=""><code>f64</code></td>
-  <td data-label="">Entry fee rate (e.g. 0.0035 for 0.35%)</td>
-</tr>
-<tr>
-  <td data-label=""><code>exit_fee</code></td>
-  <td data-label=""><code>f64</code></td>
-  <td data-label="">Exit fee rate (e.g. 0.0035 for 0.35%)</td>
-</tr>
-</tbody>
-</table>
+<p><strong>Source:</strong> <code>src/domain/treasury.rs</code> (815 lines). 10 fields:</p>
+<p>| Field | Type | Purpose |
+|---|---|---|
+| <code>papers</code> | <code>HashMap&lt;u64, PaperPosition&gt;</code> | All paper positions — the source of truth |
+| <code>real_positions</code> | <code>HashMap&lt;u64, RealPosition&gt;</code> | All real positions — actual capital deployed |
+| <code>proposer_records</code> | <code>HashMap&lt;usize, ProposerRecord&gt;</code> | Per-broker track records — the gate reads these |
+| <code>balances</code> | <code>HashMap&lt;String, f64&gt;</code> | Asset balances (e.g. &quot;USDC&quot; → 100_000.0) |
+| <code>next_paper_id</code> | <code>u64</code> | Auto-incrementing paper ID counter |
+| <code>next_position_id</code> | <code>u64</code> | Auto-incrementing real position ID counter |
+| <code>entry_fee</code> | <code>f64</code> | Entry fee rate (e.g. 0.0035 for 0.35%) |
+| <code>exit_fee</code> | <code>f64</code> | Exit fee rate (e.g. 0.0035 for 0.35%) |
+| <code>current_atr</code> | <code>f64</code> | 0.0 | Latest ATR from tick stream. Used for deadline scaling. Zero until first tick. |
+| <code>reference_atr</code> | <code>f64</code> | 0.0 | Baseline ATR for deadline scaling. Locked from first non-zero reading. |</p>
 <p><strong>Constructor:</strong> <code>Treasury::new(entry_fee, exit_fee)</code> — all maps start empty, counters start at 0.</p>
 <hr />
 <h2 id="position-lifecycle-positionstate">Position Lifecycle: <code>PositionState</code><a class="heading-anchor" href="#position-lifecycle-positionstate" aria-hidden="true">#</a></h2>
@@ -700,9 +661,13 @@ return survival_rate &gt; 0.5
 </code></pre>
 <h3 id="get_recordowner-optionltampproposerrecordgt"><code>get_record(owner) → Option&lt;&amp;ProposerRecord&gt;</code><a class="heading-anchor" href="#get_recordowner-optionltampproposerrecordgt" aria-hidden="true">#</a></h3>
 <p>Read access to a proposer's track record. Pure lookup.</p>
+<h3 id="observe_atrampmut-self-atr-f64"><code>observe_atr(&amp;mut self, atr: f64)</code><a class="heading-anchor" href="#observe_atrampmut-self-atr-f64" aria-hidden="true">#</a></h3>
+<p>Records current ATR. On the first non-zero reading, locks <code>reference_atr</code> to that value permanently. Subsequent calls only update <code>current_atr</code>.</p>
+<h3 id="scaled_deadlineampself-base-usize-usize"><code>scaled_deadline(&amp;self, base: usize) → usize</code><a class="heading-anchor" href="#scaled_deadlineampself-base-usize-usize" aria-hidden="true">#</a></h3>
+<p>Volatility-scaled deadline: <code>base × (reference_atr / current_atr)</code>. Returns <code>base</code> unchanged when <code>current_atr</code> is zero (no ATR data yet). Higher current volatility (larger ATR) shortens the deadline; lower volatility extends it.</p>
 <hr />
 <h2 id="treasuryprogram-the-service-thread">TreasuryProgram: the Service Thread<a class="heading-anchor" href="#treasuryprogram-the-service-thread" aria-hidden="true">#</a></h2>
-<p><strong>Source:</strong> <code>src/programs/app/treasury_program.rs</code> (374 lines).</p>
+<p><strong>Source:</strong> <code>src/programs/app/treasury_program.rs</code> (431 lines).</p>
 <p>The treasury runs as an independent thread. One recv loop, two-level match.</p>
 <h3 id="event-types-treasuryevent">Event Types (<code>TreasuryEvent</code>)<a class="heading-anchor" href="#event-types-treasuryevent" aria-hidden="true">#</a></h3>
 <table>
@@ -880,7 +845,7 @@ return survival_rate &gt; 0.5
 <p><strong>Papers are the training ground.</strong> They build the record that earns real capital. Real positions are the deployment — actual money, actual risk, actual accountability. The gate is the one-way valve between them.</p>
 <hr />
 <h2 id="test-coverage">Test Coverage<a class="heading-anchor" href="#test-coverage" aria-hidden="true">#</a></h2>
-<h3 id="treasuryrs-9-tests-domain-logic"><code>treasury.rs</code> — 9 tests (domain logic)<a class="heading-anchor" href="#treasuryrs-9-tests-domain-logic" aria-hidden="true">#</a></h3>
+<h3 id="treasuryrs-18-tests-domain-logic"><code>treasury.rs</code> — 18 tests (domain logic)<a class="heading-anchor" href="#treasuryrs-18-tests-domain-logic" aria-hidden="true">#</a></h3>
 <table>
 <thead>
 <tr>
@@ -997,8 +962,8 @@ return survival_rate &gt; 0.5
 <hr />
 <h2 id="sources">Sources<a class="heading-anchor" href="#sources" aria-hidden="true">#</a></h2>
 <ul>
-<li><strong><code>src/domain/treasury.rs</code></strong> (784 lines) — <code>Treasury</code> struct, <code>PositionState</code>, <code>PaperPosition</code>, <code>RealPosition</code>, <code>ProposerRecord</code>, <code>PositionReceipt</code>, <code>TreasuryVerdict</code>, all domain methods, 9+ tests</li>
-<li><strong><code>src/programs/app/treasury_program.rs</code></strong> (374 lines) — <code>TreasuryEvent</code>, <code>TreasuryRequest</code>, <code>TreasuryResponse</code>, <code>TreasuryHandle</code>, <code>TreasuryTickSender</code>, <code>treasury_program()</code> thread body, <code>handle_request()</code>, 4+ tests</li>
+<li><strong><code>src/domain/treasury.rs</code></strong> (815 lines) — <code>Treasury</code> struct, <code>PositionState</code>, <code>PaperPosition</code>, <code>RealPosition</code>, <code>ProposerRecord</code>, <code>PositionReceipt</code>, <code>TreasuryVerdict</code>, all domain methods, 18+ tests</li>
+<li><strong><code>src/programs/app/treasury_program.rs</code></strong> (431 lines) — <code>TreasuryEvent</code>, <code>TreasuryRequest</code>, <code>TreasuryResponse</code>, <code>TreasuryHandle</code>, <code>TreasuryTickSender</code>, <code>treasury_program()</code> thread body, <code>handle_request()</code>, 4+ tests</li>
 <li><strong>Proposal 055: Treasury-Driven Resolution</strong> — the design proposal that introduced these types</li>
 </ul>
 </div>

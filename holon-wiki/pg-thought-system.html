@@ -190,7 +190,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-disposable-machine.html">Disposable Machine</a>
   
-  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  <a href="pg-encoding-cache.html">Encoding Cache — generic batch-only LRU cache program</a>
   
   <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
   
@@ -244,16 +244,15 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
     </h1>
     
     <div class="tldr px-4 py-3 mb-10 text-sm leading-relaxed text-[#d0d6e0]"><h2 id="tldr">TL;DR<a class="heading-anchor" href="#tldr" aria-hidden="true">#</a></h2>
-<p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>ThoughtEncoder</code> walks that AST recursively, converting each node into a bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> (atoms) or <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where &quot;similar market conditions live near each other.&quot; The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> then observes and learns from these thoughts over time.</p>
+<p>A <strong>candle</strong> (market data) enters a <strong>vocabulary module</strong> (pure function, no state), which emits <strong>facts</strong> as <code>ThoughtAST</code> nodes. The <code>encode()</code> function walks that AST recursively with two-tier caching (L1 per-entity LruCache + L2 shared cache program), converting each node into a bipolar vector via the <a class="wikilink" href="T0-005-vector-manager.html">VectorManager</a> (atoms) or <a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> (numbers). Bindings compose relationships (<code>bind</code>), superpositions combine them (<code>bundle</code>), and <code>cosine</code> measures similarity. The result is a single high-dimensional <strong>thought vector</strong> — a point in meaning-space where &quot;similar market conditions live near each other.&quot; The <a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> then observes and learns from these thoughts over time.</p>
 <hr />
 </div>
     
     <div class="prose prose-invert max-w-none"><h2 id="1-the-pipeline-candle-facts-ast-vector-thought">1. The Pipeline: Candle → Facts → AST → Vector → Thought<a class="heading-anchor" href="#1-the-pipeline-candle-facts-ast-vector-thought" aria-hidden="true">#</a></h2>
 <pre class="mermaid">flowchart TD
     candle[&quot;candle&quot;] --&gt;|&quot;facts&quot;| vocab[&quot;vocab module\n(pure fn)&quot;]
-    vocab --&gt;|&quot;Vec&amp;lt;ThoughtAST&amp;gt;&quot;| encoder[&quot;ThoughtEncoder\n.encode()&quot;]
+    vocab --&gt;|&quot;Vec&amp;lt;ThoughtAST&amp;gt;&quot;| encoder[&quot;encode()\nL1 + L2 cache&quot;]
     encoder --&gt;|&quot;Vector&quot;| vector[&quot;Vector&quot;]
-    encoder --&gt;|&quot;across candles&quot;| incremental[&quot;IncrementalBundle&quot;]
 </pre>
 <h3 id="step-1-vocabulary-modules-emit-facts">Step 1: Vocabulary modules emit facts<a class="heading-anchor" href="#step-1-vocabulary-modules-emit-facts" aria-hidden="true">#</a></h3>
 <p>Vocabulary modules are <strong>pure functions</strong> — something in, facts out, no state. Each domain (market, exit, shared) observes different aspects of a candle and emits a <code>Vec&lt;ThoughtAST&gt;</code>.</p>
@@ -344,8 +343,14 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 </table>
 <p>A typical market candle might produce ~60–80 individual facts across all vocabulary modules, bundled into a single thought vector.</p>
 <p><code>collect_facts()</code> recursively flattens nested Bundles/Sequentials, skipping bare Atoms (names without values are not facts).</p>
-<h3 id="step-3-thoughtencoder-walks-the-ast">Step 3: ThoughtEncoder walks the AST<a class="heading-anchor" href="#step-3-thoughtencoder-walks-the-ast" aria-hidden="true">#</a></h3>
-<p>The <code>ThoughtEncoder</code> (T0-011) is <strong>stateless</strong> — no cache. It holds only a <code>ScalarEncoder</code> and a <code>VectorManager</code>. Each <code>encode()</code> call re-evaluates the entire subtree:</p>
+<h3 id="step-3-encode-walks-the-ast-with-two-tier-caching">Step 3: encode() walks the AST with two-tier caching<a class="heading-anchor" href="#step-3-encode-walks-the-ast-with-two-tier-caching" aria-hidden="true">#</a></h3>
+<p>The <code>ThoughtEncoder</code> struct has been <strong>deleted</strong> (Proposal 057). Encoding now lives in <code>encoding::encode::encode()</code> — a free function with a two-tier cache:</p>
+<ul>
+<li><strong>L1</strong>: per-entity <code>LruCache&lt;u64, Vector&gt;</code> in <code>EncodeState</code> (local memo, absorbs repeated lookups)</li>
+<li><strong>L2</strong>: shared <code>cache&lt;u64, Vector&gt;</code> program behind pipes (cross-entity sharing)</li>
+<li>Keys are precomputed <code>u64</code> hashes from <code>ThoughtAST::precomputed_hash()</code> — O(1) lookups</li>
+</ul>
+<p>Four-phase algorithm: (1) walk tree, collect L1 misses, (2) batch_get L2, (3) compute remaining with L1 memoization, (4) confirmed batch_set to L2.</p>
 <table>
 <thead>
 <tr>
@@ -371,6 +376,10 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label=""><code>ScalarEncoder.encode(value, Circular { period })</code> — modulo wrap</td>
 </tr>
 <tr>
+  <td data-label=""><code>Thermometer { value, min, max }</code></td>
+  <td data-label=""><code>ScalarEncoder.encode(value, Thermometer { min, max })</code> — bipolar gradient</td>
+</tr>
+<tr>
   <td data-label=""><code>Bind(left, right)</code></td>
   <td data-label="">Recursively encode both, then <code>Primitives::bind(&amp;l, &amp;r)</code></td>
 </tr>
@@ -379,13 +388,17 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label="">Encode all children, then <code>Primitives::bundle(&amp;refs)</code></td>
 </tr>
 <tr>
+  <td data-label=""><code>Permute(child, shift)</code></td>
+  <td data-label="">Encode child, then <code>Primitives::permute(&amp;v, shift)</code></td>
+</tr>
+<tr>
   <td data-label=""><code>Sequential(items)</code></td>
   <td data-label="">Encode each item, <code>permute</code> by position index, then <code>bundle</code></td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p>&quot;Production encoding goes through <code>encoding::encode::encode()</code> which checks the LRU. This struct exists for tests and IncrementalBundle.&quot; — T0-011</p>
+<p>&quot;One algebra. One implementation.&quot; — Tests use <code>TestEncodeEnv</code> which spins up a throwaway cache and drives the same <code>encode()</code> pipeline.</p>
 </blockquote>
 <hr />
 <h2 id="2-the-vector-algebra-how-thoughts-are-composed">2. The Vector Algebra — how thoughts are composed<a class="heading-anchor" href="#2-the-vector-algebra-how-thoughts-are-composed" aria-hidden="true">#</a></h2>
@@ -415,7 +428,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 angle = frac × 2π
 result[i] = sign(base[i] × cos(angle) + ortho[i] × sin(angle))
 </code></pre>
-<p>Used by <code>ThoughtEncoder</code> for <code>Linear</code>, <code>Log</code>, and <code>Circular</code> nodes.</p>
+<p>Used by <code>encode()</code> for <code>Linear</code>, <code>Log</code>, <code>Circular</code>, and <code>Thermometer</code> nodes.</p>
 <h3 id="positional-encoding-encoderwalkable-path">Positional encoding (Encoder/Walkable path)<a class="heading-anchor" href="#positional-encoding-encoderwalkable-path" aria-hidden="true">#</a></h3>
 <p>Transformer-style sinusoidal encoding with geometrically spaced frequencies:</p>
 <pre><code>freq = 1.0 / scale^(i / dim)
@@ -469,17 +482,13 @@ if i is odd:  cos(position × freq)
 </blockquote>
 <p>This is an alternative path to <code>ThoughtAST</code> — both produce the same vector algebra operations, but Walkable works on native Rust types while ThoughtAST works on the explicit tree.</p>
 <hr />
-<h2 id="5-incrementalbundle-efficiency-across-candles">5. IncrementalBundle — efficiency across candles<a class="heading-anchor" href="#5-incrementalbundle-efficiency-across-candles" aria-hidden="true">#</a></h2>
-<p>For streaming data (one candle at a time), re-encoding ~60 facts every tick is expensive. <code>IncrementalBundle</code> (T0-011) maintains running <code>Vec&lt;i32&gt;</code> sums:</p>
-<ol>
-<li><strong>First candle</strong>: Full encode — encode every fact, accumulate sums, store <code>HashMap&lt;ThoughtAST, Vector&gt;</code>.</li>
-<li><strong>Subsequent candles</strong>: Diff — remove vectors for facts that disappeared, encode only new/changed facts, update sums.</li>
-<li><strong>Threshold</strong>: <code>sign(sum)</code> produces the bundle — proven <strong>bit-identical</strong> to a full bundle from scratch.</li>
-</ol>
-<blockquote>
-<p>&quot;round_to at vocab emission is load-bearing for the AST diff. Quantized floats compare reliably.&quot; — T0-011</p>
-</blockquote>
-<p>Without <code>round_to</code>, floating-point drift would cause false &quot;changed&quot; detections, degrading to full recompute.</p>
+<h2 id="5-caching-efficiency-across-candles">5. Caching — efficiency across candles<a class="heading-anchor" href="#5-caching-efficiency-across-candles" aria-hidden="true">#</a></h2>
+<p><strong><code>IncrementalBundle</code> has been deleted</strong> (Proposal 057 — &quot;one algebra&quot;). The incremental optimization is now absorbed by the two-tier cache:</p>
+<ul>
+<li><strong>L1</strong> (<code>EncodeState</code>): per-entity <code>LruCache&lt;u64, Vector&gt;</code> — caches intermediate subtree results within a candle.</li>
+<li><strong>L2</strong> (<code>cache&lt;u64, Vector&gt;</code>): shared cache program behind pipes — caches results across entities and across candles.</li>
+</ul>
+<p>The four-phase <code>encode()</code> algorithm naturally avoids re-computing unchanged subtrees: L1 absorbs repeated lookups across the tree walk, and L2 absorbs cross-entity/cross-candle sharing. Precomputed <code>u64</code> hashes from <code>ThoughtAST::precomputed_hash()</code> make all lookups O(1).</p>
 <hr />
 <h2 id="6-the-full-vocabulary-landscape">6. The Full Vocabulary Landscape<a class="heading-anchor" href="#6-the-full-vocabulary-landscape" aria-hidden="true">#</a></h2>
 <p>Three domains, scoped subfiles (T2-004):</p>
@@ -517,7 +526,7 @@ if i is odd:  cos(position × freq)
 </ul>
 <hr />
 <h2 id="7-caching-architecture">7. Caching Architecture<a class="heading-anchor" href="#7-caching-architecture" aria-hidden="true">#</a></h2>
-<p>Three distinct caching layers:</p>
+<p>Two distinct caching layers (the third was IncrementalBundle, now deleted):</p>
 <table>
 <thead>
 <tr>
@@ -533,18 +542,18 @@ if i is odd:  cos(position × freq)
   <td data-label="Purpose">Atom → vector mapping. Persistent across all encodes. Shared via <code>Arc</code>.</td>
 </tr>
 <tr>
-  <td data-label=""><strong>Production LRU</strong></td>
-  <td data-label=""><code>encoding::encode::encode()</code></td>
-  <td data-label="">Avoids re-evaluating identical <code>ThoughtAST</code> subtrees on hot paths.</td>
+  <td data-label=""><strong>L1</strong></td>
+  <td data-label=""><code>EncodeState</code> — <code>LruCache&lt;u64, Vector&gt;</code></td>
+  <td data-label="">Per-entity memo for subtree results. Within a candle.</td>
 </tr>
 <tr>
-  <td data-label=""><strong>IncrementalBundle facts cache</strong></td>
-  <td data-label=""><code>HashMap&lt;ThoughtAST, Vector&gt;</code></td>
-  <td data-label="">Avoids re-encoding unchanged facts between candles. Depends on <code>round_to</code>.</td>
+  <td data-label=""><strong>L2</strong></td>
+  <td data-label=""><code>cache&lt;u64, Vector&gt;</code> program</td>
+  <td data-label="">Cross-entity, cross-candle sharing. Behind pipes.</td>
 </tr>
 </tbody>
 </table>
-<p><code>ThoughtEncoder</code> itself holds <strong>zero caching</strong> — it is a pure evaluator.</p>
+<p>Keys are precomputed <code>u64</code> hashes — O(1) lookups, no tree walking.</p>
 <hr />
 <h2 id="8-what-makes-a-thought-meaningful">8. What Makes a Thought Meaningful<a class="heading-anchor" href="#8-what-makes-a-thought-meaningful" aria-hidden="true">#</a></h2>
 <p>A thought vector is meaningful because of the algebraic properties of its construction:</p>
@@ -565,7 +574,7 @@ if i is odd:  cos(position × freq)
 <li><a class="wikilink" href="T0-004-encoder.html">ScalarEncoder</a> — mapping continuous values to bipolar vectors</li>
 <li><a class="wikilink" href="T0-006-walkable.html">Walkable</a> — zero-serialization encoding trait for Rust types</li>
 <li><a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> — the intermediate representation between vocabulary and vector</li>
-<li><a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a> — efficient streaming bundling across candles</li>
+<li>CacheHandle — generic batch cache program behind pipes (L2)</li>
 <li><a class="wikilink" href="T0-002-primitives.html">Primitives</a> — the vector algebra: atom, bind, bundle, cosine</li>
 <li><a class="wikilink" href="T1-001-wat-language.html">Reckoner Coalgebra</a> — the learning subsystem that observes thoughts over time</li>
 <li><a class="wikilink" href="pg-vocabulary.html">Vocabulary</a> — the complete atom catalog organized by domain</li>
@@ -578,7 +587,7 @@ if i is odd:  cos(position × freq)
 <li><a href="T0-004-encoder">T0-004</a> (Scalar Encoding) — rotational and positional encoding; linear, log, circular</li>
 <li><a href="T0-005-vector-manager">T0-005</a> (VectorManager) — SHA-256 → ChaCha8Rng deterministic atom vectors</li>
 <li><a href="T0-006-walkable">T0-006</a> (Walkable) — structural type system and recursive tree walking</li>
-<li><a href="T0-011-thought-encoder-rust">T0-011</a> (ThoughtEncoder) — ThoughtAST enum, encoder evaluation, IncrementalBundle</li>
+<li><a href="T0-011-thought-encoder-rust">T0-011</a> (ThoughtEncoder — deleted) — archived; encode() free function now replaces it</li>
 <li><a href="T2-004-vocabulary">T2-004</a> (Vocabulary) — complete atom catalog, domain organization, encoding schemes</li>
 </ul>
 </div>

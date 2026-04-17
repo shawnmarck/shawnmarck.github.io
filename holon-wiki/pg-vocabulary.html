@@ -190,7 +190,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   
   <a href="pg-disposable-machine.html">Disposable Machine</a>
   
-  <a href="pg-encoding-cache.html">Encoding Cache — the distributed LRU encoding service</a>
+  <a href="pg-encoding-cache.html">Encoding Cache — generic batch-only LRU cache program</a>
   
   <a href="pg-exit-observer.html">Position Observer — Pure Lens Carrier</a>
   
@@ -303,7 +303,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
 <p>For additional encoding detail (rotational vs positional, determinism, quantization), see <a class="wikilink" href="T0-004-encoder.html">scalar-encoding</a>.</p>
 <hr />
 <h2 id="thoughtast-the-language-vocabulary-speaks">ThoughtAST — the language vocabulary speaks<a class="heading-anchor" href="#thoughtast-the-language-vocabulary-speaks" aria-hidden="true">#</a></h2>
-<p>Vocabulary modules emit <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> nodes. The seven variants:</p>
+<p>Vocabulary modules emit <a class="wikilink" href="pg-thought-system.html">ThoughtAST</a> nodes. The nine variants of <code>ThoughtASTKind</code>:</p>
 <table>
 <thead>
 <tr>
@@ -334,8 +334,13 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label="">A wrapping scalar fact.</td>
 </tr>
 <tr>
+  <td data-label=""><code>Thermometer { value, min, max }</code></td>
+  <td data-label="">f64, f64, f64</td>
+  <td data-label="">Linear gradient that survives bipolar thresholding. Proposal 056.</td>
+</tr>
+<tr>
   <td data-label=""><code>Bind(left, right)</code></td>
-  <td data-label="">Box, Box</td>
+  <td data-label="">Arc, Arc</td>
   <td data-label="">Two vectors bound together. Used for named scalars (e.g., RSI bound to its value).</td>
 </tr>
 <tr>
@@ -344,18 +349,24 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #7170
   <td data-label="">Unordered set — all children merged into one vector.</td>
 </tr>
 <tr>
+  <td data-label=""><code>Permute(child, shift)</code></td>
+  <td data-label="">Arc, i32</td>
+  <td data-label="">Positional shift — circular permutation of dimensions by <code>shift</code> positions.</td>
+</tr>
+<tr>
   <td data-label=""><code>Sequential(items)</code></td>
   <td data-label="">Vec</td>
   <td data-label="">Position-sensitive sequence — each item permuted by its index, then bundled. <code>[A, B] ≠ [B, A]</code>.</td>
 </tr>
 </tbody>
 </table>
+<p><code>ThoughtAST</code> wraps <code>ThoughtASTKind</code> with a precomputed <code>hash: u64</code> for O(1) cache lookups.</p>
 <p>Key facts about the AST (from <a class="wikilink" href="pg-thought-encoding.html">thought-encoder</a> verification):</p>
 <ul>
 <li><code>Atom</code> nodes are <strong>not facts</strong> — <code>collect_facts()</code> skips them.</li>
-<li><code>Bind</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code> nodes <strong>are</strong> facts.</li>
-<li><code>round_to()</code> at vocab emission is load-bearing: the AST is used as a HashMap key in <a class="wikilink" href="T0-002-primitives.html">IncrementalBundle</a>; quantized floats compare reliably via <code>f64::to_bits()</code>.</li>
-<li>The <a class="wikilink" href="pg-thought-encoding.html">ThoughtEncoder</a> evaluates the AST recursively with no caching; production caching is external (LRU in <code>encoding::encode::encode()</code>).</li>
+<li><code>Bind</code>, <code>Linear</code>, <code>Log</code>, <code>Circular</code>, <code>Thermometer</code>, <code>Permute</code> nodes <strong>are</strong> facts.</li>
+<li><code>round_to()</code> at vocab emission is load-bearing: the AST's precomputed hash depends on <code>f64::to_bits()</code>; quantized floats compare reliably.</li>
+<li>The <code>encode()</code> function (in <code>encoding::encode</code>) evaluates the AST recursively with two-tier caching (L1 per-entity LruCache + L2 shared cache program).</li>
 </ul>
 <hr />
 <h2 id="domain-organization">Domain Organization<a class="heading-anchor" href="#domain-organization" aria-hidden="true">#</a></h2>
