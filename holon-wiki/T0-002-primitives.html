@@ -447,7 +447,11 @@ pub fn permute(vec: &amp;Vector, k: i32) -&gt; Vector
 </tr>
 <tr>
   <td data-label=""><code>blend(vec1, vec2, alpha)</code></td>
-  <td data-label="">Weighted interpolation, then threshold</td>
+  <td data-label="">Convex blend — thin wrapper over <code>blend_weighted(vec1, vec2, 1-α, α)</code></td>
+</tr>
+<tr>
+  <td data-label=""><code>blend_weighted(a, b, w1, w2)</code></td>
+  <td data-label="">Two independent real weights, thresholded to <code>{-1, 0, +1}^d</code>. Weights can be negative; zero silences input. Stdlib macros compose over this: Subtract=Blend(a,b,1,-1), Amplify=Blend(a,b,1,s), Circular=Blend(cos,sin,cosθ,sinθ)</td>
 </tr>
 <tr>
   <td data-label=""><code>resonance(vec, reference)</code></td>
@@ -703,7 +707,7 @@ pub enum NegateMethod { Subtract, Zero, Invert }
 <h2 id="source-files">Source Files<a class="heading-anchor" href="#source-files" aria-hidden="true">#</a></h2>
 <ul>
 <li><code>wat/core/primitives.wat</code> — 83 lines. Canonical specification.</li>
-<li><code>holon-rs/src/kernel/primitives.rs</code> — 1911 lines (1255 code + 656 tests). Implementation.</li>
+<li><code>holon-rs/src/kernel/primitives.rs</code> — 1936 lines (1316 code + 620 tests). Implementation.</li>
 </ul>
 </div>
   </main>
