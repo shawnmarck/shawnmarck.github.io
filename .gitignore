@@ -1,0 +1,12 @@
+# Tool caches
+.ruff_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Local scratch
+image.png
+*.local.html

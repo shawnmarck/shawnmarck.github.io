@@ -1,11 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0; url=https://github.com/shawnmarck">
-  <title>Redirecting to GitHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shawn Marck</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 3rem 1.5rem;
+    }
+    main {
+      max-width: 40rem;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .lead {
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    a {
+      display: block;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+    a:hover { border-color: var(--accent); }
+    a strong {
+      display: block;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+    a span { color: var(--muted); font-size: 0.9rem; }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    footer a { display: inline; padding: 0; background: none; border: none; color: var(--accent); }
+  </style>
 </head>
 <body>
-  <p>If you are not redirected automatically, <a href="https://github.com/shawnmarck">click here</a>.</p>
+  <main>
+    <h1>Shawn Marck</h1>
+    <p class="lead">Projects and documentation.</p>
+    <ul>
+      <li>
+        <a href="holon-wiki/">
+          <strong>Holon Wiki</strong>
+          <span>Architecture, proposals, and implementation reference</span>
+        </a>
+      </li>
+      <li>
+        <a href="holon-graph/graph.html">
+          <strong>Holon Graph</strong>
+          <span>Interactive dependency graph</span>
+        </a>
+      </li>
+      <li>
+        <a href="agent-model-map.html">
+          <strong>Agent Model Map</strong>
+          <span>OpenAgent configuration and model roster</span>
+        </a>
+      </li>
+      <li>
+        <a href="ofs-abstract.html">
+          <strong>OpenFairStack Abstract</strong>
+          <span>Provably fair framework for server-authoritative gaming</span>
+        </a>
+      </li>
+    </ul>
+    <footer>
+      <a href="https://github.com/shawnmarck">GitHub</a>
+    </footer>
+  </main>
 </body>
 </html>
